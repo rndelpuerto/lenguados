@@ -4,7 +4,7 @@
 ## 📜 Description (EN)
 
 **lenguados** is a **TypeScript‑based, lightweight, deterministic, and extensible 2‑D physics engine**.  
-Its **render plug‑in system** makes it easy to integrate with **any 2‑D rendering engine** (Canvas 2D, WebGL, etc.), while its **modular solver architecture** lets you extend or swap physical algorithms as needed, ensuring accurate collision detection and consistent performance for games and simulations.
+Its **render plug‑in system** makes it easy to integrate with **any 2‑D rendering engine** (Canvas 2D, WebGL, etc.), while its **modular solver architecture** lets you extend or swap physical algorithms as needed, delivering accurate collision detection and consistent performance for games and simulations.
 
 > **License:** Apache License 2.0 — free to use in commercial or open‑source projects as long as you keep the required attribution in the `LICENSE` and `NOTICE` files. Contributions are welcome via *pull requests* under the same license/CLA terms.
 
