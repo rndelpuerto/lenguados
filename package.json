@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo test",
-    "build": "echo build",
+    "build": "tsc -p tsconfig.json",
     "lint": "echo lint"
   },
   "repository": {
@@ -18,5 +18,8 @@
   "bugs": {
     "url": "https://github.com/rndelpuerto/lenguados/issues"
   },
-  "homepage": "https://github.com/rndelpuerto/lenguados#readme"
+  "homepage": "https://github.com/rndelpuerto/lenguados#readme",
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  }
 }
