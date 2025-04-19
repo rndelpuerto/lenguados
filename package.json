@@ -1,0 +1,22 @@
+{
+  "name": "lenguados",
+  "version": "1.0.0",
+  "description": "[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)   > **2‑D version** of the *Lenguado* physics‑engine family",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo test",
+    "build": "echo build",
+    "lint": "echo lint"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rndelpuerto/lenguados.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rndelpuerto/lenguados/issues"
+  },
+  "homepage": "https://github.com/rndelpuerto/lenguados#readme"
+}

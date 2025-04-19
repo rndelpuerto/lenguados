@@ -28,3 +28,14 @@ You must keep the `LICENSE` and `NOTICE` files (and their copyright headers) in 
 Distribuido bajo la **Apache License 2.0**.  
 Debes conservar los archivos `LICENSE` y `NOTICE` (y sus encabezados de copyright) en cualquier distribución o trabajo derivado.
 
+---
+
+## Getting Started
+
+```bash
+git clone https://github.com/rndelpuerto/lenguados.git
+cd lenguados
+nvm install   # installs 22.14.0 from .nvmrc
+nvm use
+npm install
+```
