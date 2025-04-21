@@ -1,25 +1,58 @@
 {
   "name": "lenguados",
-  "version": "1.0.0",
   "description": "[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)   > **2‑D version** of the *Lenguado* physics‑engine family",
-  "main": "index.js",
+  "keywords": [],
+  "author": "Ricardo Nicolás del Puerto Camacho",
+  "license": "ISC",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
-    "test": "echo test",
-    "build": "tsc -p tsconfig.json",
-    "lint": "echo lint"
+    "build": "npm run build:packages",
+    "build:bundles": "npm run rollup",
+    "build:packages": "npm run build:bundles",
+    "clean": "npm run clean:packages && npm run clean:main",
+    "clean-install": "npm run clean && npm run init",
+    "clean:main": "rm -rf node_modules package-lock.json",
+    "clean:packages": "rimraf packages/*/lib",
+    "dist": "npm run build && cross-env NODE_ENV=production npm run dist:packages",
+    "dist:bundles": "npm run rollup-dist",
+    "dist:packages": "npm run dist:bundles",
+    "init": "npm install && pip install -r requirements.txt",
+    "lint": "echo lint",
+    "rollup": "cross-env NODE_ENV=development lerna run build --sort --concurrency 4 --stream",
+    "rollup-dist": "cross-env NODE_ENV=production lerna run build --sort --concurrency 4 --stream",
+    "setup": "npm run init && npm run build",
+    "test": "npm run test:unit",
+    "test:unit": "echo test",
+    "test:watch": "echo test",
+    "watch": "cross-env NODE_ENV=development lerna run watch --sort --concurrency 4 --stream"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/rndelpuerto/lenguados.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "bugs": {
     "url": "https://github.com/rndelpuerto/lenguados/issues"
   },
   "homepage": "https://github.com/rndelpuerto/lenguados#readme",
   "devDependencies": {
-    "typescript": "^5.8.3"
+    "@rollup/plugin-commonjs": "^28.0.3",
+    "@rollup/plugin-json": "^6.1.0",
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "@rollup/plugin-terser": "^0.4.4",
+    "cross-env": "^7.0.3",
+    "glob-promise": "^6.0.7",
+    "lerna": "^8.2.2",
+    "rimraf": "^6.0.1",
+    "rollup": "^4.40.0",
+    "rollup-plugin-cleanup": "^3.2.1",
+    "rollup-plugin-dts": "^6.2.1",
+    "rollup-plugin-esbuild": "^6.2.1",
+    "rollup-plugin-filesize": "^10.0.0",
+    "rollup-plugin-peer-deps-external": "^2.2.4",
+    "rollup-plugin-polyfill-node": "^0.13.0",
+    "rollup-plugin-visualizer": "^5.14.0"
   }
 }

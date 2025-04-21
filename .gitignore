@@ -134,3 +134,15 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# Builds
+packages/**/lib
+packages/**/bundle-stats.html
+
+
+# System files
+.DS_Store
+
+# IDEs
+.idea
+.vscode
