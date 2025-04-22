@@ -5,11 +5,11 @@
 import { add } from '../index';
 
 describe('add()', () => {
-  it('adds two positive numbers', () => {
-    expect(add(2, 3)).toBe(5);
-  });
+ it('adds two positive numbers', () => {
+  expect(add(2, 3)).toBe(5);
+ });
 
-  it('handles negatives', () => {
-    expect(add(-4, 7)).toBe(3);
-  });
+ it('handles negatives', () => {
+  expect(add(-4, 7)).toBe(3);
+ });
 });

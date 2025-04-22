@@ -142,7 +142,3 @@ packages/**/bundle-stats.html
 
 # System files
 .DS_Store
-
-# IDEs
-.idea
-.vscode

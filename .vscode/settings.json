@@ -1,0 +1,43 @@
+{
+ // ---------------------------------------------------------
+ //  Formatting
+ // ---------------------------------------------------------
+ "editor.formatOnSave": true, // run formatter on every save
+
+ // Prettier as the formatter for the languages we use
+ "[typescript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+ "[javascript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+ "[json]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+ "[css]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+ "[scss]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+
+ // ---------------------------------------------------------
+ //  Auto‑fixers on save
+ // ---------------------------------------------------------
+ "editor.codeActionsOnSave": {
+  // ESLint quick‑fix (run when user explicitly saves)
+  "source.fixAll.eslint": "explicit",
+
+  // Stylelint quick‑fix (CSS / SCSS)
+  "source.fixAll.stylelint": "explicit"
+ },
+
+ // ---------------------------------------------------------
+ //  Linter integration
+ // ---------------------------------------------------------
+ // Tell ESLint extension to lint JS and TS files
+ "eslint.validate": ["javascript", "typescript"],
+
+ // Stay on Classic .eslintrc config (not Flat Config)
+ "eslint.useFlatConfig": true,
+
+ // Stylelint extension: activate for CSS & SCSS
+ "stylelint.validate": ["css", "scss"],
+
+ // ---------------------------------------------------------
+ //  Visual aids & consistency
+ // ---------------------------------------------------------
+ "editor.renderWhitespace": "all", // show spaces, tabs, NBSP
+ "files.eol": "\n", // force LF endings
+ "editor.tabSize": 2 // 2‑space indentation
+}

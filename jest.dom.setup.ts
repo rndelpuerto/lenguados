@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import 'jest-canvas-mock';
 import '@testing-library/jest-dom';
 
@@ -7,13 +9,14 @@ import '@testing-library/jest-dom';
 
 // Mock ResizeObserver
 class ResizeObserver {
-  observe()   {}
-  unobserve() {}
-  disconnect() {}
+ observe() {}
+ unobserve() {}
+ disconnect() {}
 }
 
 (globalThis as any).ResizeObserver = ResizeObserver;
 
 // requestAnimationFrame shim
-(globalThis as any).requestAnimationFrame = (cb: FrameRequestCallback) => setTimeout(cb, 0);
-(globalThis as any).cancelAnimationFrame  = (id: number) => clearTimeout(id);
+(globalThis as any).requestAnimationFrame = (callback: FrameRequestCallback) =>
+ setTimeout(callback, 0);
+(globalThis as any).cancelAnimationFrame = (id: number) => clearTimeout(id);

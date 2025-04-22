@@ -1,75 +1,75 @@
 {
-    "name": "@lenguados/common",
-    "version": "0.2.1",
-    "description": "Common constants, utils and other resources to use all across **2‑D version** of the *Lenguado* physics‑engine family.",
-    "homepage": "https://github.com/rndelpuerto/lenguados#readme",
-    "keywords": [],
-    "author": "Ricardo Nicolás del Puerto Camacho",
-    "license": "ISC",
-    "main": "./main.js",
-    "module": "./main.mjs",
-    "types": "./lib/@types/index.d.ts",
-    "exports": {
-      ".": {
-        "types": "./lib/@types/index.d.ts",
-        "development": {
-          "require": "./main.js",
-          "import": "./dev-main.mjs"
-        },
-        "default": {
-          "require": "./main.js",
-          "import": "./main.mjs"
-        }
-      },
-      "./constants/*": {
-        "types": "./lib/@types/constants/*.d.ts",
-        "development": {
-          "require": "./lib/cjs/constants/*.development.js",
-          "import": "./lib/esm/constants/*.development.js"
-        },
-        "default": {
-          "require": "./lib/cjs/constants/*.production.js",
-          "import": "./lib/esm/constants/*.production.js"
-        }
-      },
-      "./utils/*": {
-        "types": "./lib/@types/utils/*.d.ts",
-        "development": {
-          "require": "./lib/cjs/utils/*.development.js",
-          "import": "./lib/esm/utils/*.development.js"
-        },
-        "default": {
-          "require": "./lib/cjs/utils/*.production.js",
-          "import": "./lib/esm/utils/*.production.js"
-        }
-      },
-      "./lib/*": {
-        "types": "./lib/@types/*.d.ts",
-        "require": "./lib/cjs/*",
-        "import": "./lib/esm/*"
-      },
-      "./*": "./*"
-    },
-    "files": [
-      "index.ts",
-      "main.js",
-      "main.mjs",
-      "dev-main.mjs",
-      "lib"
-    ],
-    "repository": {
-      "type": "git",
-      "url": "git+https://github.com/rndelpuerto/lenguados.git",
-      "directory": "packages/common"
-    },
-    "bugs": {
-      "url": "https://github.com/rndelpuerto/lenguados/issues"
-    },
-    "scripts": {
-      "build": "rollup -c ../../rollup.config.mjs",
-      "watch": "rollup -c ../../rollup.config.mjs --watch"
-    },
-    "engines": {
-      "node": "^22.14.0"
-    }
-  }
+ "name": "@lenguados/common",
+ "version": "0.2.1",
+ "description": "Common constants, utils and other resources to use all across **2‑D version** of the *Lenguado* physics‑engine family.",
+ "homepage": "https://github.com/rndelpuerto/lenguados#readme",
+ "keywords": [],
+ "author": "Ricardo Nicolás del Puerto Camacho",
+ "license": "ISC",
+ "main": "./main.js",
+ "module": "./main.mjs",
+ "types": "./lib/@types/index.d.ts",
+ "exports": {
+  ".": {
+   "types": "./lib/@types/index.d.ts",
+   "development": {
+    "require": "./main.js",
+    "import": "./dev-main.mjs"
+   },
+   "default": {
+    "require": "./main.js",
+    "import": "./main.mjs"
+   }
+  },
+  "./constants/*": {
+   "types": "./lib/@types/constants/*.d.ts",
+   "development": {
+    "require": "./lib/cjs/constants/*.development.js",
+    "import": "./lib/esm/constants/*.development.js"
+   },
+   "default": {
+    "require": "./lib/cjs/constants/*.production.js",
+    "import": "./lib/esm/constants/*.production.js"
+   }
+  },
+  "./utils/*": {
+   "types": "./lib/@types/utils/*.d.ts",
+   "development": {
+    "require": "./lib/cjs/utils/*.development.js",
+    "import": "./lib/esm/utils/*.development.js"
+   },
+   "default": {
+    "require": "./lib/cjs/utils/*.production.js",
+    "import": "./lib/esm/utils/*.production.js"
+   }
+  },
+  "./lib/*": {
+   "types": "./lib/@types/*.d.ts",
+   "require": "./lib/cjs/*",
+   "import": "./lib/esm/*"
+  },
+  "./*": "./*"
+ },
+ "files": [
+  "index.ts",
+  "main.js",
+  "main.mjs",
+  "dev-main.mjs",
+  "lib"
+ ],
+ "repository": {
+  "type": "git",
+  "url": "git+https://github.com/rndelpuerto/lenguados.git",
+  "directory": "packages/common"
+ },
+ "bugs": {
+  "url": "https://github.com/rndelpuerto/lenguados/issues"
+ },
+ "scripts": {
+  "build": "rollup -c ../../rollup.config.mjs",
+  "watch": "rollup -c ../../rollup.config.mjs --watch"
+ },
+ "engines": {
+  "node": "^22.14.0"
+ }
+}
