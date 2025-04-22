@@ -1,6 +1,6 @@
 {
- "./*.[jt]s": ["eslint --fix"],
- "./**/*.ts": ["eslint --fix"],
- "./**/*.s?(c)ss": ["stylelint --fix"],
+ "*.[jt]s": ["eslint --fix"],
+ "**/*.ts": ["eslint --fix"],
+ "**/*.s?(c)ss": ["stylelint --fix"],
  "*.{ts,js,css,scss,json,md}": ["prettier --write"]
 }
