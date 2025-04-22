@@ -66,8 +66,8 @@
       "url": "https://github.com/rndelpuerto/lenguados/issues"
     },
     "scripts": {
-      "build": "rollup -c ../../rollup.config.js --bundleConfigAsCjs",
-      "watch": "rollup -c ../../rollup.config.js --bundleConfigAsCjs --watch"
+      "build": "rollup -c ../../rollup.config.mjs",
+      "watch": "rollup -c ../../rollup.config.mjs --watch"
     },
     "engines": {
       "node": "^22.14.0"

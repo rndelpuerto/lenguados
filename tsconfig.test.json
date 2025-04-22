@@ -1,0 +1,8 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "verbatimModuleSyntax": false,
+        "sourceMap": true
+    },
+    "include": ["@types/test.global.d.ts", "packages/**/__tests__", "packages/**/src"]
+}

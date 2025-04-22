@@ -1,5 +1,6 @@
 import path from 'path';
 import fs from 'fs';
+import { fileURLToPath } from 'url';
 import fg from 'fast-glob';
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
@@ -13,6 +14,9 @@ import { visualizer } from 'rollup-plugin-visualizer';
 import { dts } from 'rollup-plugin-dts';
 
 const esbuild = pluginEsbuild.default || pluginEsbuild;
+
+// Compute __dirname in ESM
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // -------------------------
 // Environment & Flags
@@ -33,7 +37,12 @@ const MAX_PARALLEL_OPS = 15;
 // -------------------------
 // Formats & Extensions
 // -------------------------
-const FormatTypes = Object.freeze({ COMMONJS: 'cjs', ES_MODULE: 'esm', TYPES: 'es' });
+const FormatTypes = Object.freeze({
+  COMMONJS: 'cjs',
+  ES_MODULE: 'esm',
+  TYPES: 'es'
+});
+
 const FORMATS = Object.freeze(Object.values(FormatTypes));
 const EXTENSIONS = Object.freeze(['.ts', '.js']);
 const TARGET_JS = 'es2020';
@@ -44,6 +53,7 @@ const TARGET_JS = 'es2020';
 const pkgDir = process.cwd();
 const srcDir = path.join(pkgDir, 'src');
 const rootEntry = path.join(pkgDir, 'index.ts');
+const tsconfigPath = path.join(__dirname, TSCONFIG_FILE);
 
 if (!fs.existsSync(rootEntry)) throw new Error(`Missing entry: ${rootEntry}`);
 
@@ -83,7 +93,14 @@ const entryPoints = Object.freeze(
     new Set([
       rootEntry,
       ...INTERNALS_LIST.flatMap(dir =>
-        fg.sync(`${dir}/**/*.ts`, { cwd: srcDir }).map(f => path.join(srcDir, f))
+        fg.sync(
+          [
+            `${dir}/**/*.ts`,
+            `!${dir}/**/__tests__/**/*.ts`
+          ],
+          { cwd: srcDir }
+        )
+        .map(f => path.join(srcDir, f))
       )
     ])
   )
@@ -99,13 +116,11 @@ const cjsExternal = Object.freeze(['crypto', 'buffer', 'process', 'http', ...bas
 const esmExternal = baseExternal;
 const dtsExternal = [];
 
-const EXTERNALS_MAP = Object.freeze(
-  new Map([
-    [FormatTypes.COMMONJS, cjsExternal],
-    [FormatTypes.ES_MODULE, esmExternal],
-    [FormatTypes.TYPES, dtsExternal]
-  ])
-);
+const EXTERNALS_MAP = Object.freeze(new Map([
+  [FormatTypes.COMMONJS, cjsExternal],
+  [FormatTypes.ES_MODULE, esmExternal],
+  [FormatTypes.TYPES, dtsExternal]
+]));
 
 // -------------------------
 // Common Plugins
@@ -130,31 +145,44 @@ const buildPlugins = format => {
   } else {
     plugins.push(
       esbuild({
-        tsconfig: path.join(pkgDir, TSCONFIG_FILE),
+        tsconfig: tsconfigPath,
         sourceMap: !IS_PRODUCTION,
         minify: IS_PRODUCTION,
         target: TARGET_JS
       })
     );
 
-    if (IS_PRODUCTION) plugins.push(cleanup(), filesize(), visualizer({ filename: STATS_FILE, open: false }));
+    if (IS_PRODUCTION) {
+      plugins.push(
+        cleanup(),
+        filesize(),
+        visualizer({ filename: STATS_FILE, open: false })
+      );
+    }
   }
 
   return Object.freeze(plugins);
 };
 
-const PLUGINS_MAP = Object.freeze(new Map(FORMATS.map(fmt => [fmt, buildPlugins(fmt)])));
+const PLUGINS_MAP = Object.freeze(new Map(
+  FORMATS.map(fmt => [fmt, buildPlugins(fmt)])
+));
 
 // -------------------------
 // Output Helpers
 // -------------------------
 const generateFileName = (rel, format) => {
-  if (format === FormatTypes.COMMONJS) return `${rel}.${ENV}.js`;
-
-  if (format === FormatTypes.ES_MODULE) {
-    return rel === 'index' && IS_PRODUCTION ? 'module.js' : `${rel}.${ENV}.js`;
+  if (format === FormatTypes.COMMONJS) {
+    return `${rel}.${ENV}.js`;
   }
 
+  if (format === FormatTypes.ES_MODULE) {
+    return rel === 'index' && IS_PRODUCTION
+      ? 'module.js'
+      : `${rel}.${ENV}.js`;
+  }
+
+  // TYPES
   return `${rel}.d.ts`;
 };
 
@@ -169,10 +197,7 @@ const makeOutputConfig = (format, entry) => {
     file: path.join(pkgDir, BUILD_DIR, dir, generateFileName(rel, format)),
     format,
     sourcemap: format !== FormatTypes.TYPES && !IS_PRODUCTION,
-    exports: format === FormatTypes.COMMONJS ? 'named' : undefined,
-    treeshake: { moduleSideEffects: false },
-    maxParallelFileOps: MAX_PARALLEL_OPS,
-    perf: true
+    exports: format === FormatTypes.COMMONJS ? 'named' : undefined
   };
 };
 
@@ -183,9 +208,14 @@ const makeConfig = (entry, format) => ({
   input: entry,
   external: EXTERNALS_MAP.get(format),
   plugins: PLUGINS_MAP.get(format),
+  treeshake: { moduleSideEffects: false },
+  maxParallelFileOps: MAX_PARALLEL_OPS,
+  perf: true,
   output: makeOutputConfig(format, entry)
 });
 
-const configs = FORMATS.flatMap(format => entryPoints.map(entry => makeConfig(entry, format)));
+const configs = FORMATS.flatMap(format =>
+  entryPoints.map(entry => makeConfig(entry, format))
+);
 
 export default configs;
