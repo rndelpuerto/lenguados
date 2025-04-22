@@ -41,7 +41,6 @@
  "husky": {
   "config": "husky.config.js"
  },
- "lint-staged": ".lintstagedrc.json",
  "commitlint": {
   "extends": [
    "@commitlint/config-conventional"
@@ -103,5 +102,6 @@
   "stylelint-prettier": "^5.0.3",
   "ts-jest": "^29.3.2",
   "ts-node": "^10.9.2"
- }
+ },
+ "version": "0.2.3"
 }
