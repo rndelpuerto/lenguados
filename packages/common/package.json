@@ -1,6 +1,6 @@
 {
  "name": "@lenguados/common",
- "version": "0.2.1",
+ "version": "0.3.0",
  "description": "Common constants, utils and other resources to use all across **2‑D version** of the *Lenguado* physics‑engine family.",
  "homepage": "https://github.com/rndelpuerto/lenguados#readme",
  "keywords": [],
