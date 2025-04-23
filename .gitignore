@@ -6,6 +6,7 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 .pnpm-debug.log*
+packages/*/outdated.*
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
@@ -138,7 +139,6 @@ dist
 # Builds
 packages/**/lib
 packages/**/bundle-stats.html
-
 
 # System files
 .DS_Store
