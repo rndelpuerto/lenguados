@@ -97,6 +97,12 @@ export default defineFlatConfig([
     tsconfigRootDir: import.meta.dirname,
     noWarnOnMultipleProjects: true,
    },
+   globals: {
+    document: 'readonly',
+    window: 'readonly',
+    HTMLElement: 'readonly',
+    CanvasRenderingContext2D: 'readonly',
+   },
   },
   plugins: {
    '@typescript-eslint': tsPlugin,

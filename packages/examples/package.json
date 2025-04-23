@@ -1,7 +1,7 @@
 {
- "name": "@lenguados/common",
+ "name": "@lenguados/examples",
  "version": "0.3.0",
- "description": "Common constants, utils and other resources to use all across **2‑D version** of the *Lenguado* physics‑engine family.",
+ "description": "Interactive demos, visual tests and reference scenes to showcase and validate all features of the 2-D version of the Lenguado physics-engine family.",
  "homepage": "https://github.com/rndelpuerto/lenguados#readme",
  "keywords": [],
  "author": "Ricardo Nicolás del Puerto Camacho",
@@ -21,28 +21,18 @@
     "import": "./main.mjs"
    }
   },
-  "./constants/*": {
-   "types": "./lib/@types/constants/*.d.ts",
+  "./canvas-hello/*": {
+   "types": "./lib/@types/canvas-hello/*.d.ts",
    "development": {
-    "require": "./lib/cjs/constants/*.development.js",
-    "import": "./lib/esm/constants/*.development.js"
+    "require": "./lib/cjs/canvas-hello/*.development.js",
+    "import": "./lib/esm/canvas-hello/*.development.js"
    },
    "default": {
-    "require": "./lib/cjs/constants/*.production.js",
-    "import": "./lib/esm/constants/*.production.js"
+    "require": "./lib/cjs/canvas-hello/*.production.js",
+    "import": "./lib/esm/canvas-hello/*.production.js"
    }
   },
-  "./utils/*": {
-   "types": "./lib/@types/utils/*.d.ts",
-   "development": {
-    "require": "./lib/cjs/utils/*.development.js",
-    "import": "./lib/esm/utils/*.development.js"
-   },
-   "default": {
-    "require": "./lib/cjs/utils/*.production.js",
-    "import": "./lib/esm/utils/*.production.js"
-   }
-  },
+  "./assets/*": "./lib/assets/*",
   "./lib/*": {
    "types": "./lib/@types/*.d.ts",
    "require": "./lib/cjs/*",
@@ -60,7 +50,7 @@
  "repository": {
   "type": "git",
   "url": "git+https://github.com/rndelpuerto/lenguados.git",
-  "directory": "packages/common"
+  "directory": "packages/examples"
  },
  "bugs": {
   "url": "https://github.com/rndelpuerto/lenguados/issues"
