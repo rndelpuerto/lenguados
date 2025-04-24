@@ -132,6 +132,7 @@
   "packages/**/@types",
   "packages/**/index.d.ts",
   "packages/**/index.ts",
-  "packages/**/src"
+  "packages/**/src",
+  "docs/**/*.ts"
  ]
 }
