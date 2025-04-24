@@ -1,0 +1,49 @@
+# .github/workflows/deploy-docs.yml
+name: Deploy Docusaurus to GitHub Pages
+
+# ────────────────────────────────────────────────
+# Trigger: run on every push (or PR merge) to main
+# ────────────────────────────────────────────────
+on:
+  push:
+    branches: [main]            # Change if you use a different default branch
+
+# ────────────────────────────────────────────────
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+
+    # Minimum permissions required for gh-pages push
+    permissions:
+      contents: write           # commit to gh-pages
+      id-token: write           # only required for the new Pages “deployment” option
+      pages: write              # idem ↑
+
+    steps:
+      # 1) Checkout repository
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false   # the deploy step provides its own token
+
+      # 2) Install Node JS and cache npm modules
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22             # Match .nvmrc / package.json “engines”
+          cache: npm
+
+      # 3) Install all workspace dependencies (monorepo friendly)
+      - run: npm ci
+
+      # # 4) OPTIONAL — build engine packages
+      # - run: npm run build --workspaces --if-present
+
+      # 5) Build the Docusaurus site (workspace “docs”)
+      - run: npm --workspace docs run build
+
+      # 6) Deploy “docs/build” to the gh-pages branch
+      - name: Publish to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: docs/build          # Folder generated in step 5
+          publish_branch: gh-pages         # Default; change only if desired
