@@ -3,3 +3,8 @@ packages/**/lib/**
 packages/**/main.*
 packages/**/dev-main.*
 packages/**/main.*.*
+
+# Docusaurus artefacts
+docs/.docusaurus/**
+docs/build/**
+docs/docs/api/**

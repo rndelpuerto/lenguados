@@ -1,6 +1,6 @@
 {
  "name": "lenguados",
- "version": "0.3.1",
+ "version": "0.3.2",
  "description": "[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)   > **2‑D version** of the *Lenguado* physics‑engine family",
  "keywords": [],
  "author": "Ricardo Nicolás del Puerto Camacho",
@@ -8,7 +8,8 @@
  "type": "module",
  "private": true,
  "workspaces": [
-  "packages/*"
+  "packages/*",
+  "docs"
  ],
  "scripts": {
   "build": "npm run build:packages",
@@ -21,6 +22,9 @@
   "dist": "npm run build && cross-env NODE_ENV=production npm run dist:packages",
   "dist:bundles": "npm run rollup-dist",
   "dist:packages": "npm run dist:bundles",
+  "docs": "npm --workspace docs run build",
+  "docs:dev": "npm --workspace docs run start",
+  "docs:deploy": "npm --workspace docs run deploy",
   "init": "npm install && pip install -r requirements.txt",
   "prepare": "husky",
   "lint": "npm run lint:js && npm run lint:css",
@@ -109,6 +113,7 @@
   "stylelint-order": "^6.0.4",
   "stylelint-prettier": "^5.0.3",
   "ts-jest": "^29.3.2",
-  "ts-node": "^10.9.2"
+  "ts-node": "^10.9.2",
+  "typedoc": "^0.28.3"
  }
 }

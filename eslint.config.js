@@ -35,7 +35,7 @@ export default defineFlatConfig([
  /*    earlier  ⟨ignores⟩ pattern, so /lib files never reach later     */
  /*    TypeScript overrides (ESLint docs § “ignores precedence”).      */
  {
-  ignores: ['packages/**/lib/**'],
+  ignores: ['packages/**/lib/**', 'docs/.docusaurus/**', 'docs/build/**', 'docs/docs/api/**'],
  },
 
  /* ───────────────── Base JS rules (ESLint core) ─────────────────── */

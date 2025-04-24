@@ -6,8 +6,4 @@ module.exports = {
   /* Keep declarations alphabetised (industry best practice) */
   'order/properties-alphabetical-order': true,
  },
- ignoreFiles: [
-  // Ignore compiled bundles
-  '**/packages/**/lib/**',
- ],
 };
