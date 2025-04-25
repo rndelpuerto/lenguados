@@ -1,6 +1,6 @@
 {
  "$schema": "https://json.schemastore.org/lerna.json",
- "version": "independent",
+ "version": "0.3.3",
  "npmClient": "npm",
  "loglevel": "warn",
  "packages": ["packages/*"],
@@ -10,7 +10,7 @@
    "allowBranch": ["main"],
    "conventionalCommits": true,
    "message": "chore(release): publish",
-   "ignoreChanges": ["**/tests/**", "**/*.md"]
+   "ignoreChanges": ["**/tests/**", "*.md", "*.log"]
   }
  }
 }

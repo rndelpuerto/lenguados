@@ -21,17 +21,6 @@
     "import": "./main.mjs"
    }
   },
-  "./constants/*": {
-   "types": "./lib/@types/constants/*.d.ts",
-   "development": {
-    "require": "./lib/cjs/constants/*.development.js",
-    "import": "./lib/esm/constants/*.development.js"
-   },
-   "default": {
-    "require": "./lib/cjs/constants/*.production.js",
-    "import": "./lib/esm/constants/*.production.js"
-   }
-  },
   "./utils/*": {
    "types": "./lib/@types/utils/*.d.ts",
    "development": {

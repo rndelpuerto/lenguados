@@ -1,0 +1,55 @@
+name: Publish Monorepo Packages to npm
+
+# ───────────────────────────────────────────────────────────────────────────────
+# Trigger: run whenever a new version tag is pushed to the default branch.
+# Supports normal SemVer tags and alpha/beta prereleases.
+# ───────────────────────────────────────────────────────────────────────────────
+on:
+ push:
+  tags:
+   - 'v*.*.*' # Regular release tags (e.g. v1.2.3)
+   - 'v*.*.*-alpha.*' # Alpha prerelease tags (e.g. v1.2.3-alpha.0)
+   - 'v*.*.*-beta.*' # Beta prerelease tags (e.g. v1.2.3-beta.0)
+
+jobs:
+ publish:
+  name: Publish packages to npm
+  runs-on: ubuntu-latest
+
+  # Permissions: we only need to read repo contents and mint an OIDC token.
+  permissions:
+   contents: read # Required for actions/checkout
+   id-token: write # Optional: if using OIDC for auth
+
+  steps:
+   # ─────────────────────────────────────────────────────────────────────────
+   # Checkout
+   # Retrieves the repository code.
+   # ─────────────────────────────────────────────────────────────────────────
+   - name: Checkout repository
+     uses: actions/checkout@v4
+     with:
+      fetch-depth: 1
+
+   # ─────────────────────────────────────────────────────────────────────────
+   # Setup Environment
+   # Installs Node.js and project dependencies.
+   # ─────────────────────────────────────────────────────────────────────────
+   - name: Set up Node.js
+     uses: actions/setup-node@v4
+     with:
+      node-version-file: '.nvmrc'
+      registry-url: 'https://registry.npmjs.org'
+      cache: npm
+
+   - name: Install dependencies
+     run: npm ci
+
+   # ─────────────────────────────────────────────────────────────────────────
+   # Publishing
+   # Publish all packages with Lerna.
+   # ─────────────────────────────────────────────────────────────────────────
+   - name: Publish packages via Lerna
+     run: npx lerna publish from-package --yes
+     env:
+      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

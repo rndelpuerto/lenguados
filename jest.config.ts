@@ -74,7 +74,7 @@ const baseConfig: JestConfigWithTsJest = {
  /**
   * ---------------------------------------------------------------
   *  Per‑environment projects (only differences are declared here)
-  *  ------------------------------------------------------------
+  *  --------------------------------------------------------------
   */
  projects: [
   /** Node‑only tests (*.node.spec.ts) */

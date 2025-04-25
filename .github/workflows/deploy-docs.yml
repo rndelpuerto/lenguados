@@ -33,35 +33,53 @@ jobs:
    id-token: write
 
   steps:
+   # ─────────────────────────────────────────────────────────────────────────
+   # Checkout
+   # Retrieves the repository code.
+   # ─────────────────────────────────────────────────────────────────────────
    - name: Checkout repository
      uses: actions/checkout@v4
      with:
       # We only need a single level of history to reduce clone time.
       fetch-depth: 1
 
-   - name: Set up Node.js 22.x and enable npm cache
+   # ─────────────────────────────────────────────────────────────────────────
+   # Setup Environment
+   # Installs Node.js and project dependencies.
+   # ─────────────────────────────────────────────────────────────────────────
+   - name: Set up Node.js and enable npm cache
      uses: actions/setup-node@v4
      with:
-      node-version: '22.x'
+      node-version-file: '.nvmrc'
+      registry-url: 'https://registry.npmjs.org'
       cache: npm
 
    - name: Install monorepo dependencies
      run: npm ci
      # npm ci is faster and more reproducible than npm install in CI.
 
+   # ─────────────────────────────────────────────────────────────────────────
+   # Build Docusaurus site
+   # Script "npm run docs" from package.json will build /docs into docs/build.
+   # ─────────────────────────────────────────────────────────────────────────
    - name: Build Docusaurus site
      run: npm run docs
-     # This script from package.json will build /docs into docs/build.
 
+   # ─────────────────────────────────────────────────────────────────────────
+   # Configure GitHub Pages deployment
+   # Prepares the Pages environment and sanity-checks settings.
+   # ─────────────────────────────────────────────────────────────────────────
    - name: Configure GitHub Pages deployment
      uses: actions/configure-pages@v4
-     # Prepares the Pages environment and sanity-checks settings.
 
+   # ─────────────────────────────────────────────────────────────────────────
+   # Upload built site as artifact
+   # Saves the static files for the deploy job.
+   # ─────────────────────────────────────────────────────────────────────────
    - name: Upload built site as artifact
      uses: actions/upload-pages-artifact@v3
      with:
       path: docs/build
-     # Saves the static files for the deploy job.
 
  # ─────────────────────────────────────────────────────────────────────────────
  # Job: deploy
