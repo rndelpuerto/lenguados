@@ -61,6 +61,15 @@ const baseConfig: JestConfigWithTsJest = {
  // Aggregate coverage reports
  collectCoverage: true,
  coverageDirectory: 'coverage',
+ coverageReporters: ['text', 'lcov'],
+ coverageThreshold: {
+  global: {
+   branches: 50, // 85%
+   functions: 85,
+   lines: 90,
+   statements: 90,
+  },
+ },
 
  /**
   * ---------------------------------------------------------------
