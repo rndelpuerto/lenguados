@@ -1,6 +1,6 @@
 {
  "name": "@lenguados/common",
- "version": "0.3.3",
+ "version": "0.3.4",
  "description": "Common constants, utils and other resources to use all across **2‑D version** of the *Lenguado* physics‑engine family.",
  "homepage": "https://github.com/rndelpuerto/lenguados#readme",
  "keywords": [],
@@ -46,6 +46,9 @@
   "dev-main.mjs",
   "lib"
  ],
+ "publishConfig": {
+  "access": "public"
+ },
  "repository": {
   "type": "git",
   "url": "git+https://github.com/rndelpuerto/lenguados.git",

@@ -1,14 +1,18 @@
 {
  "$schema": "https://json.schemastore.org/lerna.json",
- "version": "0.3.3",
+ "version": "0.3.4",
  "npmClient": "npm",
  "loglevel": "warn",
  "packages": ["packages/*"],
  "command": {
-  "run": { "stream": true, "concurrency": 4 },
+  "run": {
+   "stream": true,
+   "concurrency": 4
+  },
   "publish": {
    "allowBranch": ["main"],
    "conventionalCommits": true,
+   "access": "public",
    "message": "chore(release): publish",
    "ignoreChanges": ["**/tests/**", "*.md", "*.log"]
   }

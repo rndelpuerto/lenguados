@@ -29,7 +29,7 @@ jobs:
    - name: Checkout repository
      uses: actions/checkout@v4
      with:
-      fetch-depth: 1
+      fetch-depth: 0
 
    # ─────────────────────────────────────────────────────────────────────────
    # Setup Environment
@@ -40,6 +40,8 @@ jobs:
      with:
       node-version-file: '.nvmrc'
       registry-url: 'https://registry.npmjs.org'
+      scope: '@lenguados'
+      always-auth: true
       cache: npm
 
    - name: Install dependencies
@@ -50,6 +52,6 @@ jobs:
    # Publish all packages with Lerna.
    # ─────────────────────────────────────────────────────────────────────────
    - name: Publish packages via Lerna
-     run: npx lerna publish from-package --yes
+     run: npx lerna publish from-package --yes --access public
      env:
       NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
