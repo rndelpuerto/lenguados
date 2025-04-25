@@ -12,7 +12,6 @@
   "publish": {
    "allowBranch": ["main"],
    "conventionalCommits": true,
-   "access": "public",
    "message": "chore(release): publish",
    "ignoreChanges": ["**/tests/**", "*.md", "*.log"]
   }
