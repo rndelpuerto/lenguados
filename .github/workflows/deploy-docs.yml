@@ -1,49 +1,90 @@
 # .github/workflows/deploy-docs.yml
-name: Deploy Docusaurus to GitHub Pages
-
-# ────────────────────────────────────────────────
-# Trigger: run on every push (or PR merge) to main
-# ────────────────────────────────────────────────
+name: Deploy Docusaurus Documentation to GitHub Pages
+# ───────────────────────────────────────────────────────────────────────────────
+# Trigger: Whenever code is pushed to the default branch (main).
+# Ensures that documentation is rebuilt and redeployed on every change.
+# ───────────────────────────────────────────────────────────────────────────────
 on:
-  push:
-    branches: [main]            # Change if you use a different default branch
+ push:
+  branches:
+   - main
 
-# ────────────────────────────────────────────────
+# ───────────────────────────────────────────────────────────────────────────────
+# Concurrency: Cancel any in-flight deployment when a new push arrives,
+# preventing multiple deployments from overlapping.
+# ───────────────────────────────────────────────────────────────────────────────
+concurrency:
+ group: deploy-docs-${{ github.ref }}
+ cancel-in-progress: true
+
 jobs:
-  build-deploy:
-    runs-on: ubuntu-latest
+ # ─────────────────────────────────────────────────────────────────────────────
+ # Job: build
+ # Purpose: Checkout code, install dependencies, build the Docusaurus site,
+ #           and upload the static files as an artifact for later deployment.
+ # ─────────────────────────────────────────────────────────────────────────────
+ build:
+  name: Build Documentation
+  runs-on: ubuntu-latest
 
-    # Minimum permissions required for gh-pages push
-    permissions:
-      contents: write           # commit to gh-pages
-      id-token: write           # only required for the new Pages “deployment” option
-      pages: write              # idem ↑
+  # Permissions: we only need to read repo contents and mint an OIDC token.
+  permissions:
+   contents: read
+   id-token: write
 
-    steps:
-      # 1) Checkout repository
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false   # the deploy step provides its own token
+  steps:
+   - name: Checkout repository
+     uses: actions/checkout@v4
+     with:
+      # We only need a single level of history to reduce clone time.
+      fetch-depth: 1
 
-      # 2) Install Node JS and cache npm modules
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22             # Match .nvmrc / package.json “engines”
-          cache: npm
+   - name: Set up Node.js 22.x and enable npm cache
+     uses: actions/setup-node@v4
+     with:
+      node-version: '22.x'
+      cache: npm
 
-      # 3) Install all workspace dependencies (monorepo friendly)
-      - run: npm ci
+   - name: Install monorepo dependencies
+     run: npm ci
+     # npm ci is faster and more reproducible than npm install in CI.
 
-      # # 4) OPTIONAL — build engine packages
-      # - run: npm run build --workspaces --if-present
+   - name: Build Docusaurus site
+     run: npm run docs
+     # This script from package.json will build /docs into docs/build.
 
-      # 5) Build the Docusaurus site (workspace “docs”)
-      - run: npm --workspace docs run build
+   - name: Configure GitHub Pages deployment
+     uses: actions/configure-pages@v4
+     # Prepares the Pages environment and sanity-checks settings.
 
-      # 6) Deploy “docs/build” to the gh-pages branch
-      - name: Publish to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: docs/build          # Folder generated in step 5
-          publish_branch: gh-pages         # Default; change only if desired
+   - name: Upload built site as artifact
+     uses: actions/upload-pages-artifact@v3
+     with:
+      path: docs/build
+     # Saves the static files for the deploy job.
+
+ # ─────────────────────────────────────────────────────────────────────────────
+ # Job: deploy
+ # Purpose: Take the previously uploaded site artifact and publish it
+ #           to GitHub Pages with minimal elevated permissions.
+ # ─────────────────────────────────────────────────────────────────────────────
+ deploy:
+  name: Deploy to GitHub Pages
+  needs: build
+  runs-on: ubuntu-latest
+
+  # Permissions: only write to Pages, nothing else.
+  permissions:
+   pages: write
+   id-token: write
+
+  environment:
+   name: github-pages
+   # Populates the Pages URL in the UI once deployed:
+   url: ${{ steps.deploy-pages.outputs.page_url }}
+
+  steps:
+   - name: Deploy static site to Pages
+     id: deploy-pages
+     uses: actions/deploy-pages@v4
+     # Uses the artifact from configure-pages/upload-pages-artifact.

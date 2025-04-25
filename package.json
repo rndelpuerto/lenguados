@@ -1,6 +1,6 @@
 {
  "name": "lenguados",
- "version": "0.3.2",
+ "version": "0.3.3",
  "description": "[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)   > **2‑D version** of the *Lenguado* physics‑engine family",
  "keywords": [],
  "author": "Ricardo Nicolás del Puerto Camacho",
@@ -34,6 +34,7 @@
   "lint:js": "eslint .",
   "lint:js:fix": "npm run lint:js -- --fix",
   "format": "prettier --write .",
+  "format:check": "prettier --check .",
   "rollup": "cross-env NODE_ENV=development lerna run build",
   "rollup-dist": "cross-env NODE_ENV=production lerna run build",
   "setup": "npm run init && npm run build",
