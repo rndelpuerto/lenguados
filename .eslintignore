@@ -8,3 +8,6 @@ packages/**/main.*.*
 docs/.docusaurus/**
 docs/build/**
 docs/docs/api/**
+
+# tools/package
+tools/package/**

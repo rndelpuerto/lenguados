@@ -8,5 +8,5 @@
   "packages/*/src/**/__tests__/**/*.ts",
   "docs/**/*.ts"
  ],
- "exclude": []
+ "exclude": ["tools/package/**"]
 }

@@ -1,13 +1,29 @@
 {
  "name": "@lenguados/common",
- "version": "0.3.4",
- "description": "Common constants, utils and other resources to use all across **2‑D version** of the *Lenguado* physics‑engine family.",
+ "version": "0.4.0",
+ "description": "Common constants, utils and other resources to use all across **2-D version** of the *Lenguado* physics-engine family.",
+ "keywords": [
+  "common"
+ ],
  "homepage": "https://github.com/rndelpuerto/lenguados#readme",
- "keywords": [],
- "author": "Ricardo Nicolás del Puerto Camacho",
+ "bugs": {
+  "url": "https://github.com/rndelpuerto/lenguados/issues"
+ },
+ "repository": {
+  "type": "git",
+  "url": "git+https://github.com/rndelpuerto/lenguados.git",
+  "directory": "packages/common"
+ },
  "license": "Apache-2.0",
+ "author": "Ricardo Nicolás del Puerto Camacho",
+ "contributors": [
+  "Ricardo Nicolás del Puerto Camacho"
+ ],
  "main": "./main.js",
  "module": "./main.mjs",
+ "browser": {
+  "./main.js": "./main.js"
+ },
  "types": "./lib/@types/index.d.ts",
  "exports": {
   ".": {
@@ -46,22 +62,18 @@
   "dev-main.mjs",
   "lib"
  ],
- "publishConfig": {
-  "access": "public"
- },
- "repository": {
-  "type": "git",
-  "url": "git+https://github.com/rndelpuerto/lenguados.git",
-  "directory": "packages/common"
- },
- "bugs": {
-  "url": "https://github.com/rndelpuerto/lenguados/issues"
- },
  "scripts": {
-  "build": "rollup -c ../../rollup.config.mjs",
-  "watch": "rollup -c ../../rollup.config.mjs --watch"
+  "build": "node ../../scripts/build.mjs",
+  "clean": "node ../../scripts/clean.mjs",
+  "outdated": "node ../../scripts/outdated.mjs",
+  "publish:local": "node ../../scripts/publish-local.mjs",
+  "unpublish:local": "node ../../scripts/unpublish-local.mjs",
+  "watch": "node ../../scripts/watch.mjs"
  },
  "engines": {
-  "node": "^22.14.0"
+  "node": ">=22"
+ },
+ "publishConfig": {
+  "access": "public"
  }
 }

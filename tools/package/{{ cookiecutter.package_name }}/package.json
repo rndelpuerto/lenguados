@@ -1,9 +1,9 @@
 {
- "name": "@lenguados/examples",
- "version": "0.4.0",
- "description": "Interactive demos, visual tests and reference scenes to showcase and validate all features of the 2-D version of the Lenguado physics-engine family.",
+ "name": "@lenguados/{{ cookiecutter.package_name }}",
+ "version": "0.0.0",
+ "description": "{{ cookiecutter.package_description }}",
  "keywords": [
-  "examples"
+  "{{ cookiecutter.package_name }}"
  ],
  "homepage": "https://github.com/rndelpuerto/lenguados#readme",
  "bugs": {
@@ -12,7 +12,7 @@
  "repository": {
   "type": "git",
   "url": "git+https://github.com/rndelpuerto/lenguados.git",
-  "directory": "packages/examples"
+  "directory": "packages/{{ cookiecutter.package_name }}"
  },
  "license": "Apache-2.0",
  "author": "Ricardo Nicolás del Puerto Camacho",
@@ -37,18 +37,6 @@
     "import": "./main.mjs"
    }
   },
-  "./canvas-hello/*": {
-   "types": "./lib/@types/canvas-hello/*.d.ts",
-   "development": {
-    "require": "./lib/cjs/canvas-hello/*.development.js",
-    "import": "./lib/esm/canvas-hello/*.development.js"
-   },
-   "default": {
-    "require": "./lib/cjs/canvas-hello/*.production.js",
-    "import": "./lib/esm/canvas-hello/*.production.js"
-   }
-  },
-  "./assets/*": "./lib/assets/*",
   "./lib/*": {
    "types": "./lib/@types/*.d.ts",
    "require": "./lib/cjs/*",
@@ -70,6 +58,9 @@
   "publish:local": "node ../../scripts/publish-local.mjs",
   "unpublish:local": "node ../../scripts/unpublish-local.mjs",
   "watch": "node ../../scripts/watch.mjs"
+ },
+ "config": {
+  "verdaccioport": "4873"
  },
  "engines": {
   "node": ">=22"

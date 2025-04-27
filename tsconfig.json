@@ -124,7 +124,13 @@
   // "skipDefaultLibCheck": true,                      /* Skip type checking .d.ts files that are included with TypeScript. */
   "skipLibCheck": true /* Skip type checking all .d.ts files. */
  },
- "exclude": ["node_modules", "**/node_modules", "packages/**/__tests__", "packages/**/lib"],
+ "exclude": [
+  "node_modules",
+  "**/node_modules",
+  "tools/package/**",
+  "packages/**/__tests__",
+  "packages/**/lib"
+ ],
  "include": [
   "jest.config.ts",
   "jest.dom.setup.ts",

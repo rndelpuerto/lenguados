@@ -55,8 +55,8 @@ const baseConfig: JestConfigWithTsJest = {
  //   prefix: '<rootDir>/',
  // }),
 
- // Ignore compiled output and external deps
- testPathIgnorePatterns: ['/node_modules/', '/lib/'],
+ // Ignore compiled output, external deps and tools/package
+ testPathIgnorePatterns: ['/node_modules/', '/lib/', 'tools/package/'],
 
  // Aggregate coverage reports
  collectCoverage: true,

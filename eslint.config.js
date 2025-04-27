@@ -35,7 +35,13 @@ export default defineFlatConfig([
  /*    earlier  ⟨ignores⟩ pattern, so /lib files never reach later     */
  /*    TypeScript overrides (ESLint docs § “ignores precedence”).      */
  {
-  ignores: ['packages/**/lib/**', 'docs/.docusaurus/**', 'docs/build/**', 'docs/docs/api/**'],
+  ignores: [
+   'packages/**/lib/**',
+   'docs/.docusaurus/**',
+   'docs/build/**',
+   'docs/docs/api/**',
+   'tools/package/**',
+  ],
  },
 
  /* ───────────────── Base JS rules (ESLint core) ─────────────────── */
@@ -135,9 +141,19 @@ export default defineFlatConfig([
 
  /* ── Node‑only build/config scripts (Rollup, Husky, etc.) ───────── */
  {
-  files: ['*.config.*', 'rollup.config.mjs', 'packages/**/main.js'],
+  files: ['*.config.*', 'rollup.config.mjs', 'scripts/**/*.mjs', 'packages/**/main.js'],
   languageOptions: {
-   globals: { process: true, module: true, require: true, exports: true },
+   globals: {
+    process: 'readonly',
+    __dirname: 'readonly',
+    require: 'readonly',
+    module: 'readonly',
+    exports: 'readonly',
+    console: 'readonly',
+   },
+  },
+  rules: {
+   'no-console': 'off',
   },
  },
 ]);
