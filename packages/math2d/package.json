@@ -1,0 +1,71 @@
+{
+ "name": "@lenguados/math2d",
+ "version": "0.0.0",
+ "description": "Core 2-D math utilities for the Lenguado physics-engine family.",
+ "keywords": [
+  "math2d"
+ ],
+ "homepage": "https://github.com/rndelpuerto/lenguados#readme",
+ "bugs": {
+  "url": "https://github.com/rndelpuerto/lenguados/issues"
+ },
+ "repository": {
+  "type": "git",
+  "url": "git+https://github.com/rndelpuerto/lenguados.git",
+  "directory": "packages/math2d"
+ },
+ "license": "Apache-2.0",
+ "author": "Ricardo Nicolás del Puerto Camacho",
+ "contributors": [
+  "Ricardo Nicolás del Puerto Camacho"
+ ],
+ "main": "./main.js",
+ "module": "./main.mjs",
+ "browser": {
+  "./main.js": "./main.js"
+ },
+ "types": "./lib/@types/index.d.ts",
+ "exports": {
+  ".": {
+   "types": "./lib/@types/index.d.ts",
+   "development": {
+    "require": "./main.js",
+    "import": "./dev-main.mjs"
+   },
+   "default": {
+    "require": "./main.js",
+    "import": "./main.mjs"
+   }
+  },
+  "./lib/*": {
+   "types": "./lib/@types/*.d.ts",
+   "require": "./lib/cjs/*",
+   "import": "./lib/esm/*"
+  },
+  "./*": "./*"
+ },
+ "files": [
+  "index.ts",
+  "main.js",
+  "main.mjs",
+  "dev-main.mjs",
+  "lib"
+ ],
+ "scripts": {
+  "build": "node ../../scripts/build.mjs",
+  "clean": "node ../../scripts/clean.mjs",
+  "outdated": "node ../../scripts/outdated.mjs",
+  "publish:local": "node ../../scripts/publish-local.mjs",
+  "unpublish:local": "node ../../scripts/unpublish-local.mjs",
+  "watch": "node ../../scripts/watch.mjs"
+ },
+ "config": {
+  "verdaccioport": "4873"
+ },
+ "engines": {
+  "node": ">=22"
+ },
+ "publishConfig": {
+  "access": "public"
+ }
+}
