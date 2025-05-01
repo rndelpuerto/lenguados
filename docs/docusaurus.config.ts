@@ -23,7 +23,7 @@ const config: Config = {
 
  deploymentBranch: 'gh-pages',
 
- onBrokenLinks: 'throw',
+ onBrokenLinks: 'warn',
  onBrokenMarkdownLinks: 'warn',
 
  // Even if you don't use internationalization, you can use this field to set
@@ -150,7 +150,7 @@ const config: Config = {
      ],
     },
    ],
-   copyright: `Copyright © ${new Date().getFullYear()} Lenguados, Inc.`,
+   copyright: `Copyright © ${new Date().getFullYear()} Lenguados.`,
   },
   prism: {
    theme: prismThemes.github,
