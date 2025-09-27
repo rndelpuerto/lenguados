@@ -2,7 +2,11 @@
 
 > **sign**(`x`): `number`
 
+<<<<<<< HEAD
 Defined in: [src/scalar.ts:59](https://github.com/rndelpuerto/lenguados/blob/210e5bae9296dd537e284b2b1cad232d956bbd88/packages/math2d/src/scalar.ts#L59)
+=======
+Defined in: [src/scalar.ts:59](https://github.com/rndelpuerto/lenguados/blob/3db26e60cf924a3f02d7d869c59509fd2fa87c96/packages/math2d/src/scalar.ts#L59)
+>>>>>>> origin/main
 
 Returns the sign of a number: -1 if negative, +1 if positive, 0 if zero.
 

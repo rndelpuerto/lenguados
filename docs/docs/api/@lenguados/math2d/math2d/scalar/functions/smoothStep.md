@@ -2,7 +2,11 @@
 
 > **smoothStep**(`edge0`, `edge1`, `x`): `number`
 
+<<<<<<< HEAD
 Defined in: [src/scalar.ts:98](https://github.com/rndelpuerto/lenguados/blob/210e5bae9296dd537e284b2b1cad232d956bbd88/packages/math2d/src/scalar.ts#L98)
+=======
+Defined in: [src/scalar.ts:98](https://github.com/rndelpuerto/lenguados/blob/3db26e60cf924a3f02d7d869c59509fd2fa87c96/packages/math2d/src/scalar.ts#L98)
+>>>>>>> origin/main
 
 Performs smoothstep interpolation between two edges.
 Produces a smooth transition with zero derivatives at the boundaries.

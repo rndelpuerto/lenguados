@@ -20,8 +20,12 @@
 
 - **Constants**: π, τ, EPSILON, degree↔radian factors.
 - **Scalar utilities**: clamp, sign, lerp, normalize, smoothStep, epsilonEquals, relativeEquals, saturate.
+<<<<<<< HEAD
 - **Vector2**: mutable, chainable 2‑D vectors with robust numerics, safe variants, and alloc‑free static helpers.
 - **Mat2**: 2×2 row‑major matrices (column‑vector convention) with rotation/scale/shear, algebra, inversion & solving.
+=======
+- **(Future modules)**: vectors, matrices, transforms, convex-hull, raycasting, pooling.
+>>>>>>> origin/main
 
 ---
 
@@ -64,6 +68,7 @@ import {
 } from '@lenguados/math2d';
 ```
 
+<<<<<<< HEAD
 ### Vectors & Matrices
 
 ```ts
@@ -97,6 +102,8 @@ import {
 >   Vector2.add(a, b, out); // writes into `out` instead of allocating
 >   ```
 
+=======
+>>>>>>> origin/main
 ---
 
 ## Examples
@@ -149,6 +156,7 @@ console.log(relativeEquals(100, 100.5, 0.01)); // → true
 console.log(relativeEquals(100, 102, 0.01)); // → false
 ```
 
+<<<<<<< HEAD
 ### 2‑D vectors (Vector2)
 
 ```ts
@@ -201,6 +209,8 @@ const x = Mat2.solve(A, b); // → solution vector
 
 > **Conventions:** Matrices are **row‑major** (`m00 m01; m10 m11`) and vectors are treated as **columns** when applying transforms: `v' = M · v`.
 
+=======
+>>>>>>> origin/main
 ---
 
 ## Full Spec
@@ -222,6 +232,7 @@ const x = Mat2.solve(A, b); // → solution vector
 | **relativeEquals()** | `fn`     | Relative-tolerance float comparison (scaled by `max(1, \|x\|, \|y\|)`). |
 | **saturate()**       | `fn`     | Clamp to [0, 1].                                                        |
 
+<<<<<<< HEAD
 _(New in this release: **Vector2** and **Mat2**. Additional modules (Mat3, Transform, Geometry, Raycast, etc.) will be added in subsequent releases.)_
 
 ### Vector2 (class)
@@ -318,17 +329,28 @@ _(New in this release: **Vector2** and **Mat2**. Additional modules (Mat3, Trans
 - **Vectors & stability:** `transformVector(v)`, `transformVectorInto(v,out)`, `orthonormalize()` (Gram–Schmidt to nearest rotation).
 - **Comparison & validation:** `equals`, `nearEquals`, `isIdentity`, `isRotation`, `isFinite`, `isSingular`, `angle()` (≈ rotation).
 - **Conversion & representation:** `toJSON()`, `toObject()`, `toArray(out?,offset=0)`, iterator, `toString(precision?)`, `hashCode()`.
+=======
+_(Additional modules: Vector2, Mat2, Mat3, Transform, Geometry, Raycast, etc., will be added in subsequent releases.)_
+>>>>>>> origin/main
 
 ---
 
 ## Changelog
 
+<<<<<<< HEAD
 All notable changes to this package are documented in [CHANGELOG.md](../../_media/CHANGELOG.md).
+=======
+All notable changes to this package are documented in [CHANGELOG.md](../../_media/CHANGELOG.md).  
+>>>>>>> origin/main
 Version numbering follows [SemVer](https://semver.org/).
 
 ## Modules
 
 - [index.ts](index.ts/index.md)
+<<<<<<< HEAD
 - [math2d/mat2](math2d/mat2/index.md)
 - [math2d/scalar](math2d/scalar/index.md)
 - [math2d/vector2](math2d/vector2/index.md)
+=======
+- [math2d/scalar](math2d/scalar/index.md)
+>>>>>>> origin/main
