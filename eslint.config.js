@@ -25,6 +25,7 @@ import jsdocPlg from 'eslint-plugin-jsdoc';
 import unicornPlg from 'eslint-plugin-unicorn';
 import prettierPlg from 'eslint-plugin-prettier';
 import jestPlg from 'eslint-plugin-jest';
+import immutablePlg from 'eslint-plugin-immutable';
 
 /** Single tsconfig that covers src + tests */
 const TS_PROJECT = ['./tsconfig.eslint.json'];
@@ -116,6 +117,7 @@ export default defineFlatConfig([
    jsdoc: jsdocPlg,
    unicorn: unicornPlg,
    prettier: prettierPlg,
+   immutable: immutablePlg,
   },
   rules: {
    /* @typescript‑eslint defaults */
@@ -130,6 +132,24 @@ export default defineFlatConfig([
    /* Docs & formatting */
    'jsdoc/require-returns': 'warn',
    'prettier/prettier': 'error',
+
+   /* Avoid opaque abbreviations in identifiers */
+   'unicorn/prevent-abbreviations': [
+    'warn',
+    {
+     replacements: {
+      ctx: { context: true },
+      len: { length: true },
+      mul: { multiply: true },
+      div: { divide: true },
+     },
+     extendDefaultReplacements: true,
+    },
+   ],
+
+   /* ─────── Immutability ─────── */
+   // Disallow any mutation of objects previously passed to Object.freeze
+   // 'immutable/no-mutation': ['error', { freeze: true }],
   },
  },
 

@@ -1,6 +1,6 @@
 {
  "name": "@lenguados/math2d",
- "version": "0.0.0",
+ "version": "0.5.0",
  "description": "Core 2-D math utilities for the Lenguado physics-engine family.",
  "keywords": [
   "math2d"

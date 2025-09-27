@@ -10,12 +10,12 @@ describe('helloCanvas', () => {
 
   expect(canvas).toBeTruthy();
 
-  const ctx = canvas.getContext('2d')!;
-  const fillRectSpy = jest.spyOn(ctx, 'fillRect');
+  const context = canvas.getContext('2d')!;
+  const fillRectSpy = jest.spyOn(context, 'fillRect');
 
   helloCanvas('canvas');
 
-  expect(ctx.fillStyle).toBe('#00ff00');
+  expect(context.fillStyle).toBe('#00ff00');
   expect(fillRectSpy).toHaveBeenCalledWith(0, 0, canvas.width, canvas.height);
  });
 });

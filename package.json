@@ -86,6 +86,7 @@
   "eslint-config-prettier": "^9.1.0",
   "eslint-define-config": "^2.1.0",
   "eslint-import-resolver-typescript": "^4.3.4",
+  "eslint-plugin-immutable": "^1.0.0",
   "eslint-plugin-import": "2.30",
   "eslint-plugin-jest": "^28.11.0",
   "eslint-plugin-jsdoc": "^48.11.0",
