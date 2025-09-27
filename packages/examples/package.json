@@ -1,6 +1,6 @@
 {
  "name": "@lenguados/examples",
- "version": "0.5.0",
+ "version": "0.6.0",
  "description": "Interactive demos, visual tests and reference scenes to showcase and validate all features of the 2-D version of the Lenguado physics-engine family.",
  "keywords": [
   "examples"

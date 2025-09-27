@@ -1,6 +1,6 @@
 {
  "name": "@lenguados/common",
- "version": "0.5.0",
+ "version": "0.6.0",
  "description": "Common constants, utils and other resources to use all across **2-D version** of the *Lenguado* physics-engine family.",
  "keywords": [
   "common"
