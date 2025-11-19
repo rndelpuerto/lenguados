@@ -8,6 +8,7 @@ import { Vector2Base } from './base';
 import type { ReadonlyVector2 } from './factories';
 import { TOLERANCE } from '../constants/tolerance-types';
 import { areNearEqual, isNearZero } from '../core-utils/tolerance';
+import { validateNonNegativeLength, validateNonZeroLength, ErrorMessages, createRangeError } from '../core-utils';
 
 // Module augmentation to add missing core static methods
 declare module './base' {
@@ -89,9 +90,7 @@ Vector2Base.divideScalarSafe = function (
  */
 Vector2Base.normalize = function (v: ReadonlyVector2, outVector?: Vector2Base): Vector2Base {
   const length = Math.hypot(v.x, v.y);
-  if (length === 0) {
-    throw new RangeError('Vector2.normalize: cannot normalize zero-length vector');
-  }
+  validateNonZeroLength(length * length, 'Vector2.normalize');
   const out = outVector ?? new Vector2Base();
   return out.set(v.x / length, v.y / length);
 };
@@ -140,14 +139,10 @@ Vector2Base.setLength = function (
   newLength: number,
   outVector?: Vector2Base
 ): Vector2Base {
-  if (newLength < 0) {
-    throw new RangeError('Vector2.setLength: length must be non-negative');
-  }
+  validateNonNegativeLength(newLength, 'Vector2.setLength');
   
   const length = Math.hypot(v.x, v.y);
-  if (length === 0) {
-    throw new RangeError('Vector2.setLength: cannot set length on zero-length vector');
-  }
+  validateNonZeroLength(length * length, 'Vector2.setLength', 'set length');
   
   const out = outVector ?? new Vector2Base();
   const s = newLength / length;
@@ -286,7 +281,7 @@ Vector2Base.isZero = function (v: ReadonlyVector2): boolean {
  */
 Vector2Base.nearZero = function (v: ReadonlyVector2, tolerance: number = TOLERANCE.LINEAR): boolean {
   if (tolerance < 0) {
-    throw new RangeError('Vector2.nearZero: tolerance must be non-negative');
+    throw createRangeError('Vector2.nearZero', ErrorMessages.NEGATIVE_TOLERANCE);
   }
   return isNearZero(v.x, tolerance) && isNearZero(v.y, tolerance);
 };
@@ -317,7 +312,7 @@ Vector2Base.nearEquals = function (
   tolerance: number = TOLERANCE.LINEAR
 ): boolean {
   if (tolerance < 0) {
-    throw new RangeError('Vector2.nearEquals: tolerance must be non-negative');
+    throw createRangeError('Vector2.nearEquals', ErrorMessages.NEGATIVE_TOLERANCE);
   }
   return areNearEqual(a.x, b.x, tolerance) && areNearEqual(a.y, b.y, tolerance);
 };

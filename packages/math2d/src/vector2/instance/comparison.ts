@@ -8,6 +8,7 @@ import { Vector2Base } from '../base';
 import type { ReadonlyVector2 } from '../factories';
 import { TOLERANCE } from '../../constants/tolerance-types';
 import { areNearEqual, isNearZero, validateTolerance } from '../../core-utils/tolerance';
+import { hashComponents2D } from '../../core-utils/math-common';
 
 // Module augmentation to add instance comparison methods
 declare module '../base' {
@@ -135,7 +136,5 @@ Vector2Base.prototype.isPerpendicularTo = function (v: ReadonlyVector2, epsilon:
  * @returns A 32-bit unsigned integer hash (not cryptographically secure).
  */
 Vector2Base.prototype.hashCode = function (): number {
-  const xInt = Math.round(this.x * 1e6) & 0xffff;
-  const yInt = Math.round(this.y * 1e6) & 0xffff;
-  return ((xInt << 16) | yInt) >>> 0;
+  return hashComponents2D(this.x, this.y);
 };
