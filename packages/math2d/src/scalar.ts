@@ -1,44 +1,26 @@
 /**
  * @file src/scalar.ts
  * @module math2d/scalar
- * @description Core scalar constants and utility functions for the Lenguado physics-engine family.
+ * @description Scalar utility functions for the Lenguado physics-engine family.
+ * 
+ * @remarks
+ * This module provides common scalar mathematical operations.
+ * Mathematical constants are available in the constants module.
  */
 
-/**
- * The mathematical constant π (pi).
- * @constant {number}
- */
-export const PI = Math.PI;
+// Re-export mathematical constants for backward compatibility
+export { PI, HALF_PI, TAU, DEG2RAD, RAD2DEG } from './constants/math';
+
+// Import precision constant and core utilities
+import { LINEAR_EPSILON } from './constants/precision';
+import { areNearEqual as coreAreNearEqual } from './core-utils/tolerance';
 
 /**
- * Half π (π / 2), used for right-angle and axis-aligned calculations.
+ * Default epsilon for floating-point comparisons.
  * @constant {number}
+ * @deprecated Use LINEAR_EPSILON from constants/precision instead
  */
-export const HALF_PI = PI / 2;
-
-/**
- * Tau (2π), representing one full revolution in radians.
- * @constant {number}
- */
-export const TAU = PI * 2;
-
-/**
- * Conversion factor from degrees to radians (π / 180).
- * @constant {number}
- */
-export const DEG2RAD = PI / 180;
-
-/**
- * Conversion factor from radians to degrees (180 / π).
- * @constant {number}
- */
-export const RAD2DEG = 180 / PI;
-
-/**
- * A small tolerance for geometry and physics floating-point comparisons.
- * @constant {number}
- */
-export const EPSILON = 1e-6;
+export const EPSILON = LINEAR_EPSILON;
 
 /**
  * Clamps a value to the inclusive range [min, max].
@@ -107,9 +89,10 @@ export function smoothStep(edge0: number, edge1: number, x: number): number {
  * @param {number} b - Second number.
  * @param {number} [eps=EPSILON] - Comparison tolerance.
  * @returns {boolean} True if the absolute difference ≤ eps.
+ * @deprecated Use areNearEqual from core-utils/tolerance instead
  */
 export function epsilonEquals(a: number, b: number, eps: number = EPSILON): boolean {
- return Math.abs(a - b) <= eps;
+ return coreAreNearEqual(a, b, eps);
 }
 
 /**
