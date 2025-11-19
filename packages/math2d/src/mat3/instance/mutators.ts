@@ -63,6 +63,44 @@ declare module '../base' {
      * @returns This matrix for chaining.
      */
     copy(other: ReadonlyMat3): this;
+
+    /**
+     * Get a row as `{x,y,z}`.
+     * 
+     * @param index - 0, 1, or 2.
+     * @returns A new object `{x, y, z}` containing the requested row.
+     * @throws {RangeError} If `index` is not 0, 1 or 2.
+     */
+    getRow(index: 0 | 1 | 2): { x: number; y: number; z: number };
+
+    /**
+     * Set a row from `{x,y,z}`.
+     * 
+     * @param index - 0, 1, or 2.
+     * @param row - Source row with `{x,y,z}`.
+     * @returns This matrix for chaining.
+     * @throws {RangeError} If `index` is not 0, 1 or 2.
+     */
+    setRow(index: 0 | 1 | 2, row: { x: number; y: number; z: number }): this;
+
+    /**
+     * Get a column as `{x,y,z}`.
+     * 
+     * @param index - 0, 1, or 2.
+     * @returns The requested column components.
+     * @throws {RangeError} If `index` is not 0, 1 or 2.
+     */
+    getColumn(index: 0 | 1 | 2): { x: number; y: number; z: number };
+
+    /**
+     * Set a column from `{x,y,z}`.
+     * 
+     * @param index - 0, 1, or 2.
+     * @param column - Source column with `{x,y,z}`.
+     * @returns This matrix for chaining.
+     * @throws {RangeError} If `index` is not 0, 1 or 2.
+     */
+    setColumn(index: 0 | 1 | 2, column: { x: number; y: number; z: number }): this;
   }
 }
 
@@ -143,4 +181,88 @@ Mat3Base.prototype.copy = function (other: ReadonlyMat3): any {
   this.m21 = other.m21;
   this.m22 = other.m22;
   return this;
+};
+
+/**
+ * Get a row as {x,y,z}.
+ */
+Mat3Base.prototype.getRow = function (index: 0 | 1 | 2): { x: number; y: number; z: number } {
+  if (index === 0) return { x: this.m00, y: this.m01, z: this.m02 };
+  if (index === 1) return { x: this.m10, y: this.m11, z: this.m12 };
+  if (index === 2) return { x: this.m20, y: this.m21, z: this.m22 };
+  
+  throw new RangeError('Mat3.getRow: index must be 0, 1 or 2');
+};
+
+/**
+ * Set a row from {x,y,z}.
+ */
+Mat3Base.prototype.setRow = function (
+  index: 0 | 1 | 2,
+  row: { x: number; y: number; z: number }
+): any {
+  if (index === 0) {
+    this.m00 = row.x;
+    this.m01 = row.y;
+    this.m02 = row.z;
+    return this;
+  }
+  
+  if (index === 1) {
+    this.m10 = row.x;
+    this.m11 = row.y;
+    this.m12 = row.z;
+    return this;
+  }
+  
+  if (index === 2) {
+    this.m20 = row.x;
+    this.m21 = row.y;
+    this.m22 = row.z;
+    return this;
+  }
+  
+  throw new RangeError('Mat3.setRow: index must be 0, 1 or 2');
+};
+
+/**
+ * Get a column as {x,y,z}.
+ */
+Mat3Base.prototype.getColumn = function (index: 0 | 1 | 2): { x: number; y: number; z: number } {
+  if (index === 0) return { x: this.m00, y: this.m10, z: this.m20 };
+  if (index === 1) return { x: this.m01, y: this.m11, z: this.m21 };
+  if (index === 2) return { x: this.m02, y: this.m12, z: this.m22 };
+  
+  throw new RangeError('Mat3.getColumn: index must be 0, 1 or 2');
+};
+
+/**
+ * Set a column from {x,y,z}.
+ */
+Mat3Base.prototype.setColumn = function (
+  index: 0 | 1 | 2,
+  column: { x: number; y: number; z: number }
+): any {
+  if (index === 0) {
+    this.m00 = column.x;
+    this.m10 = column.y;
+    this.m20 = column.z;
+    return this;
+  }
+  
+  if (index === 1) {
+    this.m01 = column.x;
+    this.m11 = column.y;
+    this.m21 = column.z;
+    return this;
+  }
+  
+  if (index === 2) {
+    this.m02 = column.x;
+    this.m12 = column.y;
+    this.m22 = column.z;
+    return this;
+  }
+  
+  throw new RangeError('Mat3.setColumn: index must be 0, 1 or 2');
 };

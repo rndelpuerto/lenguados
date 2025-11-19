@@ -28,13 +28,13 @@ export type { Mat3Like, ReadonlyMat3 } from './helpers';
 // Import all modules to register methods
 import './factories';
 import './instance/mutators';
+import './instance/arithmetic';
+import './instance/transforms';
+import './instance/affine';
 // TODO: Add remaining instance modules as they are created:
-// import './instance/arithmetic';
-// import './instance/transforms';
 // import './instance/comparison';
 // import './instance/conversion';
 // import './instance/geometry';
-// import './instance/affine';
 
 // Import constants and apply to Mat3Base
 import { MAT3_CONSTANTS } from './constants';
