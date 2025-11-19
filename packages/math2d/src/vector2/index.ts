@@ -16,6 +16,7 @@ import './arithmetic';
 import './interpolation';
 import './geometry';
 import './missing_static_methods';
+import './missing_core_static_methods';
 
 // Import and apply all instance module extensions
 import './instance/mutators';
