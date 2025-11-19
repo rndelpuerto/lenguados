@@ -5,8 +5,8 @@
  */
 
 import { TOLERANCE } from '../../constants/tolerance-types';
-import { safeDiv as safeDivide } from '../../numeric';
 import { validateNonZeroComponents, validateNonZeroDivisor } from '../../core-utils/validation';
+import { safeDiv as safeDivide } from '../../numeric';
 import { Vector2Base } from '../base';
 import type { ReadonlyVector2 } from '../factories';
 

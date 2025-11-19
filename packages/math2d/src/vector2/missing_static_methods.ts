@@ -1,7 +1,7 @@
 import { TOLERANCE } from '../constants/tolerance-types';
-import { safeDiv as safeDivide } from '../numeric';
 import { validateNonZeroComponents, validateNonZeroDivisor, createError } from '../core-utils';
 import { hashComponents2D, min as minNumber, max as maxNumber } from '../core-utils/math-common';
+import { safeDiv as safeDivide } from '../numeric';
 
 import { Vector2Base } from './base';
 import type { ReadonlyVector2 } from './factories';

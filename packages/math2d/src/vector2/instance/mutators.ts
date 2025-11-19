@@ -4,10 +4,10 @@
  * @description Basic instance mutator methods for Vector2
  */
 
+import { validateArrayBounds, validateVector2Like } from '../../core-utils/validation';
 import { Vector2Base } from '../base';
 import type { ReadonlyVector2 } from '../factories';
 import type { Vector2Like } from '../helpers';
-import { validateArrayBounds, validateVector2Like } from '../../core-utils/validation';
 
 // Module augmentation to add instance mutator methods
 declare module '../base' {

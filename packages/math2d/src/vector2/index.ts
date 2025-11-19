@@ -32,6 +32,7 @@ import './instance/interpolation';
 export type { Vector2Like, ReadonlyVector2Like } from './helpers';
 export { freezeVector2, isVector2Like } from './helpers';
 export type { ReadonlyVector2 } from './factories';
+export type { Vector2 as Vector2Type } from './types';
 
 // Import constants to attach them to the class
 import { VECTOR2_CONSTANTS } from './constants';
