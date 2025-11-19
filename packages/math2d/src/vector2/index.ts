@@ -9,27 +9,23 @@
 // Import base class and extend it
 import { Vector2Base } from './base';
 
-// Import and apply all module extensions
+// Import and apply all static module extensions
 import './constants';
 import './factories';
 import './arithmetic';
 import './interpolation';
 import './geometry';
+import './missing_static_methods';
 
-// Import temporary file with remaining implementations
-// TODO: Refactor this into proper modules
-import './temporary-complete';
-
-// TODO: Import other modules as they are created
-// import './transforms';
-// import './comparison';
-// import './conversion';
-// import './instance/arithmetic';
-// import './instance/interpolation';
-// import './instance/geometry';
-// import './instance/transforms';
-// import './instance/comparison';
-// import './instance/conversion';
+// Import and apply all instance module extensions
+import './instance/mutators';
+import './instance/arithmetic';
+import './instance/transforms';
+import './instance/geometry';
+import './instance/comparison';
+import './instance/constraints';
+import './instance/conversion';
+import './instance/interpolation';
 
 // Re-export types and helpers
 export type { Vector2Like, ReadonlyVector2Like } from './helpers';
@@ -54,20 +50,20 @@ import { VECTOR2_CONSTANTS } from './constants';
  * @public
  */
 export class Vector2 extends Vector2Base {
- // Attach all static constants
- public static readonly ZERO_VECTOR = VECTOR2_CONSTANTS.ZERO_VECTOR;
- public static readonly ONE_VECTOR = VECTOR2_CONSTANTS.ONE_VECTOR;
- public static readonly NEGATIVE_ONE_VECTOR = VECTOR2_CONSTANTS.NEGATIVE_ONE_VECTOR;
- public static readonly EPSILON_VECTOR = VECTOR2_CONSTANTS.EPSILON_VECTOR;
- public static readonly INFINITY_VECTOR = VECTOR2_CONSTANTS.INFINITY_VECTOR;
- public static readonly NEGATIVE_INFINITY_VECTOR = VECTOR2_CONSTANTS.NEGATIVE_INFINITY_VECTOR;
- public static readonly UNIT_X_VECTOR = VECTOR2_CONSTANTS.UNIT_X_VECTOR;
- public static readonly UNIT_Y_VECTOR = VECTOR2_CONSTANTS.UNIT_Y_VECTOR;
- public static readonly NEGATIVE_UNIT_X_VECTOR = VECTOR2_CONSTANTS.NEGATIVE_UNIT_X_VECTOR;
- public static readonly NEGATIVE_UNIT_Y_VECTOR = VECTOR2_CONSTANTS.NEGATIVE_UNIT_Y_VECTOR;
- public static readonly UNIT_DIAGONAL_VECTOR = VECTOR2_CONSTANTS.UNIT_DIAGONAL_VECTOR;
- public static readonly NEGATIVE_UNIT_DIAGONAL_VECTOR = VECTOR2_CONSTANTS.NEGATIVE_UNIT_DIAGONAL_VECTOR;
+  // Attach all static constants
+  public static readonly ZERO_VECTOR = VECTOR2_CONSTANTS.ZERO_VECTOR;
+  public static readonly ONE_VECTOR = VECTOR2_CONSTANTS.ONE_VECTOR;
+  public static readonly NEGATIVE_ONE_VECTOR = VECTOR2_CONSTANTS.NEGATIVE_ONE_VECTOR;
+  public static readonly EPSILON_VECTOR = VECTOR2_CONSTANTS.EPSILON_VECTOR;
+  public static readonly INFINITY_VECTOR = VECTOR2_CONSTANTS.INFINITY_VECTOR;
+  public static readonly NEGATIVE_INFINITY_VECTOR = VECTOR2_CONSTANTS.NEGATIVE_INFINITY_VECTOR;
+  public static readonly UNIT_X_VECTOR = VECTOR2_CONSTANTS.UNIT_X_VECTOR;
+  public static readonly UNIT_Y_VECTOR = VECTOR2_CONSTANTS.UNIT_Y_VECTOR;
+  public static readonly NEGATIVE_UNIT_X_VECTOR = VECTOR2_CONSTANTS.NEGATIVE_UNIT_X_VECTOR;
+  public static readonly NEGATIVE_UNIT_Y_VECTOR = VECTOR2_CONSTANTS.NEGATIVE_UNIT_Y_VECTOR;
+  public static readonly UNIT_DIAGONAL_VECTOR = VECTOR2_CONSTANTS.UNIT_DIAGONAL_VECTOR;
+  public static readonly NEGATIVE_UNIT_DIAGONAL_VECTOR = VECTOR2_CONSTANTS.NEGATIVE_UNIT_DIAGONAL_VECTOR;
 
- // Static methods are already attached to Vector2Base via module augmentation,
- // so they will be available on Vector2 through inheritance
+  // Static methods are already attached to Vector2Base via module augmentation,
+  // so they will be available on Vector2 through inheritance
 }

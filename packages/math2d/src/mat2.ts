@@ -1476,7 +1476,9 @@ export class Mat2 {
  public inverse(): this {
   const det = this.determinant();
 
-  if (det === 0) 
+  if (det === 0) {
+   throw new RangeError('Mat2.inverse: matrix is singular (determinant = 0)');
+  }
 
   const m00 = this.m00,
    m01 = this.m01,

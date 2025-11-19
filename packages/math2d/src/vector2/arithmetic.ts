@@ -5,9 +5,10 @@
  * @internal
  */
 
+import { safeDiv } from '../numeric';
+
 import { Vector2Base } from './base';
 import type { ReadonlyVector2 } from './factories';
-import { safeDivide } from '../numeric';
 
 declare module './base' {
  // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -255,11 +256,9 @@ Vector2Base.divide = function (
  outVector?: Vector2Base,
 ): Vector2Base {
  const out = outVector ?? new Vector2Base();
- 
+
  if (b.x === 0 || b.y === 0) {
-  throw new Error(
-   `Vector2.divide: division by zero (b.x=${b.x}, b.y=${b.y})`,
-  );
+  throw new Error(`Vector2.divide: division by zero (b.x=${b.x}, b.y=${b.y})`);
  }
 
  out.x = a.x / b.x;

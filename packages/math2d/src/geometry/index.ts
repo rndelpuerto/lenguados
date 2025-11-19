@@ -6,7 +6,7 @@
  */
 
 // Linear algebra utilities
-export * from './linalg';
+export * from '../linalg';
 
 // Distance metrics and geometric measurements
 export * from './metrics';
