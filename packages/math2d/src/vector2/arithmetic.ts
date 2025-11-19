@@ -1,5 +1,5 @@
 /**
- * @file src/core/vector2/arithmetic.ts
+ * @file src/vector2/arithmetic.ts
  * @module math2d/core/vector2/arithmetic
  * @description Component-wise arithmetic operations for Vector2.
  * @internal

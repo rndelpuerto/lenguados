@@ -1,5 +1,5 @@
 /**
- * @file src/core/vector2/index.ts
+ * @file src/vector2/index.ts
  * @module math2d/core/vector2
  * @description Main entry point for the modularized Vector2 class.
  * Assembles the complete Vector2 class from modular components while preserving

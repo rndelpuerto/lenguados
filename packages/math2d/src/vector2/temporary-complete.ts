@@ -1,5 +1,5 @@
 /**
- * @file src/core/vector2/temporary-complete.ts
+ * @file src/vector2/temporary-complete.ts
  * @module math2d/core/vector2/temporary-complete
  * @description Temporary file containing all remaining Vector2 methods to be modularized.
  * This ensures the Vector2 class remains fully functional during the refactoring process.

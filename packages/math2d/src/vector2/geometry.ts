@@ -1,5 +1,5 @@
 /**
- * @file src/core/vector2/geometry.ts
+ * @file src/vector2/geometry.ts
  * @module math2d/core/vector2/geometry
  * @description Geometric operations for Vector2.
  * @internal

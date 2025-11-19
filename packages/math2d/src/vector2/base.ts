@@ -1,5 +1,5 @@
 /**
- * @file src/core/vector2/base.ts
+ * @file src/vector2/base.ts
  * @module math2d/core/vector2/base
  * @description Base Vector2 class definition.
  * @internal

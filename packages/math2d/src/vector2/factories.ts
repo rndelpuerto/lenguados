@@ -1,5 +1,5 @@
 /**
- * @file src/core/vector2/factories.ts
+ * @file src/vector2/factories.ts
  * @module math2d/core/vector2/factories
  * @description Static factory methods for creating Vector2 instances.
  * @internal

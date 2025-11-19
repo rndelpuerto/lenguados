@@ -1,5 +1,5 @@
 /**
- * @file src/core/vector2/interpolation.ts
+ * @file src/vector2/interpolation.ts
  * @module math2d/core/vector2/interpolation
  * @description Interpolation methods for Vector2.
  * @internal

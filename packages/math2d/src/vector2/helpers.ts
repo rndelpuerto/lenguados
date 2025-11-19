@@ -1,5 +1,5 @@
 /**
- * @file src/core/vector2/helpers.ts
+ * @file src/vector2/helpers.ts
  * @module math2d/core/vector2/helpers
  * @description Helper functions and type guards for Vector2.
  * @internal

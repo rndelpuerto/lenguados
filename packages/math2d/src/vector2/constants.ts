@@ -1,5 +1,5 @@
 /**
- * @file src/core/vector2/constants.ts
+ * @file src/vector2/constants.ts
  * @module math2d/core/vector2/constants
  * @description Static constants for Vector2 class.
  * @internal
