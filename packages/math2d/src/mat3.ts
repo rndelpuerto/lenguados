@@ -23,7 +23,8 @@
  */
 
 import type { Mat2Like } from './mat2';
-import { EPSILON } from './scalar';
+import { LINEAR_LINEAR_EPSILON } from './constants/precision';
+import { validateTolerance, areNearEqual } from './core-utils/tolerance';
 import { Vector2, ReadonlyVector2 } from './vector2';
 
 /**
@@ -917,14 +918,14 @@ export class Mat3 {
   * Inverse matrix with **tolerance**: throws if `|det(A)| ≤ epsilon`.
   *
   * @param a - Matrix to invert.
-  * @param epsilon - Non‑negative tolerance (default = {@link EPSILON}).
+  * @param epsilon - Non‑negative tolerance (default = {@link LINEAR_EPSILON}).
   * @param outMatrix - Destination matrix (default new).
   * @returns `outMatrix` containing the inverse.
   * @throws {RangeError} If the matrix is singular or nearly singular.
   */
  public static inverseTol(
   a: ReadonlyMat3,
-  epsilon: number = EPSILON,
+  epsilon: number = LINEAR_EPSILON,
   outMatrix: Mat3 = new Mat3(),
  ): Mat3 {
   const det = Mat3.determinant(a);
@@ -1059,7 +1060,7 @@ export class Mat3 {
   * @param a - Matrix (affine or projective).
   * @param p - Point `[x,y]` (implicitly `w=1`).
   * @param outVector - Destination vector (default new).
-  * @returns `outVector` with `(x'/w', y'/w')`. If `|w'| ≤ EPSILON`, returns `(0,0)`.
+  * @returns `outVector` with `(x'/w', y'/w')`. If `|w'| ≤ LINEAR_EPSILON`, returns `(0,0)`.
   */
  public static transformPointProjective(
   a: ReadonlyMat3,
@@ -1070,7 +1071,7 @@ export class Mat3 {
   const y = a.m10 * p.x + a.m11 * p.y + a.m12;
   const w = a.m20 * p.x + a.m21 * p.y + a.m22;
 
-  if (Math.abs(w) <= EPSILON) {
+  if (Math.abs(w) <= LINEAR_EPSILON) {
    return outVector.zero();
   }
 
@@ -1137,25 +1138,23 @@ export class Mat3 {
   *
   * @param a - First matrix.
   * @param b - Second matrix.
-  * @param epsilon - Non‑negative tolerance (default = {@link EPSILON}).
+  * @param epsilon - Non‑negative tolerance (default = {@link LINEAR_EPSILON}).
   * @returns `true` if `|aᵢⱼ − bᵢⱼ| ≤ epsilon` for all components.
   * @throws {RangeError} If `epsilon < 0`.
   */
- public static nearEquals(a: ReadonlyMat3, b: ReadonlyMat3, epsilon: number = EPSILON): boolean {
-  if (epsilon < 0) {
-   throw new RangeError('Mat3.nearEquals: epsilon must be non-negative');
-  }
-
+ public static nearEquals(a: ReadonlyMat3, b: ReadonlyMat3, epsilon: number = LINEAR_EPSILON): boolean {
+  validateTolerance(epsilon, 'Mat3.nearEquals');
+  
   return (
-   Math.abs(a.m00 - b.m00) <= epsilon &&
-   Math.abs(a.m01 - b.m01) <= epsilon &&
-   Math.abs(a.m02 - b.m02) <= epsilon &&
-   Math.abs(a.m10 - b.m10) <= epsilon &&
-   Math.abs(a.m11 - b.m11) <= epsilon &&
-   Math.abs(a.m12 - b.m12) <= epsilon &&
-   Math.abs(a.m20 - b.m20) <= epsilon &&
-   Math.abs(a.m21 - b.m21) <= epsilon &&
-   Math.abs(a.m22 - b.m22) <= epsilon
+   areNearEqual(a.m00, b.m00, epsilon) &&
+   areNearEqual(a.m01, b.m01, epsilon) &&
+   areNearEqual(a.m02, b.m02, epsilon) &&
+   areNearEqual(a.m10, b.m10, epsilon) &&
+   areNearEqual(a.m11, b.m11, epsilon) &&
+   areNearEqual(a.m12, b.m12, epsilon) &&
+   areNearEqual(a.m20, b.m20, epsilon) &&
+   areNearEqual(a.m21, b.m21, epsilon) &&
+   areNearEqual(a.m22, b.m22, epsilon)
   );
  }
 
@@ -1183,10 +1182,10 @@ export class Mat3 {
   * Test if a matrix is (approximately) the identity within tolerance.
   *
   * @param a - Matrix to test.
-  * @param epsilon - Non‑negative tolerance (default = {@link EPSILON}).
+  * @param epsilon - Non‑negative tolerance (default = {@link LINEAR_EPSILON}).
   * @returns `true` if `a ≈ I`.
   */
- public static isIdentity(a: ReadonlyMat3, epsilon: number = EPSILON): boolean {
+ public static isIdentity(a: ReadonlyMat3, epsilon: number = LINEAR_EPSILON): boolean {
   return (
    Math.abs(a.m00 - 1) <= epsilon &&
    Math.abs(a.m11 - 1) <= epsilon &&
@@ -1204,10 +1203,10 @@ export class Mat3 {
   * Test if a matrix is **affine** (last row ≈ `[0,0,1]`).
   *
   * @param a - Matrix to test.
-  * @param epsilon - Non‑negative tolerance (default = {@link EPSILON}).
+  * @param epsilon - Non‑negative tolerance (default = {@link LINEAR_EPSILON}).
   * @returns `true` if last row is `[0,0,1]` within `epsilon`.
   */
- public static isAffine(a: ReadonlyMat3, epsilon: number = EPSILON): boolean {
+ public static isAffine(a: ReadonlyMat3, epsilon: number = LINEAR_EPSILON): boolean {
   return Math.abs(a.m20) <= epsilon && Math.abs(a.m21) <= epsilon && Math.abs(a.m22 - 1) <= epsilon;
  }
 
@@ -1215,10 +1214,10 @@ export class Mat3 {
   * Test if a matrix is **rigid** (rotation + translation): upper‑left 2×2 is a rotation and last row ≈ `[0,0,1]`.
   *
   * @param a - Matrix to test.
-  * @param epsilon - Non‑negative tolerance (default = {@link EPSILON}).
+  * @param epsilon - Non‑negative tolerance (default = {@link LINEAR_EPSILON}).
   * @returns `true` if `a` is a rigid (proper orthogonal, det ≈ +1) transform.
   */
- public static isRigid(a: ReadonlyMat3, epsilon: number = EPSILON): boolean {
+ public static isRigid(a: ReadonlyMat3, epsilon: number = LINEAR_EPSILON): boolean {
   if (!Mat3.isAffine(a, epsilon)) return false;
 
   const c0x = a.m00,
@@ -1244,10 +1243,10 @@ export class Mat3 {
   * Test if `A` is singular (or nearly singular) with tolerance.
   *
   * @param a - Matrix to test.
-  * @param epsilon - Non‑negative tolerance (default = {@link EPSILON}).
+  * @param epsilon - Non‑negative tolerance (default = {@link LINEAR_EPSILON}).
   * @returns `true` if `|det(A)| ≤ epsilon`.
   */
- public static isSingular(a: ReadonlyMat3, epsilon: number = EPSILON): boolean {
+ public static isSingular(a: ReadonlyMat3, epsilon: number = LINEAR_EPSILON): boolean {
   return Math.abs(Mat3.determinant(a)) <= epsilon;
  }
 
@@ -1294,7 +1293,7 @@ export class Mat3 {
 
   const len0 = Math.hypot(c0x, c0y);
 
-  if (len0 > EPSILON * 10) {
+  if (len0 > LINEAR_EPSILON * 10) {
    return Math.atan2(c0y, c0x);
   }
 
@@ -1306,7 +1305,7 @@ export class Mat3 {
 
   const len1 = Math.hypot(c1x, c1y);
 
-  if (len1 > EPSILON * 10) {
+  if (len1 > LINEAR_EPSILON * 10) {
    return Math.atan2(-c1x, c1y);
   }
 
@@ -2120,11 +2119,11 @@ export class Mat3 {
  /**
   * Invert this matrix with **tolerance** (throws if `|det| ≤ epsilon`).
   *
-  * @param epsilon - Non‑negative tolerance (default = {@link EPSILON}).
+  * @param epsilon - Non‑negative tolerance (default = {@link LINEAR_EPSILON}).
   * @returns This matrix after inversion.
   * @throws {RangeError} If the matrix is singular or nearly singular.
   */
- public inverseTol(epsilon: number = EPSILON): this {
+ public inverseTol(epsilon: number = LINEAR_EPSILON): this {
   const inv = Mat3.inverseTol(this, epsilon);
   return this.copy(inv);
  }
@@ -2380,7 +2379,7 @@ export class Mat3 {
   * @param tolerance - Non-negative threshold to consider a vector degenerate.
   * @returns This matrix.
   */
- public orthonormalizeAffine(tolerance: number = EPSILON): this {
+ public orthonormalizeAffine(tolerance: number = LINEAR_EPSILON): this {
   // Preserve translation first
   const tx = this.m02;
   const ty = this.m12;
@@ -2620,7 +2619,7 @@ export class Mat3 {
   * Transform a point projectively (divides by `w` if needed).
   *
   * @param p - Point.
-  * @returns A **new** transformed {@link Vector2}; `(0,0)` if `|w'| ≤ EPSILON`.
+  * @returns A **new** transformed {@link Vector2}; `(0,0)` if `|w'| ≤ LINEAR_EPSILON`.
   */
  public transformPointProjective(p: ReadonlyVector2): Vector2 {
   return Mat3.transformPointProjective(this, p);
@@ -2631,7 +2630,7 @@ export class Mat3 {
   *
   * @param p - Input point.
   * @param outVector - Destination vector.
-  * @returns `outVector` with the result (or `(0,0)` if `|w'| ≤ EPSILON`).
+  * @returns `outVector` with the result (or `(0,0)` if `|w'| ≤ LINEAR_EPSILON`).
   */
  public transformPointProjectiveInto(p: ReadonlyVector2, outVector: Vector2): Vector2 {
   return Mat3.transformPointProjective(this, p, outVector);
@@ -2655,40 +2654,41 @@ export class Mat3 {
   * Approximate equality within tolerance.
   *
   * @param other - Matrix to compare.
-  * @param epsilon - Non‑negative tolerance (default = {@link EPSILON}).
+  * @param epsilon - Non‑negative tolerance (default = {@link LINEAR_EPSILON}).
   * @returns `true` if `this ≈ other` within `epsilon`.
   */
- public nearEquals(other: ReadonlyMat3, epsilon: number = EPSILON): boolean {
+ public nearEquals(other: ReadonlyMat3, epsilon: number = LINEAR_EPSILON): boolean {
+  validateTolerance(epsilon, 'Mat3.nearEquals');
   return Mat3.nearEquals(this, other, epsilon);
  }
 
  /**
   * Test if this matrix is approximately the identity.
   *
-  * @param epsilon - Tolerance (default = {@link EPSILON}).
+  * @param epsilon - Tolerance (default = {@link LINEAR_EPSILON}).
   * @returns `true` if `this ≈ I`.
   */
- public isIdentity(epsilon: number = EPSILON): boolean {
+ public isIdentity(epsilon: number = LINEAR_EPSILON): boolean {
   return Mat3.isIdentity(this, epsilon);
  }
 
  /**
   * Test if last row is `[0,0,1]` within tolerance (affine).
   *
-  * @param epsilon - Tolerance (default = {@link EPSILON}).
+  * @param epsilon - Tolerance (default = {@link LINEAR_EPSILON}).
   * @returns `true` if affine.
   */
- public isAffine(epsilon: number = EPSILON): boolean {
+ public isAffine(epsilon: number = LINEAR_EPSILON): boolean {
   return Mat3.isAffine(this, epsilon);
  }
 
  /**
   * Test if this is a rigid transform (proper rotation + translation).
   *
-  * @param epsilon - Tolerance (default = {@link EPSILON}).
+  * @param epsilon - Tolerance (default = {@link LINEAR_EPSILON}).
   * @returns `true` if rigid (det 2×2 ≈ +1).
   */
- public isRigid(epsilon: number = EPSILON): boolean {
+ public isRigid(epsilon: number = LINEAR_EPSILON): boolean {
   return Mat3.isRigid(this, epsilon);
  }
 
@@ -2704,10 +2704,10 @@ export class Mat3 {
  /**
   * Test if this matrix is singular within tolerance.
   *
-  * @param epsilon - Tolerance (default = {@link EPSILON}).
+  * @param epsilon - Tolerance (default = {@link LINEAR_EPSILON}).
   * @returns `true` if `|det(this)| ≤ epsilon`.
   */
- public isSingular(epsilon: number = EPSILON): boolean {
+ public isSingular(epsilon: number = LINEAR_EPSILON): boolean {
   return Mat3.isSingular(this, epsilon);
  }
 

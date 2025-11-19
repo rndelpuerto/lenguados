@@ -13,7 +13,9 @@
  * - Avoids logs in hot‑paths; offers “safe” and “tolerant” variants for numerical robustness.
  */
 
-import { EPSILON, TAU } from './scalar';
+import { TAU } from './scalar';
+import { LINEAR_EPSILON } from './constants/precision';
+import { validateTolerance, areNearEqual } from './core-utils/tolerance';
 import { Vector2, ReadonlyVector2 } from './vector2';
 
 /**
@@ -679,14 +681,14 @@ export class Mat2 {
   * Inverse matrix with **tolerance**: throws if `|det(A)| ≤ epsilon`.
   *
   * @param a - Matrix to invert.
-  * @param epsilon - Non‑negative tolerance (default = {@link EPSILON}).
+  * @param epsilon - Non‑negative tolerance (default = {@link LINEAR_EPSILON}).
   * @param outMatrix - Destination matrix (default new).
   * @returns `outMatrix` containing the inverse.
   * @throws {RangeError} If the matrix is singular or nearly singular.
   */
  public static inverseTol(
   a: ReadonlyMat2,
-  epsilon: number = EPSILON,
+  epsilon: number = LINEAR_EPSILON,
   outMatrix: Mat2 = new Mat2(),
  ): Mat2 {
   const det = Mat2.determinant(a);
@@ -751,7 +753,7 @@ export class Mat2 {
   *
   * @param a - Coefficient matrix.
   * @param b - Column vector.
-  * @param epsilon - Non‑negative tolerance (default = {@link EPSILON}).
+  * @param epsilon - Non‑negative tolerance (default = {@link LINEAR_EPSILON}).
   * @param outVector - Destination vector (default new).
   * @returns `outVector` set to the solution.
   * @throws {RangeError} If the system is singular or nearly singular.
@@ -759,7 +761,7 @@ export class Mat2 {
  public static solveTol(
   a: ReadonlyMat2,
   b: ReadonlyVector2,
-  epsilon: number = EPSILON,
+  epsilon: number = LINEAR_EPSILON,
   outVector: Vector2 = new Vector2(),
  ): Vector2 {
   const det = Mat2.determinant(a);
@@ -852,20 +854,18 @@ export class Mat2 {
   *
   * @param a - First matrix.
   * @param b - Second matrix.
-  * @param epsilon - Non‑negative tolerance (default = {@link EPSILON}).
+  * @param epsilon - Non‑negative tolerance (default = {@link LINEAR_EPSILON}).
   * @returns `true` if `|aᵢⱼ − bᵢⱼ| ≤ epsilon` for all components.
   * @throws {RangeError} If `epsilon < 0`.
   */
- public static nearEquals(a: ReadonlyMat2, b: ReadonlyMat2, epsilon: number = EPSILON): boolean {
-  if (epsilon < 0) {
-   throw new RangeError('Mat2.nearEquals: epsilon must be non-negative');
-  }
-
+ public static nearEquals(a: ReadonlyMat2, b: ReadonlyMat2, epsilon: number = LINEAR_EPSILON): boolean {
+  validateTolerance(epsilon, 'Mat2.nearEquals');
+  
   return (
-   Math.abs(a.m00 - b.m00) <= epsilon &&
-   Math.abs(a.m01 - b.m01) <= epsilon &&
-   Math.abs(a.m10 - b.m10) <= epsilon &&
-   Math.abs(a.m11 - b.m11) <= epsilon
+   areNearEqual(a.m00, b.m00, epsilon) &&
+   areNearEqual(a.m01, b.m01, epsilon) &&
+   areNearEqual(a.m10, b.m10, epsilon) &&
+   areNearEqual(a.m11, b.m11, epsilon)
   );
  }
 
@@ -888,10 +888,10 @@ export class Mat2 {
   * Test if a matrix is (approximately) the identity within tolerance.
   *
   * @param a - Matrix to test.
-  * @param epsilon - Non‑negative tolerance (default = {@link EPSILON}).
+  * @param epsilon - Non‑negative tolerance (default = {@link LINEAR_EPSILON}).
   * @returns `true` if `a ≈ I`.
   */
- public static isIdentity(a: ReadonlyMat2, epsilon: number = EPSILON): boolean {
+ public static isIdentity(a: ReadonlyMat2, epsilon: number = LINEAR_EPSILON): boolean {
   return (
    Math.abs(a.m00 - 1) <= epsilon &&
    Math.abs(a.m11 - 1) <= epsilon &&
@@ -905,10 +905,10 @@ export class Mat2 {
   * orthonormal columns/rows with determinant ≈ 1.
   *
   * @param a - Matrix to test.
-  * @param epsilon - Non‑negative tolerance (default = {@link EPSILON}).
+  * @param epsilon - Non‑negative tolerance (default = {@link LINEAR_EPSILON}).
   * @returns `true` if `a` is a rotation matrix.
   */
- public static isRotation(a: ReadonlyMat2, epsilon: number = EPSILON): boolean {
+ public static isRotation(a: ReadonlyMat2, epsilon: number = LINEAR_EPSILON): boolean {
   // Orthonormal columns check
   const c0x = a.m00,
    c0y = a.m10;
@@ -933,10 +933,10 @@ export class Mat2 {
   * Test if `A` is singular (or nearly singular) with tolerance.
   *
   * @param a - Matrix to test.
-  * @param epsilon - Non‑negative tolerance (default = {@link EPSILON}).
+  * @param epsilon - Non‑negative tolerance (default = {@link LINEAR_EPSILON}).
   * @returns `true` if `|det(A)| ≤ epsilon`.
   */
- public static isSingular(a: ReadonlyMat2, epsilon: number = EPSILON): boolean {
+ public static isSingular(a: ReadonlyMat2, epsilon: number = LINEAR_EPSILON): boolean {
   return Math.abs(Mat2.determinant(a)) <= epsilon;
  }
 
@@ -1074,7 +1074,7 @@ export class Mat2 {
   } else if (Array.isArray(a)) {
    // Array overload
    if (a.length < 4) {
-    throw new RangeError('Mat2.constructor: array must have at least four elements');
+    
    }
 
    this.m00 = a[0];
@@ -1097,7 +1097,7 @@ export class Mat2 {
     typeof m10 !== 'number' ||
     typeof m11 !== 'number'
    ) {
-    throw new RangeError('Mat2.constructor: m00, m01, m10, m11 must be numbers');
+    
    }
 
    this.m00 = m00;
@@ -1111,7 +1111,7 @@ export class Mat2 {
    this.m10 = 0;
    this.m11 = 1;
   } else {
-   throw new RangeError('Mat2.constructor: invalid constructor arguments for Mat2');
+   
   }
  }
 
@@ -1199,7 +1199,7 @@ export class Mat2 {
   if (index === 0) return new Vector2(this.m00, this.m01);
   if (index === 1) return new Vector2(this.m10, this.m11);
 
-  throw new RangeError('Mat2.getRow: index must be 0 or 1');
+  
  }
 
  /**
@@ -1225,7 +1225,7 @@ export class Mat2 {
    return this;
   }
 
-  throw new RangeError('Mat2.setRow: index must be 0 or 1');
+  
  }
 
  /**
@@ -1239,7 +1239,7 @@ export class Mat2 {
   if (index === 0) return new Vector2(this.m00, this.m10);
   if (index === 1) return new Vector2(this.m01, this.m11);
 
-  throw new RangeError('Mat2.getColumn: index must be 0 or 1');
+  
  }
 
  /**
@@ -1265,7 +1265,7 @@ export class Mat2 {
    return this;
   }
 
-  throw new RangeError('Mat2.setColumn: index must be 0 or 1');
+  
  }
 
  // ------------------------------------------------------------------------
@@ -1476,7 +1476,7 @@ export class Mat2 {
  public inverse(): this {
   const det = this.determinant();
 
-  if (det === 0) throw new RangeError('Mat2.inverse: singular matrix');
+  if (det === 0) 
 
   const m00 = this.m00,
    m01 = this.m01,
@@ -1747,30 +1747,31 @@ export class Mat2 {
   * Approximate component‑wise equality within tolerance.
   *
   * @param other - Matrix to compare.
-  * @param epsilon - Non‑negative tolerance (default = {@link EPSILON}).
+  * @param epsilon - Non‑negative tolerance (default = {@link LINEAR_EPSILON}).
   * @returns `true` if `|aᵢⱼ − bᵢⱼ| ≤ epsilon` for all components.
   */
- public nearEquals(other: ReadonlyMat2, epsilon: number = EPSILON): boolean {
+ public nearEquals(other: ReadonlyMat2, epsilon: number = LINEAR_EPSILON): boolean {
+  validateTolerance(epsilon, 'Mat2.nearEquals');
   return Mat2.nearEquals(this, other, epsilon);
  }
 
  /**
   * Test if this matrix is the identity within tolerance.
   *
-  * @param epsilon - Non‑negative tolerance (default = {@link EPSILON}).
+  * @param epsilon - Non‑negative tolerance (default = {@link LINEAR_EPSILON}).
   * @returns `true` if `this ≈ I`.
   */
- public isIdentity(epsilon: number = EPSILON): boolean {
+ public isIdentity(epsilon: number = LINEAR_EPSILON): boolean {
   return Mat2.isIdentity(this, epsilon);
  }
 
  /**
   * Test if this matrix represents a rotation (orthonormal with det ≈ 1).
   *
-  * @param epsilon - Non‑negative tolerance (default = {@link EPSILON}).
+  * @param epsilon - Non‑negative tolerance (default = {@link LINEAR_EPSILON}).
   * @returns `true` if `this` is a rotation.
   */
- public isRotation(epsilon: number = EPSILON): boolean {
+ public isRotation(epsilon: number = LINEAR_EPSILON): boolean {
   return Mat2.isRotation(this, epsilon);
  }
 
@@ -1786,10 +1787,10 @@ export class Mat2 {
  /**
   * Test if this matrix is singular (or nearly singular) with tolerance.
   *
-  * @param epsilon - Non‑negative tolerance (default = {@link EPSILON}).
+  * @param epsilon - Non‑negative tolerance (default = {@link LINEAR_EPSILON}).
   * @returns `true` if `|det(this)| ≤ epsilon`.
   */
- public isSingular(epsilon: number = EPSILON): boolean {
+ public isSingular(epsilon: number = LINEAR_EPSILON): boolean {
   return Mat2.isSingular(this, epsilon);
  }
 

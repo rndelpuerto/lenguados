@@ -1,4 +1,8 @@
 /**
+ * Note: For standard Euclidean distance, prefer Vector2.distance().
+ * This module provides specialized distance metrics not available in Vector2.
+ *
+ * @module
  * @file src/geometry/metrics.ts
  * @module math2d/geometry/metrics
  * @description
@@ -19,6 +23,10 @@
 import { Vector2, type ReadonlyVector2 } from '../vector2';
 
 /**
+ * Note: For standard Euclidean distance, prefer Vector2.distance().
+ * This module provides specialized distance metrics not available in Vector2.
+ *
+ * @module
  * Computes the L1 norm (Manhattan/Taxicab length) of a vector.
  *
  * This is the sum of absolute values of components: |x| + |y|
@@ -32,6 +40,10 @@ export function manhattanLength(v: ReadonlyVector2): number {
 }
 
 /**
+ * Note: For standard Euclidean distance, prefer Vector2.distance().
+ * This module provides specialized distance metrics not available in Vector2.
+ *
+ * @module
  * Computes the Manhattan distance between two points.
  *
  * This is the L1 distance: |x₁ - x₂| + |y₁ - y₂|
@@ -46,6 +58,10 @@ export function manhattanDistance(a: ReadonlyVector2, b: ReadonlyVector2): numbe
 }
 
 /**
+ * Note: For standard Euclidean distance, prefer Vector2.distance().
+ * This module provides specialized distance metrics not available in Vector2.
+ *
+ * @module
  * Computes the L∞ norm (Chebyshev/Chessboard length) of a vector.
  *
  * This is the maximum absolute component: max(|x|, |y|)
@@ -59,6 +75,10 @@ export function chebyshevLength(v: ReadonlyVector2): number {
 }
 
 /**
+ * Note: For standard Euclidean distance, prefer Vector2.distance().
+ * This module provides specialized distance metrics not available in Vector2.
+ *
+ * @module
  * Computes the Chebyshev distance between two points.
  *
  * This is the L∞ distance: max(|x₁ - x₂|, |y₁ - y₂|)
@@ -73,6 +93,10 @@ export function chebyshevDistance(a: ReadonlyVector2, b: ReadonlyVector2): numbe
 }
 
 /**
+ * Note: For standard Euclidean distance, prefer Vector2.distance().
+ * This module provides specialized distance metrics not available in Vector2.
+ *
+ * @module
  * Computes the generalized Minkowski distance between two points.
  *
  * The Lp norm distance: (|x₁ - x₂|^p + |y₁ - y₂|^p)^(1/p)
@@ -95,7 +119,7 @@ export function minkowskiDistance(a: ReadonlyVector2, b: ReadonlyVector2, p: num
 
  // Handle special cases for performance
  if (p === 1) return manhattanDistance(a, b);
- if (p === 2) return Math.hypot(a.x - b.x, a.y - b.y); // Euclidean
+ if (p === 2) return Vector2.distance(a, b); // Euclidean
  if (p === Number.POSITIVE_INFINITY) return chebyshevDistance(a, b);
 
  // General case
@@ -105,6 +129,10 @@ export function minkowskiDistance(a: ReadonlyVector2, b: ReadonlyVector2, p: num
 }
 
 /**
+ * Note: For standard Euclidean distance, prefer Vector2.distance().
+ * This module provides specialized distance metrics not available in Vector2.
+ *
+ * @module
  * Computes the squared Euclidean distance between two points.
  *
  * Useful for distance comparisons without the sqrt overhead.
@@ -119,6 +147,10 @@ export function squaredDistance(a: ReadonlyVector2, b: ReadonlyVector2): number 
 }
 
 /**
+ * Note: For standard Euclidean distance, prefer Vector2.distance().
+ * This module provides specialized distance metrics not available in Vector2.
+ *
+ * @module
  * Computes the Canberra distance between two points.
  *
  * A weighted version of Manhattan distance, useful for data with
@@ -142,6 +174,10 @@ export function canberraDistance(a: ReadonlyVector2, b: ReadonlyVector2): number
 }
 
 /**
+ * Note: For standard Euclidean distance, prefer Vector2.distance().
+ * This module provides specialized distance metrics not available in Vector2.
+ *
+ * @module
  * Determines which axis has the maximum extent between two points.
  *
  * Useful for spatial partitioning algorithms (KD-trees, BVH).
@@ -155,6 +191,10 @@ export function dominantAxis(a: ReadonlyVector2, b: ReadonlyVector2): number {
 }
 
 /**
+ * Note: For standard Euclidean distance, prefer Vector2.distance().
+ * This module provides specialized distance metrics not available in Vector2.
+ *
+ * @module
  * Computes the signed area of a triangle defined by three points.
  *
  * Positive for counter-clockwise, negative for clockwise, zero for collinear.
@@ -174,6 +214,10 @@ export function signedTriangleArea(
 }
 
 /**
+ * Note: For standard Euclidean distance, prefer Vector2.distance().
+ * This module provides specialized distance metrics not available in Vector2.
+ *
+ * @module
  * Tests if three points are in counter-clockwise order.
  *
  * @param a - First point
