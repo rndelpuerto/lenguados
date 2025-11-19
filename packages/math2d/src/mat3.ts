@@ -23,7 +23,7 @@
  */
 
 import type { Mat2Like } from './mat2';
-import { LINEAR_LINEAR_EPSILON } from './constants/precision';
+import { LINEAR_EPSILON } from './constants/precision';
 import { validateTolerance, areNearEqual } from './core-utils/tolerance';
 import { Vector2, ReadonlyVector2 } from './vector2';
 
