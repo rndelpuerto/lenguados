@@ -19,18 +19,43 @@ declare module '../base' {
 
 // Implementation
 
+/**
+ * Linear interpolation towards `end` by factor `t` (no clamping).
+ * 
+ * @param end - Target vector.
+ * @param t - Interpolation factor.
+ * @returns `this` for chaining.
+ */
 Vector2Base.prototype.lerp = function (end: ReadonlyVector2, t: number): any {
   this.x += (end.x - this.x) * t;
   this.y += (end.y - this.y) * t;
   return this;
 };
 
+/**
+ * Linear interpolation with `t` clamped to `[0, 1]`.
+ * 
+ * @param end - Target vector.
+ * @param t - Interpolation factor.
+ * @returns `this` for chaining.
+ */
 Vector2Base.prototype.lerpClamped = function (end: ReadonlyVector2, t: number): any {
   if (t <= 0) return this;
   if (t >= 1) return this.copy(end);
   return this.lerp(end, t);
 };
 
+/**
+ * Spherical linear interpolation between this vector and `end`.
+ * 
+ * @param end - Target vector.
+ * @param t - Interpolation factor (0 to 1).
+ * @returns `this` for chaining.
+ * 
+ * @remarks
+ * Interpolates both direction and magnitude smoothly.
+ * Falls back to linear interpolation for degenerate cases.
+ */
 Vector2Base.prototype.slerp = function (end: ReadonlyVector2, t: number): any {
   // Get the angle between vectors
   const startLength = this.length();

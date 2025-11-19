@@ -22,8 +22,7 @@
 
 import { deltaRadians } from './angle';
 import { Mat2, ReadonlyMat2 } from './mat2';
-import { EPSILON } from './scalar';
-import { LINEAR_EPSILON, ANGULAR_EPSILON } from './constants/precision';
+import { TOLERANCE } from './constants/tolerance-types';
 import { validateTolerance, areNearEqual } from './core-utils/tolerance';
 import { Vector2, ReadonlyVector2 } from './vector2';
 
@@ -216,14 +215,14 @@ export class Rot2 {
   * Creates a rotation from a 2×2 matrix with **tolerance**.
   *
   * @param matrix - Source matrix.
-  * @param epsilon - Non‑negative tolerance. @defaultValue {@link ANGULAR_EPSILON}
+  * @param epsilon - Non‑negative tolerance. @defaultValue {@link TOLERANCE.ANGULAR}
   * @param outRotation - Destination rotation. @defaultValue `new Rot2()`
   * @returns `outRotation` set to the extracted rotation.
   * @throws {RangeError} If no reliable rotation axis can be extracted (both columns near zero).
   */
  public static fromMat2Tol(
   matrix: ReadonlyMat2,
-  epsilon: number = EPSILON,
+  epsilon: number = TOLERANCE.ANGULAR,
   outRotation: Rot2 = new Rot2(),
  ): Rot2 {
   const x0 = matrix.m00,
@@ -272,14 +271,14 @@ export class Rot2 {
   * Creates a rotation from a **direction** vector with tolerance.
   *
   * @param v - Direction vector (not necessarily unit).
-  * @param epsilon - Non‑negative tolerance. @defaultValue {@link ANGULAR_EPSILON}
+  * @param epsilon - Non‑negative tolerance. @defaultValue {@link TOLERANCE.ANGULAR}
   * @param outRotation - Destination rotation. @defaultValue `new Rot2()`
   * @returns `outRotation` set from the direction.
   * @throws {RangeError} If `|v| ≤ epsilon`.
   */
  public static fromDirectionTol(
   v: ReadonlyVector2,
-  epsilon: number = EPSILON,
+  epsilon: number = TOLERANCE.ANGULAR,
   outRotation: Rot2 = new Rot2(),
  ): Rot2 {
   const length = Math.hypot(v.x, v.y);
@@ -679,7 +678,7 @@ export class Rot2 {
 
   const mag = Math.hypot(sumC, sumS);
 
-  if (mag <= EPSILON) return outRotation.identity();
+  if (mag <= TOLERANCE.LINEAR) return outRotation.identity();
 
   return outRotation.set(sumC / mag, sumS / mag);
  }
@@ -689,7 +688,7 @@ export class Rot2 {
   *
   * @param rotations - Array of rotations.
   * @param weights - Optional non‑negative weights (same length as `rotations`).
-  * @param epsilon - Non‑negative tolerance. @defaultValue {@link ANGULAR_EPSILON}
+  * @param epsilon - Non‑negative tolerance. @defaultValue {@link TOLERANCE.ANGULAR}
   * @param outRotation - Destination rotation. @defaultValue `new Rot2()`
   * @returns `outRotation` containing the mean.
   * @throws {RangeError} If the input is empty, if weights mismatch or are negative,
@@ -698,7 +697,7 @@ export class Rot2 {
  public static meanTol(
   rotations: ReadonlyRot2[],
   weights: number[] | undefined,
-  epsilon: number = EPSILON,
+  epsilon: number = TOLERANCE.ANGULAR,
   outRotation: Rot2 = new Rot2(),
  ): Rot2 {
   const n = rotations.length;
@@ -930,11 +929,11 @@ export class Rot2 {
   *
   * @param a - First rotation.
   * @param b - Second rotation.
-  * @param epsilon - Non‑negative tolerance. @defaultValue {@link ANGULAR_EPSILON}
+  * @param epsilon - Non‑negative tolerance. @defaultValue {@link TOLERANCE.ANGULAR}
   * @returns `true` if `|Δc| ≤ epsilon` and `|Δs| ≤ epsilon`.
   * @throws {RangeError} If `epsilon < 0`.
   */
- public static nearEquals(a: ReadonlyRot2, b: ReadonlyRot2, epsilon: number = ANGULAR_EPSILON): boolean {
+ public static nearEquals(a: ReadonlyRot2, b: ReadonlyRot2, epsilon: number = TOLERANCE.ANGULAR): boolean {
   validateTolerance(epsilon, 'Rot2.nearEquals');
   return areNearEqual(a.c, b.c, epsilon) && areNearEqual(a.s, b.s, epsilon);
  }
@@ -953,7 +952,7 @@ export class Rot2 {
   * Tests whether the rotation is (approximately) identity within tolerance.
   *
   * @param r - Rotation to test.
-  * @param epsilon - Non‑negative tolerance. @defaultValue {@link ANGULAR_EPSILON}
+  * @param epsilon - Non‑negative tolerance. @defaultValue {@link TOLERANCE.ANGULAR}
   * @returns `true` if `c ≈ 1` and `s ≈ 0`.
   */
  public static isIdentity(r: ReadonlyRot2, epsilon: number = EPSILON): boolean {
@@ -964,7 +963,7 @@ export class Rot2 {
   * Tests normalization: `|c|² + |s|² ≈ 1` within tolerance.
   *
   * @param r - Rotation to test.
-  * @param epsilon - Non‑negative tolerance. @defaultValue {@link ANGULAR_EPSILON}
+  * @param epsilon - Non‑negative tolerance. @defaultValue {@link TOLERANCE.ANGULAR}
   * @returns `true` if normalized within tolerance.
   */
  public static isNormalized(r: ReadonlyRot2, epsilon: number = EPSILON): boolean {
@@ -976,14 +975,14 @@ export class Rot2 {
   * returns the normalized copy (or identity if zero norm).
   *
   * @param r - Rotation to check.
-  * @param epsilon - Non‑negative tolerance. @defaultValue {@link ANGULAR_EPSILON}
+  * @param epsilon - Non‑negative tolerance. @defaultValue {@link TOLERANCE.ANGULAR}
   * @param outRotation - Destination rotation. @defaultValue `new Rot2()`
   * @returns `outRotation`.
   * @throws {RangeError} If `epsilon < 0`.
   */
  public static ensureNormalized(
   r: ReadonlyRot2,
-  epsilon: number = EPSILON,
+  epsilon: number = TOLERANCE.ANGULAR,
   outRotation: Rot2 = new Rot2(),
  ): Rot2 {
   if (epsilon < 0) throw new RangeError('Rot2.ensureNormalized: epsilon must be non-negative');
@@ -1153,7 +1152,7 @@ export class Rot2 {
   * Sets from a **direction** vector with tolerance.
   *
   * @param v - Direction vector (not necessarily unit).
-  * @param epsilon - Non‑negative tolerance. @defaultValue {@link ANGULAR_EPSILON}
+  * @param epsilon - Non‑negative tolerance. @defaultValue {@link TOLERANCE.ANGULAR}
   * @returns `this` for chaining.
   * @throws {RangeError} If `|v| ≤ epsilon`.
   */
@@ -1476,7 +1475,7 @@ export class Rot2 {
  /**
   * Normalizes this rotation only if the squared norm deviates more than `epsilon` from 1.
   *
-  * @param epsilon - Non‑negative tolerance. @defaultValue {@link ANGULAR_EPSILON}
+  * @param epsilon - Non‑negative tolerance. @defaultValue {@link TOLERANCE.ANGULAR}
   * @returns `this` for chaining.
   * @throws {RangeError} If `epsilon < 0`.
   */
@@ -1500,7 +1499,7 @@ export class Rot2 {
  /**
   * Tests whether this rotation is (approximately) identity within tolerance.
   *
-  * @param epsilon - Non‑negative tolerance. @defaultValue {@link ANGULAR_EPSILON}
+  * @param epsilon - Non‑negative tolerance. @defaultValue {@link TOLERANCE.ANGULAR}
   * @returns `true` if `this ≈ identity`; otherwise `false`.
   */
  public isIdentity(epsilon: number = EPSILON): boolean {
@@ -1510,7 +1509,7 @@ export class Rot2 {
  /**
   * Tests normalization within tolerance.
   *
-  * @param epsilon - Non‑negative tolerance. @defaultValue {@link ANGULAR_EPSILON}
+  * @param epsilon - Non‑negative tolerance. @defaultValue {@link TOLERANCE.ANGULAR}
   * @returns `true` if `|c|² + |s|² ≈ 1`; otherwise `false`.
   */
  public isNormalized(epsilon: number = EPSILON): boolean {
@@ -1540,7 +1539,7 @@ export class Rot2 {
   * Approximate component‑wise equality with tolerance.
   *
   * @param other - Rotation to compare.
-  * @param epsilon - Non‑negative tolerance. @defaultValue {@link ANGULAR_EPSILON}
+  * @param epsilon - Non‑negative tolerance. @defaultValue {@link TOLERANCE.ANGULAR}
   * @returns `true` if differences are within tolerance; otherwise `false`.
   * @throws {RangeError} If `epsilon < 0`.
   */

@@ -21,8 +21,7 @@
 
 import { Mat3, ReadonlyMat3 } from './mat3';
 import { Rot2, ReadonlyRot2, Rot2Like, freezeRot2, isRot2Like } from './rot2';
-import { EPSILON } from './scalar';
-import { LINEAR_EPSILON } from './constants/precision';
+import { TOLERANCE } from './constants/tolerance-types';
 import { validateTolerance } from './core-utils/tolerance';
 import { Vector2, ReadonlyVector2, Vector2Like, freezeVector2, isVector2Like } from './vector2';
 
@@ -269,7 +268,7 @@ export class Transform2 {
   const sx = Math.hypot(m.m00, m.m10);
   const sy = Math.hypot(m.m01, m.m11);
 
-  if (sx < EPSILON || sy < EPSILON) {
+  if (sx < TOLERANCE.LINEAR || sy < TOLERANCE.LINEAR) {
    throw new Error('Transform2.fromMatrix3: degenerate transformation matrix');
   }
 
@@ -917,10 +916,10 @@ export class Transform2 {
  /**
   * Normalizes the rotation only if needed (tolerance `epsilon`).
   *
-  * @param epsilon - Non‑negative tolerance. Defaults to {@link EPSILON}.
+  * @param epsilon - Non‑negative tolerance. Defaults to {@link TOLERANCE.LINEAR}.
   * @returns `this`.
   */
- public normalizeIfNeeded(epsilon: number = EPSILON): this {
+ public normalizeIfNeeded(epsilon: number = TOLERANCE.LINEAR): this {
   this.r.normalizeIfNeeded(epsilon);
 
   return this;
@@ -940,11 +939,11 @@ export class Transform2 {
   * Approximate equality with tolerance.
   *
   * @param other - Other transform.
-  * @param epsilon - Non‑negative tolerance. Defaults to {@link LINEAR_EPSILON}.
+  * @param epsilon - Non‑negative tolerance. Defaults to {@link TOLERANCE.LINEAR}.
   * @returns `true` if both `p` and `r` are within tolerance; otherwise `false`.
   * @throws {RangeError} If `epsilon < 0`.
   */
- public nearEquals(other: ReadonlyTransform2, epsilon: number = LINEAR_EPSILON): boolean {
+ public nearEquals(other: ReadonlyTransform2, epsilon: number = TOLERANCE.LINEAR): boolean {
   validateTolerance(epsilon, 'Transform2.nearEquals');
   return this.p.nearEquals(other.p, epsilon) && this.r.nearEquals(other.r, epsilon);
  }

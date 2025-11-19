@@ -1,11 +1,6 @@
-/**
- * @file src/vector2/missing_static_methods.ts
- * @module math2d/core/vector2/missing-static
- * @description Static methods that need to be added to achieve full symmetry with instance methods
- */
 
 import { safeDiv as safeDivide } from '../numeric';
-import { EPSILON } from '../scalar';
+import { TOLERANCE } from '../constants/tolerance-types';
 
 import { Vector2Base } from './base';
 import type { ReadonlyVector2 } from './factories';
@@ -168,95 +163,48 @@ declare module './base' {
 
 // Numeric transforms
 
-/**
- * Applies {@link Math.floor} to both components.
- * 
- * @param v - Source vector.
- * @returns A new floored {@link Vector2Base}.
- */
-Vector2Base.floor = function (v: ReadonlyVector2): Vector2Base;
-/**
- * Alloc-free variant writing into `outVector`.
- * 
- * @param v - Source vector.
- * @param outVector - Destination vector to receive the result.
- * @returns `outVector`.
- */
-Vector2Base.floor = function (v: ReadonlyVector2, outVector: Vector2Base): Vector2Base;
 Vector2Base.floor = function (v: ReadonlyVector2, outVector?: Vector2Base): Vector2Base {
- const out = outVector ?? new Vector2Base();
- return out.set(Math.floor(v.x), Math.floor(v.y));
+  const out = outVector ?? new Vector2Base();
+  return out.set(Math.floor(v.x), Math.floor(v.y));
 };
 
 /**
- * Applies {@link Math.ceil} to both components.
- * 
- * @param v - Source vector.
- * @returns A new ceiled {@link Vector2Base}.
- */
-Vector2Base.ceil = function (v: ReadonlyVector2): Vector2Base;
-/**
  * Alloc-free variant writing into `outVector`.
  * 
  * @param v - Source vector.
  * @param outVector - Destination vector to receive the result.
  * @returns `outVector`.
  */
-Vector2Base.ceil = function (v: ReadonlyVector2, outVector: Vector2Base): Vector2Base;
 Vector2Base.ceil = function (v: ReadonlyVector2, outVector?: Vector2Base): Vector2Base {
  const out = outVector ?? new Vector2Base();
  return out.set(Math.ceil(v.x), Math.ceil(v.y));
 };
 
 /**
- * Applies {@link Math.round} to both components.
- * 
- * @param v - Source vector.
- * @returns A new rounded {@link Vector2Base}.
- */
-Vector2Base.round = function (v: ReadonlyVector2): Vector2Base;
-/**
  * Alloc-free variant writing into `outVector`.
  * 
  * @param v - Source vector.
  * @param outVector - Destination vector to receive the result.
  * @returns `outVector`.
  */
-Vector2Base.round = function (v: ReadonlyVector2, outVector: Vector2Base): Vector2Base;
 Vector2Base.round = function (v: ReadonlyVector2, outVector?: Vector2Base): Vector2Base {
  const out = outVector ?? new Vector2Base();
  return out.set(Math.round(v.x), Math.round(v.y));
 };
 
 /**
- * Applies {@link Math.abs} to both components.
- * 
- * @param v - Source vector.
- * @returns A new {@link Vector2Base} with absolute components.
- */
-Vector2Base.abs = function (v: ReadonlyVector2): Vector2Base;
-/**
  * Alloc-free variant writing into `outVector`.
  * 
  * @param v - Source vector.
  * @param outVector - Destination vector to receive the result.
  * @returns `outVector`.
  */
-Vector2Base.abs = function (v: ReadonlyVector2, outVector: Vector2Base): Vector2Base;
 Vector2Base.abs = function (v: ReadonlyVector2, outVector?: Vector2Base): Vector2Base {
  const out = outVector ?? new Vector2Base();
  return out.set(Math.abs(v.x), Math.abs(v.y));
 };
 
 /**
- * Component-wise reciprocal `(1/x, 1/y)`.
- * 
- * @param v - Source vector.
- * @returns A new inverted {@link Vector2Base}.
- * @throws {RangeError} If any component is zero.
- */
-Vector2Base.inverse = function (v: ReadonlyVector2): Vector2Base;
-/**
  * Alloc-free variant writing into `outVector`.
  * 
  * @param v - Source vector.
@@ -264,7 +212,6 @@ Vector2Base.inverse = function (v: ReadonlyVector2): Vector2Base;
  * @returns `outVector`.
  * @throws {RangeError} If any component is zero.
  */
-Vector2Base.inverse = function (v: ReadonlyVector2, outVector: Vector2Base): Vector2Base;
 Vector2Base.inverse = function (v: ReadonlyVector2, outVector?: Vector2Base): Vector2Base {
  if (v.x === 0 || v.y === 0) {
   throw new RangeError('Vector2.inverse: cannot invert vector with zero component');
@@ -274,40 +221,24 @@ Vector2Base.inverse = function (v: ReadonlyVector2, outVector?: Vector2Base): Ve
 };
 
 /**
- * Safe reciprocal. Components with |value| ≤ {@link EPSILON} become `0`.
- * 
- * @param v - Source vector.
- * @returns A new {@link Vector2Base} with safe reciprocals.
- */
-Vector2Base.inverseSafe = function (v: ReadonlyVector2): Vector2Base;
-/**
  * Alloc-free variant writing into `outVector`.
  * 
  * @param v - Source vector.
  * @param outVector - Destination vector to receive the result.
  * @returns `outVector`.
  */
-Vector2Base.inverseSafe = function (v: ReadonlyVector2, outVector: Vector2Base): Vector2Base;
 Vector2Base.inverseSafe = function (v: ReadonlyVector2, outVector?: Vector2Base): Vector2Base {
  const out = outVector ?? new Vector2Base();
- return out.set(Math.abs(v.x) <= EPSILON ? 0 : 1 / v.x, Math.abs(v.y) <= EPSILON ? 0 : 1 / v.y);
+ return out.set(Math.abs(v.x) <= TOLERANCE.LINEAR ? 0 : 1 / v.x, Math.abs(v.y) <= TOLERANCE.LINEAR ? 0 : 1 / v.y);
 };
 
 /**
- * Returns a new vector with `x` and `y` swapped.
- * 
- * @param v - Source vector.
- * @returns A new {@link Vector2Base} equal to `(v.y, v.x)`.
- */
-Vector2Base.swap = function (v: ReadonlyVector2): Vector2Base;
-/**
  * Alloc-free variant writing into `outVector`.
  * 
  * @param v - Source vector.
  * @param outVector - Destination vector to receive the result.
  * @returns `outVector`.
  */
-Vector2Base.swap = function (v: ReadonlyVector2, outVector: Vector2Base): Vector2Base;
 Vector2Base.swap = function (v: ReadonlyVector2, outVector?: Vector2Base): Vector2Base {
  const out = outVector ?? new Vector2Base();
  return out.set(v.y, v.x);
@@ -315,25 +246,6 @@ Vector2Base.swap = function (v: ReadonlyVector2, outVector?: Vector2Base): Vecto
 
 // Arithmetic operations
 
-/**
- * Component-wise remainder (JS `%` semantics).
- * 
- * @param a - Dividend vector.
- * @param b - Divisor vector (non-zero components).
- * @returns A new {@link Vector2Base} equal to `(a.x % b.x, a.y % b.y)`.
- * @throws {RangeError} If any divisor component is zero.
- */
-Vector2Base.mod = function (a: ReadonlyVector2, b: ReadonlyVector2): Vector2Base;
-/**
- * Alloc-free variant writing into `outVector`.
- * 
- * @param a - Dividend vector.
- * @param b - Divisor vector (non-zero components).
- * @param outVector - Destination vector to receive the result.
- * @returns `outVector`.
- * @throws {RangeError} If any divisor component is zero.
- */
-Vector2Base.mod = function (a: ReadonlyVector2, b: ReadonlyVector2, outVector: Vector2Base): Vector2Base;
 Vector2Base.mod = function (
  a: ReadonlyVector2,
  b: ReadonlyVector2,
@@ -346,25 +258,6 @@ Vector2Base.mod = function (
  return out.set(a.x % b.x, a.y % b.y);
 };
 
-/**
- * Scalar remainder `v % s`.
- * 
- * @param v - Dividend vector.
- * @param s - Non-zero scalar divisor.
- * @returns A new {@link Vector2Base} equal to `(v.x % s, v.y % s)`.
- * @throws {RangeError} If `s === 0`.
- */
-Vector2Base.modScalar = function (v: ReadonlyVector2, s: number): Vector2Base;
-/**
- * Alloc-free variant writing into `outVector`.
- * 
- * @param v - Dividend vector.
- * @param s - Non-zero scalar divisor.
- * @param outVector - Destination vector to receive the result.
- * @returns `outVector`.
- * @throws {RangeError} If `s === 0`.
- */
-Vector2Base.modScalar = function (v: ReadonlyVector2, s: number, outVector: Vector2Base): Vector2Base;
 Vector2Base.modScalar = function (
  v: ReadonlyVector2,
  s: number,
@@ -377,30 +270,6 @@ Vector2Base.modScalar = function (
  return out.set(v.x % s, v.y % s);
 };
 
-/**
- * Adds a scaled vector: `base + scale * scaled`.
- * 
- * @param base - Base vector.
- * @param scaled - Vector to scale and add.
- * @param scale - Scale factor.
- * @returns A new {@link Vector2Base} equal to `(base + scaled * scale)`.
- * 
- * @example
- * ```ts
- * velocity = Vector2.addScaledVector(velocity, acceleration, dt);
- * ```
- */
-Vector2Base.addScaledVector = function (base: ReadonlyVector2, scaled: ReadonlyVector2, scale: number): Vector2Base;
-/**
- * Alloc-free variant writing into `outVector`.
- * 
- * @param base - Base vector.
- * @param scaled - Vector to scale and add.
- * @param scale - Scale factor.
- * @param outVector - Destination vector to receive the result.
- * @returns `outVector`.
- */
-Vector2Base.addScaledVector = function (base: ReadonlyVector2, scaled: ReadonlyVector2, scale: number, outVector: Vector2Base): Vector2Base;
 Vector2Base.addScaledVector = function (
  base: ReadonlyVector2,
  scaled: ReadonlyVector2,
@@ -435,6 +304,7 @@ Vector2Base.manhattanDistance = function (a: ReadonlyVector2, b: ReadonlyVector2
 };
 
 // Constraint methods
+
 Vector2Base.limit = function (
  v: ReadonlyVector2,
  maxLength: number,
@@ -470,6 +340,7 @@ Vector2Base.max = function (
 };
 
 // Transform methods
+
 Vector2Base.setHeading = function (
  v: ReadonlyVector2,
  angle: number,
@@ -587,6 +458,7 @@ Vector2Base.projectOnUnit = function (
 };
 
 // Box2D-style cross products
+
 Vector2Base.crossVS = function (
  a: ReadonlyVector2,
  s: number,
@@ -606,31 +478,67 @@ Vector2Base.crossSV = function (
 };
 
 // Comparison methods
+
+/**
+ * Checks if vector is unit length (magnitude 1).
+ * 
+ * @param v - Vector to test.
+ * @returns `true` if vector has unit magnitude within {@link TOLERANCE.UNIT}.
+ */
 Vector2Base.isUnit = function (v: ReadonlyVector2): boolean {
- return Math.abs(Math.hypot(v.x, v.y) - 1) <= EPSILON;
+ return Math.abs(Math.hypot(v.x, v.y) - 1) <= TOLERANCE.UNIT;
 };
 
+/**
+ * Checks if both components are finite numbers.
+ * 
+ * @param v - Vector to test.
+ * @returns `true` if both x and y are finite.
+ */
 Vector2Base.isFinite = function (v: ReadonlyVector2): boolean {
  return Number.isFinite(v.x) && Number.isFinite(v.y);
 };
 
+/**
+ * Tests whether vectors `a` and `b` are parallel within angular tolerance.
+ * 
+ * @param a - First vector.
+ * @param b - Second vector.
+ * @param epsilon - Angular tolerance. @defaultValue {@link TOLERANCE.ANGULAR}
+ * @returns `true` if vectors are parallel within tolerance.
+ */
 Vector2Base.isParallel = function (
  a: ReadonlyVector2,
  b: ReadonlyVector2,
- epsilon: number = EPSILON,
+ epsilon: number = TOLERANCE.ANGULAR,
 ): boolean {
- return Math.abs(a.x * b.y - a.y * b.x) <= Math.max(epsilon, EPSILON);
+ return Math.abs(a.x * b.y - a.y * b.x) <= epsilon;
 };
 
+/**
+ * Tests whether vectors `a` and `b` are perpendicular within angular tolerance.
+ * 
+ * @param a - First vector.
+ * @param b - Second vector.
+ * @param epsilon - Angular tolerance. @defaultValue {@link TOLERANCE.ANGULAR}
+ * @returns `true` if vectors are perpendicular within tolerance.
+ */
 Vector2Base.isPerpendicular = function (
  a: ReadonlyVector2,
  b: ReadonlyVector2,
- epsilon: number = EPSILON,
+ epsilon: number = TOLERANCE.ANGULAR,
 ): boolean {
- return Math.abs(a.x * b.x + a.y * b.y) <= Math.max(epsilon, EPSILON);
+ return Math.abs(a.x * b.x + a.y * b.y) <= epsilon;
 };
 
 // Utility methods
+
+/**
+ * Computes a hash code for the vector.
+ * 
+ * @param v - Vector to hash.
+ * @returns Integer hash code suitable for hash tables.
+ */
 Vector2Base.hashCode = function (v: ReadonlyVector2): number {
  const xInt = Math.round(v.x * 1e6) & 0xffff;
  const yInt = Math.round(v.y * 1e6) & 0xffff;
@@ -638,6 +546,15 @@ Vector2Base.hashCode = function (v: ReadonlyVector2): number {
 };
 
 // Factory methods
+
+/**
+ * Alloc-free variant writing into `outVector`.
+ * 
+ * @param string - String representation to parse.
+ * @param outVector - Destination vector to receive the result.
+ * @returns `outVector`.
+ * @throws {Error} If format is invalid.
+ */
 Vector2Base.parse = function (string: string, outVector?: Vector2Base): Vector2Base {
  const out = outVector ?? new Vector2Base();
  const parts = string.split(',').map((s) => parseFloat(s.trim()));
@@ -649,18 +566,37 @@ Vector2Base.parse = function (string: string, outVector?: Vector2Base): Vector2B
  return out.set(parts[0]!, parts[1]!);
 };
 
+/**
+ * Alloc-free variant writing into `outVector`.
+ * 
+ * @param outVector - Destination vector to receive the result.
+ * @returns `outVector`.
+ */
 Vector2Base.random = function (outVector?: Vector2Base): Vector2Base {
  const out = outVector ?? new Vector2Base();
  const angle = Math.random() * Math.PI * 2;
  return out.set(Math.cos(angle), Math.sin(angle));
 };
 
+/**
+ * Alloc-free variant writing into `outVector`.
+ * 
+ * @param radius - Circle radius.
+ * @param outVector - Destination vector to receive the result.
+ * @returns `outVector`.
+ */
 Vector2Base.randomOnCircle = function (radius: number = 1, outVector?: Vector2Base): Vector2Base {
  const out = outVector ?? new Vector2Base();
  const a = Math.random() * Math.PI * 2;
  return out.set(Math.cos(a) * radius, Math.sin(a) * radius);
 };
 
+/**
+ * Alloc-free variant writing into `outVector`.
+ * 
+ * @param outVector - Destination vector to receive the result.
+ * @returns `outVector`.
+ */
 Vector2Base.randomInUnitCircle = function (outVector?: Vector2Base): Vector2Base {
  const out = outVector ?? new Vector2Base();
  const r = Math.sqrt(Math.random()); // sqrt(u) → uniform area

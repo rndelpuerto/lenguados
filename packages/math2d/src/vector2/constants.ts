@@ -7,7 +7,7 @@
 
 import { Vector2Base } from './base';
 import { freezeVector2 } from './helpers';
-import { EPSILON } from '../scalar';
+import { TOLERANCE } from '../constants/tolerance-types';
 
 /**
  * Static Vector2 constants for common values.
@@ -24,8 +24,8 @@ export const VECTOR2_CONSTANTS = {
  /** The all-(-1) vector `(−1, −1)`. */
  NEGATIVE_ONE_VECTOR: freezeVector2(new Vector2Base(-1, -1)),
 
- /** The `(EPSILON, EPSILON)` vector. */
- EPSILON_VECTOR: freezeVector2(new Vector2Base(EPSILON, EPSILON)),
+ /** The `(LINEAR_EPSILON, LINEAR_EPSILON)` vector. */
+ EPSILON_VECTOR: freezeVector2(new Vector2Base(TOLERANCE.LINEAR, TOLERANCE.LINEAR)),
 
  /** The `( +∞, +∞ )` vector. */
  INFINITY_VECTOR: freezeVector2(

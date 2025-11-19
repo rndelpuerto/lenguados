@@ -6,7 +6,7 @@
 
 import { Vector2Base } from './base';
 import type { ReadonlyVector2 } from './factories';
-import { EPSILON } from '../scalar';
+import { TOLERANCE } from '../constants/tolerance-types';
 import { areNearEqual, isNearZero } from '../core-utils/tolerance';
 
 // Module augmentation to add missing core static methods
@@ -64,7 +64,7 @@ Vector2Base.negate = function (v: ReadonlyVector2, outVector?: Vector2Base): Vec
 };
 
 /**
- * Safe scalar division. If |`s`| ≤ {@link EPSILON}, returns `(0,0)`.
+ * Safe scalar division. If |`s`| ≤ {@link TOLERANCE.LINEAR}, returns `(0,0)`.
  * 
  * @param v - Vector to divide.
  * @param s - Scalar divisor.
@@ -76,7 +76,7 @@ Vector2Base.divideScalarSafe = function (
   outVector?: Vector2Base
 ): Vector2Base {
   const out = outVector ?? new Vector2Base();
-  if (Math.abs(s) <= EPSILON) return out.set(0, 0);
+  if (Math.abs(s) <= TOLERANCE.LINEAR) return out.set(0, 0);
   return out.set(v.x / s, v.y / s);
 };
 
@@ -100,7 +100,7 @@ Vector2Base.normalize = function (v: ReadonlyVector2, outVector?: Vector2Base): 
  * Safe normalization. If `v` has zero length, returns `(0,0)`.
  * 
  * @param v - Vector to normalize.
- * @param tolerance - Zero-length tolerance. @defaultValue {@link EPSILON}
+ * @param tolerance - Zero-length tolerance. @defaultValue {@link TOLERANCE.LINEAR}
  * @returns A new {@link Vector2Base} containing the safe normalization.
  */
 Vector2Base.normalizeSafe = function (
@@ -113,10 +113,10 @@ Vector2Base.normalizeSafe = function (
   let out: Vector2Base;
   
   if (toleranceOrOut instanceof Vector2Base) {
-    tolerance = EPSILON;
+    tolerance = TOLERANCE.LINEAR;
     out = toleranceOrOut;
   } else {
-    tolerance = toleranceOrOut ?? EPSILON;
+    tolerance = toleranceOrOut ?? TOLERANCE.LINEAR;
     out = outVector ?? new Vector2Base();
   }
   
@@ -160,7 +160,7 @@ Vector2Base.setLength = function (
  * 
  * @param v - Source vector.
  * @param newLength - Desired magnitude (non-negative).
- * @param tolerance - Zero-length tolerance. @defaultValue {@link EPSILON}
+ * @param tolerance - Zero-length tolerance. @defaultValue {@link TOLERANCE.LINEAR}
  * @returns A new {@link Vector2Base} with safe length.
  */
 Vector2Base.setLengthSafe = function (
@@ -174,10 +174,10 @@ Vector2Base.setLengthSafe = function (
   let out: Vector2Base;
   
   if (toleranceOrOut instanceof Vector2Base) {
-    tolerance = EPSILON;
+    tolerance = TOLERANCE.LINEAR;
     out = toleranceOrOut;
   } else {
-    tolerance = toleranceOrOut ?? EPSILON;
+    tolerance = toleranceOrOut ?? TOLERANCE.LINEAR;
     out = outVector ?? new Vector2Base();
   }
   
@@ -214,7 +214,7 @@ Vector2Base.reflect = function (
  * 
  * @param v - Incident vector.
  * @param normal - Normal (need not be unitary).
- * @param tolerance - Zero-length tolerance. @defaultValue {@link EPSILON}
+ * @param tolerance - Zero-length tolerance. @defaultValue {@link TOLERANCE.LINEAR}
  * @returns A new {@link Vector2Base} equal to the safe reflection.
  */
 Vector2Base.reflectSafe = function (
@@ -228,10 +228,10 @@ Vector2Base.reflectSafe = function (
   let out: Vector2Base;
   
   if (toleranceOrOut instanceof Vector2Base) {
-    tolerance = EPSILON;
+    tolerance = TOLERANCE.LINEAR;
     out = toleranceOrOut;
   } else {
-    tolerance = toleranceOrOut ?? EPSILON;
+    tolerance = toleranceOrOut ?? TOLERANCE.LINEAR;
     out = outVector ?? new Vector2Base();
   }
   
@@ -280,11 +280,11 @@ Vector2Base.isZero = function (v: ReadonlyVector2): boolean {
  * Tests whether both components are within `tolerance` of `0`.
  * 
  * @param v - Vector to test.
- * @param tolerance - Non-negative tolerance. @defaultValue {@link EPSILON}
+ * @param tolerance - Non-negative tolerance. @defaultValue {@link TOLERANCE.LINEAR}
  * @returns `true` if `|x| ≤ tolerance` and `|y| ≤ tolerance`; otherwise `false`.
  * @throws {RangeError} If `tolerance < 0`.
  */
-Vector2Base.nearZero = function (v: ReadonlyVector2, tolerance: number = EPSILON): boolean {
+Vector2Base.nearZero = function (v: ReadonlyVector2, tolerance: number = TOLERANCE.LINEAR): boolean {
   if (tolerance < 0) {
     throw new RangeError('Vector2.nearZero: tolerance must be non-negative');
   }
@@ -307,14 +307,14 @@ Vector2Base.equals = function (a: ReadonlyVector2, b: ReadonlyVector2): boolean 
  * 
  * @param a - First vector.
  * @param b - Second vector.
- * @param tolerance - Non-negative tolerance. @defaultValue {@link EPSILON}
+ * @param tolerance - Non-negative tolerance. @defaultValue {@link TOLERANCE.LINEAR}
  * @returns `true` if both component differences are within `tolerance`; otherwise `false`.
  * @throws {RangeError} If `tolerance < 0`.
  */
 Vector2Base.nearEquals = function (
   a: ReadonlyVector2,
   b: ReadonlyVector2,
-  tolerance: number = EPSILON
+  tolerance: number = TOLERANCE.LINEAR
 ): boolean {
   if (tolerance < 0) {
     throw new RangeError('Vector2.nearEquals: tolerance must be non-negative');

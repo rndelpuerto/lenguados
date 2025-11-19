@@ -7,7 +7,8 @@
 
 import { Vector2Base } from './base';
 import type { ReadonlyVector2 } from './factories';
-import { clamp as clampNumber, EPSILON } from '../scalar';
+import { clamp as clampNumber } from '../scalar';
+import { TOLERANCE } from '../constants/tolerance-types';
 
 declare module './base' {
  // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -151,7 +152,7 @@ Vector2Base.slerp = function (
  const theta = Math.acos(clampedDot);
 
  // For very small angles, use linear interpolation
- if (Math.abs(theta) < EPSILON) {
+ if (Math.abs(theta) < TOLERANCE.ANGULAR) {
   return Vector2Base.lerp(a, b, t, out);
  }
 

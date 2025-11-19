@@ -7,7 +7,8 @@
 
 import { Vector2Base } from './base';
 import type { ReadonlyVector2 } from './factories';
-import { clamp as clampNumber, EPSILON } from '../scalar';
+import { clamp as clampNumber } from '../scalar';
+import { TOLERANCE } from '../constants/tolerance-types';
 
 declare module './base' {
  // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -76,7 +77,7 @@ declare module './base' {
 
   /**
    * Safe projection that returns zero vector if `b` is degenerate.
-   * @param tolerance - Optional tolerance for zero length check (defaults to EPSILON)
+   * @param tolerance - Optional tolerance for zero length check (defaults to LINEAR_EPSILON)
    */
   function projectSafe(a: ReadonlyVector2, b: ReadonlyVector2): Vector2Base;
   function projectSafe(a: ReadonlyVector2, b: ReadonlyVector2, outVector: Vector2Base): Vector2Base;
@@ -174,7 +175,7 @@ Vector2Base.projectSafe = function (
  } else {
   // Overload: projectSafe(a, b, outVector?, tolerance?)
   out = outVectorOrTolerance ?? new Vector2Base();
-  tol = tolerance ?? EPSILON;
+  tol = tolerance ?? TOLERANCE.LINEAR;
  }
  
  const lengthSqB = Vector2Base.lengthSq(b);

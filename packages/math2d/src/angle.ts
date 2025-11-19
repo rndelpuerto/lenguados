@@ -16,7 +16,8 @@
  */
 
 import { wrap } from './numeric';
-import { PI, TAU, DEG2RAD, RAD2DEG, EPSILON } from './scalar';
+import { PI, TAU, DEG2RAD, RAD2DEG } from './scalar';
+import { TOLERANCE } from './constants/tolerance-types';
 
 /* =============================================================================
  * Conversions
@@ -172,10 +173,10 @@ export function distanceDegrees(a: number, b: number): number {
  * Angle equality under wrap: true if shortest-arc distance ≤ eps.
  * @param {number} a - Radians.
  * @param {number} b - Radians.
- * @param {number} [eps=EPSILON]
+ * @param {number} [eps=ANGULAR_EPSILON]
  * @returns {boolean} True if shortest-arc distance ≤ eps.
  */
-export function equalsRadians(a: number, b: number, eps: number = EPSILON): boolean {
+export function equalsRadians(a: number, b: number, eps: number = TOLERANCE.ANGULAR): boolean {
  return distanceRadians(a, b) <= eps;
 }
 
@@ -183,10 +184,10 @@ export function equalsRadians(a: number, b: number, eps: number = EPSILON): bool
  * Angle equality under wrap (degrees): true if shortest-arc distance ≤ eps.
  * @param {number} a - Degrees.
  * @param {number} b - Degrees.
- * @param {number} [eps=EPSILON]
+ * @param {number} [eps=ANGULAR_EPSILON]
  * @returns {boolean} True if shortest-arc distance ≤ eps.
  */
-export function equalsDegrees(a: number, b: number, eps: number = EPSILON): boolean {
+export function equalsDegrees(a: number, b: number, eps: number = TOLERANCE.ANGULAR): boolean {
  return distanceDegrees(a, b) <= eps;
 }
 
@@ -245,7 +246,7 @@ export function sweepLengthCCWDegrees(aDeg: number, bDeg: number): number {
  * @param {number} b
  * @param {number} theta
  * @param {boolean} [inclusive=true]
- * @param {number} [eps=EPSILON]
+ * @param {number} [eps=ANGULAR_EPSILON]
  * @returns {boolean} True if `theta` lies on the CCW arc from `a` to `b`.
  */
 export function isBetweenCCW(
@@ -253,7 +254,7 @@ export function isBetweenCCW(
  b: number,
  theta: number,
  inclusive: boolean = true,
- eps: number = EPSILON,
+ eps: number = TOLERANCE.ANGULAR,
 ): boolean {
  const sweep = sweepLengthCCW(a, b);
  const off = normalizeRadiansPositive(theta - a);
@@ -267,7 +268,7 @@ export function isBetweenCCW(
  * @param {number} bDeg
  * @param {number} thetaDeg
  * @param {boolean} [inclusive=true]
- * @param {number} [eps=EPSILON]
+ * @param {number} [eps=ANGULAR_EPSILON]
  * @returns {boolean} True if `theta` lies on the CCW arc from `a` to `b`.
  */
 export function isBetweenCCWDegrees(
@@ -275,7 +276,7 @@ export function isBetweenCCWDegrees(
  bDeg: number,
  thetaDeg: number,
  inclusive: boolean = true,
- eps: number = EPSILON,
+ eps: number = TOLERANCE.ANGULAR,
 ): boolean {
  const sweep = sweepLengthCCWDegrees(aDeg, bDeg);
  const off = normalizeDegreesPositive(thetaDeg - aDeg);
@@ -380,7 +381,7 @@ export function meanRadians(angles: number[], weights?: number[]): number {
  }
 
  const mag = Math.hypot(sumCos, sumSin);
- if (mag <= EPSILON) return NaN;
+ if (mag <= TOLERANCE.LINEAR) return NaN;
 
  return Math.atan2(sumSin, sumCos); // Already in [-PI, PI)
 }
@@ -410,14 +411,14 @@ export function meanDegrees(degAngles: number[], weights?: number[]): number {
  * @param {number} theta
  * @param {number} stepRad
  * @param {number} [originRad=0]
- * @param {number} [eps=EPSILON]
+ * @param {number} [eps=ANGULAR_EPSILON]
  * @returns {number} Snapped angle, in [originRad-PI, originRad+PI).
  */
 export function snapRadians(
  theta: number,
  stepRad: number,
  originRad: number = 0,
- eps: number = EPSILON,
+ eps: number = TOLERANCE.ANGULAR,
 ): number {
  const s = Math.abs(stepRad);
  if (s <= eps) return normalizeAroundRadians(theta, originRad);
@@ -434,14 +435,14 @@ export function snapRadians(
  * @param {number} deg
  * @param {number} stepDeg
  * @param {number} [originDeg=0]
- * @param {number} [eps=EPSILON]
+ * @param {number} [eps=ANGULAR_EPSILON]
  * @returns {number} Snapped angle, in [originDeg-PI, originDeg+PI).
  */
 export function snapDegrees(
  deg: number,
  stepDeg: number,
  originDeg: number = 0,
- eps: number = EPSILON,
+ eps: number = TOLERANCE.ANGULAR,
 ): number {
  return toDegrees(snapRadians(toRadians(deg), toRadians(stepDeg), toRadians(originDeg), eps));
 }
