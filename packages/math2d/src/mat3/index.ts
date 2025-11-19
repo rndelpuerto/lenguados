@@ -31,9 +31,9 @@ import './instance/mutators';
 import './instance/arithmetic';
 import './instance/transforms';
 import './instance/affine';
+import './instance/comparison';
+import './instance/conversion';
 // TODO: Add remaining instance modules as they are created:
-// import './instance/comparison';
-// import './instance/conversion';
 // import './instance/geometry';
 
 // Import constants and apply to Mat3Base
