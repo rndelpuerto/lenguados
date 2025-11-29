@@ -1,0 +1,1153 @@
+# src/index.ts
+
+## References
+
+### abs
+
+Re-exports [abs](../../@lenguados/math2d/auxiliary/scalar/functions/abs.md)
+
+---
+
+### angleAverage
+
+Re-exports [angleAverage](../../@lenguados/math2d/auxiliary/angle/functions/angleAverage.md)
+
+---
+
+### angleBisector
+
+Re-exports [angleBisector](../../@lenguados/math2d/auxiliary/angle/functions/angleBisector.md)
+
+---
+
+### angleDifference
+
+Re-exports [angleDifference](../../@lenguados/math2d/auxiliary/angle/functions/angleDifference.md)
+
+---
+
+### angleDistance
+
+Re-exports [angleDistance](../../@lenguados/math2d/auxiliary/angle/functions/angleDistance.md)
+
+---
+
+### angleFromVectors
+
+Re-exports [angleFromVectors](../../@lenguados/math2d/auxiliary/angle/functions/angleFromVectors.md)
+
+---
+
+### anglesNearEqual
+
+Re-exports [anglesNearEqual](../../@lenguados/math2d/auxiliary/angle/functions/anglesNearEqual.md)
+
+---
+
+### AngleUnwrapper
+
+Re-exports [AngleUnwrapper](../../@lenguados/math2d/auxiliary/angle/classes/AngleUnwrapper.md)
+
+---
+
+### angleWeightedAverage
+
+Re-exports [angleWeightedAverage](../../@lenguados/math2d/auxiliary/angle/functions/angleWeightedAverage.md)
+
+---
+
+### AtanTable
+
+Re-exports [AtanTable](../../@lenguados/math2d/deterministic/tables/classes/AtanTable.md)
+
+---
+
+### bezierInterp
+
+Re-exports [bezierInterp](../../@lenguados/math2d/auxiliary/scalar/functions/bezierInterp.md)
+
+---
+
+### catmullRomInterp
+
+Re-exports [catmullRomInterp](../../@lenguados/math2d/auxiliary/scalar/functions/catmullRomInterp.md)
+
+---
+
+### clamp
+
+Re-exports [clamp](../../@lenguados/math2d/auxiliary/scalar/functions/clamp.md)
+
+---
+
+### clampAngle
+
+Re-exports [clampAngle](../../@lenguados/math2d/auxiliary/angle/functions/clampAngle.md)
+
+---
+
+### compensatedProduct
+
+Re-exports [compensatedProduct](../../@lenguados/math2d/auxiliary/numeric/functions/compensatedProduct.md)
+
+---
+
+### CompensatedResult
+
+Re-exports [CompensatedResult](../../@lenguados/math2d/deterministic/interfaces/CompensatedResult.md)
+
+---
+
+### Complex
+
+Re-exports [Complex](../../index.ts/classes/Complex.md)
+
+---
+
+### Constants
+
+Re-exports [Constants](../../@lenguados/math2d/auxiliary/scalar/variables/Constants.md)
+
+---
+
+### CosineTable
+
+Re-exports [CosineTable](../../@lenguados/math2d/deterministic/tables/classes/CosineTable.md)
+
+---
+
+### DEFAULT_POOL_CONFIGS
+
+Re-exports [DEFAULT_POOL_CONFIGS](../../@lenguados/math2d/pool/variables/DEFAULT_POOL_CONFIGS.md)
+
+---
+
+### DEFAULT_TABLE_SIZE
+
+Re-exports [DEFAULT_TABLE_SIZE](../../@lenguados/math2d/deterministic/tables/variables/DEFAULT_TABLE_SIZE.md)
+
+---
+
+### DEFAULT_VALIDATION_CONFIG
+
+Re-exports [DEFAULT_VALIDATION_CONFIG](../../@lenguados/math2d/validation/variables/DEFAULT_VALIDATION_CONFIG.md)
+
+---
+
+### DEG_TO_RAD
+
+Re-exports [DEG_TO_RAD](../../@lenguados/math2d/auxiliary/scalar/variables/DEG_TO_RAD.md)
+
+---
+
+### degreesToRadians
+
+Re-exports [degreesToRadians](../../@lenguados/math2d/auxiliary/angle/functions/degreesToRadians.md)
+
+---
+
+### DeterministicMath
+
+Re-exports [DeterministicMath](../../@lenguados/math2d/deterministic/classes/DeterministicMath.md)
+
+---
+
+### DeterministicOptions
+
+Re-exports [DeterministicOptions](../../@lenguados/math2d/deterministic/interfaces/DeterministicOptions.md)
+
+---
+
+### E
+
+Re-exports [E](../../@lenguados/math2d/auxiliary/scalar/variables/E.md)
+
+---
+
+### ensureFinite
+
+Re-exports [ensureFinite](../../@lenguados/math2d/auxiliary/numeric/functions/ensureFinite.md)
+
+---
+
+### EPSILON
+
+Re-exports [EPSILON](../../@lenguados/math2d/auxiliary/scalar/variables/EPSILON.md)
+
+---
+
+### EPSILON_SQUARED
+
+Re-exports [EPSILON_SQUARED](../../@lenguados/math2d/auxiliary/scalar/variables/EPSILON_SQUARED.md)
+
+---
+
+### ErrorBounds
+
+Re-exports [ErrorBounds](../../@lenguados/math2d/validation/interfaces/ErrorBounds.md)
+
+---
+
+### ErrorPropagation
+
+Re-exports [ErrorPropagation](../../@lenguados/math2d/validation/classes/ErrorPropagation.md)
+
+---
+
+### euclideanMod
+
+Re-exports [euclideanMod](../../@lenguados/math2d/auxiliary/numeric/functions/euclideanMod.md)
+
+---
+
+### exponentialInterp
+
+Re-exports [exponentialInterp](../../@lenguados/math2d/auxiliary/scalar/functions/exponentialInterp.md)
+
+---
+
+### floorDivide
+
+Re-exports [floorDivide](../../@lenguados/math2d/auxiliary/scalar/functions/floorDivide.md)
+
+---
+
+### flooredMod
+
+Re-exports [flooredMod](../../@lenguados/math2d/auxiliary/numeric/functions/flooredMod.md)
+
+---
+
+### fract
+
+Re-exports [fract](../../@lenguados/math2d/auxiliary/numeric/functions/fract.md)
+
+---
+
+### freezeVector2
+
+Re-exports [freezeVector2](../../@lenguados/math2d/core/functions/freezeVector2.md)
+
+---
+
+### getValidationConfig
+
+Re-exports [getValidationConfig](../../@lenguados/math2d/validation/functions/getValidationConfig.md)
+
+---
+
+### GOLDEN_RATIO
+
+Re-exports [GOLDEN_RATIO](../../@lenguados/math2d/auxiliary/scalar/variables/GOLDEN_RATIO.md)
+
+---
+
+### GRAD_TO_RAD
+
+Re-exports [GRAD_TO_RAD](../../@lenguados/math2d/auxiliary/scalar/variables/GRAD_TO_RAD.md)
+
+---
+
+### gradiansToRadians
+
+Re-exports [gradiansToRadians](../../@lenguados/math2d/auxiliary/angle/functions/gradiansToRadians.md)
+
+---
+
+### greaterThan
+
+Re-exports [greaterThan](../../@lenguados/math2d/auxiliary/scalar/functions/greaterThan.md)
+
+---
+
+### HALF_PI
+
+Re-exports [HALF_PI](../../@lenguados/math2d/auxiliary/scalar/variables/HALF_PI.md)
+
+---
+
+### inRange
+
+Re-exports [inRange](../../@lenguados/math2d/auxiliary/scalar/functions/inRange.md)
+
+---
+
+### Interval
+
+Re-exports [Interval](../../index.ts/classes/Interval.md)
+
+---
+
+### inverseLerp
+
+Re-exports [inverseLerp](../../@lenguados/math2d/auxiliary/scalar/functions/inverseLerp.md)
+
+---
+
+### isAngleBetween
+
+Re-exports [isAngleBetween](../../@lenguados/math2d/auxiliary/angle/functions/isAngleBetween.md)
+
+---
+
+### isDenormal
+
+Re-exports [isDenormal](../../@lenguados/math2d/auxiliary/numeric/functions/isDenormal.md)
+
+---
+
+### isFinite
+
+Re-exports [isFinite](../../@lenguados/math2d/auxiliary/numeric/functions/isFinite.md)
+
+---
+
+### isInfinity
+
+Re-exports [isInfinity](../../@lenguados/math2d/auxiliary/numeric/functions/isInfinity.md)
+
+---
+
+### isInRange
+
+Re-exports [isInRange](../../@lenguados/math2d/auxiliary/numeric/functions/isInRange.md)
+
+---
+
+### isNaN
+
+Re-exports [isNaN](../../@lenguados/math2d/auxiliary/numeric/functions/isNaN.md)
+
+---
+
+### isNearOne
+
+Re-exports [isNearOne](../../@lenguados/math2d/auxiliary/scalar/functions/isNearOne.md)
+
+---
+
+### isNearZero
+
+Re-exports [isNearZero](../../@lenguados/math2d/auxiliary/scalar/functions/isNearZero.md)
+
+---
+
+### isNegativeInfinity
+
+Re-exports [isNegativeInfinity](../../@lenguados/math2d/auxiliary/numeric/functions/isNegativeInfinity.md)
+
+---
+
+### isPositiveInfinity
+
+Re-exports [isPositiveInfinity](../../@lenguados/math2d/auxiliary/numeric/functions/isPositiveInfinity.md)
+
+---
+
+### isQuadrantAngle
+
+Re-exports [isQuadrantAngle](../../@lenguados/math2d/auxiliary/angle/functions/isQuadrantAngle.md)
+
+---
+
+### isSafeInteger
+
+Re-exports [isSafeInteger](../../@lenguados/math2d/auxiliary/numeric/functions/isSafeInteger.md)
+
+---
+
+### isVector2Like
+
+Re-exports [isVector2Like](../../@lenguados/math2d/types/functions/isVector2Like.md)
+
+---
+
+### lerp
+
+Re-exports [lerp](../../@lenguados/math2d/auxiliary/scalar/functions/lerp.md)
+
+---
+
+### lerpAngle
+
+Re-exports [lerpAngle](../../@lenguados/math2d/auxiliary/angle/functions/lerpAngle.md)
+
+---
+
+### lerpUnclamped
+
+Re-exports [lerpUnclamped](../../@lenguados/math2d/auxiliary/scalar/functions/lerpUnclamped.md)
+
+---
+
+### lessThan
+
+Re-exports [lessThan](../../@lenguados/math2d/auxiliary/scalar/functions/lessThan.md)
+
+---
+
+### LN_10
+
+Re-exports [LN_10](../../@lenguados/math2d/auxiliary/scalar/variables/LN_10.md)
+
+---
+
+### LN_2
+
+Re-exports [LN_2](../../@lenguados/math2d/auxiliary/scalar/variables/LN_2.md)
+
+---
+
+### LookupTable
+
+Re-exports [LookupTable](../../@lenguados/math2d/deterministic/tables/classes/LookupTable.md)
+
+---
+
+### loop
+
+Re-exports [loop](../../@lenguados/math2d/auxiliary/scalar/functions/loop.md)
+
+---
+
+### Matrix2
+
+Re-exports [Matrix2](../../index.ts/classes/Matrix2.md)
+
+---
+
+### Matrix2Batch
+
+Re-exports [Matrix2Batch](../../@lenguados/math2d/batch/classes/Matrix2Batch.md)
+
+---
+
+### Matrix3
+
+Re-exports [Matrix3](../../index.ts/classes/Matrix3.md)
+
+---
+
+### max
+
+Re-exports [max](../../@lenguados/math2d/auxiliary/scalar/functions/max.md)
+
+---
+
+### MAX_SAFE_INTEGER_F64
+
+Re-exports [MAX_SAFE_INTEGER_F64](../../@lenguados/math2d/auxiliary/scalar/variables/MAX_SAFE_INTEGER_F64.md)
+
+---
+
+### min
+
+Re-exports [min](../../@lenguados/math2d/auxiliary/scalar/functions/min.md)
+
+---
+
+### MIN_SAFE_DIVISOR
+
+Re-exports [MIN_SAFE_DIVISOR](../../@lenguados/math2d/auxiliary/numeric/variables/MIN_SAFE_DIVISOR.md)
+
+---
+
+### mirror
+
+Re-exports [mirror](../../@lenguados/math2d/auxiliary/numeric/functions/mirror.md)
+
+---
+
+### mix
+
+Re-exports [mix](../../@lenguados/math2d/auxiliary/scalar/functions/mix.md)
+
+---
+
+### mod
+
+Re-exports [mod](../../@lenguados/math2d/auxiliary/scalar/functions/mod.md)
+
+---
+
+### nearEquals
+
+Re-exports [nearEquals](../../@lenguados/math2d/auxiliary/scalar/functions/nearEquals.md)
+
+---
+
+### neumaierSum
+
+Re-exports [neumaierSum](../../@lenguados/math2d/auxiliary/numeric/functions/neumaierSum.md)
+
+---
+
+### normalizeDegrees
+
+Re-exports [normalizeDegrees](../../@lenguados/math2d/auxiliary/angle/functions/normalizeDegrees.md)
+
+---
+
+### normalizeDegreesPositive
+
+Re-exports [normalizeDegreesPositive](../../@lenguados/math2d/auxiliary/angle/functions/normalizeDegreesPositive.md)
+
+---
+
+### normalizeRadians
+
+Re-exports [normalizeRadians](../../@lenguados/math2d/auxiliary/angle/functions/normalizeRadians.md)
+
+---
+
+### normalizeRadiansAround
+
+Re-exports [normalizeRadiansAround](../../@lenguados/math2d/auxiliary/angle/functions/normalizeRadiansAround.md)
+
+---
+
+### normalizeRadiansPositive
+
+Re-exports [normalizeRadiansPositive](../../@lenguados/math2d/auxiliary/angle/functions/normalizeRadiansPositive.md)
+
+---
+
+### NumericalValidationError
+
+Re-exports [NumericalValidationError](../../@lenguados/math2d/validation/classes/NumericalValidationError.md)
+
+---
+
+### NumericalValidator
+
+Re-exports [NumericalValidator](../../@lenguados/math2d/validation/classes/NumericalValidator.md)
+
+---
+
+### ObjectPool
+
+Re-exports [ObjectPool](../../@lenguados/math2d/pool/classes/ObjectPool.md)
+
+---
+
+### PI
+
+Re-exports [PI](../../@lenguados/math2d/auxiliary/scalar/variables/PI.md)
+
+---
+
+### pingPong
+
+Re-exports [pingPong](../../@lenguados/math2d/auxiliary/scalar/functions/pingPong.md)
+
+---
+
+### Poolable
+
+Re-exports [Poolable](../../@lenguados/math2d/pool/interfaces/Poolable.md)
+
+---
+
+### PoolConfig
+
+Re-exports [PoolConfig](../../@lenguados/math2d/pool/interfaces/PoolConfig.md)
+
+---
+
+### PoolContext
+
+Re-exports [PoolContext](../../@lenguados/math2d/pool/classes/PoolContext.md)
+
+---
+
+### PoolFactory
+
+Re-exports [PoolFactory](../../@lenguados/math2d/pool/type-aliases/PoolFactory.md)
+
+---
+
+### PoolManager
+
+Re-exports [PoolManager](../../@lenguados/math2d/pool/classes/PoolManager.md)
+
+---
+
+### PoolStats
+
+Re-exports [PoolStats](../../@lenguados/math2d/pool/interfaces/PoolStats.md)
+
+---
+
+### PrecisionMath
+
+Re-exports [PrecisionMath](../../@lenguados/math2d/deterministic/classes/PrecisionMath.md)
+
+---
+
+### principalAngle
+
+Re-exports [principalAngle](../../@lenguados/math2d/auxiliary/angle/functions/principalAngle.md)
+
+---
+
+### quantize
+
+Re-exports [quantize](../../@lenguados/math2d/auxiliary/numeric/functions/quantize.md)
+
+---
+
+### QUARTER_PI
+
+Re-exports [QUARTER_PI](../../@lenguados/math2d/auxiliary/scalar/variables/QUARTER_PI.md)
+
+---
+
+### Quaternion2
+
+Re-exports [Quaternion2](../../index.ts/classes/Quaternion2.md)
+
+---
+
+### RAD_TO_DEG
+
+Re-exports [RAD_TO_DEG](../../@lenguados/math2d/auxiliary/scalar/variables/RAD_TO_DEG.md)
+
+---
+
+### RAD_TO_GRAD
+
+Re-exports [RAD_TO_GRAD](../../@lenguados/math2d/auxiliary/scalar/variables/RAD_TO_GRAD.md)
+
+---
+
+### RAD_TO_TURN
+
+Re-exports [RAD_TO_TURN](../../@lenguados/math2d/auxiliary/scalar/variables/RAD_TO_TURN.md)
+
+---
+
+### radiansToDegrees
+
+Re-exports [radiansToDegrees](../../@lenguados/math2d/auxiliary/angle/functions/radiansToDegrees.md)
+
+---
+
+### radiansToGradians
+
+Re-exports [radiansToGradians](../../@lenguados/math2d/auxiliary/angle/functions/radiansToGradians.md)
+
+---
+
+### radiansToTurns
+
+Re-exports [radiansToTurns](../../@lenguados/math2d/auxiliary/angle/functions/radiansToTurns.md)
+
+---
+
+### ReadonlyComplex
+
+Re-exports [ReadonlyComplex](../../@lenguados/math2d/core/type-aliases/ReadonlyComplex.md)
+
+---
+
+### ReadonlyInterval
+
+Re-exports [ReadonlyInterval](../../@lenguados/math2d/core/type-aliases/ReadonlyInterval.md)
+
+---
+
+### ReadonlyMatrix2
+
+Re-exports [ReadonlyMatrix2](../../@lenguados/math2d/core/type-aliases/ReadonlyMatrix2.md)
+
+---
+
+### ReadonlyMatrix3
+
+Re-exports [ReadonlyMatrix3](../../@lenguados/math2d/core/type-aliases/ReadonlyMatrix3.md)
+
+---
+
+### ReadonlyQuaternion2
+
+Re-exports [ReadonlyQuaternion2](../../@lenguados/math2d/core/type-aliases/ReadonlyQuaternion2.md)
+
+---
+
+### ReadonlyRotation2
+
+Re-exports [ReadonlyRotation2](../../@lenguados/math2d/core/type-aliases/ReadonlyRotation2.md)
+
+---
+
+### ReadonlyTransform2
+
+Re-exports [ReadonlyTransform2](../../@lenguados/math2d/core/type-aliases/ReadonlyTransform2.md)
+
+---
+
+### ReadonlyVector2
+
+Re-exports [ReadonlyVector2](../../@lenguados/math2d/core/type-aliases/ReadonlyVector2.md)
+
+---
+
+### reflectAngle
+
+Re-exports [reflectAngle](../../@lenguados/math2d/auxiliary/angle/functions/reflectAngle.md)
+
+---
+
+### relativeEquals
+
+Re-exports [relativeEquals](../../@lenguados/math2d/auxiliary/scalar/functions/relativeEquals.md)
+
+---
+
+### remap
+
+Re-exports [remap](../../@lenguados/math2d/auxiliary/scalar/functions/remap.md)
+
+---
+
+### repeat
+
+Re-exports [repeat](../../@lenguados/math2d/auxiliary/numeric/functions/repeat.md)
+
+---
+
+### resetValidationConfig
+
+Re-exports [resetValidationConfig](../../@lenguados/math2d/validation/functions/resetValidationConfig.md)
+
+---
+
+### robustSum
+
+Re-exports [robustSum](../../@lenguados/math2d/auxiliary/numeric/functions/robustSum.md)
+
+---
+
+### Rotation2
+
+Re-exports [Rotation2](../../index.ts/classes/Rotation2.md)
+
+---
+
+### Rotation2Like
+
+Re-exports [Rotation2Like](../../@lenguados/math2d/core/interfaces/Rotation2Like.md)
+
+---
+
+### roundAwayFromZero
+
+Re-exports [roundAwayFromZero](../../@lenguados/math2d/auxiliary/scalar/functions/roundAwayFromZero.md)
+
+---
+
+### RoundingControl
+
+Re-exports [RoundingControl](../../@lenguados/math2d/deterministic/classes/RoundingControl.md)
+
+---
+
+### RoundingMode
+
+Re-exports [RoundingMode](../../@lenguados/math2d/deterministic/enumerations/RoundingMode.md)
+
+---
+
+### roundToInt
+
+Re-exports [roundToInt](../../@lenguados/math2d/auxiliary/numeric/functions/roundToInt.md)
+
+---
+
+### roundToMultiple
+
+Re-exports [roundToMultiple](../../@lenguados/math2d/auxiliary/numeric/functions/roundToMultiple.md)
+
+---
+
+### roundToPlaces
+
+Re-exports [roundToPlaces](../../@lenguados/math2d/auxiliary/numeric/functions/roundToPlaces.md)
+
+---
+
+### roundToPowerOfTwo
+
+Re-exports [roundToPowerOfTwo](../../@lenguados/math2d/auxiliary/numeric/functions/roundToPowerOfTwo.md)
+
+---
+
+### safeAcos
+
+Re-exports [safeAcos](../../@lenguados/math2d/auxiliary/numeric/functions/safeAcos.md)
+
+---
+
+### safeAsin
+
+Re-exports [safeAsin](../../@lenguados/math2d/auxiliary/numeric/functions/safeAsin.md)
+
+---
+
+### safeDivide
+
+Re-exports [safeDivide](../../@lenguados/math2d/auxiliary/numeric/functions/safeDivide.md)
+
+---
+
+### safeLerp
+
+Re-exports [safeLerp](../../@lenguados/math2d/auxiliary/numeric/functions/safeLerp.md)
+
+---
+
+### safeLog
+
+Re-exports [safeLog](../../@lenguados/math2d/auxiliary/numeric/functions/safeLog.md)
+
+---
+
+### safeMod
+
+Re-exports [safeMod](../../@lenguados/math2d/auxiliary/numeric/functions/safeMod.md)
+
+---
+
+### safePow
+
+Re-exports [safePow](../../@lenguados/math2d/auxiliary/numeric/functions/safePow.md)
+
+---
+
+### safeReciprocal
+
+Re-exports [safeReciprocal](../../@lenguados/math2d/auxiliary/numeric/functions/safeReciprocal.md)
+
+---
+
+### safeSqrt
+
+Re-exports [safeSqrt](../../@lenguados/math2d/auxiliary/numeric/functions/safeSqrt.md)
+
+---
+
+### sanitizeNumber
+
+Re-exports [sanitizeNumber](../../@lenguados/math2d/auxiliary/numeric/functions/sanitizeNumber.md)
+
+---
+
+### saturate
+
+Re-exports [saturate](../../@lenguados/math2d/auxiliary/scalar/functions/saturate.md)
+
+---
+
+### saturateSigned
+
+Re-exports [saturateSigned](../../@lenguados/math2d/auxiliary/scalar/functions/saturateSigned.md)
+
+---
+
+### setValidationConfig
+
+Re-exports [setValidationConfig](../../@lenguados/math2d/validation/functions/setValidationConfig.md)
+
+---
+
+### sign
+
+Re-exports [sign](../../@lenguados/math2d/auxiliary/scalar/functions/sign.md)
+
+---
+
+### SimdDetector
+
+Re-exports [SimdDetector](../../@lenguados/math2d/batch/simd/classes/SimdDetector.md)
+
+---
+
+### SimdSupportState
+
+Re-exports [SimdSupportState](../../@lenguados/math2d/batch/simd/enumerations/SimdSupportState.md)
+
+---
+
+### sinCos
+
+Re-exports [sinCos](../../@lenguados/math2d/auxiliary/angle/functions/sinCos.md)
+
+---
+
+### SinCos
+
+Re-exports [SinCos](../../@lenguados/math2d/auxiliary/angle/interfaces/SinCos.md)
+
+---
+
+### sinCosNormalized
+
+Re-exports [sinCosNormalized](../../@lenguados/math2d/auxiliary/angle/functions/sinCosNormalized.md)
+
+---
+
+### SinCosTable
+
+Re-exports [SinCosTable](../../@lenguados/math2d/deterministic/tables/classes/SinCosTable.md)
+
+---
+
+### SineTable
+
+Re-exports [SineTable](../../@lenguados/math2d/deterministic/tables/classes/SineTable.md)
+
+---
+
+### slerpAngle
+
+Re-exports [slerpAngle](../../@lenguados/math2d/auxiliary/angle/functions/slerpAngle.md)
+
+---
+
+### smootherStep
+
+Re-exports [smootherStep](../../@lenguados/math2d/auxiliary/scalar/functions/smootherStep.md)
+
+---
+
+### smoothStep
+
+Re-exports [smoothStep](../../@lenguados/math2d/auxiliary/scalar/functions/smoothStep.md)
+
+---
+
+### smoothStepAngle
+
+Re-exports [smoothStepAngle](../../@lenguados/math2d/auxiliary/angle/functions/smoothStepAngle.md)
+
+---
+
+### snapToGrid
+
+Re-exports [snapToGrid](../../@lenguados/math2d/auxiliary/numeric/functions/snapToGrid.md)
+
+---
+
+### springAngle
+
+Re-exports [springAngle](../../@lenguados/math2d/auxiliary/angle/functions/springAngle.md)
+
+---
+
+### springInterp
+
+Re-exports [springInterp](../../@lenguados/math2d/auxiliary/scalar/functions/springInterp.md)
+
+---
+
+### SQRT_2
+
+Re-exports [SQRT_2](../../@lenguados/math2d/auxiliary/scalar/variables/SQRT_2.md)
+
+---
+
+### SQRT_HALF
+
+Re-exports [SQRT_HALF](../../@lenguados/math2d/auxiliary/scalar/variables/SQRT_HALF.md)
+
+---
+
+### step
+
+Re-exports [step](../../@lenguados/math2d/auxiliary/scalar/functions/step.md)
+
+---
+
+### TAU
+
+Re-exports [TAU](../../@lenguados/math2d/auxiliary/scalar/variables/TAU.md)
+
+---
+
+### Transform2
+
+Re-exports [Transform2](../../index.ts/classes/Transform2.md)
+
+---
+
+### Transform2Batch
+
+Re-exports [Transform2Batch](../../@lenguados/math2d/batch/classes/Transform2Batch.md)
+
+---
+
+### Transform2Like
+
+Re-exports [Transform2Like](../../@lenguados/math2d/types/interfaces/Transform2Like.md)
+
+---
+
+### trunc
+
+Re-exports [trunc](../../@lenguados/math2d/auxiliary/numeric/functions/trunc.md)
+
+---
+
+### truncatedMod
+
+Re-exports [truncatedMod](../../@lenguados/math2d/auxiliary/numeric/functions/truncatedMod.md)
+
+---
+
+### TURN_TO_RAD
+
+Re-exports [TURN_TO_RAD](../../@lenguados/math2d/auxiliary/scalar/variables/TURN_TO_RAD.md)
+
+---
+
+### turnsToRadians
+
+Re-exports [turnsToRadians](../../@lenguados/math2d/auxiliary/angle/functions/turnsToRadians.md)
+
+---
+
+### TwoProductResult
+
+Re-exports [TwoProductResult](../../@lenguados/math2d/deterministic/interfaces/TwoProductResult.md)
+
+---
+
+### TwoSumResult
+
+Re-exports [TwoSumResult](../../@lenguados/math2d/deterministic/interfaces/TwoSumResult.md)
+
+---
+
+### TypePools
+
+Re-exports [TypePools](../../@lenguados/math2d/pool/classes/TypePools.md)
+
+---
+
+### unwrapAngles
+
+Re-exports [unwrapAngles](../../@lenguados/math2d/auxiliary/angle/functions/unwrapAngles.md)
+
+---
+
+### unwrapAnglesInPlace
+
+Re-exports [unwrapAnglesInPlace](../../@lenguados/math2d/auxiliary/angle/functions/unwrapAnglesInPlace.md)
+
+---
+
+### ValidationConfig
+
+Re-exports [ValidationConfig](../../@lenguados/math2d/validation/interfaces/ValidationConfig.md)
+
+---
+
+### ValidationMode
+
+Re-exports [ValidationMode](../../@lenguados/math2d/validation/enumerations/ValidationMode.md)
+
+---
+
+### Vector2
+
+Re-exports [Vector2](../../index.ts/classes/Vector2.md)
+
+---
+
+### Vector2Batch
+
+Re-exports [Vector2Batch](../../@lenguados/math2d/batch/classes/Vector2Batch.md)
+
+---
+
+### Vector2BatchSimd
+
+Re-exports [Vector2BatchSimd](../../@lenguados/math2d/batch/simd/classes/Vector2BatchSimd.md)
+
+---
+
+### Vector2BatchSimdImplementation
+
+Re-exports [Vector2BatchSimdImplementation](../../@lenguados/math2d/batch/simd/interfaces/Vector2BatchSimdImplementation.md)
+
+---
+
+### withComplex
+
+Re-exports [withComplex](../../@lenguados/math2d/pool/functions/withComplex.md)
+
+---
+
+### withInterval
+
+Re-exports [withInterval](../../@lenguados/math2d/pool/functions/withInterval.md)
+
+---
+
+### withMatrix2
+
+Re-exports [withMatrix2](../../@lenguados/math2d/pool/functions/withMatrix2.md)
+
+---
+
+### withMatrix3
+
+Re-exports [withMatrix3](../../@lenguados/math2d/pool/functions/withMatrix3.md)
+
+---
+
+### withQuaternion2
+
+Re-exports [withQuaternion2](../../@lenguados/math2d/pool/functions/withQuaternion2.md)
+
+---
+
+### withRotation2
+
+Re-exports [withRotation2](../../@lenguados/math2d/pool/functions/withRotation2.md)
+
+---
+
+### withTransform2
+
+Re-exports [withTransform2](../../@lenguados/math2d/pool/functions/withTransform2.md)
+
+---
+
+### withValidationConfig
+
+Re-exports [withValidationConfig](../../@lenguados/math2d/validation/functions/withValidationConfig.md)
+
+---
+
+### withVector2
+
+Re-exports [withVector2](../../@lenguados/math2d/pool/functions/withVector2.md)
+
+---
+
+### withVector2s
+
+Re-exports [withVector2s](../../@lenguados/math2d/pool/functions/withVector2s.md)
+
+---
+
+### wrap
+
+Re-exports [wrap](../../@lenguados/math2d/auxiliary/numeric/functions/wrap.md)
+
+---
+
+### wrapAngle
+
+Re-exports [wrapAngle](../../@lenguados/math2d/auxiliary/angle/functions/wrapAngle.md)

@@ -1,0 +1,264 @@
+/**
+ * @file auxiliary/scalar/interpolation.ts
+ * @module @lenguados/math2d/auxiliary/scalar
+ * @description Scalar interpolation operations
+ */
+
+import { saturate } from './arithmetic';
+import { EPSILON } from './constants';
+
+/**
+ * Linear interpolation between two values.
+ * @param a - Start value
+ * @param b - End value
+ * @param t - Interpolation factor (usually 0-1)
+ * @returns Interpolated value
+ *
+ * @remarks
+ * The interpolation factor t is not clamped. Use saturate(t) if needed.
+ * For t=0 returns a, for t=1 returns b.
+ *
+ * @example
+ * ```typescript
+ * lerp(0, 10, 0.5);    // 5
+ * lerp(0, 10, 0);      // 0
+ * lerp(0, 10, 1);      // 10
+ * lerp(0, 10, 2);      // 20 (extrapolation)
+ * ```
+ *
+ * @category Interpolation
+ * @since 1.0.0
+ */
+export function lerp(a: number, b: number, t: number): number {
+ return a + (b - a) * t;
+}
+
+/**
+ * Unclamped linear interpolation.
+ * Same as lerp but explicitly documented as unclamped.
+ * @param a - Start value
+ * @param b - End value
+ * @param t - Interpolation factor
+ * @returns Interpolated value (can extrapolate)
+ *
+ * @category Interpolation
+ * @since 1.0.0
+ */
+export function lerpUnclamped(a: number, b: number, t: number): number {
+ return lerp(a, b, t);
+}
+
+/**
+ * Inverse linear interpolation.
+ * Returns t such that lerp(a, b, t) = value.
+ * @param a - Start value
+ * @param b - End value
+ * @param value - Value to find t for
+ * @returns Interpolation factor t
+ *
+ * @example
+ * ```typescript
+ * inverseLerp(0, 10, 5);     // 0.5
+ * inverseLerp(0, 10, 0);     // 0
+ * inverseLerp(0, 10, 10);    // 1
+ * inverseLerp(0, 10, 20);    // 2 (extrapolation)
+ * ```
+ *
+ * @category Interpolation
+ * @since 1.0.0
+ */
+export function inverseLerp(a: number, b: number, value: number): number {
+ const denominator = b - a;
+ if (Math.abs(denominator) < EPSILON) {
+  return 0; // Avoid division by zero
+ }
+ return (value - a) / denominator;
+}
+
+/**
+ * Cubic Hermite interpolation (smooth step).
+ * Maps [edge0, edge1] to [0, 1] with smooth curve.
+ * @param edge0 - Lower edge
+ * @param edge1 - Upper edge
+ * @param x - Input value
+ * @returns Result in [0, 1]
+ *
+ * @remarks
+ * Produces a smooth transition with zero derivatives at the boundaries.
+ * Typically used for eased interpolation between 0 and 1.
+ *
+ * @example
+ * ```typescript
+ * smoothStep(0, 1, 0.5);     // 0.5
+ * smoothStep(0, 10, 5);      // 0.5
+ * smoothStep(0, 10, -5);     // 0 (clamped)
+ * smoothStep(0, 10, 15);     // 1 (clamped)
+ * ```
+ *
+ * @category Interpolation
+ * @since 1.0.0
+ */
+export function smoothStep(edge0: number, edge1: number, x: number): number {
+ const t = saturate((x - edge0) / (edge1 - edge0));
+ return t * t * (3 - 2 * t);
+}
+
+/**
+ * Quintic Hermite interpolation (smoother step).
+ * Even smoother than smoothStep.
+ * @param edge0 - Lower edge
+ * @param edge1 - Upper edge
+ * @param x - Input value
+ * @returns Result in [0, 1]
+ *
+ * @remarks
+ * Produces an even smoother transition than smoothStep with zero
+ * first and second derivatives at the boundaries.
+ *
+ * @example
+ * ```typescript
+ * smootherStep(0, 1, 0.5);   // 0.5
+ * smootherStep(0, 10, 5);    // 0.5
+ * ```
+ *
+ * @category Interpolation
+ * @since 1.0.0
+ */
+export function smootherStep(edge0: number, edge1: number, x: number): number {
+ const t = saturate((x - edge0) / (edge1 - edge0));
+ return t * t * t * (t * (t * 6 - 15) + 10);
+}
+
+/**
+ * Exponential interpolation.
+ * Useful for zoom, scale animations.
+ * @param a - Start value
+ * @param b - End value
+ * @param t - Interpolation factor [0, 1]
+ * @param power - Exponential power (default: 2)
+ * @returns Interpolated value
+ *
+ * @example
+ * ```typescript
+ * exponentialInterp(0, 100, 0.5, 2);    // 25 (quadratic ease-in)
+ * exponentialInterp(0, 100, 0.5, 3);    // 12.5 (cubic ease-in)
+ * ```
+ *
+ * @category Interpolation
+ * @since 1.0.0
+ */
+export function exponentialInterp(a: number, b: number, t: number, power: number = 2): number {
+ const tPow = Math.pow(saturate(t), power);
+ return lerp(a, b, tPow);
+}
+
+/**
+ * Spring-like interpolation.
+ * Overshoots and settles.
+ * @param current - Current value
+ * @param target - Target value
+ * @param velocity - Current velocity
+ * @param stiffness - Spring stiffness (0-1)
+ * @param damping - Damping factor (0-1)
+ * @param dt - Time step
+ * @returns Object with new value and velocity
+ *
+ * @example
+ * ```typescript
+ * let pos = 0, vel = 0;
+ * const result = springInterp(pos, 100, vel, 0.1, 0.9, 0.016);
+ * pos = result.value;
+ * vel = result.velocity;
+ * ```
+ *
+ * @category Interpolation
+ * @since 1.0.0
+ */
+export function springInterp(
+ current: number,
+ target: number,
+ velocity: number,
+ stiffness: number,
+ damping: number,
+ dt: number,
+): { value: number; velocity: number } {
+ const force = (target - current) * stiffness;
+ const dampingForce = -velocity * damping;
+ const acceleration = force + dampingForce;
+
+ const newVelocity = velocity + acceleration * dt;
+ const newValue = current + newVelocity * dt;
+
+ return {
+  value: newValue,
+  velocity: newVelocity,
+ };
+}
+
+/**
+ * Bezier interpolation using control points.
+ * @param t - Parameter [0, 1]
+ * @param p0 - Start point
+ * @param p1 - Control point 1
+ * @param p2 - Control point 2
+ * @param p3 - End point
+ * @returns Interpolated value
+ *
+ * @remarks
+ * Uses the cubic Bezier formula for smooth curves.
+ *
+ * @example
+ * ```typescript
+ * // Ease-out curve
+ * bezierInterp(0.5, 0, 0.58, 1, 1);
+ * ```
+ *
+ * @category Interpolation
+ * @since 1.0.0
+ */
+export function bezierInterp(t: number, p0: number, p1: number, p2: number, p3: number): number {
+ const t2 = t * t;
+ const t3 = t2 * t;
+ const mt = 1 - t;
+ const mt2 = mt * mt;
+ const mt3 = mt2 * mt;
+
+ return mt3 * p0 + 3 * mt2 * t * p1 + 3 * mt * t2 * p2 + t3 * p3;
+}
+
+/**
+ * Catmull-Rom spline interpolation.
+ * @param t - Parameter [0, 1]
+ * @param p0 - Point before start
+ * @param p1 - Start point
+ * @param p2 - End point
+ * @param p3 - Point after end
+ * @returns Interpolated value
+ *
+ * @remarks
+ * Passes through p1 and p2, using p0 and p3 for tangent calculation.
+ *
+ * @example
+ * ```typescript
+ * // Smooth interpolation through points
+ * catmullRomInterp(0.5, 0, 1, 2, 3);  // 1.5
+ * ```
+ *
+ * @category Interpolation
+ * @since 1.0.0
+ */
+export function catmullRomInterp(
+ t: number,
+ p0: number,
+ p1: number,
+ p2: number,
+ p3: number,
+): number {
+ const t2 = t * t;
+ const t3 = t2 * t;
+
+ const v0 = (p2 - p0) * 0.5;
+ const v1 = (p3 - p1) * 0.5;
+
+ return p1 + v0 * t + (3 * (p2 - p1) - 2 * v0 - v1) * t2 + (2 * (p1 - p2) + v0 + v1) * t3;
+}

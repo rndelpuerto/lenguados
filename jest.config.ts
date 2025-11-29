@@ -82,7 +82,7 @@ const baseConfig: JestConfigWithTsJest = {
    displayName: 'node',
    testEnvironment: 'node',
    roots: ['<rootDir>/packages'],
-   testMatch: ['**/src/**/__tests__/**/*.node.spec.ts'],
+   testMatch: ['**/test/**/*.node.spec.ts'],
    transform: sharedTransform,
   },
 
@@ -91,7 +91,7 @@ const baseConfig: JestConfigWithTsJest = {
    displayName: 'jsdom',
    testEnvironment: 'jsdom',
    roots: ['<rootDir>/packages'],
-   testMatch: ['**/src/**/__tests__/**/*.dom.spec.ts'],
+   testMatch: ['**/test/**/*.dom.spec.ts'],
    // Polyfills and custom matchers (canvas, ResizeObserver, jest‑dom, etc.)
    setupFilesAfterEnv: ['<rootDir>/jest.dom.setup.ts'],
    transform: sharedTransform,

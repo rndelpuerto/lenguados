@@ -12,13 +12,20 @@
  * All functions ensure proper distributions:
  * - Points in/on circles use polar coordinates with sqrt(r) for uniform area distribution
  * - Rotations use uniform angle distribution
+ *
+ * @remarks
+ * All trigonometric functions use {@link DeterministicMath} for cross-platform
+ * reproducibility when using a {@link SeededRandomSource}.
  */
 
-import { Mat2 } from '../mat2';
-import { Rot2 } from '../rot2';
-import { TAU } from '../scalar';
-import { Transform2 } from '../transform2';
-import { Vector2, ReadonlyVector2 } from '../vector2';
+import { safeSqrt } from '../auxiliary/numeric/safety';
+import { TAU } from '../auxiliary/scalar/constants';
+import { lerp } from '../auxiliary/scalar/interpolation';
+import { Matrix2 as Mat2 } from '../core/matrix2';
+import { Rotation2 as Rot2 } from '../core/rotation2';
+import { Transform2 } from '../core/transform2';
+import { Vector2, type ReadonlyVector2 } from '../core/vector2';
+import { DeterministicMath } from '../deterministic/deterministic-math';
 
 import { RandomSource, defaultRandomSource } from './random-source';
 
@@ -55,7 +62,7 @@ export function randomUnitVector2(
  source: RandomSource = defaultRandomSource,
 ): Vector2 {
  const angle = source.next() * TAU;
- return out.set(Math.cos(angle), Math.sin(angle));
+ return out.set(DeterministicMath.cos(angle), DeterministicMath.sin(angle));
 }
 
 /**
@@ -74,7 +81,7 @@ export function randomOnCircle(
  source: RandomSource = defaultRandomSource,
 ): Vector2 {
  const angle = source.next() * TAU;
- return out.set(Math.cos(angle) * radius, Math.sin(angle) * radius);
+ return out.set(DeterministicMath.cos(angle) * radius, DeterministicMath.sin(angle) * radius);
 }
 
 /**
@@ -92,9 +99,9 @@ export function randomInUnitCircle(
  source: RandomSource = defaultRandomSource,
 ): Vector2 {
  // sqrt(r) gives uniform distribution by area
- const r = Math.sqrt(source.next());
+ const r = safeSqrt(source.next());
  const angle = source.next() * TAU;
- return out.set(Math.cos(angle) * r, Math.sin(angle) * r);
+ return out.set(DeterministicMath.cos(angle) * r, DeterministicMath.sin(angle) * r);
 }
 
 /**
@@ -111,7 +118,7 @@ export function randomInCircle(
  source: RandomSource = defaultRandomSource,
 ): Vector2 {
  randomInUnitCircle(out, source);
- return out.multiplyScalar(radius);
+ return out.scale(radius);
 }
 
 /**
@@ -160,8 +167,8 @@ export function randomTransform2(
  out = new Transform2(),
  source: RandomSource = defaultRandomSource,
 ): Transform2 {
- randomInUnitCircle(out.p, source);
- randomRotation2(out.r, source);
+ randomInUnitCircle(out.position, source);
+ out.rotation = source.next() * TAU;
  return out;
 }
 
@@ -267,10 +274,16 @@ export function randomGaussianVector2(
  const u1 = source.next();
  const u2 = source.next();
 
- const mag = standardDeviation * Math.sqrt(-2.0 * Math.log(u1));
- const angle = 2.0 * Math.PI * u2;
+ // Use safe version to avoid log(0) = -Infinity
+ // Clamp u1 to avoid edge case where u1 = 0
+ const safeU1 = u1 <= 0 ? Number.EPSILON : u1;
+ const mag = standardDeviation * safeSqrt(-2.0 * Math.log(safeU1));
+ const angle = TAU * u2;
 
- return out.set(mean + mag * Math.cos(angle), mean + mag * Math.sin(angle));
+ return out.set(
+  mean + mag * DeterministicMath.cos(angle),
+  mean + mag * DeterministicMath.sin(angle),
+ );
 }
 
 /**
@@ -289,7 +302,7 @@ export function randomOnSegment(
  source: RandomSource = defaultRandomSource,
 ): Vector2 {
  const t = source.next();
- return Vector2.lerp(start, end, t, out);
+ return out.set(lerp(start.x, end.x, t), lerp(start.y, end.y, t));
 }
 
 /**
@@ -351,17 +364,20 @@ export function randomOnTriangle(
  const ca = Vector2.distance(c, a);
  const perimeter = ab + bc + ca;
 
- // Random position along perimeter
+ // Random position along perimeter (single random call for consistent distribution)
  const t = source.next() * perimeter;
 
  if (t < ab) {
-  // On edge AB
-  return randomOnSegment(a, b, out, source);
+  // On edge AB - calculate position directly instead of calling randomOnSegment
+  const edgeT = t / ab;
+  return out.set(lerp(a.x, b.x, edgeT), lerp(a.y, b.y, edgeT));
  } else if (t < ab + bc) {
   // On edge BC
-  return randomOnSegment(b, c, out, source);
+  const edgeT = (t - ab) / bc;
+  return out.set(lerp(b.x, c.x, edgeT), lerp(b.y, c.y, edgeT));
  } else {
   // On edge CA
-  return randomOnSegment(c, a, out, source);
+  const edgeT = (t - ab - bc) / ca;
+  return out.set(lerp(c.x, a.x, edgeT), lerp(c.y, a.y, edgeT));
  }
 }

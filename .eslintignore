@@ -9,5 +9,8 @@ docs/.docusaurus/**
 docs/build/**
 docs/docs/api/**
 
+# Review scripts
+docs/reviews/check_vector2_api.js
+
 # tools/package
 tools/package/**

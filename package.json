@@ -48,7 +48,8 @@
   "version": "lerna version --conventional-commits --yes",
   "version:alpha": "npm run prerelease && lerna version prerelease --conventional-commits --preid alpha --yes --no-changelog",
   "version:beta": "npm run prerelease && lerna version prerelease --conventional-commits --preid beta --yes",
-  "watch": "cross-env NODE_ENV=development lerna run watch"
+  "watch": "cross-env NODE_ENV=development lerna run watch",
+  "benchmark": "node --loader ts-node/esm benchmarks/run-benchmarks.ts"
  },
  "husky": {
   "config": "husky.config.js"
@@ -114,6 +115,7 @@
   "stylelint-config-standard": "^38.0.0",
   "stylelint-order": "^6.0.4",
   "stylelint-prettier": "^5.0.3",
+  "tinybench": "^2.9.0",
   "ts-jest": "^29.3.2",
   "ts-node": "^10.9.2",
   "typedoc": "^0.28.3"

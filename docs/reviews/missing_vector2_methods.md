@@ -5,6 +5,7 @@
 After thorough analysis comparing the original Vector2 implementation with the refactored version, the following methods appear to be missing or need verification:
 
 ### Static Methods Missing:
+
 1. **manhattanLength** - Found in geometry/metrics.ts but not in Vector2 class
 2. **manhattanDistance** - Should be present for API completeness
 3. **setScalar** - For setting both components to same value
@@ -22,10 +23,11 @@ After thorough analysis comparing the original Vector2 implementation with the r
 15. **swap** - Swap x and y components
 16. **mod** - Component-wise modulo
 17. **modScalar** - Scalar modulo
-18. **addScaledVector** - Add scaled vector (a + b*s)
+18. **addScaledVector** - Add scaled vector (a + b\*s)
 19. **parseVector** - Parse from string
 
 ### Instance Methods Missing:
+
 1. **manhattanLength** - Instance version
 2. **manhattanDistanceTo** - Manhattan distance to another vector
 3. **crossScalarRight** - this × scalar

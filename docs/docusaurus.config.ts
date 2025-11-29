@@ -25,6 +25,14 @@ const config: Config = {
 
  onBrokenLinks: 'warn',
  onBrokenMarkdownLinks: 'warn',
+ markdown: {
+  format: 'md',
+  mdx1Compat: {
+   comments: true,
+   admonitions: true,
+   headingIds: true,
+  },
+ },
 
  // Even if you don't use internationalization, you can use this field to set
  // useful metadata like html lang. For example, if your site is Chinese, you
@@ -79,6 +87,9 @@ const config: Config = {
     exclude: ['**/__tests__/**/*'],
     readme: 'none',
     hideBreadcrumbs: true,
+    skipErrorChecking: true,
+    plugin: ['typedoc-plugin-markdown'],
+    disableSources: true,
    },
   ],
  ],

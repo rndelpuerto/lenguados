@@ -41,6 +41,7 @@ export default defineFlatConfig([
    'docs/.docusaurus/**',
    'docs/build/**',
    'docs/docs/api/**',
+   'docs/reviews/**',
    'tools/package/**',
   ],
  },
@@ -91,6 +92,12 @@ export default defineFlatConfig([
    ...jestPlg.configs.recommended.rules,
    // Allow implicit return types only in tests.
    '@typescript-eslint/explicit-function-return-type': 'off',
+   'jest/expect-expect': [
+    'error',
+    {
+     assertFunctionNames: ['expect', 'expectVecClose'],
+    },
+   ],
   },
  },
 
@@ -144,6 +151,10 @@ export default defineFlatConfig([
       div: { divide: true },
      },
      extendDefaultReplacements: true,
+     allowList: {
+      mod: true,
+      Mod: true,
+     },
     },
    ],
 

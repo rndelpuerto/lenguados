@@ -11,18 +11,19 @@
  * - Flexible input format acceptance
  * - Consistent error handling
  * - Support for both creation and in-place parsing (out parameter)
+ *
+ * @remarks
+ * All trigonometric operations use {@link DeterministicMath} for
+ * cross-platform reproducibility.
  */
 
-import { Mat2 } from '../mat2';
-import type { ReadonlyMat2 } from '../mat2';
-import { Mat3 } from '../mat3';
-import type { ReadonlyMat3 } from '../mat3';
-import type { ReadonlyRot2 } from '../rot2';
-import { Rot2 } from '../rot2';
-import type { ReadonlyTransform2 } from '../transform2';
-import { Transform2 } from '../transform2';
-import type { ReadonlyVector2 } from '../vector2';
-import { Vector2 } from '../vector2';
+import { DEG_TO_RAD, RAD_TO_DEG } from '../auxiliary/scalar/constants';
+import { Matrix2 as Mat2, type ReadonlyMatrix2 as ReadonlyMat2 } from '../core/matrix2';
+import { Matrix3 as Mat3, type ReadonlyMatrix3 as ReadonlyMat3 } from '../core/matrix3';
+import { Rotation2 as Rot2, type ReadonlyRotation2 as ReadonlyRot2 } from '../core/rotation2';
+import { Transform2, type ReadonlyTransform2 } from '../core/transform2';
+import { Vector2, type ReadonlyVector2 } from '../core/vector2';
+import { DeterministicMath } from '../deterministic/deterministic-math';
 
 /**
  * Parses a string representation of a 2D vector.
@@ -32,7 +33,7 @@ import { Vector2 } from '../vector2';
  * - "x y" (space-separated)
  * - "(x,y)" (with parentheses)
  * - "[x,y]" (with brackets)
- * - "{x:n, y:n}" (JSON-like)
+ * - "\{x:n, y:n\}" (JSON-like)
  *
  * @param str - String to parse
  * @param out - Optional output vector (default: new Vector2)
@@ -110,7 +111,7 @@ export function formatVector2(
  * - "angle" (single number in radians)
  * - "90deg" (with degree suffix)
  * - "c,s" (cosine,sine components)
- * - "{c:n, s:n}" (JSON-like)
+ * - "\{c:n, s:n\}" (JSON-like)
  *
  * @param str - String to parse
  * @param out - Optional output rotation (default: new Rot2)
@@ -136,7 +137,7 @@ export function parseRot2(string_: string, out = new Rot2()): Rot2 {
  if (trimmed.endsWith('deg')) {
   const degrees = parseFloat(trimmed.slice(0, -3));
   if (!isNaN(degrees)) {
-   return Rot2.fromAngle((degrees * Math.PI) / 180, out);
+   return Rot2.fromAngle(degrees * DEG_TO_RAD, out);
   }
  }
 
@@ -176,11 +177,11 @@ export function formatRot2(
 ): string {
  switch (format) {
   case 'radians': {
-   const angle = Math.atan2(r.s, r.c);
+   const angle = DeterministicMath.atan2(r.s, r.c);
    return precision !== undefined ? angle.toFixed(precision) : angle.toString();
   }
   case 'degrees': {
-   const angle = (Math.atan2(r.s, r.c) * 180) / Math.PI;
+   const angle = DeterministicMath.atan2(r.s, r.c) * RAD_TO_DEG;
    const string_ = precision !== undefined ? angle.toFixed(precision) : angle.toString();
    return `${string_}deg`;
   }
@@ -423,8 +424,9 @@ export function parseTransform2(string_: string, out = new Transform2()): Transf
      typeof object.r.c === 'number' &&
      typeof object.r.s === 'number'
     ) {
-     out.p.set(object.p.x, object.p.y);
-     out.r.set(object.r.c, object.r.s);
+     out.position.set(object.p.x, object.p.y);
+     out.rotation = DeterministicMath.atan2(object.r.s, object.r.c);
+     // Scale defaults to 1 if not present, or we could parse it if format supports it
      return out;
     }
    }
@@ -443,7 +445,9 @@ export function parseTransform2(string_: string, out = new Transform2()): Transf
   throw new Error(`parseTransform2: expected 4 values, got ${values.length} in "${string_}"`);
  }
 
- return Transform2.fromValues(values[0]!, values[1]!, values[2]!, values[3]!, out);
+ // Format is px, py, c, s
+ const rotation = DeterministicMath.atan2(values[3]!, values[2]!);
+ return Transform2.fromValues(values[0]!, values[1]!, rotation, 1, 1, out);
 }
 
 /**
@@ -460,14 +464,16 @@ export function formatTransform2(
  precision?: number,
 ): string {
  const fmt = (n: number) => (precision !== undefined ? n.toFixed(precision) : n.toString());
+ const c = DeterministicMath.cos(t.rotation);
+ const s = DeterministicMath.sin(t.rotation);
 
  switch (format) {
   case 'flat':
-   return `${fmt(t.p.x)},${fmt(t.p.y)},${fmt(t.r.c)},${fmt(t.r.s)}`;
+   return `${fmt(t.position.x)},${fmt(t.position.y)},${fmt(c)},${fmt(s)}`;
   case 'json':
    return JSON.stringify({
-    p: { x: parseFloat(fmt(t.p.x)), y: parseFloat(fmt(t.p.y)) },
-    r: { c: parseFloat(fmt(t.r.c)), s: parseFloat(fmt(t.r.s)) },
+    p: { x: parseFloat(fmt(t.position.x)), y: parseFloat(fmt(t.position.y)) },
+    r: { c: parseFloat(fmt(c)), s: parseFloat(fmt(s)) },
    });
  }
 }
