@@ -33,13 +33,9 @@
  * @internal
  */
 const DEFAULT_ENABLED = !(
- // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
- (
-  typeof globalThis !== 'undefined' &&
-  'process' in globalThis &&
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  globalThis.process?.env?.NODE_ENV === 'production'
- )
+ typeof globalThis !== 'undefined' &&
+ 'process' in globalThis &&
+ globalThis.process?.env?.NODE_ENV === 'production'
 );
 
 /**
