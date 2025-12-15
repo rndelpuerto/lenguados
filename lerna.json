@@ -13,7 +13,7 @@
    "allowBranch": ["main"],
    "conventionalCommits": true,
    "message": "chore(release): publish",
-   "ignoreChanges": ["**/tests/**", "*.md", "*.log"]
+   "ignoreChanges": ["**/test/**", "*.md", "*.log"]
   }
  }
 }

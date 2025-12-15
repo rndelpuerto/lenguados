@@ -99,7 +99,7 @@ const entryPoints = Object.freeze(
    rootEntry,
    ...INTERNALS_LIST.flatMap((dir) =>
     fg
-     .sync([`${dir}/**/*.ts`, `!${dir}/**/__tests__/**/*.ts`], { cwd: srcDir })
+     .sync([`${dir}/**/*.ts`, `!${dir}/**/test/**/*.ts`], { cwd: srcDir })
      .map((f) => path.join(srcDir, f)),
    ),
   ]),

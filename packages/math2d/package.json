@@ -37,6 +37,83 @@
     "import": "./main.mjs"
    }
   },
+  "./validation/assert": {
+   "types": "./lib/@types/validation/assert.d.ts",
+   "development": {
+    "require": "./lib/cjs/validation/assert.development.js",
+    "import": "./lib/esm/validation/assert.development.js"
+   },
+   "default": {
+    "require": "./lib/cjs/validation/assert.production.js",
+    "import": "./lib/esm/validation/assert.production.js"
+   }
+  },
+  "./deterministic/precision-math": {
+   "types": "./lib/@types/deterministic/precision-math.d.ts",
+   "development": {
+    "require": "./lib/cjs/deterministic/precision-math.development.js",
+    "import": "./lib/esm/deterministic/precision-math.development.js"
+   },
+   "default": {
+    "require": "./lib/cjs/deterministic/precision-math.production.js",
+    "import": "./lib/esm/deterministic/precision-math.production.js"
+   }
+  },
+  "./deterministic/rounding-control": {
+   "types": "./lib/@types/deterministic/rounding-control.d.ts",
+   "development": {
+    "require": "./lib/cjs/deterministic/rounding-control.development.js",
+    "import": "./lib/esm/deterministic/rounding-control.development.js"
+   },
+   "default": {
+    "require": "./lib/cjs/deterministic/rounding-control.production.js",
+    "import": "./lib/esm/deterministic/rounding-control.production.js"
+   }
+  },
+  "./utils/random": {
+   "types": "./lib/@types/utils/random.d.ts",
+   "development": {
+    "require": "./lib/cjs/utils/random.development.js",
+    "import": "./lib/esm/utils/random.development.js"
+   },
+   "default": {
+    "require": "./lib/cjs/utils/random.production.js",
+    "import": "./lib/esm/utils/random.production.js"
+   }
+  },
+  "./utils/random-source": {
+   "types": "./lib/@types/utils/random-source.d.ts",
+   "development": {
+    "require": "./lib/cjs/utils/random-source.development.js",
+    "import": "./lib/esm/utils/random-source.development.js"
+   },
+   "default": {
+    "require": "./lib/cjs/utils/random-source.production.js",
+    "import": "./lib/esm/utils/random-source.production.js"
+   }
+  },
+  "./utils/parse": {
+   "types": "./lib/@types/utils/parse.d.ts",
+   "development": {
+    "require": "./lib/cjs/utils/parse.development.js",
+    "import": "./lib/esm/utils/parse.development.js"
+   },
+   "default": {
+    "require": "./lib/cjs/utils/parse.production.js",
+    "import": "./lib/esm/utils/parse.production.js"
+   }
+  },
+  "./utils/performance": {
+   "types": "./lib/@types/utils/performance.d.ts",
+   "development": {
+    "require": "./lib/cjs/utils/performance.development.js",
+    "import": "./lib/esm/utils/performance.development.js"
+   },
+   "default": {
+    "require": "./lib/cjs/utils/performance.production.js",
+    "import": "./lib/esm/utils/performance.production.js"
+   }
+  },
   "./lib/*": {
    "types": "./lib/@types/*.d.ts",
    "require": "./lib/cjs/*",

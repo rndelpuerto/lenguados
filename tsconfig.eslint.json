@@ -5,8 +5,9 @@
   "packages/*/*.ts",
   "packages/*/src/**/*.ts",
   "@types/**/*.d.ts",
-  "packages/*/src/**/__tests__/**/*.ts",
-  "docs/**/*.ts"
+  "packages/*/test/**/*.ts",
+  "docs/**/*.ts",
+  "benchmarks/**/*.ts"
  ],
  "exclude": ["tools/package/**"]
 }

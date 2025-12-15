@@ -20,12 +20,8 @@
 
 - **Constants**: π, τ, EPSILON, degree↔radian factors.
 - **Scalar utilities**: clamp, sign, lerp, normalize, smoothStep, epsilonEquals, relativeEquals, saturate.
-<<<<<<< HEAD
 - **Vector2**: mutable, chainable 2‑D vectors with robust numerics, safe variants, and alloc‑free static helpers.
-- **Mat2**: 2×2 row‑major matrices (column‑vector convention) with rotation/scale/shear, algebra, inversion & solving.
-=======
-- **(Future modules)**: vectors, matrices, transforms, convex-hull, raycasting, pooling.
->>>>>>> origin/main
+- **Matrix2**: 2×2 row‑major matrices (column‑vector convention) with rotation/scale/shear, algebra, inversion & solving.
 
 ---
 
@@ -68,7 +64,6 @@ import {
 } from '@lenguados/math2d';
 ```
 
-<<<<<<< HEAD
 ### Vectors & Matrices
 
 ```ts
@@ -81,12 +76,12 @@ import {
  type ReadonlyVector2Like,
  type ReadonlyVector2,
 
- // Mat2 + helpers & types
- Mat2,
- freezeMat2,
- isMat2Like,
- type Mat2Like,
- type ReadonlyMat2,
+ // Matrix2 + helpers & types
+ Matrix2,
+ freezeMatrix2,
+ isMatrix2Like,
+ type Matrix2Like,
+ type ReadonlyMatrix2,
 } from '@lenguados/math2d';
 ```
 
@@ -102,8 +97,6 @@ import {
 >   Vector2.add(a, b, out); // writes into `out` instead of allocating
 >   ```
 
-=======
->>>>>>> origin/main
 ---
 
 ## Examples
@@ -156,7 +149,6 @@ console.log(relativeEquals(100, 100.5, 0.01)); // → true
 console.log(relativeEquals(100, 102, 0.01)); // → false
 ```
 
-<<<<<<< HEAD
 ### 2‑D vectors (Vector2)
 
 ```ts
@@ -168,7 +160,7 @@ console.log(p.length()); // 5
 
 // Mutable, chainable instance methods
 p.normalize()
- .multiplyScalar(10)
+ .scale(10)
  .rotate(Math.PI / 4);
 
 // Pure static helper with alloc‑free `out`
@@ -176,7 +168,7 @@ const a = new Vector2(1, 2);
 const b = new Vector2(5, -1);
 const sum = Vector2.add(a, b); // → new Vector2(6, 1)
 const out = new Vector2();
-Vector2.subtract?.Vector2.sub(a, b, out); // (alias isn't provided) // → out = (-4, 3)
+Vector2.subtract(a, b, out); // → out = (-4, 3)
 
 // Safe vs throwing variants
 const v = new Vector2(1, 1);
@@ -185,32 +177,30 @@ v.divideScalarSafe(0); // → (0,0)   (safe)
 
 > **Tip:** many operations also exist as _safe_ statics, e.g. `Vector2.divideSafe`, `Vector2.normalizeSafe`, etc.
 
-### 2×2 matrices (Mat2)
+### 2×2 matrices (Matrix2)
 
 ```ts
-import { Mat2, Vector2 } from '@lenguados/math2d';
+import { Matrix2, Vector2 } from '@lenguados/math2d';
 
 // Build a rotation and transform a vector (column vector convention)
-const R = Mat2.fromRotation(Math.PI / 2);
+const R = Matrix2.fromRotation(Math.PI / 2);
 const v = new Vector2(1, 0);
-const vRot = Mat2.transformVector(R, v); // → (0, 1)
+const vRot = Matrix2.transformVector(R, v); // → (0, 1)
 
 // Compose transforms (mutable & chainable)
-const M = new Mat2()
+const M = new Matrix2()
  .setRotation(Math.PI / 3)
  .scale(2, 1)
  .shear(0.1, 0.2);
 
 // Solve A·x = b
-const A = new Mat2(2, 1, 1, 3);
+const A = new Matrix2(2, 1, 1, 3);
 const b = new Vector2(5, 7);
-const x = Mat2.solve(A, b); // → solution vector
+const x = Matrix2.solve(A, b); // → solution vector
 ```
 
 > **Conventions:** Matrices are **row‑major** (`m00 m01; m10 m11`) and vectors are treated as **columns** when applying transforms: `v' = M · v`.
 
-=======
->>>>>>> origin/main
 ---
 
 ## Full Spec
@@ -232,8 +222,7 @@ const x = Mat2.solve(A, b); // → solution vector
 | **relativeEquals()** | `fn`     | Relative-tolerance float comparison (scaled by `max(1, \|x\|, \|y\|)`). |
 | **saturate()**       | `fn`     | Clamp to [0, 1].                                                        |
 
-<<<<<<< HEAD
-_(New in this release: **Vector2** and **Mat2**. Additional modules (Mat3, Transform, Geometry, Raycast, etc.) will be added in subsequent releases.)_
+_(New in this release: **Vector2** and **Matrix2**. Additional modules (Matrix3, Transform2, Geometry, Raycast, etc.) will be added in subsequent releases.)_
 
 ### Vector2 (class)
 
@@ -291,16 +280,16 @@ _(New in this release: **Vector2** and **Mat2**. Additional modules (Mat3, Trans
 - **Comparison & validation:** `isZero`, `nearZero(eps)`, `equals(v)`, `nearEquals(v,eps)`, `isUnit()`, `isFinite()`, `isParallelTo(v,eps)`, `isPerpendicularTo(v,eps)`.
 - **Conversion & representation:** `toJSON()`, `toObject()`, `toArray(out?,offset=0)`, iterator `[Symbol.iterator]`, `toString(precision?)`, `hashCode()`.
 
-### Mat2 (class, 2×2)
+### Matrix2 (class, 2×2)
 
 > **Summary:** Row‑major storage (`m00, m01, m10, m11`) with **column‑vector** transform semantics (`v' = M · v`). Includes full algebra, rotation/scale/shear builders, inversion (safe/tolerant), solving `A·x=b`, orthonormalization, and alloc‑free statics.
 
 **Types & helpers**
 
-- `interface Mat2Like { m00:number; m01:number; m10:number; m11:number }`
-- `type ReadonlyMat2 = Readonly<Mat2>`
-- `freezeMat2(m: Mat2): ReadonlyMat2` – permanently freeze a matrix instance.
-- `isMat2Like(subject: unknown): subject is Readonly<Mat2Like>`
+- `interface Matrix2Like { m00:number; m01:number; m10:number; m11:number }`
+- `type ReadonlyMatrix2 = Readonly<Matrix2>`
+- `freezeMatrix2(m: Matrix2): ReadonlyMatrix2` – permanently freeze a matrix instance.
+- `isMatrix2Like(subject: unknown): subject is Readonly<Matrix2Like>`
 
 **Static constants**
 
@@ -329,28 +318,48 @@ _(New in this release: **Vector2** and **Mat2**. Additional modules (Mat3, Trans
 - **Vectors & stability:** `transformVector(v)`, `transformVectorInto(v,out)`, `orthonormalize()` (Gram–Schmidt to nearest rotation).
 - **Comparison & validation:** `equals`, `nearEquals`, `isIdentity`, `isRotation`, `isFinite`, `isSingular`, `angle()` (≈ rotation).
 - **Conversion & representation:** `toJSON()`, `toObject()`, `toArray(out?,offset=0)`, iterator, `toString(precision?)`, `hashCode()`.
-=======
-_(Additional modules: Vector2, Mat2, Mat3, Transform, Geometry, Raycast, etc., will be added in subsequent releases.)_
->>>>>>> origin/main
 
 ---
 
 ## Changelog
 
-<<<<<<< HEAD
-All notable changes to this package are documented in [CHANGELOG.md](../../_media/CHANGELOG.md).
-=======
-All notable changes to this package are documented in [CHANGELOG.md](../../_media/CHANGELOG.md).  
->>>>>>> origin/main
+All notable changes to this package are documented in the [CHANGELOG](https://github.com/rndelpuerto/lenguados/blob/main/packages/math2d/CHANGELOG.md).
 Version numbering follows [SemVer](https://semver.org/).
 
 ## Modules
 
-- [index.ts](index.ts/index.md)
-<<<<<<< HEAD
-- [math2d/mat2](math2d/mat2/index.md)
-- [math2d/scalar](math2d/scalar/index.md)
-- [math2d/vector2](math2d/vector2/index.md)
-=======
-- [math2d/scalar](math2d/scalar/index.md)
->>>>>>> origin/main
+- [@lenguados/math2d](@lenguados/math2d/index.md)
+- [@lenguados/math2d/auxiliary/angle](@lenguados/math2d/auxiliary/angle/index.md)
+- [@lenguados/math2d/auxiliary/angle](@lenguados/math2d/auxiliary/angle/index-1.md)
+- [@lenguados/math2d/auxiliary/angle](@lenguados/math2d/auxiliary/angle/index-2.md)
+- [@lenguados/math2d/auxiliary/angle](@lenguados/math2d/auxiliary/angle/index-3.md)
+- [@lenguados/math2d/auxiliary/angle](@lenguados/math2d/auxiliary/angle/index-4.md)
+- [@lenguados/math2d/auxiliary/angle](@lenguados/math2d/auxiliary/angle/index-5.md)
+- [@lenguados/math2d/auxiliary/numeric](@lenguados/math2d/auxiliary/numeric/index.md)
+- [@lenguados/math2d/auxiliary/numeric](@lenguados/math2d/auxiliary/numeric/index-1.md)
+- [@lenguados/math2d/auxiliary/numeric](@lenguados/math2d/auxiliary/numeric/index-2.md)
+- [@lenguados/math2d/auxiliary/numeric](@lenguados/math2d/auxiliary/numeric/index-3.md)
+- [@lenguados/math2d/auxiliary/numeric](@lenguados/math2d/auxiliary/numeric/index-4.md)
+- [@lenguados/math2d/auxiliary/scalar](@lenguados/math2d/auxiliary/scalar/index.md)
+- [@lenguados/math2d/auxiliary/scalar](@lenguados/math2d/auxiliary/scalar/index-1.md)
+- [@lenguados/math2d/auxiliary/scalar](@lenguados/math2d/auxiliary/scalar/index-2.md)
+- [@lenguados/math2d/auxiliary/scalar](@lenguados/math2d/auxiliary/scalar/index-3.md)
+- [@lenguados/math2d/auxiliary/scalar](@lenguados/math2d/auxiliary/scalar/index-4.md)
+- [@lenguados/math2d/core](@lenguados/math2d/core/index.md)
+- [@lenguados/math2d/core](@lenguados/math2d/core/index-1.md)
+- [@lenguados/math2d/core](@lenguados/math2d/core/index-2.md)
+- [@lenguados/math2d/core](@lenguados/math2d/core/index-3.md)
+- [@lenguados/math2d/core](@lenguados/math2d/core/index-4.md)
+- [@lenguados/math2d/core](@lenguados/math2d/core/index-5.md)
+- [@lenguados/math2d/core](@lenguados/math2d/core/index-6.md)
+- [@lenguados/math2d/core](@lenguados/math2d/core/index-7.md)
+- [@lenguados/math2d/deterministic](@lenguados/math2d/deterministic/index.md)
+- [@lenguados/math2d/deterministic](@lenguados/math2d/deterministic/index-1.md)
+- [@lenguados/math2d/deterministic](@lenguados/math2d/deterministic/index-2.md)
+- [@lenguados/math2d/types](@lenguados/math2d/types/index.md)
+- [@lenguados/math2d/utils](@lenguados/math2d/utils/index.md)
+- [@lenguados/math2d/validation](@lenguados/math2d/validation/index.md)
+- [math2d/utils/parse](math2d/utils/parse/index.md)
+- [math2d/utils/random](math2d/utils/random/index.md)
+- [math2d/utils/random-source](math2d/utils/random-source/index.md)
+- [src/index.ts](src/index.ts/index.md)

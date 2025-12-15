@@ -10,6 +10,13 @@ const config: Config = {
   'Lenguados is a TypeScript‑based, lightweight, deterministic, and extensible 2‑D physics engine.',
  favicon: 'img/favicon.ico',
 
+ // Markdown configuration for TypeDoc-generated API docs compatibility
+ // 'detect' uses file extension: .md = CommonMark, .mdx = MDX
+ // This prevents MDX from parsing TypeDoc output as JSX
+ markdown: {
+  format: 'detect',
+ },
+
  // Set the production url of your site here
  url: 'https://rndelpuerto.github.io',
  // Set the /<baseUrl>/ pathname under which your site is served
@@ -76,7 +83,7 @@ const config: Config = {
     entryPoints: ['../packages/*'],
     entryPointStrategy: 'packages',
     tsconfig: '../tsconfig.json',
-    exclude: ['**/__tests__/**/*'],
+    exclude: ['**/test/**/*'],
     readme: 'none',
     hideBreadcrumbs: true,
    },

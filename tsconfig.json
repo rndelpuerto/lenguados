@@ -128,7 +128,7 @@
   "node_modules",
   "**/node_modules",
   "tools/package/**",
-  "packages/**/__tests__",
+  "packages/**/test",
   "packages/**/lib"
  ],
  "include": [

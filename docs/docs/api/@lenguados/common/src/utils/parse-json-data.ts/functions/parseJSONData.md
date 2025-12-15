@@ -1,12 +1,8 @@
 # Function: parseJSONData()
 
-> **parseJSONData**\<`TData`\>(`data`): `undefined` \| `TData`
+> **parseJSONData**\<`TData`\>(`data`): `TData` \| `undefined`
 
-<<<<<<< HEAD
-Defined in: [src/utils/parse-json-data.ts:1](https://github.com/rndelpuerto/lenguados/blob/210e5bae9296dd537e284b2b1cad232d956bbd88/packages/common/src/utils/parse-json-data.ts#L1)
-=======
-Defined in: [src/utils/parse-json-data.ts:1](https://github.com/rndelpuerto/lenguados/blob/3db26e60cf924a3f02d7d869c59509fd2fa87c96/packages/common/src/utils/parse-json-data.ts#L1)
->>>>>>> origin/main
+Defined in: [src/utils/parse-json-data.ts:1](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/common/src/utils/parse-json-data.ts#L1)
 
 ## Type Parameters
 
@@ -22,4 +18,4 @@ Defined in: [src/utils/parse-json-data.ts:1](https://github.com/rndelpuerto/leng
 
 ## Returns
 
-`undefined` \| `TData`
+`TData` \| `undefined`

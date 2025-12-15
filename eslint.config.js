@@ -67,7 +67,7 @@ export default defineFlatConfig([
  /* ───────────────── Jest setup files + unit tests ───────────────── */
  {
   files: [
-   '**/__tests__/**/*.ts', // tests under __tests__
+   '**/test/**/*.ts', // tests under test/
    'jest.*.{js,ts}', // jest.config.ts, jest.dom.setup.ts …
   ],
   languageOptions: {
