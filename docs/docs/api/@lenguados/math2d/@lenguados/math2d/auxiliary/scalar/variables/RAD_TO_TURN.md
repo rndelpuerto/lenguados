@@ -1,8 +1,8 @@
-# Variable: RAD\_TO\_TURN
+# Variable: RAD_TO_TURN
 
-> `const` **RAD\_TO\_TURN**: `number`
+> `const` **RAD_TO_TURN**: `number`
 
-Defined in: [src/auxiliary/scalar/constants.ts:144](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/auxiliary/scalar/constants.ts#L144)
+Defined in: [src/auxiliary/scalar/constants.ts:175](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/auxiliary/scalar/constants.ts#L175)
 
 Conversion factor from radians to turns (full rotations).
 

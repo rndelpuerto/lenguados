@@ -1,7 +1,7 @@
 /**
  * @file auxiliary/angle/unwrapping.ts
  * @module @lenguados/math2d/auxiliary/angle
- * @description Angle unwrapping for continuous sequences
+ * @description Angle unwrapping for continuous sequences.
  */
 
 import { normalizeRadiansAround } from './normalization';
@@ -11,9 +11,9 @@ import { angleDifference } from './operations';
  * Unwraps a sequence of angles into a continuous series by
  * taking shortest-arc steps between consecutive elements.
  *
- * @param angles - Array of angles in radians
- * @param reference - Optional continuity reference for the first element
- * @returns New array of unwrapped angles (real-valued)
+ * @param angles - Array of angles in radians.
+ * @param reference - Optional continuity reference for the first element.
+ * @returns New array of unwrapped angles (real-valued).
  *
  * @remarks
  * If `reference` is provided, the first element is chosen equivalent to `angles[0]`
@@ -29,10 +29,10 @@ import { angleDifference } from './operations';
  * unwrapAngles([0, 3, 6], -Math.PI);     // [-6.28..., -3.28..., -0.28...]
  * ```
  *
- * @throws {TypeError} If input array contains holes (undefined values)
+ * @throws {TypeError} If input array contains holes (undefined values).
  *
  * @category Unwrapping
- * @since 1.0.0
+ * @since 0.7.0
  */
 export function unwrapAngles(angles: number[], reference?: number): number[] {
  const n = angles.length;
@@ -68,9 +68,9 @@ export function unwrapAngles(angles: number[], reference?: number): number[] {
 
 /**
  * Unwraps angles in-place.
- * @param angles - Array of angles to unwrap (modified in-place)
- * @param reference - Optional continuity reference for the first element
- * @returns The modified angles array
+ * @param angles - Array of angles to unwrap (modified in-place).
+ * @param reference - Optional continuity reference for the first element.
+ * @returns The modified angles array.
  *
  * @remarks
  * More memory efficient than unwrapAngles for large arrays.
@@ -82,10 +82,10 @@ export function unwrapAngles(angles: number[], reference?: number): number[] {
  * console.log(angles);  // [0, 3, 3.28..., 6.28...]
  * ```
  *
- * @throws {TypeError} If input array contains holes (undefined values)
+ * @throws {TypeError} If input array contains holes (undefined values).
  *
  * @category Unwrapping
- * @since 1.0.0
+ * @since 0.7.0
  */
 export function unwrapAnglesInPlace(angles: number[], reference?: number): number[] {
  const n = angles.length;
@@ -136,7 +136,7 @@ export function unwrapAnglesInPlace(angles: number[], reference?: number): numbe
  * ```
  *
  * @category Unwrapping
- * @since 1.0.0
+ * @since 0.7.0
  */
 export class AngleUnwrapper {
  private _initialized = false;
@@ -144,7 +144,7 @@ export class AngleUnwrapper {
 
  /**
   * Creates a new angle unwrapper.
-  * @param initialAngle - Optional initial angle
+  * @param initialAngle - Optional initial angle.
   */
  constructor(initialAngle?: number) {
   if (initialAngle !== undefined) {
@@ -156,8 +156,11 @@ export class AngleUnwrapper {
  /**
   * Feeds a new wrapped angle and returns the continuous (unwrapped) value.
   * On first call, it initializes to the provided angle.
-  * @param theta - Wrapped angle in radians
-  * @returns Unwrapped angle in radians
+  * @param theta - Wrapped angle in radians.
+  * @returns Unwrapped angle in radians.
+  *
+  * @category Unwrapping
+  * @since 0.7.0
   */
  next(theta: number): number {
   if (!this._initialized) {
@@ -172,7 +175,10 @@ export class AngleUnwrapper {
 
  /**
   * Returns the last unwrapped value.
-  * @returns The last unwrapped value
+  * @returns The last unwrapped value.
+  *
+  * @category Unwrapping
+  * @since 0.7.0
   */
  get value(): number {
   return this._value;
@@ -180,7 +186,10 @@ export class AngleUnwrapper {
 
  /**
   * Resets the internal state. If `theta` is provided, sets it as the starting value.
-  * @param theta - Optional new starting angle
+  * @param theta - Optional new starting angle.
+  *
+  * @category Unwrapping
+  * @since 0.7.0
   */
  reset(theta?: number): void {
   this._initialized = theta !== undefined;

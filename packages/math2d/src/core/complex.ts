@@ -37,15 +37,25 @@
  * @see {@link Rotation2} for 2D rotations in physics simulations
  */
 
+import {
+ degreesToRadians,
+ radiansToDegrees,
+ radiansToTurns,
+ turnsToRadians,
+} from '../auxiliary/angle/conversion';
 import { lerpAngle } from '../auxiliary/angle/interpolation';
 import { normalizeRadians } from '../auxiliary/angle/normalization';
 import { sinCos } from '../auxiliary/angle/operations';
-import { safeDivide, safeSqrt } from '../auxiliary/numeric/safety';
+import { safeDivide } from '../auxiliary/numeric/safety';
 import { saturate } from '../auxiliary/scalar/arithmetic';
-import { isNearZero, relativeEquals } from '../auxiliary/scalar/comparison';
-import { EPSILON } from '../auxiliary/scalar/constants';
+import {
+ isNearZero,
+ relativeEquals,
+ nearEquals as scalarNearEquals,
+} from '../auxiliary/scalar/comparison';
+import { EPSILON, SQRT_HALF } from '../auxiliary/scalar/constants';
 import { lerp, smoothStep } from '../auxiliary/scalar/interpolation';
-import { DeterministicMath } from '../deterministic/deterministic-math';
+import { atan2, hypot, pow, sqrt } from '../deterministic/deterministic-kernels';
 import type { ComplexLike, Matrix2Like, ReadonlyVector2Like } from '../types';
 import { assertFinite } from '../validation/assert';
 
@@ -57,6 +67,9 @@ import { Vector2 } from './vector2';
 
 /**
  * Readonly view of a {@link Complex} instance.
+ *
+ * @category Types
+ * @since 0.7.0
  * @public
  */
 export type ReadonlyComplex = Readonly<Complex>;
@@ -82,7 +95,7 @@ export type ReadonlyComplex = Readonly<Complex>;
  * ```
  *
  * @category Helpers
- * @since 0.9.0
+ * @since 0.7.0
  */
 export function freezeComplex(complex: Complex): ReadonlyComplex {
  return Object.freeze(complex);
@@ -92,6 +105,16 @@ export function freezeComplex(complex: Complex): ReadonlyComplex {
 /* Class: Complex                                                             */
 /* ========================================================================== */
 
+/**
+ * Mutable complex number with deterministic arithmetic and transforms.
+ *
+ * @remarks
+ * - Instance methods mutate `this` for fluent chaining.
+ * - Static methods are pure and accept an optional `out` parameter.
+ *
+ * @category Core
+ * @since 0.7.0
+ */
 export class Complex implements ComplexLike {
  /* ======================================================================== */
  /* Instance Properties                                                      */
@@ -108,11 +131,6 @@ export class Complex implements ComplexLike {
   return out ?? new Complex();
  }
 
- private static sanitize(value: number, label: string): number {
-  assertFinite(value, label);
-  return value;
- }
-
  /* ======================================================================== */
  /* Static Constants (Immutable)                                             */
  /* ======================================================================== */
@@ -122,6 +140,13 @@ export class Complex implements ComplexLike {
   * @category Core
   */
  public static readonly ZERO = Object.freeze(new Complex(0, 0)) as ReadonlyComplex;
+
+ /**
+  * Number of elements when serialized to an array.
+  * @category Constant
+  * @since 0.7.0
+  */
+ public static readonly ELEMENT_COUNT = 2;
 
  /**
   * Real unit (1 + 0i).
@@ -165,7 +190,7 @@ export class Complex implements ComplexLike {
   * Inverse of square root of 2 as a real complex (1/√2 + 0i).
   * @category Core
   */
- public static readonly SQRT2_INV = Object.freeze(new Complex(Math.SQRT1_2, 0)) as ReadonlyComplex;
+ public static readonly SQRT2_INV = Object.freeze(new Complex(SQRT_HALF, 0)) as ReadonlyComplex;
 
  /**
   * Pi as a real complex (π + 0i).
@@ -186,6 +211,7 @@ export class Complex implements ComplexLike {
  constructor(real = 0, imag = 0) {
   this.real = real;
   this.imag = imag;
+  // Pure math: no assertions - Infinity/NaN are valid IEEE 754 values
  }
 
  /* ======================================================================== */
@@ -200,13 +226,13 @@ export class Complex implements ComplexLike {
   * @returns Complex number (magnitude * e^(i*angle))
   *
   * @category Factory
-  * @since 0.1.0
+  * @since 0.7.0
   */
  public static fromPolar(magnitude: number, angle: number, out?: Complex): Complex {
-  const sanitizedMagnitude = this.sanitize(magnitude, 'Complex.fromPolar:magnitude');
+  assertFinite(angle, 'Complex.fromPolar:angle');
   const normalized = normalizeRadians(angle);
   const { cos, sin } = sinCos(normalized);
-  return this.ensureOut(out).set(sanitizedMagnitude * cos, sanitizedMagnitude * sin);
+  return this.ensureOut(out).set(magnitude * cos, magnitude * sin);
  }
 
  /**
@@ -215,19 +241,18 @@ export class Complex implements ComplexLike {
   * @param offset - Index offset (default: 0)
   * @param out - Optional output complex
   * @returns Complex number
+  * @throws {RangeError} If offset is out of bounds
   *
   * @category Factory
-  * @since 0.1.0
+  * @since 0.7.0
   */
  public static fromArray(array: ArrayLike<number>, offset = 0, out?: Complex): Complex {
-  if (offset < 0 || offset + 1 >= array.length) {
+  if (offset < 0 || offset + Complex.ELEMENT_COUNT > array.length) {
    throw new RangeError(
     `Complex.fromArray: offset ${offset} is out of bounds for array of length ${array.length}`,
    );
   }
-  const real = this.sanitize(array[offset]!, 'Complex.fromArray:real');
-  const imag = this.sanitize(array[offset + 1]!, 'Complex.fromArray:imag');
-  return this.ensureOut(out).set(real, imag);
+  return this.ensureOut(out).set(array[offset]!, array[offset + 1]!);
  }
 
  /**
@@ -237,11 +262,30 @@ export class Complex implements ComplexLike {
   * @returns Complex number
   *
   * @category Factory
-  * @since 0.1.0
+  * @since 0.7.0
   */
  public static fromObject(object: ComplexLike, out?: Complex): Complex {
-  const real = this.sanitize(object.real, 'Complex.fromObject:real');
-  const imag = this.sanitize(object.imag, 'Complex.fromObject:imag');
+  return this.ensureOut(out).set(object.real, object.imag);
+ }
+
+ /**
+  * Creates a complex number from individual real and imaginary values.
+  * @param real - Real component
+  * @param imag - Imaginary component
+  * @param out - Optional output complex
+  * @returns Complex number
+  *
+  * @example
+  * ```typescript
+  * Complex.fromValues(1, 0);    // Real unit (1 + 0i)
+  * Complex.fromValues(0, 1);    // Imaginary unit (0 + 1i)
+  * Complex.fromValues(3, 4);    // 3 + 4i
+  * ```
+  *
+  * @category Factory
+  * @since 0.7.0
+  */
+ public static fromValues(real: number, imag: number, out?: Complex): Complex {
   return this.ensureOut(out).set(real, imag);
  }
 
@@ -252,7 +296,7 @@ export class Complex implements ComplexLike {
   * @returns A Complex with identical values
   *
   * @category Factory
-  * @since 0.9.0
+  * @since 0.7.0
   */
  public static clone(source: ReadonlyComplex, out?: Complex): Complex {
   return this.ensureOut(out).set(source.real, source.imag);
@@ -265,7 +309,7 @@ export class Complex implements ComplexLike {
   * @returns The destination complex
   *
   * @category Factory
-  * @since 0.9.0
+  * @since 0.7.0
   */
  public static copy(source: ReadonlyComplex, destination: Complex): Complex {
   return destination.set(source.real, source.imag);
@@ -283,7 +327,7 @@ export class Complex implements ComplexLike {
   * @returns Sum
   *
   * @category Arithmetic
-  * @since 0.1.0
+  * @since 0.7.0
   */
  public static add(a: ReadonlyComplex, b: ReadonlyComplex, out?: Complex): Complex {
   return Complex.ensureOut(out).set(a.real + b.real, a.imag + b.imag);
@@ -297,7 +341,7 @@ export class Complex implements ComplexLike {
   * @returns Difference
   *
   * @category Arithmetic
-  * @since 0.1.0
+  * @since 0.7.0
   */
  public static subtract(a: ReadonlyComplex, b: ReadonlyComplex, out?: Complex): Complex {
   return Complex.ensureOut(out).set(a.real - b.real, a.imag - b.imag);
@@ -310,8 +354,15 @@ export class Complex implements ComplexLike {
   * @param out - Optional output complex
   * @returns Product
   *
+  * @example
+  * ```typescript
+  * const a = new Complex(1, 2); // 1 + 2i
+  * const b = new Complex(3, 4); // 3 + 4i
+  * const result = Complex.multiply(a, b); // -5 + 10i
+  * ```
+  *
   * @category Arithmetic
-  * @since 0.1.0
+  * @since 0.7.0
   */
  public static multiply(a: ReadonlyComplex, b: ReadonlyComplex, out?: Complex): Complex {
   return Complex.ensureOut(out).set(
@@ -326,16 +377,70 @@ export class Complex implements ComplexLike {
   * @param b - Denominator
   * @param out - Optional output complex
   * @returns Quotient
+  * @throws {RangeError} If denominator magnitude is near zero.
   *
-  * @remarks
-  * Uses safe division internally. Dividing by zero returns (0, 0).
+  * @see {@link divideSafe} - Returns (0,0) instead of throwing
+  * @see {@link divideUnchecked} - No validation, for hot paths
   *
   * @category Arithmetic
-  * @since 0.1.0
+  * @since 0.7.0
   */
  public static divide(a: ReadonlyComplex, b: ReadonlyComplex, out?: Complex): Complex {
   const denom = b.real * b.real + b.imag * b.imag;
-  const invDenom = safeDivide(1, denom);
+  if (isNearZero(denom)) {
+   throw new RangeError('Complex.divide: cannot divide by zero-magnitude complex number');
+  }
+  const invDenom = 1 / denom;
+  return Complex.ensureOut(out).set(
+   (a.real * b.real + a.imag * b.imag) * invDenom,
+   (a.imag * b.real - a.real * b.imag) * invDenom,
+  );
+ }
+
+ /**
+  * Divides two complex numbers, returning (0,0) if denominator is near zero.
+  * @param a - Numerator
+  * @param b - Denominator
+  * @param out - Optional output complex
+  * @returns Quotient, or (0,0) if denominator magnitude is near zero.
+  *
+  * @see {@link divide} - Throws on zero denominator
+  * @see {@link divideUnchecked} - No validation
+  *
+  * @category Arithmetic
+  * @since 0.7.0
+  */
+ public static divideSafe(a: ReadonlyComplex, b: ReadonlyComplex, out?: Complex): Complex {
+  const denom = b.real * b.real + b.imag * b.imag;
+  if (isNearZero(denom)) {
+   return Complex.ensureOut(out).set(0, 0);
+  }
+  const invDenom = 1 / denom;
+  return Complex.ensureOut(out).set(
+   (a.real * b.real + a.imag * b.imag) * invDenom,
+   (a.imag * b.real - a.real * b.imag) * invDenom,
+  );
+ }
+
+ /**
+  * Divides two complex numbers without validation.
+  * @param a - Numerator
+  * @param b - Denominator (must have non-zero magnitude)
+  * @param out - Optional output complex
+  * @returns Quotient
+  *
+  * @remarks
+  * **⚠️ Precondition:** `|b| ≠ 0`. Calling with zero denominator produces Infinity/NaN.
+  *
+  * @see {@link divide} - Throws on zero denominator
+  * @see {@link divideSafe} - Returns (0,0) on zero denominator
+  *
+  * @category Arithmetic
+  * @since 0.7.0
+  */
+ public static divideUnchecked(a: ReadonlyComplex, b: ReadonlyComplex, out?: Complex): Complex {
+  const denom = b.real * b.real + b.imag * b.imag;
+  const invDenom = 1 / denom;
   return Complex.ensureOut(out).set(
    (a.real * b.real + a.imag * b.imag) * invDenom,
    (a.imag * b.real - a.real * b.imag) * invDenom,
@@ -350,7 +455,7 @@ export class Complex implements ComplexLike {
   * @returns Scaled complex
   *
   * @category Arithmetic
-  * @since 0.1.0
+  * @since 0.7.0
   */
  public static scale(complex: ReadonlyComplex, scalar: number, out?: Complex): Complex {
   return Complex.ensureOut(out).set(complex.real * scalar, complex.imag * scalar);
@@ -363,7 +468,7 @@ export class Complex implements ComplexLike {
   * @returns Conjugate
   *
   * @category Arithmetic
-  * @since 0.1.0
+  * @since 0.7.0
   */
  public static conjugate(complex: ReadonlyComplex, out?: Complex): Complex {
   return Complex.ensureOut(out).set(complex.real, -complex.imag);
@@ -376,7 +481,7 @@ export class Complex implements ComplexLike {
   * @returns Negated complex
   *
   * @category Arithmetic
-  * @since 0.1.0
+  * @since 0.7.0
   */
  public static negate(complex: ReadonlyComplex, out?: Complex): Complex {
   return Complex.ensureOut(out).set(-complex.real, -complex.imag);
@@ -395,7 +500,7 @@ export class Complex implements ComplexLike {
   * @returns Interpolated complex
   *
   * @category Interpolation
-  * @since 0.1.0
+  * @since 0.7.0
   */
  public static lerp(a: ReadonlyComplex, b: ReadonlyComplex, t: number, out?: Complex): Complex {
   return Complex.ensureOut(out).set(lerp(a.real, b.real, t), lerp(a.imag, b.imag, t));
@@ -410,7 +515,7 @@ export class Complex implements ComplexLike {
   * @returns Interpolated complex
   *
   * @category Interpolation
-  * @since 0.9.0
+  * @since 0.7.0
   */
  public static lerpClamped(
   a: ReadonlyComplex,
@@ -431,7 +536,7 @@ export class Complex implements ComplexLike {
   * @returns Interpolated complex
   *
   * @category Interpolation
-  * @since 0.9.0
+  * @since 0.7.0
   */
  public static slerp(a: ReadonlyComplex, b: ReadonlyComplex, t: number, out?: Complex): Complex {
   const mag1 = Complex.magnitude(a);
@@ -453,7 +558,7 @@ export class Complex implements ComplexLike {
   * @returns Interpolated complex
   *
   * @category Interpolation
-  * @since 0.9.0
+  * @since 0.7.0
   */
  public static slerpClamped(
   a: ReadonlyComplex,
@@ -480,13 +585,13 @@ export class Complex implements ComplexLike {
   * ```typescript
   * const a = Complex.fromPolar(1, 0);
   * const b = Complex.fromPolar(1, Math.PI / 2);
-  * const smooth = Complex.smoothLerp(a, b, 0.5); // Smooth interpolation
+  * const smooth = Complex.smoothStep(a, b, 0.5); // Smooth interpolation
   * ```
   *
   * @category Interpolation
-  * @since 0.11.0
+  * @since 0.7.0
   */
- public static smoothLerp(
+ public static smoothStep(
   a: ReadonlyComplex,
   b: ReadonlyComplex,
   t: number,
@@ -510,7 +615,7 @@ export class Complex implements ComplexLike {
   * Use {@link nearEquals} for comparing results of floating-point operations.
   *
   * @category Comparison
-  * @since 0.1.0
+  * @since 0.7.0
   */
  public static exactEquals(a: ReadonlyComplex, b: ReadonlyComplex): boolean {
   return a.real === b.real && a.imag === b.imag;
@@ -527,7 +632,7 @@ export class Complex implements ComplexLike {
   * Uses relative tolerance: `|a - b| <= epsilon * max(1, |a|, |b|)` per component.
   *
   * @category Comparison
-  * @since 0.9.0
+  * @since 0.7.0
   */
  public static nearEquals(
   a: ReadonlyComplex,
@@ -538,15 +643,46 @@ export class Complex implements ComplexLike {
  }
 
  /**
+  * Tests if a complex number has unit magnitude.
+  * @param complex - Complex number to test
+  * @param epsilon - Tolerance (default: EPSILON)
+  * @returns True if |z| ≈ 1
+  *
+  * @category Comparison
+  * @since 0.7.0
+  */
+ public static isUnit(complex: ReadonlyComplex, epsilon: number = EPSILON): boolean {
+  const magnitudeSq = complex.real * complex.real + complex.imag * complex.imag;
+  return Math.abs(magnitudeSq - 1) < epsilon;
+ }
+
+ /**
+  * Tests if a complex number is the multiplicative identity (1 + 0i).
+  * @param complex - Complex number to test
+  * @param epsilon - Tolerance (default: EPSILON)
+  * @returns True if z ≈ 1 + 0i
+  *
+  * @remarks
+  * The multiplicative identity in ℂ is 1 + 0i, where z * 1 = z for all z.
+  * This is equivalent to Rotation2.isIdentity() (0° rotation).
+  *
+  * @category Comparison
+  * @since 0.7.0
+  */
+ public static isIdentity(complex: ReadonlyComplex, epsilon: number = EPSILON): boolean {
+  return scalarNearEquals(complex.real, 1, epsilon) && isNearZero(complex.imag, epsilon);
+ }
+
+ /**
   * Returns the magnitude of a complex number.
   * @param complex - Complex number
   * @returns Magnitude
   *
   * @category Computed
-  * @since 0.1.0
+  * @since 0.7.0
   */
  public static magnitude(complex: ReadonlyComplex): number {
-  return safeSqrt(complex.real * complex.real + complex.imag * complex.imag);
+  return hypot(complex.real, complex.imag);
  }
 
  /**
@@ -555,10 +691,10 @@ export class Complex implements ComplexLike {
   * @returns Angle in radians
   *
   * @category Computed
-  * @since 0.1.0
+  * @since 0.7.0
   */
  public static argument(complex: ReadonlyComplex): number {
-  return DeterministicMath.atan2(complex.imag, complex.real);
+  return atan2(complex.imag, complex.real);
  }
 
  /**
@@ -567,7 +703,7 @@ export class Complex implements ComplexLike {
   * @returns Squared magnitude
   *
   * @category Computed
-  * @since 0.1.0
+  * @since 0.7.0
   */
  public static magnitudeSq(complex: ReadonlyComplex): number {
   return complex.real * complex.real + complex.imag * complex.imag;
@@ -581,7 +717,7 @@ export class Complex implements ComplexLike {
   * @throws {RangeError} If magnitude is near zero
   *
   * @category Transform
-  * @since 0.1.0
+  * @since 0.7.0
   */
  public static normalize(complex: ReadonlyComplex, out?: Complex): Complex {
   const mag = Complex.magnitude(complex);
@@ -609,7 +745,7 @@ export class Complex implements ComplexLike {
   * ```
   *
   * @category Transform
-  * @since 0.10.0
+  * @since 0.7.0
   */
  public static normalizeSafe(complex: ReadonlyComplex, out?: Complex): Complex {
   const mag = Complex.magnitude(complex);
@@ -617,6 +753,29 @@ export class Complex implements ComplexLike {
    return Complex.ensureOut(out).set(1, 0);
   }
   const invMag = 1 / mag;
+  return Complex.ensureOut(out).set(complex.real * invMag, complex.imag * invMag);
+ }
+
+ /**
+  * Normalizes a complex number without validation (for hot paths).
+  * @param complex - Complex number to normalize (must have non-zero magnitude)
+  * @param out - Optional output complex
+  * @returns Normalized complex
+  *
+  * @remarks
+  * **WARNING:** This method performs no validation.
+  * - If complex has zero magnitude, the result will be (NaN, NaN).
+  * - Use only when you can guarantee non-zero magnitude.
+  *
+  * @see {@link normalize} - Throws on zero-magnitude
+  * @see {@link normalizeSafe} - Returns (1, 0) on zero-magnitude
+  *
+  * @category Transform
+  * @since 0.7.0
+  */
+ public static normalizeUnchecked(complex: ReadonlyComplex, out?: Complex): Complex {
+  const magSq = complex.real * complex.real + complex.imag * complex.imag;
+  const invMag = 1 / sqrt(magSq);
   return Complex.ensureOut(out).set(complex.real * invMag, complex.imag * invMag);
  }
 
@@ -640,7 +799,7 @@ export class Complex implements ComplexLike {
   * ```
   *
   * @category Transform
-  * @since 0.10.0
+  * @since 0.7.0
   */
  public static apply(
   complex: ReadonlyComplex,
@@ -658,17 +817,102 @@ export class Complex implements ComplexLike {
  }
 
  /**
+  * Applies the inverse rotation of a complex number to a vector.
+  * @param complex - Complex number (will be normalized first)
+  * @param vector - Vector to rotate inversely
+  * @param out - Optional output vector
+  * @returns Rotated vector (in the opposite direction)
+  *
+  * @remarks
+  * Uses the conjugate of the normalized complex number for the inverse rotation.
+  * For a complex number representing angle θ, this rotates by -θ.
+  *
+  * Relationship: `applyInverse(c, apply(c, v)) ≈ v`
+  *
+  * @example
+  * ```typescript
+  * const c = Complex.fromPolar(1, Math.PI / 4); // 45° rotation
+  * const v = { x: 1, y: 0 };
+  * const rotated = Complex.apply(c, v);        // ≈ (0.707, 0.707)
+  * const back = Complex.applyInverse(c, rotated); // ≈ (1, 0)
+  * ```
+  *
+  * @category Transform
+  * @since 0.7.0
+  */
+ public static applyInverse(
+  complex: ReadonlyComplex,
+  vector: ReadonlyVector2Like,
+  out?: Vector2,
+ ): Vector2 {
+  const mag = Complex.magnitude(complex);
+  if (isNearZero(mag)) {
+   return Vector2.clone(vector, out);
+  }
+  const invMag = 1 / mag;
+  // Conjugate: use (real, -imag) for inverse rotation
+  const c = complex.real * invMag;
+  const s = -complex.imag * invMag;
+  return Vector2.fromValues(c * vector.x - s * vector.y, s * vector.x + c * vector.y, out);
+ }
+
+ /**
   * Returns the reciprocal of a complex number.
   * @param complex - Complex number
   * @param out - Optional output complex
   * @returns Reciprocal
+  * @throws {RangeError} If magnitude is near zero.
+  *
+  * @see {@link reciprocalSafe} - Returns (0,0) instead of throwing
+  * @see {@link reciprocalUnchecked} - No validation
   *
   * @category Transform
-  * @since 0.1.0
+  * @since 0.7.0
   */
  public static reciprocal(complex: ReadonlyComplex, out?: Complex): Complex {
   const magSq = Complex.magnitudeSq(complex);
-  const invMagSq = safeDivide(1, magSq);
+  if (isNearZero(magSq)) {
+   throw new RangeError('Complex.reciprocal: cannot compute reciprocal of zero-magnitude complex');
+  }
+  const invMagSq = 1 / magSq;
+  return Complex.ensureOut(out).set(complex.real * invMagSq, -complex.imag * invMagSq);
+ }
+
+ /**
+  * Returns the reciprocal of a complex number, returning (0,0) if magnitude is near zero.
+  * @param complex - Complex number
+  * @param out - Optional output complex
+  * @returns Reciprocal, or (0,0) if input has zero magnitude.
+  *
+  * @see {@link reciprocal} - Throws on zero magnitude
+  *
+  * @category Transform
+  * @since 0.7.0
+  */
+ public static reciprocalSafe(complex: ReadonlyComplex, out?: Complex): Complex {
+  const magSq = Complex.magnitudeSq(complex);
+  if (isNearZero(magSq)) {
+   return Complex.ensureOut(out).set(0, 0);
+  }
+  const invMagSq = 1 / magSq;
+  return Complex.ensureOut(out).set(complex.real * invMagSq, -complex.imag * invMagSq);
+ }
+
+ /**
+  * Returns the reciprocal of a complex number without validation.
+  * @param complex - Complex number (must have non-zero magnitude)
+  * @param out - Optional output complex
+  * @returns Reciprocal
+  *
+  * @remarks
+  * **⚠️ Precondition:** `|complex| ≠ 0`. Calling with zero produces Infinity/NaN.
+  *
+  * @category Transform
+  * @since 0.7.0
+  */
+ public static reciprocalUnchecked(complex: ReadonlyComplex, out?: Complex): Complex {
+  const magSq = Complex.magnitudeSq(complex);
+  const invMagSq = 1 / magSq;
   return Complex.ensureOut(out).set(complex.real * invMagSq, -complex.imag * invMagSq);
  }
 
@@ -680,12 +924,12 @@ export class Complex implements ComplexLike {
   * @returns Complex raised to power
   *
   * @category Transform
-  * @since 0.1.0
+  * @since 0.7.0
   */
  public static pow(complex: ReadonlyComplex, exponent: number, out?: Complex): Complex {
   const mag = Complex.magnitude(complex);
   const angle = Complex.argument(complex);
-  const poweredMagnitude = Math.pow(mag, exponent);
+  const poweredMagnitude = pow(mag, exponent);
   const targetAngle = angle * exponent;
   return Complex.fromPolar(poweredMagnitude, targetAngle, out);
  }
@@ -697,22 +941,39 @@ export class Complex implements ComplexLike {
   * @returns Square root
   *
   * @category Transform
-  * @since 0.1.0
+  * @since 0.7.0
   */
  public static sqrt(complex: ReadonlyComplex, out?: Complex): Complex {
   return Complex.pow(complex, 0.5, out);
  }
 
  /**
-  * Tests if a complex number is near zero.
-  * @param complex - Complex number
-  * @param epsilon - Tolerance (default: EPSILON)
-  * @returns True if near zero
+  * Tests if a complex number is exactly zero.
+  *
+  * @param complex - Complex number to test.
+  * @returns True if both real and imaginary parts are exactly 0.
+  *
+  * @remarks
+  * For tolerance-based comparison, use {@link isNearZero}.
   *
   * @category Comparison
-  * @since 0.1.0
+  * @since 0.7.0
   */
- public static isZero(complex: ReadonlyComplex, epsilon: number = EPSILON): boolean {
+ public static isZero(complex: ReadonlyComplex): boolean {
+  return complex.real === 0 && complex.imag === 0;
+ }
+
+ /**
+  * Tests if a complex number is near zero within tolerance.
+  *
+  * @param complex - Complex number to test.
+  * @param epsilon - Tolerance (default: EPSILON).
+  * @returns True if both components are within epsilon of zero.
+  *
+  * @category Comparison
+  * @since 0.7.0
+  */
+ public static isNearZero(complex: ReadonlyComplex, epsilon: number = EPSILON): boolean {
   return isNearZero(complex.real, epsilon) && isNearZero(complex.imag, epsilon);
  }
 
@@ -723,7 +984,7 @@ export class Complex implements ComplexLike {
   * @returns True if imaginary part is near zero
   *
   * @category Comparison
-  * @since 0.1.0
+  * @since 0.7.0
   */
  public static isReal(complex: ReadonlyComplex, epsilon: number = EPSILON): boolean {
   return isNearZero(complex.imag, epsilon);
@@ -736,7 +997,7 @@ export class Complex implements ComplexLike {
   * @returns True if real part is near zero
   *
   * @category Comparison
-  * @since 0.1.0
+  * @since 0.7.0
   */
  public static isImaginary(complex: ReadonlyComplex, epsilon: number = EPSILON): boolean {
   return isNearZero(complex.real, epsilon);
@@ -748,7 +1009,7 @@ export class Complex implements ComplexLike {
   * @returns True if both components are finite
   *
   * @category Comparison
-  * @since 0.9.0
+  * @since 0.7.0
   */
  public static isFinite(complex: ReadonlyComplex): boolean {
   return Number.isFinite(complex.real) && Number.isFinite(complex.imag);
@@ -760,10 +1021,28 @@ export class Complex implements ComplexLike {
   * @returns True if any component is NaN
   *
   * @category Comparison
-  * @since 0.9.0
+  * @since 0.7.0
   */
  public static hasNaN(complex: ReadonlyComplex): boolean {
   return Number.isNaN(complex.real) || Number.isNaN(complex.imag);
+ }
+
+ /**
+  * Tests if any component is infinite (±Infinity).
+  * @param complex - Complex to test
+  * @returns True if any component is ±Infinity
+  *
+  * @remarks
+  * Distinguishes infinity from NaN. Use {@link isFinite} to check for both.
+  *
+  * @category Comparison
+  * @since 0.7.0
+  */
+ public static hasInfinity(complex: ReadonlyComplex): boolean {
+  return (
+   (!Number.isFinite(complex.real) && !Number.isNaN(complex.real)) ||
+   (!Number.isFinite(complex.imag) && !Number.isNaN(complex.imag))
+  );
  }
 
  /* ======================================================================== */
@@ -777,7 +1056,7 @@ export class Complex implements ComplexLike {
   * @returns This for chaining
   *
   * @category Mutator
-  * @since 0.1.0
+  * @since 0.7.0
   */
  set(real: number, imag: number): this {
   this.real = real;
@@ -791,12 +1070,51 @@ export class Complex implements ComplexLike {
   * @returns This for chaining
   *
   * @category Mutator
-  * @since 0.1.0
+  * @since 0.7.0
   */
  copy(other: ReadonlyComplex): this {
   this.real = other.real;
   this.imag = other.imag;
   return this;
+ }
+
+ /**
+  * Sets from polar coordinates.
+  * @param magnitude - Distance from origin.
+  * @param angle - Angle in radians.
+  * @returns This for chaining.
+  *
+  * @category Mutator
+  * @since 0.7.0
+  */
+ setFromPolar(magnitude: number, angle: number): this {
+  const { cos, sin } = sinCos(angle);
+  return this.set(magnitude * cos, magnitude * sin);
+ }
+
+ /**
+  * Sets from array values.
+  * @param array - Source array [real, imag].
+  * @param offset - Starting index (default 0).
+  * @returns This for chaining.
+  *
+  * @category Mutator
+  * @since 0.7.0
+  */
+ setFromArray(array: ArrayLike<number>, offset = 0): this {
+  return this.set(array[offset]!, array[offset + 1]!);
+ }
+
+ /**
+  * Sets from a Vector2 (x→real, y→imag).
+  * @param v - Source vector.
+  * @returns This for chaining.
+  *
+  * @category Mutator
+  * @since 0.7.0
+  */
+ setFromVector2(v: ReadonlyVector2Like): this {
+  return this.set(v.x, v.y);
  }
 
  /* ======================================================================== */
@@ -808,10 +1126,10 @@ export class Complex implements ComplexLike {
   * @returns Magnitude
   *
   * @category Computed
-  * @since 0.1.0
+  * @since 0.7.0
   */
  magnitude(): number {
-  return safeSqrt(this.real * this.real + this.imag * this.imag);
+  return hypot(this.real, this.imag);
  }
 
  /**
@@ -819,7 +1137,7 @@ export class Complex implements ComplexLike {
   * @returns Squared magnitude
   *
   * @category Computed
-  * @since 0.1.0
+  * @since 0.7.0
   */
  magnitudeSq(): number {
   return this.real * this.real + this.imag * this.imag;
@@ -830,10 +1148,101 @@ export class Complex implements ComplexLike {
   * @returns Angle in radians
   *
   * @category Computed
-  * @since 0.1.0
+  * @since 0.7.0
   */
  argument(): number {
-  return DeterministicMath.atan2(this.imag, this.real);
+  return atan2(this.imag, this.real);
+ }
+
+ /**
+  * Gets the phase angle in radians.
+  * Symmetric with Rotation2.angle getter.
+  * @returns Angle in radians
+  *
+  * @category Computed
+  * @since 0.8.0
+  */
+ get angle(): number {
+  return this.argument();
+ }
+
+ /**
+  * Sets the phase angle in radians.
+  * Preserves magnitude, only changes angle. Zero-allocation in-place mutation.
+  * Symmetric with Rotation2.angle setter.
+  *
+  * @remarks
+  * Unlike immutable libraries (complex.js, math.js), we provide mutable setters
+  * for zero-allocation hot paths in game loops and physics simulations.
+  *
+  * @example
+  * ```typescript
+  * const c = Complex.fromPolar(2, 0);
+  * c.angle = Math.PI / 4;
+  * c.magnitude(); // Still 2
+  * c.angle;       // ≈ Math.PI / 4
+  * ```
+  *
+  * @category Computed
+  * @since 0.8.0
+  */
+ set angle(value: number) {
+  const mag = this.magnitude();
+  const sc = sinCos(value);
+  this.real = mag * sc.cos;
+  this.imag = mag * sc.sin;
+ }
+
+ /**
+  * Gets the phase angle in degrees.
+  * Uses auxiliary/angle/conversion for DRY compliance.
+  * Symmetric with Rotation2.angleDegrees getter.
+  * @returns Angle in degrees
+  *
+  * @category Computed
+  * @since 0.8.0
+  */
+ get angleDegrees(): number {
+  return radiansToDegrees(this.argument());
+ }
+
+ /**
+  * Sets the phase angle in degrees.
+  * Preserves magnitude, only changes angle. Zero-allocation in-place mutation.
+  * Uses auxiliary/angle/conversion for DRY compliance.
+  * Symmetric with Rotation2.angleDegrees setter.
+  *
+  * @category Computed
+  * @since 0.8.0
+  */
+ set angleDegrees(value: number) {
+  this.angle = degreesToRadians(value);
+ }
+
+ /**
+  * Gets the phase angle in turns (0-1 = one full rotation).
+  * Uses auxiliary/angle/conversion for DRY compliance.
+  * Symmetric with Rotation2.angleTurns getter.
+  * @returns Angle in turns (0-1 range)
+  *
+  * @category Computed
+  * @since 0.8.0
+  */
+ get angleTurns(): number {
+  return radiansToTurns(this.argument());
+ }
+
+ /**
+  * Sets the phase angle in turns.
+  * Preserves magnitude, only changes angle. Zero-allocation in-place mutation.
+  * Uses auxiliary/angle/conversion for DRY compliance.
+  * Symmetric with Rotation2.angleTurns setter.
+  *
+  * @category Computed
+  * @since 0.8.0
+  */
+ set angleTurns(value: number) {
+  this.angle = turnsToRadians(value);
  }
 
  /* ======================================================================== */
@@ -846,7 +1255,7 @@ export class Complex implements ComplexLike {
   * @returns This for chaining
   *
   * @category Arithmetic
-  * @since 0.1.0
+  * @since 0.7.0
   */
  add(other: ReadonlyComplex): this {
   this.real += other.real;
@@ -860,7 +1269,7 @@ export class Complex implements ComplexLike {
   * @returns This for chaining
   *
   * @category Arithmetic
-  * @since 0.1.0
+  * @since 0.7.0
   */
  subtract(other: ReadonlyComplex): this {
   this.real -= other.real;
@@ -874,7 +1283,7 @@ export class Complex implements ComplexLike {
   * @returns This for chaining
   *
   * @category Arithmetic
-  * @since 0.1.0
+  * @since 0.7.0
   */
  multiply(other: ReadonlyComplex): this {
   const a = this.real;
@@ -890,12 +1299,13 @@ export class Complex implements ComplexLike {
   * Divides by another complex number in place.
   * @param other - Complex number to divide by
   * @returns This for chaining
+  * @throws {RangeError} If denominator magnitude is near zero.
   *
-  * @remarks
-  * Uses safe division internally. Dividing by zero returns (0, 0).
+  * @see {@link divideSafe} - Sets to (0,0) instead of throwing
+  * @see {@link divideUnchecked} - No validation
   *
   * @category Arithmetic
-  * @since 0.1.0
+  * @since 0.7.0
   */
  divide(other: ReadonlyComplex): this {
   const a = this.real;
@@ -903,7 +1313,58 @@ export class Complex implements ComplexLike {
   const c = other.real;
   const d = other.imag;
   const denominator = c * c + d * d;
-  const invDenominator = safeDivide(1, denominator);
+  if (isNearZero(denominator)) {
+   throw new RangeError('Complex.divide: cannot divide by zero-magnitude complex number');
+  }
+  const invDenominator = 1 / denominator;
+  this.real = (a * c + b * d) * invDenominator;
+  this.imag = (b * c - a * d) * invDenominator;
+  return this;
+ }
+
+ /**
+  * Divides by another complex number in place (safe).
+  * @param other - Complex number to divide by
+  * @returns This for chaining (sets to (0,0) if denominator near zero)
+  *
+  * @category Arithmetic
+  * @since 0.7.0
+  */
+ divideSafe(other: ReadonlyComplex): this {
+  const a = this.real;
+  const b = this.imag;
+  const c = other.real;
+  const d = other.imag;
+  const denominator = c * c + d * d;
+  if (isNearZero(denominator)) {
+   this.real = 0;
+   this.imag = 0;
+   return this;
+  }
+  const invDenominator = 1 / denominator;
+  this.real = (a * c + b * d) * invDenominator;
+  this.imag = (b * c - a * d) * invDenominator;
+  return this;
+ }
+
+ /**
+  * Divides by another complex number in place (unchecked).
+  * @param other - Complex number to divide by (must have non-zero magnitude)
+  * @returns This for chaining
+  *
+  * @remarks
+  * **⚠️ Precondition:** `|other| ≠ 0`.
+  *
+  * @category Arithmetic
+  * @since 0.7.0
+  */
+ divideUnchecked(other: ReadonlyComplex): this {
+  const a = this.real;
+  const b = this.imag;
+  const c = other.real;
+  const d = other.imag;
+  const denominator = c * c + d * d;
+  const invDenominator = 1 / denominator;
   this.real = (a * c + b * d) * invDenominator;
   this.imag = (b * c - a * d) * invDenominator;
   return this;
@@ -915,7 +1376,7 @@ export class Complex implements ComplexLike {
   * @returns This for chaining
   *
   * @category Arithmetic
-  * @since 0.1.0
+  * @since 0.7.0
   */
  scale(scalar: number): this {
   this.real *= scalar;
@@ -928,7 +1389,7 @@ export class Complex implements ComplexLike {
   * @returns This for chaining
   *
   * @category Arithmetic
-  * @since 0.1.0
+  * @since 0.7.0
   */
  conjugate(): this {
   this.imag = -this.imag;
@@ -945,7 +1406,7 @@ export class Complex implements ComplexLike {
   * @throws {RangeError} If magnitude is near zero
   *
   * @category Transform
-  * @since 0.1.0
+  * @since 0.7.0
   */
  normalize(): this {
   const mag = this.magnitude();
@@ -963,7 +1424,7 @@ export class Complex implements ComplexLike {
   * @returns This for chaining
   *
   * @category Transform
-  * @since 0.9.0
+  * @since 0.7.0
   */
  normalizeSafe(): this {
   const mag = this.magnitude();
@@ -973,6 +1434,29 @@ export class Complex implements ComplexLike {
    return this;
   }
   const invMag = safeDivide(1, mag);
+  this.real *= invMag;
+  this.imag *= invMag;
+  return this;
+ }
+
+ /**
+  * Normalizes this complex number without validation (for hot paths).
+  * @returns This for chaining
+  *
+  * @remarks
+  * **WARNING:** This method performs no validation.
+  * - If magnitude is zero, this will become (NaN, NaN).
+  * - Use only when you can guarantee non-zero magnitude.
+  *
+  * @see {@link normalize} - Throws on zero-magnitude
+  * @see {@link normalizeSafe} - Sets to (1, 0) on zero-magnitude
+  *
+  * @category Transform
+  * @since 0.7.0
+  */
+ normalizeUnchecked(): this {
+  const magSq = this.real * this.real + this.imag * this.imag;
+  const invMag = 1 / sqrt(magSq);
   this.real *= invMag;
   this.imag *= invMag;
   return this;
@@ -996,22 +1480,94 @@ export class Complex implements ComplexLike {
   * ```
   *
   * @category Transform
-  * @since 0.10.0
+  * @since 0.7.0
   */
  apply(vector: ReadonlyVector2Like, out?: Vector2): Vector2 {
   return Complex.apply(this, vector, out);
  }
 
  /**
-  * Computes the reciprocal of this complex number in place.
-  * @returns This for chaining
+  * Applies the inverse rotation of this complex number to a vector.
+  * @param vector - Vector to rotate inversely
+  * @param out - Optional output vector
+  * @returns Rotated vector (in the opposite direction)
+  *
+  * @remarks
+  * Uses the conjugate of the normalized complex number.
+  * For a complex representing angle θ, this rotates by -θ.
+  *
+  * Relationship: `c.applyInverse(c.apply(v)) ≈ v`
+  *
+  * @example
+  * ```typescript
+  * const c = Complex.fromPolar(1, Math.PI / 4);
+  * const v = { x: 1, y: 0 };
+  * const rotated = c.apply(v);          // ≈ (0.707, 0.707)
+  * const back = c.applyInverse(rotated); // ≈ (1, 0)
+  * ```
   *
   * @category Transform
-  * @since 0.1.0
+  * @since 0.7.0
+  */
+ applyInverse(vector: ReadonlyVector2Like, out?: Vector2): Vector2 {
+  return Complex.applyInverse(this, vector, out);
+ }
+
+ /**
+  * Computes the reciprocal of this complex number in place.
+  * @returns This for chaining
+  * @throws {RangeError} If magnitude is near zero.
+  *
+  * @see {@link reciprocalSafe} - Sets to (0,0) instead of throwing
+  * @see {@link reciprocalUnchecked} - No validation
+  *
+  * @category Transform
+  * @since 0.7.0
   */
  reciprocal(): this {
   const magSq = this.magnitudeSq();
-  const invMagSq = safeDivide(1, magSq);
+  if (isNearZero(magSq)) {
+   throw new RangeError('Complex.reciprocal: cannot compute reciprocal of zero-magnitude complex');
+  }
+  const invMagSq = 1 / magSq;
+  this.real *= invMagSq;
+  this.imag = -this.imag * invMagSq;
+  return this;
+ }
+
+ /**
+  * Computes the reciprocal of this complex number in place (safe).
+  * @returns This for chaining (sets to (0,0) if magnitude near zero)
+  *
+  * @category Transform
+  * @since 0.7.0
+  */
+ reciprocalSafe(): this {
+  const magSq = this.magnitudeSq();
+  if (isNearZero(magSq)) {
+   this.real = 0;
+   this.imag = 0;
+   return this;
+  }
+  const invMagSq = 1 / magSq;
+  this.real *= invMagSq;
+  this.imag = -this.imag * invMagSq;
+  return this;
+ }
+
+ /**
+  * Computes the reciprocal of this complex number in place (unchecked).
+  * @returns This for chaining
+  *
+  * @remarks
+  * **⚠️ Precondition:** Magnitude must be non-zero.
+  *
+  * @category Transform
+  * @since 0.7.0
+  */
+ reciprocalUnchecked(): this {
+  const magSq = this.magnitudeSq();
+  const invMagSq = 1 / magSq;
   this.real *= invMagSq;
   this.imag = -this.imag * invMagSq;
   return this;
@@ -1023,12 +1579,12 @@ export class Complex implements ComplexLike {
   * @returns This for chaining
   *
   * @category Transform
-  * @since 0.1.0
+  * @since 0.7.0
   */
  pow(exponent: number): this {
   const mag = this.magnitude();
   const angle = this.argument();
-  const poweredMagnitude = Math.pow(mag, exponent);
+  const poweredMagnitude = pow(mag, exponent);
   const targetAngle = angle * exponent;
   const { cos, sin } = sinCos(targetAngle);
   this.real = poweredMagnitude * cos;
@@ -1041,7 +1597,7 @@ export class Complex implements ComplexLike {
   * @returns This for chaining
   *
   * @category Transform
-  * @since 0.1.0
+  * @since 0.7.0
   */
  sqrt(): this {
   return this.pow(0.5);
@@ -1060,7 +1616,7 @@ export class Complex implements ComplexLike {
   * Use {@link nearEquals} for comparing results of floating-point operations.
   *
   * @category Comparison
-  * @since 0.1.0
+  * @since 0.7.0
   */
  exactEquals(other: ReadonlyComplex): boolean {
   return Complex.exactEquals(this, other);
@@ -1076,7 +1632,7 @@ export class Complex implements ComplexLike {
   * Uses relative tolerance: `|a - b| <= epsilon * max(1, |a|, |b|)` per component.
   *
   * @category Comparison
-  * @since 0.9.0
+  * @since 0.7.0
   */
  nearEquals(other: ReadonlyComplex, epsilon: number = EPSILON): boolean {
   return Complex.nearEquals(this, other, epsilon);
@@ -1087,14 +1643,25 @@ export class Complex implements ComplexLike {
  /* ======================================================================== */
 
  /**
+  * Tests if this complex number is exactly zero.
+  * @returns True if both real and imag are exactly 0.
+  *
+  * @category Predicate
+  * @since 0.7.0
+  */
+ isZero(): boolean {
+  return this.real === 0 && this.imag === 0;
+ }
+
+ /**
   * Tests if this complex number is near zero.
   * @param epsilon - Tolerance (default: EPSILON)
   * @returns True if near zero
   *
   * @category Predicate
-  * @since 0.1.0
+  * @since 0.7.0
   */
- isZero(epsilon: number = EPSILON): boolean {
+ isNearZero(epsilon: number = EPSILON): boolean {
   return isNearZero(this.real, epsilon) && isNearZero(this.imag, epsilon);
  }
 
@@ -1104,7 +1671,7 @@ export class Complex implements ComplexLike {
   * @returns True if imaginary part is near zero
   *
   * @category Predicate
-  * @since 0.1.0
+  * @since 0.7.0
   */
  isReal(epsilon: number = EPSILON): boolean {
   return isNearZero(this.imag, epsilon);
@@ -1116,7 +1683,7 @@ export class Complex implements ComplexLike {
   * @returns True if real part is near zero
   *
   * @category Predicate
-  * @since 0.1.0
+  * @since 0.7.0
   */
  isImaginary(epsilon: number = EPSILON): boolean {
   return isNearZero(this.real, epsilon);
@@ -1127,7 +1694,7 @@ export class Complex implements ComplexLike {
   * @returns True if both components are finite
   *
   * @category Predicate
-  * @since 0.9.0
+  * @since 0.7.0
   */
  isFinite(): boolean {
   return Number.isFinite(this.real) && Number.isFinite(this.imag);
@@ -1138,10 +1705,45 @@ export class Complex implements ComplexLike {
   * @returns True if any component is NaN
   *
   * @category Predicate
-  * @since 0.9.0
+  * @since 0.7.0
   */
  hasNaN(): boolean {
   return Number.isNaN(this.real) || Number.isNaN(this.imag);
+ }
+
+ /**
+  * Tests if any component is infinite (±Infinity).
+  * @returns True if any component is ±Infinity
+  *
+  * @category Predicate
+  * @since 0.7.0
+  */
+ hasInfinity(): boolean {
+  return Complex.hasInfinity(this);
+ }
+
+ /**
+  * Tests if this complex number has unit magnitude.
+  * @param epsilon - Tolerance (default: EPSILON)
+  * @returns True if |z| ≈ 1
+  *
+  * @category Predicate
+  * @since 0.7.0
+  */
+ isUnit(epsilon: number = EPSILON): boolean {
+  return Complex.isUnit(this, epsilon);
+ }
+
+ /**
+  * Tests if this complex number is the multiplicative identity (1 + 0i).
+  * @param epsilon - Tolerance (default: EPSILON)
+  * @returns True if z ≈ 1 + 0i
+  *
+  * @category Predicate
+  * @since 0.7.0
+  */
+ isIdentity(epsilon: number = EPSILON): boolean {
+  return Complex.isIdentity(this, epsilon);
  }
 
  /**
@@ -1149,7 +1751,7 @@ export class Complex implements ComplexLike {
   * @returns This for chaining
   *
   * @category Arithmetic
-  * @since 0.1.0
+  * @since 0.7.0
   */
  negate(): this {
   this.real = -this.real;
@@ -1162,7 +1764,7 @@ export class Complex implements ComplexLike {
   * @returns This for chaining
   *
   * @category Mutator
-  * @since 0.9.0
+  * @since 0.7.0
   */
  zero(): this {
   this.real = 0;
@@ -1179,7 +1781,7 @@ export class Complex implements ComplexLike {
   * @returns New conjugate complex
   *
   * @category Computed
-  * @since 0.1.0
+  * @since 0.7.0
   */
  public get conjugated(): Complex {
   return new Complex(this.real, -this.imag);
@@ -1190,7 +1792,7 @@ export class Complex implements ComplexLike {
   * @returns New unit complex
   *
   * @category Computed
-  * @since 0.1.0
+  * @since 0.7.0
   */
  public get normalized(): Complex {
   const mag = this.magnitude();
@@ -1206,7 +1808,7 @@ export class Complex implements ComplexLike {
   * @returns New negated complex
   *
   * @category Computed
-  * @since 0.1.0
+  * @since 0.7.0
   */
  public get negated(): Complex {
   return new Complex(-this.real, -this.imag);
@@ -1217,7 +1819,7 @@ export class Complex implements ComplexLike {
   * @returns New reciprocal complex
   *
   * @category Computed
-  * @since 0.1.0
+  * @since 0.7.0
   */
  public get reciprocated(): Complex {
   const magSq = this.magnitudeSq();
@@ -1236,7 +1838,7 @@ export class Complex implements ComplexLike {
   * @returns This for chaining
   *
   * @category Interpolation
-  * @since 0.1.0
+  * @since 0.7.0
   */
  lerp(other: ReadonlyComplex, t: number): this {
   this.real = lerp(this.real, other.real, t);
@@ -1251,7 +1853,7 @@ export class Complex implements ComplexLike {
   * @returns This for chaining
   *
   * @category Interpolation
-  * @since 0.9.0
+  * @since 0.7.0
   */
  lerpClamped(other: ReadonlyComplex, t: number): this {
   return this.lerp(other, saturate(t));
@@ -1264,7 +1866,7 @@ export class Complex implements ComplexLike {
   * @returns This for chaining
   *
   * @category Interpolation
-  * @since 0.1.0
+  * @since 0.7.0
   */
  slerp(other: ReadonlyComplex, t: number): this {
   const mag1 = this.magnitude();
@@ -1286,7 +1888,7 @@ export class Complex implements ComplexLike {
   * @returns This for chaining
   *
   * @category Interpolation
-  * @since 0.9.0
+  * @since 0.7.0
   */
  slerpClamped(other: ReadonlyComplex, t: number): this {
   return this.slerp(other, saturate(t));
@@ -1302,9 +1904,9 @@ export class Complex implements ComplexLike {
   * Uses Hermite smoothStep for ease-in-out effect.
   *
   * @category Interpolation
-  * @since 0.11.0
+  * @since 0.7.0
   */
- smoothLerp(other: ReadonlyComplex, t: number): this {
+ smoothStep(other: ReadonlyComplex, t: number): this {
   const clamped = saturate(t);
   return this.lerp(other, smoothStep(0, 1, clamped));
  }
@@ -1323,20 +1925,20 @@ export class Complex implements ComplexLike {
   * Returns a `Matrix2Like` object, not a `Matrix2` instance, to avoid
   * circular dependencies. If you need a full `Matrix2` instance, use:
   * ```typescript
-  * const mat = Matrix2.fromObject(complex.toRotationMatrix());
+  * const mat = Matrix2.fromObject(complex.toRotationMatrix2());
   * ```
   *
   * @example
   * ```typescript
   * const c = Complex.fromPolar(1, Math.PI / 4);
-  * const m = c.toRotationMatrix();
+  * const m = c.toRotationMatrix2();
   * // m represents a 45° rotation: { m00: cos, m01: sin, m10: -sin, m11: cos }
   * ```
   *
   * @category Serialization
-  * @since 0.1.0
+  * @since 0.7.0
   */
- toRotationMatrix(out?: Matrix2Like): Matrix2Like {
+ public toRotationMatrix2(out?: Matrix2Like): Matrix2Like {
   const normalized = this.normalized;
   const result = out ?? { m00: 0, m01: 0, m10: 0, m11: 0 };
   result.m00 = normalized.real;
@@ -1347,21 +1949,35 @@ export class Complex implements ComplexLike {
  }
 
  /**
-  * Converts the complex number to a tuple [real, imag].
-  * @returns Tuple with real and imaginary parts
+  * Writes to array or typed array.
+  *
+  * @param out - Optional destination array. If not provided, returns a new tuple.
+  * @param offset - Write offset. @defaultValue `0`
+  * @returns The output array, or a new tuple if no output was provided.
   *
   * @example
   * ```typescript
   * const c = new Complex(3, 4);
   * const [real, imag] = c.toArray();
-  * // real = 3, imag = 4
+  *
+  * // Write to existing array
+  * const arr = new Float32Array(10);
+  * c.toArray(arr, 4); // writes at indices 4, 5
   * ```
   *
   * @category Serialization
-  * @since 0.1.0
+  * @since 0.7.0
   */
- toArray(): [number, number] {
-  return [this.real, this.imag];
+ public toArray<T extends ArrayLike<number> & { [index: number]: number }>(
+  out?: T,
+  offset = 0,
+ ): T | [number, number] {
+  if (!out) {
+   return [this.real, this.imag];
+  }
+  out[offset] = this.real;
+  out[offset + 1] = this.imag;
+  return out;
  }
 
  /**
@@ -1376,9 +1992,9 @@ export class Complex implements ComplexLike {
   * ```
   *
   * @category Serialization
-  * @since 0.1.0
+  * @since 0.7.0
   */
- toObject(): ComplexLike {
+ public toObject(): ComplexLike {
   return { real: this.real, imag: this.imag };
  }
 
@@ -1395,9 +2011,9 @@ export class Complex implements ComplexLike {
   * ```
   *
   * @category Serialization
-  * @since 0.1.0
+  * @since 0.7.0
   */
- toJSON(): ComplexLike {
+ public toJSON(): ComplexLike {
   return this.toObject();
  }
 
@@ -1419,9 +2035,9 @@ export class Complex implements ComplexLike {
   * ```
   *
   * @category Serialization
-  * @since 0.1.0
+  * @since 0.7.0
   */
- toString(precision = 4): string {
+ public toString(precision = 4): string {
   const realString = this.real.toFixed(precision);
   const imagString = Math.abs(this.imag).toFixed(precision);
   const sign = this.imag >= 0 ? '+' : '-';
@@ -1440,7 +2056,7 @@ export class Complex implements ComplexLike {
   * ```
   *
   * @category Serialization
-  * @since 0.1.0
+  * @since 0.7.0
   */
  clone(): Complex {
   return new Complex(this.real, this.imag);
@@ -1456,7 +2072,7 @@ export class Complex implements ComplexLike {
   * ```
   *
   * @category Conversion
-  * @since 0.9.0
+  * @since 0.7.0
   */
  *[Symbol.iterator](): IterableIterator<number> {
   yield this.real;

@@ -1,3 +1,9 @@
+/**
+ * @file test/utils/random-source.node.spec.ts
+ * @module @lenguados/math2d/utils
+ * @description Tests for random source implementations.
+ */
+
 import { describe, expect, it } from '@jest/globals';
 
 import {

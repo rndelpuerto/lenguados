@@ -2,7 +2,7 @@
 
 > **neumaierSum**(`values`): `number`
 
-Defined in: [src/auxiliary/numeric/safety.ts:299](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/auxiliary/numeric/safety.ts#L299)
+Defined in: [src/auxiliary/numeric/safety.ts:307](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/auxiliary/numeric/safety.ts#L307)
 
 Neumaier summation - improved Kahan algorithm.
 Even more robust for values of varying magnitudes.
@@ -13,13 +13,13 @@ Even more robust for values of varying magnitudes.
 
 `number`[]
 
-Array of numbers to sum
+Array of numbers to sum.
 
 ## Returns
 
 `number`
 
-Sum with minimized error
+Sum with minimized error.
 
 ## Example
 

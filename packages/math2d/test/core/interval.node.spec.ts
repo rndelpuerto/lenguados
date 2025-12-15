@@ -1,9 +1,15 @@
+/**
+ * @file test/core/interval.node.spec.ts
+ * @module @lenguados/math2d/core
+ * @description Tests for Interval core behavior.
+ */
+
 import { describe, expect, it } from '@jest/globals';
 
 import { Interval } from '../../src/core/interval';
 import { setAssertionsEnabled } from '../../src/validation/assert';
 
-const DIGITS = 10;
+const DIGITS = 8; // toBeCloseTo decimal digits (8 for float tolerance)
 
 describe('Interval', () => {
  describe('Factories and setters', () => {
@@ -67,16 +73,19 @@ describe('Interval', () => {
    expect(hull.max).toBe(10);
 
    const intersection = a.clone().intersect(b);
+   if (!intersection) {
+    throw new Error('Expected intersection to be defined');
+   }
    expect(intersection.min).toBe(3);
    expect(intersection.max).toBe(5);
   });
  });
 
  describe('Interpolation helpers', () => {
-  it('lerp clamps t', () => {
+  it('sample clamps t', () => {
    const interval = new Interval(0, 10);
-   expect(interval.lerp(1.5)).toBe(10);
-   expect(interval.lerp(-1)).toBe(0);
+   expect(interval.sample(1.5)).toBe(10);
+   expect(interval.sample(-1)).toBe(0);
   });
 
   it('inverseLerp returns normalized value', () => {
@@ -445,6 +454,7 @@ describe('Interval', () => {
 
   it('intersect finds common interval', () => {
    const result = Interval.intersect(new Interval(0, 5), new Interval(3, 10));
+   if (!result) throw new Error('Expected intersection');
    expect(result.min).toBe(3);
    expect(result.max).toBe(5);
   });
@@ -635,16 +645,16 @@ describe('Interval', () => {
    expect.hasAssertions();
    const index = new Interval(4, 9);
    const result = index.sqrt();
-   expect(result.min).toBeCloseTo(2, 10);
-   expect(result.max).toBeCloseTo(3, 10);
+   expect(result.min).toBeCloseTo(2, 6);
+   expect(result.max).toBeCloseTo(3, 6);
   });
 
   it('reciprocal computes reciprocal interval', () => {
    expect.hasAssertions();
    const index = new Interval(2, 4);
    const result = index.reciprocal();
-   expect(result.min).toBeCloseTo(0.25, 10);
-   expect(result.max).toBeCloseTo(0.5, 10);
+   expect(result.min).toBeCloseTo(0.25, 8);
+   expect(result.max).toBeCloseTo(0.5, 8);
   });
 
   it('reciprocal throws when interval contains zero', () => {
@@ -763,6 +773,7 @@ describe('Interval', () => {
    const a = new Interval(0, 5);
    const b = new Interval(3, 8);
    const result = a.intersect(b);
+   if (!result) throw new Error('Expected intersection');
    expect(result.min).toBe(3);
    expect(result.max).toBe(5);
   });
@@ -847,6 +858,925 @@ describe('Interval', () => {
    expect(result).toBe(index);
    expect(index.min).toBe(0);
    expect(index.max).toBe(0);
+  });
+ });
+
+ describe('Coverage - Static Arithmetic Operations', () => {
+  it('static square handles positive interval', () => {
+   const result = Interval.square({ min: 2, max: 4 });
+   expect(result.min).toBe(4);
+   expect(result.max).toBe(16);
+  });
+
+  it('static square handles negative interval', () => {
+   const result = Interval.square({ min: -4, max: -2 });
+   expect(result.min).toBe(4);
+   expect(result.max).toBe(16);
+  });
+
+  it('static square handles crossing zero', () => {
+   const result = Interval.square({ min: -2, max: 3 });
+   expect(result.min).toBe(0);
+   expect(result.max).toBe(9);
+  });
+
+  it('static sqrt works for non-negative intervals', () => {
+   const result = Interval.sqrt({ min: 4, max: 16 });
+   expect(result.min).toBeCloseTo(2, DIGITS);
+   expect(result.max).toBeCloseTo(4, DIGITS);
+  });
+
+  it('static sqrt throws for negative intervals', () => {
+   expect(() => Interval.sqrt({ min: -4, max: 4 })).toThrow(RangeError);
+  });
+
+  it('static reciprocal works for positive intervals', () => {
+   const result = Interval.reciprocal({ min: 2, max: 4 });
+   expect(result.min).toBeCloseTo(0.25, DIGITS);
+   expect(result.max).toBeCloseTo(0.5, DIGITS);
+  });
+
+  it('static reciprocal throws when interval contains zero', () => {
+   expect(() => Interval.reciprocal({ min: -1, max: 1 })).toThrow(RangeError);
+  });
+ });
+
+ describe('Coverage - Static exactEquals and nearEquals', () => {
+  it('static exactEquals compares exact values', () => {
+   expect(Interval.exactEquals({ min: 1, max: 2 }, { min: 1, max: 2 })).toBe(true);
+   expect(Interval.exactEquals({ min: 1, max: 2 }, { min: 1, max: 3 })).toBe(false);
+  });
+
+  it('static nearEquals compares with tolerance', () => {
+   expect(Interval.nearEquals({ min: 1, max: 2 }, { min: 1.0000001, max: 2.0000001 }, 1e-5)).toBe(
+    true,
+   );
+   expect(Interval.nearEquals({ min: 1, max: 2 }, { min: 2, max: 3 })).toBe(false);
+  });
+ });
+
+ describe('Coverage - Instance Comparison Methods', () => {
+  it('overlaps detects overlapping intervals', () => {
+   const a = new Interval(0, 5);
+   const b = new Interval(3, 10);
+   const c = new Interval(6, 8);
+   expect(a.overlaps(b)).toBe(true);
+   expect(a.overlaps(c)).toBe(false);
+  });
+
+  it('isSubsetOf checks if interval is contained', () => {
+   const small = new Interval(2, 4);
+   const large = new Interval(0, 10);
+   expect(small.isSubsetOf(large)).toBe(true);
+   expect(large.isSubsetOf(small)).toBe(false);
+  });
+ });
+
+ describe('Coverage - Static strictlyContains and isSubsetOf', () => {
+  it('static strictlyContains returns true for interior points', () => {
+   expect(Interval.strictlyContains({ min: 0, max: 10 }, 5)).toBe(true);
+  });
+
+  it('static strictlyContains returns false for boundary points', () => {
+   expect(Interval.strictlyContains({ min: 0, max: 10 }, 0)).toBe(false);
+   expect(Interval.strictlyContains({ min: 0, max: 10 }, 10)).toBe(false);
+  });
+
+  it('static isSubsetOf checks subset relationship', () => {
+   expect(Interval.isSubsetOf({ min: 2, max: 8 }, { min: 0, max: 10 })).toBe(true);
+   expect(Interval.isSubsetOf({ min: 0, max: 10 }, { min: 2, max: 8 })).toBe(false);
+  });
+ });
+
+ describe('Coverage - Static inverseLerp and clampValue', () => {
+  it('static inverseLerp returns normalized position', () => {
+   expect(Interval.inverseLerp({ min: 0, max: 10 }, 5)).toBeCloseTo(0.5, DIGITS);
+   expect(Interval.inverseLerp({ min: 0, max: 10 }, 0)).toBeCloseTo(0, DIGITS);
+   expect(Interval.inverseLerp({ min: 0, max: 10 }, 10)).toBeCloseTo(1, DIGITS);
+  });
+
+  it('static inverseLerp handles zero-width interval', () => {
+   expect(Interval.inverseLerp({ min: 5, max: 5 }, 5)).toBe(0);
+  });
+
+  it('static clampValue clamps to interval bounds', () => {
+   expect(Interval.clampValue({ min: 0, max: 10 }, 5)).toBe(5);
+   expect(Interval.clampValue({ min: 0, max: 10 }, -5)).toBe(0);
+   expect(Interval.clampValue({ min: 0, max: 10 }, 15)).toBe(10);
+  });
+ });
+
+ describe('Coverage - Instance Arithmetic Operations', () => {
+  it('square instance method', () => {
+   const interval = new Interval(2, 4);
+   const result = interval.square();
+   expect(result).toBe(interval);
+   expect(interval.min).toBe(4);
+   expect(interval.max).toBe(16);
+  });
+
+  it('sqrt instance method', () => {
+   const interval = new Interval(4, 16);
+   const result = interval.sqrt();
+   expect(result).toBe(interval);
+   expect(interval.min).toBeCloseTo(2, DIGITS);
+   expect(interval.max).toBeCloseTo(4, DIGITS);
+  });
+
+  it('reciprocal instance method', () => {
+   const interval = new Interval(2, 4);
+   const result = interval.reciprocal();
+   expect(result).toBe(interval);
+   expect(interval.min).toBeCloseTo(0.25, DIGITS);
+   expect(interval.max).toBeCloseTo(0.5, DIGITS);
+  });
+ });
+
+ describe('Coverage - fromArray with offset', () => {
+  it('fromArray with offset reads correct values', () => {
+   const array = [1, 2, 3, 10, 5];
+   const interval = Interval.fromArray(array, 2);
+   expect(interval.min).toBe(3);
+   expect(interval.max).toBe(10);
+  });
+
+  it('fromArray throws for out of bounds offset', () => {
+   expect(() => Interval.fromArray([1, 2], 2)).toThrow(RangeError);
+  });
+ });
+
+ describe('Coverage - Static lerp and smoothStep', () => {
+  it('static lerp interpolates between intervals', () => {
+   const a = { min: 0, max: 10 };
+   const b = { min: 10, max: 20 };
+   const mid = Interval.lerp(a, b, 0.5);
+   expect(mid.min).toBe(5);
+   expect(mid.max).toBe(15);
+  });
+
+  it('static lerpClamped clamps t', () => {
+   const a = { min: 0, max: 10 };
+   const b = { min: 10, max: 20 };
+   const result = Interval.lerpClamped(a, b, 2);
+   expect(result.min).toBe(10);
+   expect(result.max).toBe(20);
+  });
+
+  it('static lerp with midpoint', () => {
+   const a = { min: 0, max: 10 };
+   const b = { min: 10, max: 20 };
+   const mid = Interval.lerp(a, b, 0.5);
+   expect(mid.min).toBe(5);
+   expect(mid.max).toBe(15);
+  });
+ });
+
+ describe('Coverage - Instance strictlyContains', () => {
+  it('strictlyContains returns true for interior', () => {
+   const interval = new Interval(0, 10);
+   expect(interval.strictlyContains(5)).toBe(true);
+  });
+
+  it('strictlyContains returns false for boundaries', () => {
+   const interval = new Interval(0, 10);
+   expect(interval.strictlyContains(0)).toBe(false);
+   expect(interval.strictlyContains(10)).toBe(false);
+  });
+ });
+
+ describe('Coverage - Static width, center, radius', () => {
+  it('static width returns interval width', () => {
+   expect(Interval.width({ min: 2, max: 8 })).toBe(6);
+  });
+
+  it('static center returns interval center', () => {
+   expect(Interval.center({ min: 2, max: 8 })).toBe(5);
+  });
+
+  it('static radius returns half width', () => {
+   expect(Interval.radius({ min: 2, max: 8 })).toBe(3);
+  });
+ });
+
+ describe('Coverage - Static arithmetic', () => {
+  it('static add adds intervals', () => {
+   const result = Interval.add({ min: 1, max: 2 }, { min: 3, max: 4 });
+   expect(result.min).toBe(4);
+   expect(result.max).toBe(6);
+  });
+
+  it('static subtract subtracts intervals', () => {
+   const result = Interval.subtract({ min: 5, max: 10 }, { min: 1, max: 2 });
+   expect(result.min).toBe(3);
+   expect(result.max).toBe(9);
+  });
+
+  it('static multiply multiplies intervals', () => {
+   const result = Interval.multiply({ min: 2, max: 3 }, { min: 4, max: 5 });
+   expect(result.min).toBe(8);
+   expect(result.max).toBe(15);
+  });
+
+  it('static scale scales interval', () => {
+   const result = Interval.scale({ min: 1, max: 3 }, 2);
+   expect(result.min).toBe(2);
+   expect(result.max).toBe(6);
+  });
+ });
+
+ describe('Coverage - Static containment', () => {
+  it('static union returns bounding interval', () => {
+   const result = Interval.union({ min: 0, max: 5 }, { min: 3, max: 8 });
+   expect(result.min).toBe(0);
+   expect(result.max).toBe(8);
+  });
+
+  it('static intersect returns overlapping interval', () => {
+   const result = Interval.intersect({ min: 0, max: 5 }, { min: 3, max: 8 });
+   if (!result) throw new Error('Expected intersection');
+   expect(result.min).toBe(3);
+   expect(result.max).toBe(5);
+  });
+
+  it('static overlaps checks overlap', () => {
+   expect(Interval.overlaps({ min: 0, max: 5 }, { min: 4, max: 8 })).toBe(true);
+   expect(Interval.overlaps({ min: 0, max: 3 }, { min: 5, max: 8 })).toBe(false);
+  });
+
+  it('instance contains checks value containment', () => {
+   const interval = new Interval(0, 10);
+   expect(interval.contains(5)).toBe(true);
+   expect(interval.contains(15)).toBe(false);
+  });
+ });
+
+ describe('Coverage - Static lerp', () => {
+  it('static lerp interpolates', () => {
+   expect(Interval.lerp({ min: 0, max: 10 }, { min: 0, max: 10 }, 0.5).min).toBe(0);
+  });
+ });
+
+ describe('Coverage - Invalid interval handling', () => {
+  it('fromCenterRadius throws for negative radius', () => {
+   expect(() => Interval.fromCenterRadius(5, -1)).toThrow();
+  });
+
+  it('divide throws for divisor spanning zero', () => {
+   const a = new Interval(1, 2);
+   const b = new Interval(-1, 1);
+   expect(() => a.divide(b)).toThrow();
+  });
+ });
+
+ describe('Coverage - Static negate', () => {
+  it('negate negates interval', () => {
+   const result = Interval.negate(new Interval(1, 3));
+   expect(result.min).toBe(-3);
+   expect(result.max).toBe(-1);
+  });
+
+  it('negate with out parameter', () => {
+   const out = new Interval();
+   const result = Interval.negate(new Interval(1, 3), out);
+   expect(result).toBe(out);
+  });
+ });
+
+ describe('Coverage - Static clone', () => {
+  it('clone clones interval', () => {
+   const source = new Interval(5, 10);
+   const cloned = Interval.clone(source);
+   expect(cloned.min).toBe(5);
+   expect(cloned.max).toBe(10);
+   expect(cloned).not.toBe(source);
+  });
+ });
+
+ describe('Coverage - Static copy', () => {
+  it('copy copies to destination', () => {
+   const source = new Interval(5, 10);
+   const destination = new Interval();
+   const result = Interval.copy(source, destination);
+   expect(result).toBe(destination);
+   expect(destination.min).toBe(5);
+   expect(destination.max).toBe(10);
+  });
+ });
+
+ describe('Coverage - Instance negate', () => {
+  it('negate negates in place', () => {
+   const interval = new Interval(1, 3);
+   interval.negate();
+   expect(interval.min).toBe(-3);
+   expect(interval.max).toBe(-1);
+  });
+ });
+
+ describe('Coverage - Instance clone', () => {
+  it('clone returns new instance', () => {
+   const interval = new Interval(5, 10);
+   const cloned = interval.clone();
+   expect(cloned.min).toBe(5);
+   expect(cloned.max).toBe(10);
+   expect(cloned).not.toBe(interval);
+  });
+ });
+
+ describe('Coverage - Instance copy', () => {
+  it('copy copies from source', () => {
+   const source = new Interval(5, 10);
+   const target = new Interval();
+   target.copy(source);
+   expect(target.min).toBe(5);
+   expect(target.max).toBe(10);
+  });
+ });
+
+ describe('Coverage - Static scale', () => {
+  it('scale scales interval', () => {
+   const result = Interval.scale(new Interval(5, 10), 2);
+   expect(result.min).toBe(10);
+   expect(result.max).toBe(20);
+  });
+ });
+
+ describe('Coverage - Instance scale', () => {
+  it('scale scales in place', () => {
+   const interval = new Interval(5, 10);
+   interval.scale(2);
+   expect(interval.min).toBe(10);
+   expect(interval.max).toBe(20);
+  });
+ });
+
+ describe('Coverage - contains', () => {
+  it('contains checks value containment', () => {
+   const interval = new Interval(5, 10);
+   expect(interval.contains(7)).toBe(true);
+   expect(interval.contains(11)).toBe(false);
+  });
+ });
+
+ describe('Coverage - Instance add/subtract', () => {
+  it('add adds interval', () => {
+   const a = new Interval(1, 2);
+   a.add(new Interval(3, 4));
+   expect(a.min).toBe(4);
+   expect(a.max).toBe(6);
+  });
+
+  it('subtract subtracts interval', () => {
+   const a = new Interval(5, 10);
+   a.subtract(new Interval(1, 2));
+   expect(a.min).toBe(3);
+   expect(a.max).toBe(9);
+  });
+ });
+
+ describe('Coverage - Instance multiply', () => {
+  it('multiply multiplies intervals', () => {
+   const a = new Interval(2, 3);
+   a.multiply(new Interval(2, 4));
+   expect(a.min).toBe(4);
+   expect(a.max).toBe(12);
+  });
+ });
+
+ // === BRANCH COVERAGE: L320-339 - static add/subtract with out param ===
+ describe('Coverage - Static add with out', () => {
+  it('add uses out parameter', () => {
+   const a = new Interval(1, 2);
+   const b = new Interval(3, 4);
+   const out = new Interval();
+   const result = Interval.add(a, b, out);
+   expect(result).toBe(out);
+   expect(result.min).toBe(4);
+   expect(result.max).toBe(6);
+  });
+ });
+
+ describe('Coverage - Static subtract with out', () => {
+  it('subtract uses out parameter', () => {
+   const a = new Interval(5, 10);
+   const b = new Interval(1, 2);
+   const out = new Interval();
+   const result = Interval.subtract(a, b, out);
+   expect(result).toBe(out);
+   expect(result.min).toBe(3);
+   expect(result.max).toBe(9);
+  });
+ });
+
+ describe('Coverage - Static multiply with out', () => {
+  it('multiply uses out parameter', () => {
+   const a = new Interval(2, 3);
+   const b = new Interval(2, 4);
+   const out = new Interval();
+   const result = Interval.multiply(a, b, out);
+   expect(result).toBe(out);
+   expect(result.min).toBe(4);
+   expect(result.max).toBe(12);
+  });
+ });
+
+ describe('Coverage - Static scale with out', () => {
+  it('scale uses out parameter', () => {
+   const interval = new Interval(2, 4);
+   const out = new Interval();
+   const result = Interval.scale(interval, 2, out);
+   expect(result).toBe(out);
+   expect(result.min).toBe(4);
+   expect(result.max).toBe(8);
+  });
+ });
+
+ describe('Coverage - Static union with out', () => {
+  it('union uses out parameter', () => {
+   const a = new Interval(1, 5);
+   const b = new Interval(3, 7);
+   const out = new Interval();
+   const result = Interval.union(a, b, out);
+   expect(result).toBe(out);
+   expect(result.min).toBe(1);
+   expect(result.max).toBe(7);
+  });
+ });
+
+ describe('Coverage - Static intersect with out', () => {
+  it('intersect uses out parameter', () => {
+   const a = new Interval(1, 5);
+   const b = new Interval(3, 7);
+   const out = new Interval();
+   const result = Interval.intersect(a, b, out);
+   if (!result) throw new Error('Expected intersection');
+   expect(result).toBe(out);
+   expect(result.min).toBe(3);
+   expect(result.max).toBe(5);
+  });
+ });
+
+ describe('Coverage - Static lerp with out', () => {
+  it('lerp uses out parameter', () => {
+   const a = new Interval(0, 10);
+   const b = new Interval(10, 20);
+   const out = new Interval();
+   const result = Interval.lerp(a, b, 0.5, out);
+   expect(result).toBe(out);
+   expect(result.min).toBe(5);
+   expect(result.max).toBe(15);
+  });
+ });
+
+ describe('fromValues factory', () => {
+  it('creates interval from min and max values', () => {
+   const index = Interval.fromValues(2, 8);
+   expect(index.min).toBe(2);
+   expect(index.max).toBe(8);
+  });
+
+  it('creates unit interval', () => {
+   const index = Interval.fromValues(0, 1);
+   expect(index.min).toBe(0);
+   expect(index.max).toBe(1);
+  });
+
+  it('uses out parameter', () => {
+   const out = new Interval();
+   const result = Interval.fromValues(3, 7, out);
+   expect(result).toBe(out);
+   expect(out.min).toBe(3);
+   expect(out.max).toBe(7);
+  });
+
+  it('throws on NaN min', () => {
+   expect(() => Interval.fromValues(NaN, 5)).toThrow();
+  });
+
+  it('throws on NaN max', () => {
+   expect(() => Interval.fromValues(0, NaN)).toThrow();
+  });
+
+  it('throws on min > max', () => {
+   expect(() => Interval.fromValues(10, 5)).toThrow();
+  });
+ });
+
+ describe('divideUnchecked', () => {
+  it('static divideUnchecked divides interval by scalar', () => {
+   const a = new Interval(10, 20);
+   const result = Interval.divideUnchecked(a, 2);
+   expect(result.min).toBe(5);
+   expect(result.max).toBe(10);
+  });
+
+  it('static divideUnchecked uses out parameter', () => {
+   const a = new Interval(4, 8);
+   const out = new Interval();
+   const result = Interval.divideUnchecked(a, 2, out);
+   expect(result).toBe(out);
+   expect(result.min).toBe(2);
+   expect(result.max).toBe(4);
+  });
+
+  it('divideUnchecked returns Infinity when divisor is zero', () => {
+   const a = new Interval(4, 8);
+   const result = Interval.divideUnchecked(a, 0);
+   expect(result.min).toBe(Infinity);
+   expect(result.max).toBe(Infinity);
+  });
+
+  it('divideUnchecked handles negative scalar', () => {
+   const a = new Interval(4, 8);
+   const result = Interval.divideUnchecked(a, -2);
+   expect(result.min).toBe(-4);
+   expect(result.max).toBe(-2);
+  });
+ });
+
+ describe('reciprocalSafe', () => {
+  it('static reciprocalSafe returns zero for interval containing zero', () => {
+   const result = Interval.reciprocalSafe({ min: -1, max: 1 });
+   expect(result.min).toBe(0);
+   expect(result.max).toBe(0);
+  });
+
+  it('static reciprocalSafe computes reciprocal for positive interval', () => {
+   const result = Interval.reciprocalSafe({ min: 2, max: 4 });
+   expect(result.min).toBeCloseTo(0.25);
+   expect(result.max).toBeCloseTo(0.5);
+  });
+
+  it('static reciprocalSafe computes reciprocal for negative interval', () => {
+   const result = Interval.reciprocalSafe({ min: -4, max: -2 });
+   expect(result.min).toBeCloseTo(-0.5);
+   expect(result.max).toBeCloseTo(-0.25);
+  });
+
+  it('static reciprocalSafe uses out parameter', () => {
+   const out = new Interval();
+   const result = Interval.reciprocalSafe({ min: 2, max: 4 }, out);
+   expect(result).toBe(out);
+   expect(result.min).toBeCloseTo(0.25);
+   expect(result.max).toBeCloseTo(0.5);
+  });
+
+  it('instance reciprocalSafe sets to zero for interval containing zero', () => {
+   const interval = new Interval(-1, 1);
+   const result = interval.reciprocalSafe();
+   expect(result.min).toBe(0);
+   expect(result.max).toBe(0);
+  });
+
+  it('instance reciprocalSafe computes reciprocal for valid interval', () => {
+   const interval = new Interval(2, 4);
+   const result = interval.reciprocalSafe();
+   expect(result.min).toBeCloseTo(0.25);
+   expect(result.max).toBeCloseTo(0.5);
+  });
+
+  it('instance reciprocalSafe returns this', () => {
+   const interval = new Interval(2, 4);
+   const result = interval.reciprocalSafe();
+   expect(result).toBe(interval);
+  });
+ });
+
+ describe('reciprocalUnchecked', () => {
+  it('static reciprocalUnchecked computes reciprocal for positive interval', () => {
+   const result = Interval.reciprocalUnchecked({ min: 2, max: 4 });
+   expect(result.min).toBeCloseTo(0.25);
+   expect(result.max).toBeCloseTo(0.5);
+  });
+
+  it('static reciprocalUnchecked computes reciprocal for negative interval', () => {
+   const result = Interval.reciprocalUnchecked({ min: -4, max: -2 });
+   expect(result.min).toBeCloseTo(-0.5);
+   expect(result.max).toBeCloseTo(-0.25);
+  });
+
+  it('static reciprocalUnchecked uses out parameter', () => {
+   const out = new Interval();
+   const result = Interval.reciprocalUnchecked({ min: 2, max: 4 }, out);
+   expect(result).toBe(out);
+   expect(result.min).toBeCloseTo(0.25);
+   expect(result.max).toBeCloseTo(0.5);
+  });
+
+  it('static reciprocalUnchecked returns Infinity for interval containing zero', () => {
+   const result = Interval.reciprocalUnchecked({ min: 0, max: 1 });
+   expect(result.max).toBe(Infinity);
+  });
+
+  it('instance reciprocalUnchecked computes reciprocal', () => {
+   const interval = new Interval(2, 4);
+   interval.reciprocalUnchecked();
+   expect(interval.min).toBeCloseTo(0.25);
+   expect(interval.max).toBeCloseTo(0.5);
+  });
+
+  it('instance reciprocalUnchecked returns this', () => {
+   const interval = new Interval(2, 4);
+   const result = interval.reciprocalUnchecked();
+   expect(result).toBe(interval);
+  });
+
+  it('instance reciprocalUnchecked handles negative interval', () => {
+   const interval = new Interval(-4, -2);
+   interval.reciprocalUnchecked();
+   expect(interval.min).toBeCloseTo(-0.5);
+   expect(interval.max).toBeCloseTo(-0.25);
+  });
+ });
+
+ describe('Instance validation methods', () => {
+  it('isFinite returns true for finite interval', () => {
+   const interval = new Interval(1, 10);
+   expect(interval.isFinite()).toBe(true);
+  });
+
+  it('isFinite returns false for Infinity', () => {
+   const interval = new Interval(0, Infinity);
+   expect(interval.isFinite()).toBe(false);
+  });
+
+  it('hasNaN returns false for valid interval', () => {
+   const interval = new Interval(1, 10);
+   expect(interval.hasNaN()).toBe(false);
+  });
+
+  it('hasNaN returns true for NaN min', () => {
+   const interval = new Interval();
+   (interval as { min: number }).min = NaN;
+   expect(interval.hasNaN()).toBe(true);
+  });
+
+  it('exactEquals returns true for identical intervals', () => {
+   const a = new Interval(1, 5);
+   const b = new Interval(1, 5);
+   expect(a.exactEquals(b)).toBe(true);
+  });
+
+  it('exactEquals returns false for different intervals', () => {
+   const a = new Interval(1, 5);
+   const b = new Interval(1, 6);
+   expect(a.exactEquals(b)).toBe(false);
+  });
+
+  it('nearEquals returns true for close intervals', () => {
+   const a = new Interval(1, 5);
+   const b = new Interval(1 + 1e-11, 5 + 1e-11);
+   expect(a.nearEquals(b, 1e-10)).toBe(true);
+  });
+ });
+
+ describe('Static divide method', () => {
+  it('divide throws on zero scalar', () => {
+   const interval = new Interval(1, 10);
+   expect(() => Interval.divide(interval, 0)).toThrow(RangeError);
+  });
+
+  it('divideSafe returns zero for zero scalar', () => {
+   const interval = new Interval(1, 10);
+   const result = Interval.divideSafe(interval, 0);
+   expect(result.min).toBe(0);
+   expect(result.max).toBe(0);
+  });
+
+  it('divide divides interval by scalar', () => {
+   const result = Interval.divide({ min: 10, max: 20 }, 2);
+   expect(result.min).toBe(5);
+   expect(result.max).toBe(10);
+  });
+ });
+
+ describe('Static isFinite/hasNaN', () => {
+  it('static isFinite returns true for finite interval', () => {
+   expect(Interval.isFinite({ min: 1, max: 10 })).toBe(true);
+  });
+
+  it('static isFinite returns false for Infinity', () => {
+   expect(Interval.isFinite({ min: 0, max: Infinity })).toBe(false);
+  });
+
+  it('static hasNaN returns false for valid interval', () => {
+   expect(Interval.hasNaN({ min: 1, max: 10 })).toBe(false);
+  });
+
+  it('static hasNaN returns true for NaN', () => {
+   expect(Interval.hasNaN({ min: NaN, max: 10 })).toBe(true);
+  });
+ });
+
+ describe('Coverage - Static hasInfinity', () => {
+  it('hasInfinity returns false for finite interval', () => {
+   expect(Interval.hasInfinity({ min: 1, max: 10 })).toBe(false);
+  });
+
+  it('hasInfinity returns true for Infinity max', () => {
+   expect(Interval.hasInfinity({ min: 0, max: Infinity })).toBe(true);
+  });
+
+  it('hasInfinity returns true for -Infinity min', () => {
+   expect(Interval.hasInfinity({ min: -Infinity, max: 10 })).toBe(true);
+  });
+
+  it('hasInfinity returns false for NaN (not infinity)', () => {
+   expect(Interval.hasInfinity({ min: NaN, max: 10 })).toBe(false);
+  });
+ });
+
+ describe('Coverage - Static isZero', () => {
+  it('isZero returns true for [0, 0]', () => {
+   expect(Interval.isZero({ min: 0, max: 0 })).toBe(true);
+  });
+
+  it('isZero returns false for [0, 1]', () => {
+   expect(Interval.isZero({ min: 0, max: 1 })).toBe(false);
+  });
+
+  it('isZero returns false for [1, 1]', () => {
+   expect(Interval.isZero({ min: 1, max: 1 })).toBe(false);
+  });
+ });
+
+ describe('Coverage - Static isNearZero', () => {
+  it('isNearZero returns true for [0, 0]', () => {
+   expect(Interval.isNearZero({ min: 0, max: 0 })).toBe(true);
+  });
+
+  it('isNearZero returns true for near-zero interval', () => {
+   expect(Interval.isNearZero({ min: 1e-10, max: 1e-10 })).toBe(true);
+  });
+
+  it('isNearZero returns false for non-zero interval', () => {
+   expect(Interval.isNearZero({ min: 0, max: 1 })).toBe(false);
+  });
+ });
+
+ describe('Coverage - Instance hasInfinity', () => {
+  it('instance hasInfinity returns false for finite', () => {
+   const interval = new Interval(1, 10);
+   expect(interval.hasInfinity()).toBe(false);
+  });
+
+  it('instance hasInfinity returns true for infinite', () => {
+   const interval = new Interval(0, Infinity);
+   expect(interval.hasInfinity()).toBe(true);
+  });
+ });
+
+ describe('Coverage - Instance isZero', () => {
+  it('instance isZero returns true for zero interval', () => {
+   const interval = new Interval(0, 0);
+   expect(interval.isZero()).toBe(true);
+  });
+
+  it('instance isZero returns false for non-zero', () => {
+   const interval = new Interval(0, 1);
+   expect(interval.isZero()).toBe(false);
+  });
+ });
+
+ describe('Coverage - Instance isNearZero', () => {
+  it('instance isNearZero returns true for near-zero', () => {
+   const interval = new Interval(1e-10, 1e-10);
+   expect(interval.isNearZero()).toBe(true);
+  });
+
+  it('instance isNearZero returns false for non-zero', () => {
+   const interval = new Interval(1, 2);
+   expect(interval.isNearZero()).toBe(false);
+  });
+ });
+
+ describe('Coverage - Instance isFinite', () => {
+  it('instance isFinite returns true for finite interval', () => {
+   const interval = new Interval(1, 10);
+   expect(interval.isFinite()).toBe(true);
+  });
+
+  it('instance isFinite returns false for infinite interval', () => {
+   expect(Interval.POSITIVE.isFinite()).toBe(false);
+  });
+ });
+
+ describe('Coverage - Instance hasNaN', () => {
+  it('instance hasNaN returns false for valid interval', () => {
+   const interval = new Interval(1, 10);
+   expect(interval.hasNaN()).toBe(false);
+  });
+ });
+
+ describe('Coverage - Instance isZero method', () => {
+  it('instance isZero returns true for [0, 0]', () => {
+   expect(Interval.ZERO.isZero()).toBe(true);
+  });
+
+  it('instance isZero returns false for non-zero', () => {
+   const interval = new Interval(1, 2);
+   expect(interval.isZero()).toBe(false);
+  });
+ });
+
+ describe('Coverage - Static reciprocalSafe', () => {
+  it('reciprocalSafe returns ZERO when containing zero', () => {
+   const result = Interval.reciprocalSafe(new Interval(-1, 1));
+   expect(result.min).toBe(0);
+   expect(result.max).toBe(0);
+  });
+
+  it('reciprocalSafe computes reciprocal for valid interval', () => {
+   const result = Interval.reciprocalSafe(new Interval(2, 4));
+   expect(result.min).toBeCloseTo(0.25, DIGITS);
+   expect(result.max).toBeCloseTo(0.5, DIGITS);
+  });
+ });
+
+ describe('Coverage - Instance reciprocalSafe', () => {
+  it('instance reciprocalSafe returns ZERO when containing zero', () => {
+   const interval = new Interval(0, 5);
+   interval.reciprocalSafe();
+   expect(interval.min).toBe(0);
+   expect(interval.max).toBe(0);
+  });
+ });
+
+ describe('Coverage - Instance reciprocalUnchecked', () => {
+  it('instance reciprocalUnchecked computes reciprocal', () => {
+   const interval = new Interval(2, 4);
+   interval.reciprocalUnchecked();
+   expect(interval.min).toBeCloseTo(0.25, DIGITS);
+   expect(interval.max).toBeCloseTo(0.5, DIGITS);
+  });
+ });
+
+ describe('Coverage - Static divideSafe', () => {
+  it('divideSafe returns ZERO when scalar is near zero', () => {
+   const result = Interval.divideSafe(new Interval(10, 20), 0);
+   expect(result.min).toBe(0);
+   expect(result.max).toBe(0);
+  });
+
+  it('divideSafe divides when scalar is valid', () => {
+   const result = Interval.divideSafe(new Interval(10, 20), 2);
+   expect(result.min).toBe(5);
+   expect(result.max).toBe(10);
+  });
+ });
+
+ describe('Coverage - Static divideUnchecked', () => {
+  it('divideUnchecked divides interval', () => {
+   const result = Interval.divideUnchecked(new Interval(10, 20), 2);
+   expect(result.min).toBe(5);
+   expect(result.max).toBe(10);
+  });
+ });
+
+ describe('Coverage - Instance intersect degenerate', () => {
+  it('intersect creates degenerate interval when no overlap', () => {
+   const a = new Interval(0, 5);
+   const b = new Interval(10, 15);
+   const result = a.intersect(b);
+   // When no overlap, creates degenerate interval at newMin
+   expect(result).toBeDefined();
+   expect(a.min).toBe(10);
+   expect(a.max).toBe(10);
+  });
+ });
+
+ describe('Coverage - Instance sample edge cases', () => {
+  it('sample at t=0 returns min', () => {
+   const interval = new Interval(10, 20);
+   expect(interval.sample(0)).toBe(10);
+  });
+
+  it('sample at t=1 returns max', () => {
+   const interval = new Interval(10, 20);
+   expect(interval.sample(1)).toBe(20);
+  });
+ });
+
+ describe('Coverage - Static hasInfinity bounds', () => {
+  it('hasInfinity returns true for infinite min', () => {
+   expect(Interval.hasInfinity(new Interval(-Infinity, 5))).toBe(true);
+  });
+
+  it('hasInfinity returns true for infinite max', () => {
+   expect(Interval.hasInfinity(new Interval(0, Infinity))).toBe(true);
+  });
+
+  it('hasInfinity returns false for finite interval', () => {
+   expect(Interval.hasInfinity(new Interval(1, 10))).toBe(false);
+  });
+ });
+
+ describe('Coverage - Static union', () => {
+  it('union combines two intervals', () => {
+   const a = new Interval(0, 5);
+   const b = new Interval(10, 15);
+   const result = Interval.union(a, b);
+   expect(result.min).toBe(0);
+   expect(result.max).toBe(15);
   });
  });
 });

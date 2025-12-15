@@ -2,7 +2,7 @@
 
 > **isNearOne**(`value`, `epsilon`): `boolean`
 
-Defined in: [src/auxiliary/scalar/comparison.ts:66](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/auxiliary/scalar/comparison.ts#L66)
+Defined in: [src/auxiliary/scalar/comparison.ts:66](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/auxiliary/scalar/comparison.ts#L66)
 
 Tests if value is near one.
 
@@ -12,26 +12,26 @@ Tests if value is near one.
 
 `number`
 
-Value to test
+Value to test.
 
 ### epsilon
 
 `number` = `EPSILON`
 
-Tolerance (default: EPSILON)
+Tolerance (default: EPSILON).
 
 ## Returns
 
 `boolean`
 
-True if |value - 1| <= epsilon
+True if |value - 1| <= epsilon.
 
 ## Example
 
 ```typescript
-isNearOne(0.9999999999);   // true (within default epsilon)
-isNearOne(0.9);           // false
-isNearOne(1.01, 0.1);     // true (within custom epsilon)
+isNearOne(0.9999999999); // true (within default epsilon)
+isNearOne(0.9); // false
+isNearOne(1.01, 0.1); // true (within custom epsilon)
 ```
 
 ## Since

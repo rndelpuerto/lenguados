@@ -61,6 +61,7 @@ const baseConfig: JestConfigWithTsJest = {
  // Aggregate coverage reports
  collectCoverage: true,
  coverageDirectory: 'coverage',
+ coveragePathIgnorePatterns: ['/node_modules/', '/test/'],
  coverageReporters: ['text', 'lcov'],
  coverageThreshold: {
   global: {

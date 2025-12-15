@@ -1,5 +1,6 @@
 /**
- * @file tests/auxiliary/angle/conversion.node.spec.ts
+ * @file test/auxiliary/angle/conversion.node.spec.ts
+ * @module @lenguados/math2d/auxiliary/angle
  * @description Tests for angle conversion functions.
  */
 

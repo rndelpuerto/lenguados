@@ -1,5 +1,6 @@
 /**
  * @file test/properties/interval.property.node.spec.ts
+ * @module @lenguados/math2d/core
  * @description Property-based tests for Interval.
  */
 
@@ -116,41 +117,41 @@ describe('Interval Property-Based Tests', () => {
  });
 
  // ========================================================================
- // Interpolation (lerp within interval)
+ // Interpolation (sample within interval)
  // ========================================================================
 
- describe('Internal Interpolation', () => {
-  it('should satisfy: lerp(0) = min', () => {
+ describe('Internal Interpolation (sample)', () => {
+  it('should satisfy: sample(0) = min', () => {
    fc.assert(
     fc.property(arbInterval, (interval) => {
-     const result = interval.clone().lerp(0);
+     const result = interval.sample(0);
      return Math.abs(result - interval.min) < TEST_TOLERANCE;
     }),
    );
   });
 
-  it('should satisfy: lerp(1) = max', () => {
+  it('should satisfy: sample(1) = max', () => {
    fc.assert(
     fc.property(arbInterval, (interval) => {
-     const result = interval.clone().lerp(1);
+     const result = interval.sample(1);
      return Math.abs(result - interval.max) < TEST_TOLERANCE;
     }),
    );
   });
 
-  it('should satisfy: lerp(0.5) = center', () => {
+  it('should satisfy: sample(0.5) = center', () => {
    fc.assert(
     fc.property(arbInterval, (interval) => {
-     const result = interval.clone().lerp(0.5);
+     const result = interval.sample(0.5);
      return Math.abs(result - interval.center()) < TEST_TOLERANCE;
     }),
    );
   });
 
-  it('should satisfy: lerp result is always in interval (clamped)', () => {
+  it('should satisfy: sample result is always in interval (clamped)', () => {
    fc.assert(
     fc.property(arbInterval, fc.float({ min: -10, max: 10, noNaN: true }), (interval, t) => {
-     const result = interval.clone().lerp(t);
+     const result = interval.sample(t);
      return result >= interval.min && result <= interval.max;
     }),
    );

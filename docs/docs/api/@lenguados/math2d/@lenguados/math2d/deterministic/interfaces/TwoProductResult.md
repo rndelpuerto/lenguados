@@ -1,8 +1,12 @@
 # Interface: TwoProductResult
 
-Defined in: [src/deterministic/precision-math.ts:35](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/deterministic/precision-math.ts#L35)
+Defined in: [src/deterministic/precision-math.ts:48](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/deterministic/precision-math.ts#L48)
 
-Two-product result for exact floating-point multiplication
+Two-product result for exact floating-point multiplication.
+
+## Since
+
+0.1.0
 
 ## Properties
 
@@ -10,16 +14,16 @@ Two-product result for exact floating-point multiplication
 
 > **error**: `number`
 
-Defined in: [src/deterministic/precision-math.ts:39](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/deterministic/precision-math.ts#L39)
+Defined in: [src/deterministic/precision-math.ts:52](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/deterministic/precision-math.ts#L52)
 
-The exact error
+The exact error.
 
-***
+---
 
 ### product
 
 > **product**: `number`
 
-Defined in: [src/deterministic/precision-math.ts:37](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/deterministic/precision-math.ts#L37)
+Defined in: [src/deterministic/precision-math.ts:50](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/deterministic/precision-math.ts#L50)
 
-The rounded product
+The rounded product.

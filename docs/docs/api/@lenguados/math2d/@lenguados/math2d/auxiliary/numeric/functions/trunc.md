@@ -2,7 +2,7 @@
 
 > **trunc**(`value`): `number`
 
-Defined in: [src/auxiliary/numeric/rounding.ts:178](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/auxiliary/numeric/rounding.ts#L178)
+Defined in: [src/auxiliary/numeric/rounding.ts:181](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/auxiliary/numeric/rounding.ts#L181)
 
 Truncates to integer (towards zero).
 
@@ -12,21 +12,21 @@ Truncates to integer (towards zero).
 
 `number`
 
-Value to truncate
+Value to truncate.
 
 ## Returns
 
 `number`
 
-Truncated integer
+Truncated integer.
 
 ## Example
 
 ```typescript
-trunc(3.7);        // 3
-trunc(3.2);        // 3
-trunc(-3.7);       // -3
-trunc(-3.2);       // -3
+trunc(3.7); // 3
+trunc(3.2); // 3
+trunc(-3.7); // -3
+trunc(-3.2); // -3
 ```
 
 ## Since

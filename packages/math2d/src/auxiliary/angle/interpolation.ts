@@ -1,7 +1,7 @@
 /**
  * @file auxiliary/angle/interpolation.ts
  * @module @lenguados/math2d/auxiliary/angle
- * @description Angular interpolation operations
+ * @description Angular interpolation operations.
  */
 
 import { saturate } from '../scalar/arithmetic';
@@ -12,10 +12,10 @@ import { angleDifference } from './operations';
 
 /**
  * Interpolates between angles using shortest path.
- * @param from - Start angle in radians
- * @param to - End angle in radians
- * @param t - Interpolation factor [0, 1]
- * @returns Interpolated angle
+ * @param from - Start angle in radians.
+ * @param to - End angle in radians.
+ * @param t - Interpolation factor [0, 1].
+ * @returns Interpolated angle.
  *
  * @remarks
  * Works for any real t (not only [0, 1]). Output is normalized
@@ -29,7 +29,7 @@ import { angleDifference } from './operations';
  * ```
  *
  * @category Interpolation
- * @since 1.0.0
+ * @since 0.7.0
  */
 export function lerpAngle(from: number, to: number, t: number): number {
  const diff = angleDifference(from, to);
@@ -39,10 +39,10 @@ export function lerpAngle(from: number, to: number, t: number): number {
 /**
  * Spherical linear interpolation for angles.
  * Constant angular velocity.
- * @param from - Start angle in radians
- * @param to - End angle in radians
- * @param t - Interpolation factor [0, 1]
- * @returns Interpolated angle
+ * @param from - Start angle in radians.
+ * @param to - End angle in radians.
+ * @param t - Interpolation factor [0, 1].
+ * @returns Interpolated angle.
  *
  * @remarks
  * For angles, slerp and lerp produce the same result since
@@ -50,7 +50,7 @@ export function lerpAngle(from: number, to: number, t: number): number {
  * exists for API consistency and clarity of intent.
  *
  * @category Interpolation
- * @since 1.0.0
+ * @since 0.7.0
  */
 export function slerpAngle(from: number, to: number, t: number): number {
  // For 2D angles, slerp is equivalent to lerp along shortest arc
@@ -59,10 +59,10 @@ export function slerpAngle(from: number, to: number, t: number): number {
 
 /**
  * Smooth step interpolation for angles.
- * @param from - Start angle in radians
- * @param to - End angle in radians
- * @param t - Interpolation factor [0, 1]
- * @returns Interpolated angle with smooth acceleration/deceleration
+ * @param from - Start angle in radians.
+ * @param to - End angle in radians.
+ * @param t - Interpolation factor [0, 1].
+ * @returns Interpolated angle with smooth acceleration/deceleration.
  *
  * @example
  * ```typescript
@@ -71,7 +71,7 @@ export function slerpAngle(from: number, to: number, t: number): number {
  * ```
  *
  * @category Interpolation
- * @since 1.0.0
+ * @since 0.7.0
  */
 export function smoothStepAngle(from: number, to: number, t: number): number {
  const smoothT = smoothStep(0, 1, saturate(t));
@@ -80,13 +80,13 @@ export function smoothStepAngle(from: number, to: number, t: number): number {
 
 /**
  * Spring interpolation for angles.
- * @param current - Current angle in radians
- * @param target - Target angle in radians
- * @param velocity - Current angular velocity (rad/s)
- * @param stiffness - Spring stiffness (0-1)
- * @param damping - Damping factor (0-1)
- * @param dt - Time step
- * @returns Object with new angle and angular velocity
+ * @param current - Current angle in radians.
+ * @param target - Target angle in radians.
+ * @param velocity - Current angular velocity (rad/s).
+ * @param stiffness - Spring stiffness (0-1).
+ * @param damping - Damping factor (0-1).
+ * @param dt - Time step.
+ * @returns Object with new angle and angular velocity.
  *
  * @example
  * ```typescript
@@ -97,7 +97,7 @@ export function smoothStepAngle(from: number, to: number, t: number): number {
  * ```
  *
  * @category Interpolation
- * @since 1.0.0
+ * @since 0.7.0
  */
 export function springAngle(
  current: number,

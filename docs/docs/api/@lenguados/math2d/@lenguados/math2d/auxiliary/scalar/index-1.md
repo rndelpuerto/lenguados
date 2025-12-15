@@ -6,10 +6,11 @@ auxiliary/scalar/comparison.ts
 
 ## Description
 
-Scalar comparison operations with tolerance
+Scalar comparison operations with tolerance.
 
 ## Comparison
 
+- [compare](functions/compare.md)
 - [greaterThan](functions/greaterThan.md)
 - [inRange](functions/inRange.md)
 - [isNearOne](functions/isNearOne.md)

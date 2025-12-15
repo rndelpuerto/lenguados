@@ -1,24 +1,25 @@
 /**
- * @file tests/auxiliary/scalar/arithmetic.spec.ts
+ * @file test/auxiliary/scalar/arithmetic.node.spec.ts
  * @module @lenguados/math2d/auxiliary/scalar
- * @description Focused tests for remap, loop, and pingPong helpers
+ * @description Focused tests for remap, loop, and pingPong helpers.
  */
 
 import { describe, expect, test } from '@jest/globals';
 
 import {
  loop,
+ loopUnchecked,
  pingPong,
+ pingPongUnchecked,
  remap,
+ remapSafe,
  clamp,
  sign,
- abs,
- min,
- max,
  saturate,
  saturateSigned,
  step,
  mod as module_,
+ modUnchecked,
  floorDivide,
  roundAwayFromZero,
 } from '../../../src/auxiliary/scalar/arithmetic';
@@ -65,9 +66,9 @@ describe('scalar/arithmetic – focused behaviors', () => {
    expect(loop(-7, -5, 5)).toBe(3);
   });
 
-  test('returns the lower bound when range collapses', () => {
-   expect(loop(42, 5, 5)).toBe(5);
-   expect(loop(-10, 2, -3)).toBe(2);
+  test('throws for collapsed range', () => {
+   expect(() => loop(42, 5, 5)).toThrow(RangeError);
+   expect(() => loop(-10, 2, -3)).toThrow(RangeError);
   });
 
   test('keeps results stable for very large magnitudes', () => {
@@ -96,8 +97,8 @@ describe('scalar/arithmetic – focused behaviors', () => {
    expect(pingPong(-4, 0, 2)).toBe(0);
   });
 
-  test('returns lower bound when range collapses', () => {
-   expect(pingPong(10, 5, 5)).toBe(5);
+  test('throws for collapsed range', () => {
+   expect(() => pingPong(10, 5, 5)).toThrow(RangeError);
   });
 
   test('remains deterministic under many cycles', () => {
@@ -122,23 +123,6 @@ describe('scalar/arithmetic – focused behaviors', () => {
    expect(sign(5)).toBe(1);
    expect(sign(-5)).toBe(-1);
    expect(sign(0)).toBe(0);
-  });
- });
-
- describe('abs', () => {
-  test('returns absolute value', () => {
-   expect(abs(-5)).toBe(5);
-   expect(abs(5)).toBe(5);
-   expect(abs(0)).toBe(0);
-  });
- });
-
- describe('min and max', () => {
-  test('return smaller/larger value', () => {
-   expect(min(3, 7)).toBe(3);
-   expect(max(3, 7)).toBe(7);
-   expect(min(-3, 7)).toBe(-3);
-   expect(max(-3, 7)).toBe(7);
   });
  });
 
@@ -176,9 +160,9 @@ describe('scalar/arithmetic – focused behaviors', () => {
    expect(module_(-5, 3)).toBe(1);
   });
 
-  test('returns 0 for non-positive divisor', () => {
-   expect(module_(5, -3)).toBe(0);
-   expect(module_(5, 0)).toBe(0);
+  test('throws for non-positive divisor', () => {
+   expect(() => module_(5, -3)).toThrow(RangeError);
+   expect(() => module_(5, 0)).toThrow(RangeError);
   });
  });
 
@@ -200,6 +184,49 @@ describe('scalar/arithmetic – focused behaviors', () => {
    expect(roundAwayFromZero(-1.4)).toBe(-1);
    expect(roundAwayFromZero(1.6)).toBe(2);
    expect(roundAwayFromZero(-1.6)).toBe(-2);
+  });
+ });
+
+ describe('remapSafe', () => {
+  test('returns outMin for collapsed input range (inMin equals inMax)', () => {
+   expect(remapSafe(5, 3, 3, 0, 100)).toBe(0); // outMin = 0
+   expect(remapSafe(5, 0, 0, 10, 20)).toBe(10); // outMin = 10
+  });
+
+  test('works like remap for valid ranges', () => {
+   expect(remapSafe(5, 0, 10, 0, 100)).toBe(50);
+   expect(remapSafe(0, 0, 10, 0, 100)).toBe(0);
+   expect(remapSafe(10, 0, 10, 0, 100)).toBe(100);
+  });
+
+  test('handles extrapolation', () => {
+   expect(remapSafe(15, 0, 10, 0, 100)).toBe(150);
+   expect(remapSafe(-5, 0, 10, 0, 100)).toBe(-50);
+  });
+ });
+
+ describe('modUnchecked', () => {
+  test('returns positive modulo without validation', () => {
+   expect(modUnchecked(7, 3)).toBe(1);
+   expect(modUnchecked(-7, 3)).toBe(2);
+   expect(modUnchecked(10, 4)).toBe(2);
+  });
+ });
+
+ describe('loopUnchecked', () => {
+  test('wraps value into range without validation', () => {
+   expect(loopUnchecked(5, 0, 4)).toBe(1);
+   expect(loopUnchecked(-1, 0, 4)).toBe(3);
+   expect(loopUnchecked(8, 2, 5)).toBe(2);
+  });
+ });
+
+ describe('pingPongUnchecked', () => {
+  test('ping-pongs value without validation', () => {
+   expect(pingPongUnchecked(0, 0, 2)).toBe(0);
+   expect(pingPongUnchecked(2, 0, 2)).toBe(2);
+   expect(pingPongUnchecked(3, 0, 2)).toBe(1);
+   expect(pingPongUnchecked(4, 0, 2)).toBe(0);
   });
  });
 });

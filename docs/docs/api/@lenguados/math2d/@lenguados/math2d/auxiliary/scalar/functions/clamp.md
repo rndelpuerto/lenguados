@@ -2,7 +2,7 @@
 
 > **clamp**(`value`, `min`, `max`): `number`
 
-Defined in: [src/auxiliary/scalar/arithmetic.ts:25](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/auxiliary/scalar/arithmetic.ts#L25)
+Defined in: [src/auxiliary/scalar/arithmetic.ts:25](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/auxiliary/scalar/arithmetic.ts#L25)
 
 Clamps a value between min and max bounds.
 
@@ -12,33 +12,33 @@ Clamps a value between min and max bounds.
 
 `number`
 
-Value to clamp
+Value to clamp.
 
 ### min
 
 `number`
 
-Lower bound
+Lower bound.
 
 ### max
 
 `number`
 
-Upper bound
+Upper bound.
 
 ## Returns
 
 `number`
 
-Clamped value
+Clamped value.
 
 ## Example
 
 ```typescript
-clamp(5, 0, 10);    // 5
-clamp(-5, 0, 10);   // 0
-clamp(15, 0, 10);   // 10
-clamp(NaN, 0, 10);  // NaN
+clamp(5, 0, 10); // 5
+clamp(-5, 0, 10); // 0
+clamp(15, 0, 10); // 10
+clamp(NaN, 0, 10); // NaN
 ```
 
 ## Since

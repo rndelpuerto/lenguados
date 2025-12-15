@@ -1,7 +1,9 @@
 /**
- * @file boundaries/angular.boundary.node.spec.ts
+ * @file test/boundaries/angular.boundary.node.spec.ts
+ * @module @lenguados/math2d/core
  * @description Boundary value tests for angular operations.
  *
+ * @remarks
  * These tests specifically target edge cases at angular boundaries (±π, 0, 2π)
  * to prevent bugs like the Transform2.nearEquals wrap-around issue.
  */
@@ -45,7 +47,7 @@ describe('Angular Boundary Tests', () => {
     const r2 = Rotation2.fromAngle(-PI * 0.9);
     const mid = Rotation2.lerp(r1, r2, 0.5);
     // Should go through ±π, not through 0
-    expect(Math.abs(mid.angle())).toBeGreaterThan(PI * 0.8);
+    expect(Math.abs(mid.angle)).toBeGreaterThan(PI * 0.8);
    });
 
    it('slerp crosses ±π boundary correctly', () => {
@@ -53,7 +55,7 @@ describe('Angular Boundary Tests', () => {
     const r2 = Rotation2.fromAngle(-PI * 0.9);
     const mid = Rotation2.slerp(r1, r2, 0.5);
     // Should go through ±π, not through 0
-    expect(Math.abs(mid.angle())).toBeGreaterThan(PI * 0.8);
+    expect(Math.abs(mid.angle)).toBeGreaterThan(PI * 0.8);
    });
   });
 
@@ -75,7 +77,7 @@ describe('Angular Boundary Tests', () => {
     const t2 = Transform2.fromValues(0, 0, -PI * 0.9, 1, 1);
     const mid = Transform2.lerp(t1, t2, 0.5);
     // Should go through ±π, not through 0
-    expect(Math.abs(mid.rotation)).toBeGreaterThan(PI * 0.8);
+    expect(Math.abs(mid.rotation.angle)).toBeGreaterThan(PI * 0.8);
    });
 
    it('static nearEquals is symmetric at ±π', () => {
@@ -158,7 +160,7 @@ describe('Angular Boundary Tests', () => {
 
   describe('Vector2', () => {
    it('angle of UNIT_X is 0', () => {
-    expect(Vector2.UNIT_X.angle()).toBe(0);
+    expect(Vector2.angle(Vector2.UNIT_X)).toBe(0);
    });
 
    it('angleTo same direction is 0', () => {
@@ -196,8 +198,8 @@ describe('Angular Boundary Tests', () => {
   describe('Transform2', () => {
    it('rotation is normalized after construction', () => {
     const t = Transform2.fromValues(0, 0, 3 * PI, 1, 1);
-    expect(t.rotation).toBeGreaterThanOrEqual(-PI);
-    expect(t.rotation).toBeLessThanOrEqual(PI);
+    expect(t.rotation.angle).toBeGreaterThanOrEqual(-PI);
+    expect(t.rotation.angle).toBeLessThanOrEqual(PI);
    });
   });
  });
@@ -304,7 +306,7 @@ describe('Angular Boundary Tests', () => {
     const r = Rotation2.fromAngle(angle);
     const c = Complex.fromPolar(1, angle);
     // Both should give the same angle (within normalization)
-    const rAngle = r.angle();
+    const rAngle = r.angle;
     const cAngle = Complex.argument(c);
     const diff = Math.abs(rAngle - cAngle);
     expect(diff < TEST_TOLERANCE || Math.abs(diff - 2 * PI) < TEST_TOLERANCE).toBe(true);

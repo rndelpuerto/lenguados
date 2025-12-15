@@ -1,5 +1,6 @@
 /**
- * @file tests/auxiliary/angle/normalization.node.spec.ts
+ * @file test/auxiliary/angle/normalization.node.spec.ts
+ * @module @lenguados/math2d/auxiliary/angle
  * @description Tests for angle normalization functions.
  */
 

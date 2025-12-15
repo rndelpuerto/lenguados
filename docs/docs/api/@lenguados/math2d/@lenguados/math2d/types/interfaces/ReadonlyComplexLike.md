@@ -1,8 +1,12 @@
 # Interface: ReadonlyComplexLike
 
-Defined in: [src/types/index.ts:149](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/types/index.ts#L149)
+Defined in: [src/types/index.ts:180](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/types/index.ts#L180)
 
 Readonly interface for complex numbers.
+
+## Since
+
+0.1.0
 
 ## Properties
 
@@ -10,12 +14,12 @@ Readonly interface for complex numbers.
 
 > `readonly` **imag**: `number`
 
-Defined in: [src/types/index.ts:151](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/types/index.ts#L151)
+Defined in: [src/types/index.ts:182](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/types/index.ts#L182)
 
-***
+---
 
 ### real
 
 > `readonly` **real**: `number`
 
-Defined in: [src/types/index.ts:150](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/types/index.ts#L150)
+Defined in: [src/types/index.ts:181](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/types/index.ts#L181)

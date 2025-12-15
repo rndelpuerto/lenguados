@@ -2,7 +2,7 @@
 
 > **normalizeDegreesPositive**(`degrees`): `number`
 
-Defined in: [src/auxiliary/angle/normalization.ts:113](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/auxiliary/angle/normalization.ts#L113)
+Defined in: [src/auxiliary/angle/normalization.ts:113](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/auxiliary/angle/normalization.ts#L113)
 
 Normalizes degrees to [0, 360).
 
@@ -12,22 +12,22 @@ Normalizes degrees to [0, 360).
 
 `number`
 
-Angle in degrees
+Angle in degrees.
 
 ## Returns
 
 `number`
 
-Normalized angle in [0, 360)
+Normalized angle in [0, 360).
 
 ## Example
 
 ```typescript
-normalizeDegreesPositive(0);      // 0
-normalizeDegreesPositive(180);    // 180
-normalizeDegreesPositive(-180);   // 180
-normalizeDegreesPositive(360);    // 0
-normalizeDegreesPositive(540);    // 180
+normalizeDegreesPositive(0); // 0
+normalizeDegreesPositive(180); // 180
+normalizeDegreesPositive(-180); // 180
+normalizeDegreesPositive(360); // 0
+normalizeDegreesPositive(540); // 180
 ```
 
 ## Since

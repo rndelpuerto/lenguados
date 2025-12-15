@@ -6,7 +6,7 @@ auxiliary/numeric/safety.ts
 
 ## Description
 
-Safe arithmetic operations that handle edge cases gracefully
+Safe arithmetic operations that handle edge cases gracefully.
 
 ## Remarks
 
@@ -19,12 +19,9 @@ JavaScript engines (sqrt) are delegated to [DeterministicMath](../../determinist
 ensure cross-platform reproducibility for physics simulations, lockstep
 networking, and replay systems.
 
-## Other
-
-- [MIN\_SAFE\_DIVISOR](variables/MIN_SAFE_DIVISOR.md)
-
 ## Safety
 
+- [MIN_SAFE_DIVISOR](variables/MIN_SAFE_DIVISOR.md)
 - [compensatedProduct](functions/compensatedProduct.md)
 - [ensureFinite](functions/ensureFinite.md)
 - [neumaierSum](functions/neumaierSum.md)

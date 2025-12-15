@@ -1,5 +1,6 @@
 /**
- * @file tests/auxiliary/numeric/guards.node.spec.ts
+ * @file test/auxiliary/numeric/guards.node.spec.ts
+ * @module @lenguados/math2d/auxiliary/numeric
  * @description Tests for numeric type guards (boolean predicates).
  */
 

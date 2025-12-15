@@ -2,7 +2,7 @@
 
 > **sanitizeNumber**(`value`, `fallback`, `min`, `max`): `number`
 
-Defined in: [src/auxiliary/numeric/safety.ts:383](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/auxiliary/numeric/safety.ts#L383)
+Defined in: [src/auxiliary/numeric/safety.ts:391](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/auxiliary/numeric/safety.ts#L391)
 
 Validates and cleans numeric value.
 
@@ -12,31 +12,31 @@ Validates and cleans numeric value.
 
 `number`
 
-Value to sanitize
+Value to sanitize.
 
 ### fallback
 
 `number` = `0`
 
-Value to use if input is invalid (default: 0)
+Value to use if input is invalid (default: 0).
 
 ### min
 
 `number` = `-Number.MAX_VALUE`
 
-Minimum allowed value (default: -Number.MAX_VALUE)
+Minimum allowed value (default: -Number.MAX_VALUE).
 
 ### max
 
 `number` = `Number.MAX_VALUE`
 
-Maximum allowed value (default: Number.MAX_VALUE)
+Maximum allowed value (default: Number.MAX_VALUE).
 
 ## Returns
 
 `number`
 
-Clean value or fallback
+Clean value or fallback.
 
 ## Remarks
 
@@ -46,12 +46,12 @@ a value is both finite and within a specific range.
 ## Example
 
 ```typescript
-sanitizeNumber(42);                    // 42
-sanitizeNumber(NaN);                   // 0 (fallback)
-sanitizeNumber(Infinity);              // 0 (fallback)
-sanitizeNumber(100, 0, 0, 50);         // 50 (clamped to max)
-sanitizeNumber(-10, 0, 0, 100);        // 0 (clamped to min)
-sanitizeNumber(NaN, -1);               // -1 (custom fallback)
+sanitizeNumber(42); // 42
+sanitizeNumber(NaN); // 0 (fallback)
+sanitizeNumber(Infinity); // 0 (fallback)
+sanitizeNumber(100, 0, 0, 50); // 50 (clamped to max)
+sanitizeNumber(-10, 0, 0, 100); // 0 (clamped to min)
+sanitizeNumber(NaN, -1); // -1 (custom fallback)
 ```
 
 ## Since

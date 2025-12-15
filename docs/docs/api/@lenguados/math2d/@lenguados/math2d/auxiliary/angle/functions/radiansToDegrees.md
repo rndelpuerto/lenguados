@@ -2,7 +2,7 @@
 
 > **radiansToDegrees**(`radians`): `number`
 
-Defined in: [src/auxiliary/angle/conversion.ts:43](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/auxiliary/angle/conversion.ts#L43)
+Defined in: [src/auxiliary/angle/conversion.ts:43](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/auxiliary/angle/conversion.ts#L43)
 
 Converts radians to degrees.
 
@@ -12,20 +12,20 @@ Converts radians to degrees.
 
 `number`
 
-Angle in radians
+Angle in radians.
 
 ## Returns
 
 `number`
 
-Angle in degrees
+Angle in degrees.
 
 ## Example
 
 ```typescript
-radiansToDegrees(Math.PI);       // 180
-radiansToDegrees(Math.PI / 2);   // 90
-radiansToDegrees(2 * Math.PI);   // 360
+radiansToDegrees(Math.PI); // 180
+radiansToDegrees(Math.PI / 2); // 90
+radiansToDegrees(2 * Math.PI); // 360
 ```
 
 ## Since

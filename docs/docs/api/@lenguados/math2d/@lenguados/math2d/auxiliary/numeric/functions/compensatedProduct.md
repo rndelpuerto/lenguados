@@ -2,7 +2,7 @@
 
 > **compensatedProduct**(`a`, `b`): `object`
 
-Defined in: [src/auxiliary/numeric/safety.ts:320](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/auxiliary/numeric/safety.ts#L320)
+Defined in: [src/auxiliary/numeric/safety.ts:328](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/auxiliary/numeric/safety.ts#L328)
 
 Compensated product using error-free transformation.
 
@@ -12,19 +12,19 @@ Compensated product using error-free transformation.
 
 `number`
 
-First factor
+First factor.
 
 ### b
 
 `number`
 
-Second factor
+Second factor.
 
 ## Returns
 
 `object`
 
-Object with product and error term
+Object with product and error term.
 
 ### error
 

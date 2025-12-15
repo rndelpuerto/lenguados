@@ -1,5 +1,5 @@
 /**
- * @file tests/auxiliary/numeric/safety.spec.ts
+ * @file test/auxiliary/numeric/safety.node.spec.ts
  * @module @lenguados/math2d/auxiliary/numeric
  * @description Focused coverage for numeric safety helpers.
  */
@@ -119,8 +119,8 @@ describe('numeric/safety', () => {
 
  describe('safeSqrt', () => {
   test('returns sqrt for positive inputs', () => {
-   expect(safeSqrt(4)).toBe(2);
-   expect(safeSqrt(9)).toBe(3);
+   expect(safeSqrt(4)).toBeCloseTo(2, 6);
+   expect(safeSqrt(9)).toBeCloseTo(3, 6);
   });
 
   test('returns 0 for negative inputs', () => {

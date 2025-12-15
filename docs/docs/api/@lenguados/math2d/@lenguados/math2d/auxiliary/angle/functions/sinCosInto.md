@@ -2,7 +2,7 @@
 
 > **sinCosInto**(`angle`, `out`): [`SinCos`](../interfaces/SinCos.md)
 
-Defined in: [src/auxiliary/angle/operations.ts:96](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/auxiliary/angle/operations.ts#L96)
+Defined in: [src/auxiliary/angle/operations.ts:95](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/auxiliary/angle/operations.ts#L95)
 
 Computes sine and cosine into an existing output object.
 Zero-allocation version of [sinCos](sinCos.md) for hot paths.
@@ -13,19 +13,19 @@ Zero-allocation version of [sinCos](sinCos.md) for hot paths.
 
 `number`
 
-Angle in radians
+Angle in radians.
 
 ### out
 
 [`SinCos`](../interfaces/SinCos.md)
 
-Output object to write sin/cos into
+Output object to write sin/cos into.
 
 ## Returns
 
 [`SinCos`](../interfaces/SinCos.md)
 
-The same `out` object with updated sin/cos
+The same `out` object with updated sin/cos.
 
 ## Remarks
 
@@ -39,14 +39,14 @@ const result: SinCos = { sin: 0, cos: 0 };
 
 // Reuse object in hot loop
 for (let i = 0; i < 1000; i++) {
-  sinCosInto(angles[i], result);
-  // use result.sin, result.cos...
+ sinCosInto(angles[i], result);
+ // use result.sin, result.cos...
 }
 ```
 
 ## See
 
-[sinCos](sinCos.md) for convenience variant that creates new object
+[sinCos](sinCos.md) for convenience variant that creates new object.
 
 ## Since
 

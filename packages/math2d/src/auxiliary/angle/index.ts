@@ -1,7 +1,9 @@
 /**
+ * @file auxiliary/angle/index.ts
  * @module @lenguados/math2d/auxiliary/angle
- * @description Angular mathematical operations for the Lenguados math2d library
+ * @description Angular mathematical operations for the Lenguados math2d library.
  *
+ * @remarks
  * This module provides specialized angular operations including:
  * - Angle conversions (degrees, radians, turns, gradians)
  * - Angle normalization (wrap to standard ranges)

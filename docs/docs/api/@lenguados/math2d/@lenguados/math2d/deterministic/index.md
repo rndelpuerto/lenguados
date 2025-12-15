@@ -2,16 +2,16 @@
 
 ## File
 
-deterministic/DeterministicMath.ts
+deterministic/deterministic-math.ts
 
 ## Description
 
-Deterministic implementations of mathematical functions
+Deterministic implementations of mathematical functions.
 
-## Classes
+## Deterministic
 
 - [DeterministicMath](classes/DeterministicMath.md)
 
-## Interfaces
+## Types
 
 - [DeterministicOptions](interfaces/DeterministicOptions.md)

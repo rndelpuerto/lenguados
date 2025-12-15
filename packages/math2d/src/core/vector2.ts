@@ -1,7 +1,7 @@
 /**
  * @file core/vector2.ts
  * @module @lenguados/math2d/core
- * @description Industrial-grade mutable 2D vector implementation.
+ * @description Two-dimensional vector implementation for the Lenguado 2-D physics-engine family.
  *
  * @remarks
  * **Angle & rotation conventions**
@@ -15,17 +15,14 @@
  * **Design principles**
  * - Instance methods mutate `this` for fluent chaining.
  * - Static methods are pure and accept an optional `out` parameter to avoid allocations.
- * - Trigonometric and square-root operations delegate to {@link DeterministicMath}.
+ * - Trigonometric and square-root operations delegate to deterministic kernels.
  * - All operations use auxiliary modules to maintain DRY principle.
  */
 
 import { sinCos } from '../auxiliary/angle/operations';
 import { safeAcos, safeDivide, safeSqrt } from '../auxiliary/numeric/safety';
 import {
- abs as scalarAbs,
  clamp,
- max as scalarMax,
- min as scalarMin,
  mod as scalarModule,
  saturate,
  sign as scalarSign,
@@ -36,12 +33,13 @@ import {
  nearEquals as scalarNearEquals,
  relativeEquals,
 } from '../auxiliary/scalar/comparison';
-import { EPSILON } from '../auxiliary/scalar/constants';
+import { EPSILON, SQRT_HALF } from '../auxiliary/scalar/constants';
 import { lerp, smoothStep } from '../auxiliary/scalar/interpolation';
-import { DeterministicMath } from '../deterministic/deterministic-math';
+import { atan2, hypot, sin, sqrt } from '../deterministic/deterministic-kernels';
 import type {
  ReadonlyComplexLike,
  ReadonlyMatrix2Like,
+ ReadonlyMatrix3Like,
  ReadonlyRotation2Like,
  ReadonlyTransform2Like,
  ReadonlyVector2Like,
@@ -55,6 +53,9 @@ import { assertFinite } from '../validation/assert';
 
 /**
  * Readonly view of a {@link Vector2} instance.
+ *
+ * @category Types
+ * @since 0.7.0
  * @public
  */
 export type ReadonlyVector2 = Readonly<Vector2>;
@@ -80,7 +81,7 @@ export type ReadonlyVector2 = Readonly<Vector2>;
  * ```
  *
  * @category Helpers
- * @since 0.8.0
+ * @since 0.7.0
  */
 export function freezeVector2(vector: Vector2): ReadonlyVector2 {
  return Object.freeze(vector);
@@ -99,7 +100,7 @@ export { isVector2Like } from '../types';
  * @remarks
  * - **Design:** Instance methods are mutable and chainable; static methods are pure
  *   with alloc-free overloads via `out` parameter.
- * - **Numerics:** Uses DeterministicMath for cross-platform reproducibility.
+ * - **Numerics:** Uses deterministic kernels for cross-platform reproducibility.
  * - **Safety:** "Safe" variants avoid throwing on degeneracies.
  *
  * @example
@@ -113,7 +114,7 @@ export { isVector2Like } from '../types';
  * ```
  *
  * @category Core
- * @since 0.1.0
+ * @since 0.7.0
  */
 export class Vector2 implements Vector2Like {
  /* ======================================================================== */
@@ -124,56 +125,101 @@ export class Vector2 implements Vector2Like {
   return out ?? new Vector2();
  }
 
- private static sanitizeComponent(value: number, name: string): number {
-  assertFinite(value, name);
-  return value;
- }
-
  /* ======================================================================== */
  /* Static Constants (Immutable)                                             */
  /* ======================================================================== */
 
- /** The zero/origin vector `(0, 0)`. */
+ /**
+  * The zero/origin vector `(0, 0)`.
+  * @category Constant
+  * @since 0.7.0
+  */
  public static readonly ZERO = freezeVector2(new Vector2(0, 0));
 
- /** Alias for ZERO - the origin vector. */
- public static readonly ORIGIN = Vector2.ZERO;
+ /**
+  * Number of elements when serialized to an array.
+  * @category Constant
+  * @since 0.7.0
+  */
+ public static readonly ELEMENT_COUNT = 2;
 
- /** Epsilon vector `(ε, ε)`. */
+ /**
+  * Epsilon vector `(ε, ε)`.
+  * @category Constant
+  * @since 0.7.0
+  */
  public static readonly EPSILON_VECTOR = freezeVector2(new Vector2(EPSILON, EPSILON));
 
- /** The all-ones vector `(1, 1)`. */
+ /**
+  * The all-ones vector `(1, 1)`.
+  * @category Constant
+  * @since 0.7.0
+  */
  public static readonly ONE = freezeVector2(new Vector2(1, 1));
 
- /** The all-negative-ones vector `(-1, -1)`. */
+ /**
+  * The all-negative-ones vector `(-1, -1)`.
+  * @category Constant
+  * @since 0.7.0
+  */
  public static readonly NEGATIVE_ONE = freezeVector2(new Vector2(-1, -1));
 
- /** Unit vector along +X `(1, 0)`. */
+ /**
+  * Unit vector along +X `(1, 0)`.
+  * @category Constant
+  * @since 0.7.0
+  */
  public static readonly UNIT_X = freezeVector2(new Vector2(1, 0));
 
- /** Unit vector along +Y `(0, 1)`. */
+ /**
+  * Unit vector along +Y `(0, 1)`.
+  * @category Constant
+  * @since 0.7.0
+  */
  public static readonly UNIT_Y = freezeVector2(new Vector2(0, 1));
 
- /** Unit vector along -X `(-1, 0)`. */
+ /**
+  * Unit vector along -X `(-1, 0)`.
+  * @category Constant
+  * @since 0.7.0
+  */
  public static readonly NEGATIVE_UNIT_X = freezeVector2(new Vector2(-1, 0));
 
- /** Unit vector along -Y `(0, -1)`. */
+ /**
+  * Unit vector along -Y `(0, -1)`.
+  * @category Constant
+  * @since 0.7.0
+  */
  public static readonly NEGATIVE_UNIT_Y = freezeVector2(new Vector2(0, -1));
 
- /** 45° diagonal unit `(1/√2, 1/√2)`. */
- public static readonly UNIT_DIAGONAL = freezeVector2(new Vector2(Math.SQRT1_2, Math.SQRT1_2));
+ /**
+  * 45° diagonal unit `(1/√2, 1/√2)` - direction from origin at 45° from +X.
+  * @category Constant
+  * @since 0.7.0
+  */
+ public static readonly UNIT_DIAGONAL = freezeVector2(new Vector2(SQRT_HALF, SQRT_HALF));
 
- /** 225° diagonal unit `(-1/√2, -1/√2)`. */
- public static readonly NEGATIVE_UNIT_DIAGONAL = freezeVector2(
-  new Vector2(-Math.SQRT1_2, -Math.SQRT1_2),
- );
+ /**
+  * 225° diagonal unit `(-1/√2, -1/√2)` - direction from origin at 225° from +X.
+  * @category Constant
+  * @since 0.7.0
+  */
+ public static readonly NEGATIVE_UNIT_DIAGONAL = freezeVector2(new Vector2(-SQRT_HALF, -SQRT_HALF));
 
- /** The `(+∞, +∞)` vector. */
+ /**
+  * The `(+∞, +∞)` vector.
+  * @category Constant
+  * @since 0.7.0
+  */
  public static readonly POSITIVE_INFINITY = freezeVector2(
   new Vector2(Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY),
  );
 
- /** The `(-∞, -∞)` vector. */
+ /**
+  * The `(-∞, -∞)` vector.
+  * @category Constant
+  * @since 0.7.0
+  */
  public static readonly NEGATIVE_INFINITY = freezeVector2(
   new Vector2(Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY),
  );
@@ -191,7 +237,7 @@ export class Vector2 implements Vector2Like {
   * @returns A Vector2 with components `(x, y)`.
   *
   * @category Factory
-  * @since 0.1.0
+  * @since 0.7.0
   */
  public static fromValues(x: number, y: number, out?: Vector2): Vector2 {
   return this.ensureOut(out).set(x, y);
@@ -205,7 +251,7 @@ export class Vector2 implements Vector2Like {
   * @returns A Vector2 with identical components.
   *
   * @category Factory
-  * @since 0.1.0
+  * @since 0.7.0
   */
  public static clone(source: ReadonlyVector2Like, out?: Vector2): Vector2 {
   return this.ensureOut(out).set(source.x, source.y);
@@ -219,7 +265,7 @@ export class Vector2 implements Vector2Like {
   * @returns The destination vector.
   *
   * @category Factory
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static copy(source: ReadonlyVector2Like, destination: Vector2): Vector2 {
   return destination.set(source.x, source.y);
@@ -239,9 +285,10 @@ export class Vector2 implements Vector2Like {
   * ```
   *
   * @category Factory
-  * @since 0.1.0
+  * @since 0.7.0
   */
  public static fromAngle(angle: number, radius = 1, out?: Vector2): Vector2 {
+  assertFinite(angle, 'Vector2.fromAngle:angle');
   const { cos, sin } = sinCos(angle);
   return this.ensureOut(out).set(cos * radius, sin * radius);
  }
@@ -255,12 +302,10 @@ export class Vector2 implements Vector2Like {
   * @throws {Error} If x or y is not finite.
   *
   * @category Factory
-  * @since 0.1.0
+  * @since 0.7.0
   */
  public static fromObject(object: ReadonlyVector2Like, out?: Vector2): Vector2 {
-  const x = this.sanitizeComponent(object.x, 'Vector2.fromObject:x');
-  const y = this.sanitizeComponent(object.y, 'Vector2.fromObject:y');
-  return this.ensureOut(out).set(x, y);
+  return this.ensureOut(out).set(object.x, object.y);
  }
 
  /**
@@ -279,17 +324,32 @@ export class Vector2 implements Vector2Like {
   * ```
   *
   * @category Factory
-  * @since 0.1.0
+  * @since 0.7.0
   */
  public static fromArray(array: ArrayLike<number>, offset = 0, out?: Vector2): Vector2 {
-  if (offset < 0 || offset + 1 >= array.length) {
+  if (offset < 0 || offset + Vector2.ELEMENT_COUNT > array.length) {
    throw new RangeError(
     `Vector2.fromArray: offset ${offset} out of bounds for array length ${array.length}`,
    );
   }
-  const x = this.sanitizeComponent(array[offset]!, 'Vector2.fromArray:x');
-  const y = this.sanitizeComponent(array[offset + 1]!, 'Vector2.fromArray:y');
-  return this.ensureOut(out).set(x, y);
+  return this.ensureOut(out).set(array[offset]!, array[offset + 1]!);
+ }
+
+ /**
+  * Creates a vector from a complex number.
+  *
+  * @param complex - Complex number with real and imag components.
+  * @param out - Optional output vector.
+  * @returns Vector with x=real, y=imag.
+  *
+  * @remarks
+  * Uses interface for loose coupling with Complex class.
+  *
+  * @category Factory
+  * @since 0.7.0
+  */
+ public static fromComplex(complex: ReadonlyComplexLike, out?: Vector2): Vector2 {
+  return this.ensureOut(out).set(complex.real, complex.imag);
  }
 
  /* ======================================================================== */
@@ -303,7 +363,7 @@ export class Vector2 implements Vector2Like {
   * @returns The scalar sum `vector.x + vector.y`.
   *
   * @category Arithmetic
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static sumComponents(vector: ReadonlyVector2Like): number {
   return vector.x + vector.y;
@@ -318,7 +378,7 @@ export class Vector2 implements Vector2Like {
   * @returns Vector equal to `(a.x + b.x, a.y + b.y)`.
   *
   * @category Arithmetic
-  * @since 0.1.0
+  * @since 0.7.0
   */
  public static add(a: ReadonlyVector2Like, b: ReadonlyVector2Like, out?: Vector2): Vector2 {
   return this.ensureOut(out).set(a.x + b.x, a.y + b.y);
@@ -333,7 +393,7 @@ export class Vector2 implements Vector2Like {
   * @returns Vector equal to `(v.x + s, v.y + s)`.
   *
   * @category Arithmetic
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static addScalar(v: ReadonlyVector2Like, s: number, out?: Vector2): Vector2 {
   return this.ensureOut(out).set(v.x + s, v.y + s);
@@ -348,7 +408,7 @@ export class Vector2 implements Vector2Like {
   * @returns Vector equal to `(a.x - b.x, a.y - b.y)`.
   *
   * @category Arithmetic
-  * @since 0.1.0
+  * @since 0.7.0
   */
  public static subtract(a: ReadonlyVector2Like, b: ReadonlyVector2Like, out?: Vector2): Vector2 {
   return this.ensureOut(out).set(a.x - b.x, a.y - b.y);
@@ -363,7 +423,7 @@ export class Vector2 implements Vector2Like {
   * @returns Vector equal to `(v.x - s, v.y - s)`.
   *
   * @category Arithmetic
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static subtractScalar(v: ReadonlyVector2Like, s: number, out?: Vector2): Vector2 {
   return this.ensureOut(out).set(v.x - s, v.y - s);
@@ -378,7 +438,7 @@ export class Vector2 implements Vector2Like {
   * @returns Vector equal to `(a.x * b.x, a.y * b.y)`.
   *
   * @category Arithmetic
-  * @since 0.1.0
+  * @since 0.7.0
   */
  public static multiply(a: ReadonlyVector2Like, b: ReadonlyVector2Like, out?: Vector2): Vector2 {
   return this.ensureOut(out).set(a.x * b.x, a.y * b.y);
@@ -393,32 +453,99 @@ export class Vector2 implements Vector2Like {
   * @returns Vector equal to `(v.x * s, v.y * s)`.
   *
   * @category Arithmetic
-  * @since 0.1.0
+  * @since 0.7.0
   */
  public static scale(v: ReadonlyVector2Like, s: number, out?: Vector2): Vector2 {
   return this.ensureOut(out).set(v.x * s, v.y * s);
  }
 
  /**
-  * Component-wise division `a / b` using safe division.
+  * Component-wise division `a / b` (strict).
+  *
+  * @param a - Numerator vector.
+  * @param b - Divisor vector.
+  * @param out - Optional output vector.
+  * @returns Vector equal to `(a.x / b.x, a.y / b.y)`.
+  * @throws {RangeError} If any component of b is near zero.
+  *
+  * @see {@link divideSafe} - Returns 0 per component instead of throwing
+  * @see {@link divideUnchecked} - No validation, for hot paths
+  *
+  * @category Arithmetic
+  * @since 0.7.0
+  */
+ public static divide(a: ReadonlyVector2Like, b: ReadonlyVector2Like, out?: Vector2): Vector2 {
+  if (isNearZero(b.x) || isNearZero(b.y)) {
+   throw new RangeError('Vector2.divide: cannot divide by near-zero component');
+  }
+  return this.ensureOut(out).set(a.x / b.x, a.y / b.y);
+ }
+
+ /**
+  * Component-wise division `a / b` (safe).
   *
   * @param a - Numerator vector.
   * @param b - Divisor vector.
   * @param out - Optional output vector.
   * @returns Vector with safe division per component (0 if divisor near zero).
   *
-  * @remarks
-  * Uses safeDivide internally - division by zero returns 0 per component.
+  * @see {@link divide} - Throws on near-zero component
   *
   * @category Arithmetic
-  * @since 0.1.0
+  * @since 0.7.0
   */
- public static divide(a: ReadonlyVector2Like, b: ReadonlyVector2Like, out?: Vector2): Vector2 {
-  return this.ensureOut(out).set(safeDivide(a.x, b.x), safeDivide(a.y, b.y));
+ public static divideSafe(a: ReadonlyVector2Like, b: ReadonlyVector2Like, out?: Vector2): Vector2 {
+  return this.ensureOut(out).set(isNearZero(b.x) ? 0 : a.x / b.x, isNearZero(b.y) ? 0 : a.y / b.y);
  }
 
  /**
-  * Scalar division `v / s` using safe division.
+  * Component-wise division `a / b` (unchecked for hot paths).
+  *
+  * @param a - Numerator vector.
+  * @param b - Divisor vector (must have non-zero components).
+  * @param out - Optional output vector.
+  * @returns Vector equal to `(a.x / b.x, a.y / b.y)`.
+  *
+  * @remarks
+  * **⚠️ Precondition:** `b.x ≠ 0` and `b.y ≠ 0`. Calling with zero produces Infinity/NaN.
+  *
+  * @category Arithmetic
+  * @since 0.7.0
+  */
+ public static divideUnchecked(
+  a: ReadonlyVector2Like,
+  b: ReadonlyVector2Like,
+  out?: Vector2,
+ ): Vector2 {
+  return this.ensureOut(out).set(a.x / b.x, a.y / b.y);
+ }
+
+ /**
+  * Scalar division `v / s` (strict).
+  *
+  * @param v - Vector to divide.
+  * @param s - Scalar divisor.
+  * @param out - Optional output vector.
+  * @returns Vector equal to `(v.x / s, v.y / s)`.
+  * @throws {RangeError} If scalar is near zero.
+  *
+  * @remarks
+  * For safe division that returns zeros instead of throwing, use {@link divideScalarSafe}.
+  * For hot paths where you've already validated the input, use {@link divideScalarUnchecked}.
+  *
+  * @category Arithmetic
+  * @since 0.7.0
+  */
+ public static divideScalar(v: ReadonlyVector2Like, s: number, out?: Vector2): Vector2 {
+  if (isNearZero(s)) {
+   throw new RangeError('Vector2.divideScalar: cannot divide by zero or near-zero scalar');
+  }
+  const inv = 1 / s;
+  return this.ensureOut(out).set(v.x * inv, v.y * inv);
+ }
+
+ /**
+  * Scalar division `v / s` (safe).
   *
   * @param v - Vector to divide.
   * @param s - Scalar divisor (if near zero, returns (0, 0)).
@@ -426,12 +553,32 @@ export class Vector2 implements Vector2Like {
   * @returns Vector equal to `(v.x / s, v.y / s)` or (0, 0) if s is near zero.
   *
   * @category Arithmetic
-  * @since 0.1.0
+  * @since 0.7.0
   */
- public static divideScalar(v: ReadonlyVector2Like, s: number, out?: Vector2): Vector2 {
+ public static divideScalarSafe(v: ReadonlyVector2Like, s: number, out?: Vector2): Vector2 {
   if (isNearZero(s)) {
    return this.ensureOut(out).set(0, 0);
   }
+  const inv = 1 / s;
+  return this.ensureOut(out).set(v.x * inv, v.y * inv);
+ }
+
+ /**
+  * Scalar division `v / s` (unchecked for hot paths).
+  *
+  * @param v - Vector to divide.
+  * @param s - Scalar divisor (must be non-zero).
+  * @param out - Optional output vector.
+  * @returns Vector equal to `(v.x / s, v.y / s)`.
+  *
+  * @remarks
+  * ⚠️ **Precondition:** Scalar must be non-zero.
+  * Calling with zero scalar produces Infinity/NaN components.
+  *
+  * @category Arithmetic
+  * @since 0.7.0
+  */
+ public static divideScalarUnchecked(v: ReadonlyVector2Like, s: number, out?: Vector2): Vector2 {
   const inv = 1 / s;
   return this.ensureOut(out).set(v.x * inv, v.y * inv);
  }
@@ -444,7 +591,7 @@ export class Vector2 implements Vector2Like {
   * @returns Negated vector.
   *
   * @category Arithmetic
-  * @since 0.1.0
+  * @since 0.7.0
   */
  public static negate(v: ReadonlyVector2Like, out?: Vector2): Vector2 {
   return this.ensureOut(out).set(-v.x, -v.y);
@@ -468,7 +615,7 @@ export class Vector2 implements Vector2Like {
   * ```
   *
   * @category Arithmetic
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static addScaledVector(
   base: ReadonlyVector2Like,
@@ -492,7 +639,7 @@ export class Vector2 implements Vector2Like {
   * More efficient than separate multiply and add operations.
   *
   * @category Arithmetic
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static fma(
   a: ReadonlyVector2Like,
@@ -516,7 +663,7 @@ export class Vector2 implements Vector2Like {
   * which handles negative values correctly (always returns positive).
   *
   * @category Arithmetic
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static mod(a: ReadonlyVector2Like, b: ReadonlyVector2Like, out?: Vector2): Vector2 {
   return this.ensureOut(out).set(scalarModule(a.x, b.x), scalarModule(a.y, b.y));
@@ -531,7 +678,7 @@ export class Vector2 implements Vector2Like {
   * @returns Vector with modulo applied to both components.
   *
   * @category Arithmetic
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static modScalar(v: ReadonlyVector2Like, s: number, out?: Vector2): Vector2 {
   return this.ensureOut(out).set(scalarModule(v.x, s), scalarModule(v.y, s));
@@ -549,7 +696,7 @@ export class Vector2 implements Vector2Like {
   * @returns Floored vector.
   *
   * @category Numeric Transform
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static floor(v: ReadonlyVector2Like, out?: Vector2): Vector2 {
   return this.ensureOut(out).set(Math.floor(v.x), Math.floor(v.y));
@@ -563,7 +710,7 @@ export class Vector2 implements Vector2Like {
   * @returns Ceiled vector.
   *
   * @category Numeric Transform
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static ceil(v: ReadonlyVector2Like, out?: Vector2): Vector2 {
   return this.ensureOut(out).set(Math.ceil(v.x), Math.ceil(v.y));
@@ -577,10 +724,24 @@ export class Vector2 implements Vector2Like {
   * @returns Rounded vector.
   *
   * @category Numeric Transform
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static round(v: ReadonlyVector2Like, out?: Vector2): Vector2 {
   return this.ensureOut(out).set(Math.round(v.x), Math.round(v.y));
+ }
+
+ /**
+  * Applies Math.trunc to both components (rounds towards zero).
+  *
+  * @param v - Source vector.
+  * @param out - Optional output vector.
+  * @returns Truncated vector.
+  *
+  * @category Numeric Transform
+  * @since 0.7.0
+  */
+ public static trunc(v: ReadonlyVector2Like, out?: Vector2): Vector2 {
+  return this.ensureOut(out).set(Math.trunc(v.x), Math.trunc(v.y));
  }
 
  /**
@@ -591,10 +752,10 @@ export class Vector2 implements Vector2Like {
   * @returns Absolute-valued vector.
   *
   * @category Numeric Transform
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static abs(v: ReadonlyVector2Like, out?: Vector2): Vector2 {
-  return this.ensureOut(out).set(scalarAbs(v.x), scalarAbs(v.y));
+  return this.ensureOut(out).set(Math.abs(v.x), Math.abs(v.y));
  }
 
  /**
@@ -605,7 +766,7 @@ export class Vector2 implements Vector2Like {
   * @returns Vector with components -1, 0, or 1.
   *
   * @category Numeric Transform
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static sign(v: ReadonlyVector2Like, out?: Vector2): Vector2 {
   return this.ensureOut(out).set(scalarSign(v.x), scalarSign(v.y));
@@ -620,11 +781,11 @@ export class Vector2 implements Vector2Like {
   * @throws {RangeError} If any component is zero.
   *
   * @category Numeric Transform
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static inverse(v: ReadonlyVector2Like, out?: Vector2): Vector2 {
-  if (v.x === 0 || v.y === 0) {
-   throw new RangeError('Vector2.inverse: cannot invert zero component');
+  if (isNearZero(v.x) || isNearZero(v.y)) {
+   throw new RangeError('Vector2.inverse: cannot invert near-zero component');
   }
   return this.ensureOut(out).set(1 / v.x, 1 / v.y);
  }
@@ -637,10 +798,28 @@ export class Vector2 implements Vector2Like {
   * @returns Safe inverted vector.
   *
   * @category Numeric Transform
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static inverseSafe(v: ReadonlyVector2Like, out?: Vector2): Vector2 {
   return this.ensureOut(out).set(isNearZero(v.x) ? 0 : 1 / v.x, isNearZero(v.y) ? 0 : 1 / v.y);
+ }
+
+ /**
+  * Unchecked reciprocal for hot paths.
+  *
+  * @param v - Source vector (must have non-zero components).
+  * @param out - Optional output vector.
+  * @returns Inverted vector.
+  *
+  * @remarks
+  * **⚠️ Precondition:** Both components must be non-zero.
+  * Calling with zero produces Infinity.
+  *
+  * @category Numeric Transform
+  * @since 0.7.0
+  */
+ public static inverseUnchecked(v: ReadonlyVector2Like, out?: Vector2): Vector2 {
+  return this.ensureOut(out).set(1 / v.x, 1 / v.y);
  }
 
  /**
@@ -651,7 +830,7 @@ export class Vector2 implements Vector2Like {
   * @returns Vector with swapped components `(y, x)`.
   *
   * @category Numeric Transform
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static swap(v: ReadonlyVector2Like, out?: Vector2): Vector2 {
   return this.ensureOut(out).set(v.y, v.x);
@@ -669,7 +848,7 @@ export class Vector2 implements Vector2Like {
   * Useful for shader-like operations and conditional masking.
   *
   * @category Numeric Transform
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static step(edge: ReadonlyVector2Like, v: ReadonlyVector2Like, out?: Vector2): Vector2 {
   return this.ensureOut(out).set(scalarStep(edge.x, v.x), scalarStep(edge.y, v.y));
@@ -689,7 +868,7 @@ export class Vector2 implements Vector2Like {
   * @returns Interpolated vector.
   *
   * @category Interpolation
-  * @since 0.1.0
+  * @since 0.7.0
   */
  public static lerp(
   a: ReadonlyVector2Like,
@@ -710,7 +889,7 @@ export class Vector2 implements Vector2Like {
   * @returns Clamped interpolated vector.
   *
   * @category Interpolation
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static lerpClamped(
   a: ReadonlyVector2Like,
@@ -720,30 +899,6 @@ export class Vector2 implements Vector2Like {
  ): Vector2 {
   const tc = saturate(t);
   return this.lerp(a, b, tc, out);
- }
-
- /**
-  * Linear interpolation without clamping t.
-  *
-  * @param a - Start vector.
-  * @param b - End vector.
-  * @param t - Interpolation factor (not clamped, can extrapolate).
-  * @param out - Optional output vector.
-  * @returns Interpolated vector.
-  *
-  * @remarks
-  * Alias for `lerp`. Provided for symmetry with `lerpClamped`.
-  *
-  * @category Interpolation
-  * @since 0.9.0
-  */
- public static lerpUnclamped(
-  a: ReadonlyVector2Like,
-  b: ReadonlyVector2Like,
-  t: number,
-  out?: Vector2,
- ): Vector2 {
-  return this.lerp(a, b, t, out);
  }
 
  /**
@@ -759,8 +914,15 @@ export class Vector2 implements Vector2Like {
   * Interpolates the angle while maintaining constant angular velocity.
   * Falls back to linear interpolation for nearly parallel or opposite vectors.
   *
+  * @example
+  * ```typescript
+  * const a = new Vector2(1, 0); // pointing right
+  * const b = new Vector2(0, 1); // pointing up
+  * const mid = Vector2.slerp(a, b, 0.5); // ~(0.707, 0.707) - 45° between
+  * ```
+  *
   * @category Interpolation
-  * @since 0.1.0
+  * @since 0.7.0
   */
  public static slerp(
   a: ReadonlyVector2Like,
@@ -768,8 +930,8 @@ export class Vector2 implements Vector2Like {
   t: number,
   out?: Vector2,
  ): Vector2 {
-  const lengthA = Vector2.length(a);
-  const lengthB = Vector2.length(b);
+  const lengthA = Vector2.magnitude(a);
+  const lengthB = Vector2.magnitude(b);
 
   if (isNearZero(lengthA) || isNearZero(lengthB)) {
    return this.lerp(a, b, t, out);
@@ -789,9 +951,15 @@ export class Vector2 implements Vector2Like {
    return this.lerp(a, b, t, out);
   }
 
-  const sinTheta = DeterministicMath.sin(theta);
-  const wa = DeterministicMath.sin((1 - t) * theta) / sinTheta;
-  const wb = DeterministicMath.sin(t * theta) / sinTheta;
+  const sinTheta = sin(theta);
+
+  // Fall back to lerp for opposite vectors where sin(theta) ≈ 0
+  if (isNearZero(sinTheta)) {
+   return this.lerp(a, b, t, out);
+  }
+
+  const wa = sin((1 - t) * theta) / sinTheta;
+  const wb = sin(t * theta) / sinTheta;
 
   // Interpolate magnitude
   const lengthInterp = lerp(lengthA, lengthB, t);
@@ -812,7 +980,7 @@ export class Vector2 implements Vector2Like {
   * @returns Interpolated vector.
   *
   * @category Interpolation
-  * @since 0.9.0
+  * @since 0.7.0
   */
  public static slerpClamped(
   a: ReadonlyVector2Like,
@@ -843,7 +1011,7 @@ export class Vector2 implements Vector2Like {
   * ```
   *
   * @category Interpolation
-  * @since 0.11.0
+  * @since 0.7.0
   */
  public static smoothStep(
   a: ReadonlyVector2Like,
@@ -866,8 +1034,16 @@ export class Vector2 implements Vector2Like {
   * @param b - Second operand.
   * @returns Scalar dot product.
   *
+  * @example
+  * ```typescript
+  * const a = new Vector2(1, 0);
+  * const b = new Vector2(0, 1);
+  * Vector2.dot(a, b); // 0 - perpendicular vectors
+  * Vector2.dot(a, a); // 1 - parallel vectors (self dot = magnitude²)
+  * ```
+  *
   * @category Geometry
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static dot(a: ReadonlyVector2Like, b: ReadonlyVector2Like): number {
   return a.x * b.x + a.y * b.y;
@@ -883,8 +1059,16 @@ export class Vector2 implements Vector2Like {
   * @remarks
   * Positive if b is CCW from a, negative if CW.
   *
+  * @example
+  * ```typescript
+  * const a = new Vector2(1, 0);
+  * const b = new Vector2(0, 1);
+  * Vector2.cross(a, b); // 1 - b is CCW from a
+  * Vector2.cross(b, a); // -1 - a is CW from b
+  * ```
+  *
   * @category Geometry
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static cross(a: ReadonlyVector2Like, b: ReadonlyVector2Like): number {
   return a.x * b.y - a.y * b.x;
@@ -899,7 +1083,7 @@ export class Vector2 implements Vector2Like {
   * @returns Twice the signed area (positive if CCW winding).
   *
   * @category Geometry
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static cross3(
   a: ReadonlyVector2Like,
@@ -916,10 +1100,10 @@ export class Vector2 implements Vector2Like {
   * @returns The Euclidean norm.
   *
   * @category Geometry
-  * @since 0.8.0
+  * @since 0.7.0
   */
- public static length(v: ReadonlyVector2Like): number {
-  return safeSqrt(v.x * v.x + v.y * v.y);
+ public static magnitude(v: ReadonlyVector2Like): number {
+  return hypot(v.x, v.y);
  }
 
  /**
@@ -929,9 +1113,9 @@ export class Vector2 implements Vector2Like {
   * @returns The squared length.
   *
   * @category Geometry
-  * @since 0.8.0
+  * @since 0.7.0
   */
- public static lengthSquared(v: ReadonlyVector2Like): number {
+ public static magnitudeSquared(v: ReadonlyVector2Like): number {
   return v.x * v.x + v.y * v.y;
  }
 
@@ -942,10 +1126,10 @@ export class Vector2 implements Vector2Like {
   * @returns The Manhattan (L1) norm.
   *
   * @category Geometry
-  * @since 0.1.0
+  * @since 0.7.0
   */
  public static manhattanLength(v: ReadonlyVector2Like): number {
-  return scalarAbs(v.x) + scalarAbs(v.y);
+  return Math.abs(v.x) + Math.abs(v.y);
  }
 
  /**
@@ -955,13 +1139,20 @@ export class Vector2 implements Vector2Like {
   * @param b - Second point.
   * @returns The Euclidean distance.
   *
+  * @example
+  * ```typescript
+  * const a = new Vector2(0, 0);
+  * const b = new Vector2(3, 4);
+  * Vector2.distance(a, b); // 5 - the 3-4-5 triangle
+  * ```
+  *
   * @category Geometry
-  * @since 0.1.0
+  * @since 0.7.0
   */
  public static distance(a: ReadonlyVector2Like, b: ReadonlyVector2Like): number {
   const dx = b.x - a.x;
   const dy = b.y - a.y;
-  return safeSqrt(dx * dx + dy * dy);
+  return hypot(dx, dy);
  }
 
  /**
@@ -972,7 +1163,7 @@ export class Vector2 implements Vector2Like {
   * @returns The squared distance.
   *
   * @category Geometry
-  * @since 0.1.0
+  * @since 0.7.0
   */
  public static distanceSquared(a: ReadonlyVector2Like, b: ReadonlyVector2Like): number {
   const dx = b.x - a.x;
@@ -988,10 +1179,10 @@ export class Vector2 implements Vector2Like {
   * @returns The Manhattan distance.
   *
   * @category Geometry
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static manhattanDistance(a: ReadonlyVector2Like, b: ReadonlyVector2Like): number {
-  return scalarAbs(b.x - a.x) + scalarAbs(b.y - a.y);
+  return Math.abs(b.x - a.x) + Math.abs(b.y - a.y);
  }
 
  /* ======================================================================== */
@@ -999,15 +1190,19 @@ export class Vector2 implements Vector2Like {
  /* ======================================================================== */
 
  /**
-  * Unit direction from `from` to `to`. Returns (0,0) if coincident.
+  * Unit direction from `from` to `to`.
   *
   * @param from - Start point.
   * @param to - End point.
   * @param out - Optional output vector.
   * @returns Unit direction vector.
+  * @throws {RangeError} If from and to are coincident.
+  *
+  * @see {@link directionSafe} - Returns (0,0) instead of throwing
+  * @see {@link directionUnchecked} - No validation, for hot paths
   *
   * @category Direction
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static direction(
   from: ReadonlyVector2Like,
@@ -1016,11 +1211,67 @@ export class Vector2 implements Vector2Like {
  ): Vector2 {
   const dx = to.x - from.x;
   const dy = to.y - from.y;
-  const length = safeSqrt(dx * dx + dy * dy);
+  const length = hypot(dx, dy);
+  if (isNearZero(length)) {
+   throw new RangeError('Vector2.direction: from and to are coincident');
+  }
+  return this.ensureOut(out).set(dx / length, dy / length);
+ }
+
+ /**
+  * Unit direction from `from` to `to`, returning (0,0) if coincident.
+  *
+  * @param from - Start point.
+  * @param to - End point.
+  * @param out - Optional output vector.
+  * @returns Unit direction vector, or (0,0) if coincident.
+  *
+  * @see {@link direction} - Throws on coincident points
+  * @see {@link directionUnchecked} - No validation, for hot paths
+  *
+  * @category Direction
+  * @since 0.7.0
+  */
+ public static directionSafe(
+  from: ReadonlyVector2Like,
+  to: ReadonlyVector2Like,
+  out?: Vector2,
+ ): Vector2 {
+  const dx = to.x - from.x;
+  const dy = to.y - from.y;
+  const length = hypot(dx, dy);
   if (isNearZero(length)) {
    return this.ensureOut(out).set(0, 0);
   }
   return this.ensureOut(out).set(dx / length, dy / length);
+ }
+
+ /**
+  * Unit direction without validation (hot path).
+  *
+  * @param from - Start point.
+  * @param to - End point (must be different from `from`).
+  * @param out - Optional output vector.
+  * @returns Unit direction vector.
+  *
+  * @remarks
+  * ⚠️ **Precondition:** `from ≠ to`.
+  * Calling with identical points produces NaN/Infinity.
+  *
+  * @see {@link direction} - Handles identical points gracefully
+  *
+  * @category Direction
+  * @since 0.7.0
+  */
+ public static directionUnchecked(
+  from: ReadonlyVector2Like,
+  to: ReadonlyVector2Like,
+  out?: Vector2,
+ ): Vector2 {
+  const dx = to.x - from.x;
+  const dy = to.y - from.y;
+  const invLength = 1 / hypot(dx, dy);
+  return this.ensureOut(out).set(dx * invLength, dy * invLength);
  }
 
  /**
@@ -1030,10 +1281,10 @@ export class Vector2 implements Vector2Like {
   * @returns Angle in radians (CCW positive).
   *
   * @category Direction
-  * @since 0.1.0
+  * @since 0.7.0
   */
  public static angle(v: ReadonlyVector2Like): number {
-  return DeterministicMath.atan2(v.y, v.x);
+  return atan2(v.y, v.x);
  }
 
  /**
@@ -1047,10 +1298,10 @@ export class Vector2 implements Vector2Like {
   * Uses `atan2(cross(a,b), dot(a,b))` for robust behavior.
   *
   * @category Direction
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static angleTo(a: ReadonlyVector2Like, b: ReadonlyVector2Like): number {
-  return DeterministicMath.atan2(Vector2.cross(a, b), Vector2.dot(a, b));
+  return atan2(Vector2.cross(a, b), Vector2.dot(a, b));
  }
 
  /**
@@ -1061,11 +1312,11 @@ export class Vector2 implements Vector2Like {
   * @returns Unsigned angle in radians.
   *
   * @category Direction
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static angleBetween(a: ReadonlyVector2Like, b: ReadonlyVector2Like): number {
-  const lengthA = Vector2.length(a);
-  const lengthB = Vector2.length(b);
+  const lengthA = Vector2.magnitude(a);
+  const lengthB = Vector2.magnitude(b);
   if (isNearZero(lengthA) || isNearZero(lengthB)) return 0;
 
   const dot = Vector2.dot(a, b);
@@ -1087,7 +1338,7 @@ export class Vector2 implements Vector2Like {
   * @returns Clamped vector.
   *
   * @category Constraint
-  * @since 0.1.0
+  * @since 0.7.0
   */
  public static clamp(
   v: ReadonlyVector2Like,
@@ -1108,7 +1359,7 @@ export class Vector2 implements Vector2Like {
   * @returns Clamped vector.
   *
   * @category Constraint
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static clampScalar(
   v: ReadonlyVector2Like,
@@ -1129,20 +1380,20 @@ export class Vector2 implements Vector2Like {
   * @returns Vector with clamped magnitude.
   *
   * @category Constraint
-  * @since 0.1.0
+  * @since 0.7.0
   */
- public static clampLength(
+ public static clampMagnitude(
   v: ReadonlyVector2Like,
   minLength: number,
   maxLength: number,
   out?: Vector2,
  ): Vector2 {
-  const length = Vector2.length(v);
+  const length = Vector2.magnitude(v);
   if (isNearZero(length)) {
    return this.ensureOut(out).set(0, 0);
   }
-  const newLength = clamp(length, minLength, maxLength);
-  const scale = newLength / length;
+  const newMagnitude = clamp(length, minLength, maxLength);
+  const scale = newMagnitude / length;
   return this.ensureOut(out).set(v.x * scale, v.y * scale);
  }
 
@@ -1154,13 +1405,13 @@ export class Vector2 implements Vector2Like {
   * @param out - Optional output vector.
   * @returns Vector with limited magnitude.
   *
-  * @remarks Equivalent to `clampLength(v, 0, maxLength)`.
+  * @remarks Equivalent to `clampMagnitude(v, 0, maxLength)`.
   *
   * @category Constraint
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static limit(v: ReadonlyVector2Like, maxLength: number, out?: Vector2): Vector2 {
-  const lengthSq = Vector2.lengthSquared(v);
+  const lengthSq = Vector2.magnitudeSquared(v);
   if (lengthSq > maxLength * maxLength && lengthSq > 0) {
    const scale = maxLength / safeSqrt(lengthSq);
    return this.ensureOut(out).set(v.x * scale, v.y * scale);
@@ -1177,10 +1428,10 @@ export class Vector2 implements Vector2Like {
   * @returns Vector with per-component minima.
   *
   * @category Constraint
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static min(a: ReadonlyVector2Like, b: ReadonlyVector2Like, out?: Vector2): Vector2 {
-  return this.ensureOut(out).set(scalarMin(a.x, b.x), scalarMin(a.y, b.y));
+  return this.ensureOut(out).set(Math.min(a.x, b.x), Math.min(a.y, b.y));
  }
 
  /**
@@ -1192,10 +1443,40 @@ export class Vector2 implements Vector2Like {
   * @returns Vector with per-component maxima.
   *
   * @category Constraint
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static max(a: ReadonlyVector2Like, b: ReadonlyVector2Like, out?: Vector2): Vector2 {
-  return this.ensureOut(out).set(scalarMax(a.x, b.x), scalarMax(a.y, b.y));
+  return this.ensureOut(out).set(Math.max(a.x, b.x), Math.max(a.y, b.y));
+ }
+
+ /**
+  * Component-wise minimum of v and scalar s.
+  *
+  * @param v - Vector.
+  * @param s - Scalar bound.
+  * @param out - Optional output vector.
+  * @returns Vector with each component ≤ s.
+  *
+  * @category Constraint
+  * @since 0.7.0
+  */
+ public static minScalar(v: ReadonlyVector2Like, s: number, out?: Vector2): Vector2 {
+  return this.ensureOut(out).set(Math.min(v.x, s), Math.min(v.y, s));
+ }
+
+ /**
+  * Component-wise maximum of v and scalar s.
+  *
+  * @param v - Vector.
+  * @param s - Scalar bound.
+  * @param out - Optional output vector.
+  * @returns Vector with each component ≥ s.
+  *
+  * @category Constraint
+  * @since 0.7.0
+  */
+ public static maxScalar(v: ReadonlyVector2Like, s: number, out?: Vector2): Vector2 {
+  return this.ensureOut(out).set(Math.max(v.x, s), Math.max(v.y, s));
  }
 
  /* ======================================================================== */
@@ -1217,15 +1498,21 @@ export class Vector2 implements Vector2Like {
   * the vector is technically non-zero. Use {@link normalizeSafe} for
   * graceful handling of such edge cases.
   *
+  * @example
+  * ```typescript
+  * const v = new Vector2(3, 4);
+  * const unit = Vector2.normalize(v); // (0.6, 0.8) - unit vector
+  * ```
+  *
   * @category Transform
-  * @since 0.1.0
+  * @since 0.7.0
   */
  public static normalize(v: ReadonlyVector2Like, out?: Vector2): Vector2 {
-  const length = Vector2.length(v);
-  if (isNearZero(length)) {
+  const lengthSq = Vector2.magnitudeSquared(v);
+  if (isNearZero(lengthSq)) {
    throw new RangeError('Vector2.normalize: cannot normalize zero-length vector');
   }
-  const inv = 1 / length;
+  const inv = 1 / safeSqrt(lengthSq);
   return this.ensureOut(out).set(v.x * inv, v.y * inv);
  }
 
@@ -1237,10 +1524,10 @@ export class Vector2 implements Vector2Like {
   * @returns Normalized vector or zero vector.
   *
   * @category Transform
-  * @since 0.1.0
+  * @since 0.7.0
   */
  public static normalizeSafe(v: ReadonlyVector2Like, out?: Vector2): Vector2 {
-  const lengthSq = Vector2.lengthSquared(v);
+  const lengthSq = Vector2.magnitudeSquared(v);
   if (isNearZero(lengthSq)) {
    return this.ensureOut(out).set(0, 0);
   }
@@ -1249,43 +1536,98 @@ export class Vector2 implements Vector2Like {
  }
 
  /**
+  * Normalizes a vector without validation (for hot paths).
+  *
+  * @param v - Vector to normalize (must have non-zero length).
+  * @param out - Optional output vector.
+  * @returns Normalized vector.
+  *
+  * @remarks
+  * **WARNING:** This method performs no validation.
+  * - If v is zero, the result will be (NaN, NaN).
+  * - Use only when you can guarantee the vector has non-zero length.
+  *
+  * @see {@link normalize} - Throws on zero-length vectors
+  * @see {@link normalizeSafe} - Returns (0,0) on zero-length vectors
+  *
+  * @category Transform
+  * @since 0.7.0
+  */
+ public static normalizeUnchecked(v: ReadonlyVector2Like, out?: Vector2): Vector2 {
+  const lengthSq = v.x * v.x + v.y * v.y;
+  const inv = 1 / sqrt(lengthSq);
+  return this.ensureOut(out).set(v.x * inv, v.y * inv);
+ }
+
+ /**
+  * Computes length and unit vector in a single operation.
+  *
+  * @param v - Vector to process.
+  * @param out - Optional output vector for the unit vector.
+  * @returns Object with length and unit vector.
+  *
+  * @remarks
+  * More efficient than calling length() and normalize() separately
+  * when both values are needed, as it avoids computing sqrt twice.
+  *
+  * @category Transform
+  * @since 0.7.0
+  */
+ public static getLengthAndNormalize(
+  v: ReadonlyVector2Like,
+  out?: Vector2,
+ ): { length: number; unit: Vector2 } {
+  const lengthSq = v.x * v.x + v.y * v.y;
+  if (lengthSq < EPSILON * EPSILON) {
+   return { length: 0, unit: this.ensureOut(out).set(0, 0) };
+  }
+  const length = safeSqrt(lengthSq);
+  const inv = 1 / length;
+  return { length, unit: this.ensureOut(out).set(v.x * inv, v.y * inv) };
+ }
+
+ /**
   * Returns a copy of v with the requested length.
   *
   * @param v - Source vector.
-  * @param newLength - Desired magnitude.
+  * @param newMagnitude - Desired magnitude.
   * @param out - Optional output vector.
   * @returns Vector with specified length.
-  * @throws {RangeError} If newLength < 0 or v has zero length.
+  * @throws {RangeError} If newMagnitude < 0 or v has zero length.
   *
   * @category Transform
-  * @since 0.8.0
+  * @since 0.7.0
   */
- public static setLength(v: ReadonlyVector2Like, newLength: number, out?: Vector2): Vector2 {
-  if (newLength < 0) {
-   throw new RangeError('Vector2.setLength: length must be non-negative');
+ public static setMagnitude(v: ReadonlyVector2Like, newMagnitude: number, out?: Vector2): Vector2 {
+  if (newMagnitude < 0) {
+   throw new RangeError('Vector2.setMagnitude: length must be non-negative');
   }
-  const length = Vector2.length(v);
+  const length = Vector2.magnitude(v);
   if (isNearZero(length)) {
-   throw new RangeError('Vector2.setLength: cannot set length on zero vector');
+   throw new RangeError('Vector2.setMagnitude: cannot set length on zero vector');
   }
-  const scale = newLength / length;
+  const scale = newMagnitude / length;
   return this.ensureOut(out).set(v.x * scale, v.y * scale);
  }
 
  /**
-  * Safe setLength. Zero vectors become (newLength, 0).
+  * Safe setMagnitude. Zero vectors become (newMagnitude, 0).
   *
   * @param v - Source vector.
-  * @param newLength - Desired magnitude (clamped to 0 if negative).
+  * @param newMagnitude - Desired magnitude (clamped to 0 if negative).
   * @param out - Optional output vector.
   * @returns Vector with specified length.
   *
   * @category Transform
-  * @since 0.8.0
+  * @since 0.7.0
   */
- public static setLengthSafe(v: ReadonlyVector2Like, newLength: number, out?: Vector2): Vector2 {
-  const nn = newLength < 0 ? 0 : newLength;
-  const length = Vector2.length(v);
+ public static setMagnitudeSafe(
+  v: ReadonlyVector2Like,
+  newMagnitude: number,
+  out?: Vector2,
+ ): Vector2 {
+  const nn = newMagnitude < 0 ? 0 : newMagnitude;
+  const length = Vector2.magnitude(v);
   if (isNearZero(length)) {
    return this.ensureOut(out).set(nn, 0);
   }
@@ -1294,18 +1636,46 @@ export class Vector2 implements Vector2Like {
  }
 
  /**
-  * Returns vector with same magnitude but new heading.
+  * Sets length without validation (hot path).
+  *
+  * @param v - Source vector (must have non-zero length).
+  * @param newMagnitude - Desired magnitude (must be non-negative).
+  * @param out - Optional output vector.
+  * @returns Vector with specified length.
+  *
+  * @remarks
+  * ⚠️ **Preconditions:** `v` must have non-zero length, `newMagnitude >= 0`.
+  * Calling with zero-length vector produces NaN/Infinity.
+  *
+  * @see {@link setMagnitude} - Throws on invalid input
+  * @see {@link setMagnitudeSafe} - Handles edge cases gracefully
+  *
+  * @category Transform
+  * @since 0.7.0
+  */
+ public static setMagnitudeUnchecked(
+  v: ReadonlyVector2Like,
+  newMagnitude: number,
+  out?: Vector2,
+ ): Vector2 {
+  const length = hypot(v.x, v.y);
+  const scale = newMagnitude / length;
+  return this.ensureOut(out).set(v.x * scale, v.y * scale);
+ }
+
+ /**
+  * Returns vector with same magnitude but new angle.
   *
   * @param v - Source vector.
   * @param angle - New heading in radians.
   * @param out - Optional output vector.
-  * @returns Vector with rotated heading.
+  * @returns Vector with new angle.
   *
   * @category Transform
-  * @since 0.8.0
+  * @since 0.7.0
   */
- public static setHeading(v: ReadonlyVector2Like, angle: number, out?: Vector2): Vector2 {
-  const magnitude = Vector2.length(v);
+ public static setAngle(v: ReadonlyVector2Like, angle: number, out?: Vector2): Vector2 {
+  const magnitude = Vector2.magnitude(v);
   const { cos, sin } = sinCos(angle);
   return this.ensureOut(out).set(cos * magnitude, sin * magnitude);
  }
@@ -1317,22 +1687,86 @@ export class Vector2 implements Vector2Like {
   * @param axis - Projection axis.
   * @param out - Optional output vector.
   * @returns Projection of v onto axis.
+  * @throws {RangeError} If axis has zero length.
   *
   * @remarks
-  * If axis is zero, returns (0, 0).
+  * Mathematically equivalent to `axis * (dot(v, axis) / magnitudeSquared(axis))`.
   *
-  * @remarks
-  * Mathematically equivalent to `axis * (dot(v, axis) / lengthSquared(axis))`.
-  * Uses {@link Vector2.dot} and {@link Vector2.lengthSquared} internally.
+  * @example
+  * ```typescript
+  * const v = new Vector2(3, 4);
+  * const axis = new Vector2(1, 0);
+  * const proj = Vector2.project(v, axis); // (3, 0) - projection onto X axis
+  * ```
+  *
+  * @see {@link projectSafe} - Returns (0,0) instead of throwing
+  * @see {@link projectUnchecked} - No validation, for hot paths
+  * @see {@link projectOnUnit} - Optimized for unit vectors
   *
   * @category Transform
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static project(v: ReadonlyVector2Like, axis: ReadonlyVector2Like, out?: Vector2): Vector2 {
-  const denom = Vector2.lengthSquared(axis);
+  const denom = Vector2.magnitudeSquared(axis);
+  if (isNearZero(denom)) {
+   throw new RangeError('Vector2.project: cannot project onto zero-length axis');
+  }
+  const s = Vector2.dot(v, axis) / denom;
+  return this.ensureOut(out).set(axis.x * s, axis.y * s);
+ }
+
+ /**
+  * Projects v onto axis, returning (0,0) if axis has zero length.
+  *
+  * @param v - Vector to project.
+  * @param axis - Projection axis.
+  * @param out - Optional output vector.
+  * @returns Projection of v onto axis, or (0,0) if axis is zero.
+  *
+  * @see {@link project} - Throws on zero axis
+  * @see {@link projectUnchecked} - No validation, for hot paths
+  * @see {@link projectOnUnit} - Optimized for unit vectors
+  *
+  * @category Transform
+  * @since 0.7.0
+  */
+ public static projectSafe(
+  v: ReadonlyVector2Like,
+  axis: ReadonlyVector2Like,
+  out?: Vector2,
+ ): Vector2 {
+  const denom = Vector2.magnitudeSquared(axis);
   if (isNearZero(denom)) {
    return this.ensureOut(out).set(0, 0);
   }
+  const s = Vector2.dot(v, axis) / denom;
+  return this.ensureOut(out).set(axis.x * s, axis.y * s);
+ }
+
+ /**
+  * Projects v onto axis without validation (hot path).
+  *
+  * @param v - Vector to project.
+  * @param axis - Projection axis (must have non-zero length).
+  * @param out - Optional output vector.
+  * @returns Projection of v onto axis.
+  *
+  * @remarks
+  * **⚠️ Precondition:** `axis` must have non-zero length.
+  * If axis is zero, result will be (NaN, NaN).
+  *
+  * @see {@link project} - Safe version with zero check
+  * @see {@link projectOnUnit} - Optimized for unit vectors
+  *
+  * @category Transform
+  * @since 0.7.0
+  */
+ public static projectUnchecked(
+  v: ReadonlyVector2Like,
+  axis: ReadonlyVector2Like,
+  out?: Vector2,
+ ): Vector2 {
+  const denom = Vector2.magnitudeSquared(axis);
   const s = Vector2.dot(v, axis) / denom;
   return this.ensureOut(out).set(axis.x * s, axis.y * s);
  }
@@ -1346,7 +1780,7 @@ export class Vector2 implements Vector2Like {
   * @returns Projection of v onto unitAxis.
   *
   * @category Transform
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static projectOnUnit(
   v: ReadonlyVector2Like,
@@ -1364,20 +1798,108 @@ export class Vector2 implements Vector2Like {
   * @param b - Axis of projection.
   * @param out - Optional output vector.
   * @returns Rejection of a from b.
+  * @throws {RangeError} If b has zero length.
   *
   * @remarks
   * `reject(a, b) = a - project(a, b)`
   *
+  * @example
+  * ```typescript
+  * const v = new Vector2(3, 4);
+  * const axis = new Vector2(1, 0);
+  * const rej = Vector2.reject(v, axis); // (0, 4) - the perpendicular component
+  * ```
+  *
+  * @see {@link rejectSafe} - Returns copy of a instead of throwing
+  * @see {@link rejectUnchecked} - No validation, for hot paths
+  * @see {@link rejectOnUnit} - Optimized for unit vectors
+  *
   * @category Transform
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static reject(a: ReadonlyVector2Like, b: ReadonlyVector2Like, out?: Vector2): Vector2 {
-  const denom = Vector2.lengthSquared(b);
+  const denom = Vector2.magnitudeSquared(b);
+  if (isNearZero(denom)) {
+   throw new RangeError('Vector2.reject: cannot reject from zero-length vector');
+  }
+  const s = Vector2.dot(a, b) / denom;
+  return this.ensureOut(out).set(a.x - b.x * s, a.y - b.y * s);
+ }
+
+ /**
+  * Vector rejection, returning copy of a if b has zero length.
+  *
+  * @param a - Vector to decompose.
+  * @param b - Axis of projection.
+  * @param out - Optional output vector.
+  * @returns Rejection of a from b, or copy of a if b is zero.
+  *
+  * @see {@link reject} - Throws on zero b
+  * @see {@link rejectUnchecked} - No validation, for hot paths
+  * @see {@link rejectOnUnit} - Optimized for unit vectors
+  *
+  * @category Transform
+  * @since 0.7.0
+  */
+ public static rejectSafe(a: ReadonlyVector2Like, b: ReadonlyVector2Like, out?: Vector2): Vector2 {
+  const denom = Vector2.magnitudeSquared(b);
   if (isNearZero(denom)) {
    return this.ensureOut(out).set(a.x, a.y);
   }
   const s = Vector2.dot(a, b) / denom;
   return this.ensureOut(out).set(a.x - b.x * s, a.y - b.y * s);
+ }
+
+ /**
+  * Vector rejection without validation (hot path).
+  *
+  * @param a - Vector to decompose.
+  * @param b - Axis of projection (must have non-zero length).
+  * @param out - Optional output vector.
+  * @returns Rejection of a from b.
+  *
+  * @remarks
+  * **⚠️ Precondition:** `b` must have non-zero length.
+  * If b is zero, result will be (NaN, NaN).
+  *
+  * @see {@link reject} - Safe version with zero check
+  * @see {@link rejectOnUnit} - Optimized for unit vectors
+  *
+  * @category Transform
+  * @since 0.7.0
+  */
+ public static rejectUnchecked(
+  a: ReadonlyVector2Like,
+  b: ReadonlyVector2Like,
+  out?: Vector2,
+ ): Vector2 {
+  const denom = Vector2.magnitudeSquared(b);
+  const s = Vector2.dot(a, b) / denom;
+  return this.ensureOut(out).set(a.x - b.x * s, a.y - b.y * s);
+ }
+
+ /**
+  * Vector rejection onto a unit axis (optimized hot path).
+  *
+  * @param a - Vector to decompose.
+  * @param unitAxis - Unit-length axis.
+  * @param out - Optional output vector.
+  * @returns Rejection of a from unitAxis.
+  *
+  * @remarks
+  * `rejectOnUnit(a, unitAxis) = a - projectOnUnit(a, unitAxis)`
+  * Use when you know the axis is already normalized.
+  *
+  * @category Transform
+  * @since 0.7.0
+  */
+ public static rejectOnUnit(
+  a: ReadonlyVector2Like,
+  unitAxis: ReadonlyVector2Like,
+  out?: Vector2,
+ ): Vector2 {
+  const s = Vector2.dot(a, unitAxis);
+  return this.ensureOut(out).set(a.x - unitAxis.x * s, a.y - unitAxis.y * s);
  }
 
  /**
@@ -1393,14 +1915,29 @@ export class Vector2 implements Vector2Like {
   * Uses {@link Vector2.dot} internally.
   * For physics bounces, the incident velocity reflects off surfaces using this formula.
   *
+  * @example
+  * ```typescript
+  * const v = new Vector2(1, -1); // incoming at 45°
+  * const normal = new Vector2(0, 1); // horizontal surface
+  * const r = Vector2.reflect(v, normal); // (1, 1) - bounces off
+  * ```
+  *
+  * @see {@link reflectSafe} - Normalizes normal first
+  * @see {@link reflectUnchecked} - No validation, for hot paths
+  * @throws {RangeError} If unitNormal is not unit length
+  *
   * @category Transform
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static reflect(
   v: ReadonlyVector2Like,
   unitNormal: ReadonlyVector2Like,
   out?: Vector2,
  ): Vector2 {
+  const magSq = Vector2.magnitudeSquared(unitNormal);
+  if (!scalarNearEquals(magSq, 1)) {
+   throw new RangeError('Vector2.reflect: normal must be unit length');
+  }
   const d2 = 2 * Vector2.dot(v, unitNormal);
   return this.ensureOut(out).set(v.x - d2 * unitNormal.x, v.y - d2 * unitNormal.y);
  }
@@ -1413,15 +1950,18 @@ export class Vector2 implements Vector2Like {
   * @param out - Optional output vector.
   * @returns Reflected vector.
   *
+  * @see {@link reflect} - Throws if normal is not unit
+  * @see {@link reflectUnchecked} - No validation, for hot paths
+  *
   * @category Transform
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static reflectSafe(
   v: ReadonlyVector2Like,
   normal: ReadonlyVector2Like,
   out?: Vector2,
  ): Vector2 {
-  const lengthSq = Vector2.lengthSquared(normal);
+  const lengthSq = Vector2.magnitudeSquared(normal);
   if (isNearZero(lengthSq)) {
    return this.ensureOut(out).set(v.x, v.y);
   }
@@ -1430,6 +1970,33 @@ export class Vector2 implements Vector2Like {
   const ny = normal.y * invLength;
   const d2 = 2 * (v.x * nx + v.y * ny);
   return this.ensureOut(out).set(v.x - d2 * nx, v.y - d2 * ny);
+ }
+
+ /**
+  * Reflection without validation (hot path).
+  *
+  * @param v - Incident vector.
+  * @param unitNormal - Unit-length normal (must be unit).
+  * @param out - Optional output vector.
+  * @returns Reflected vector.
+  *
+  * @remarks
+  * **⚠️ Precondition:** `unitNormal` must have unit length.
+  * If not unit, result will be incorrect but not NaN.
+  *
+  * @see {@link reflect} - Throws if normal is not unit
+  * @see {@link reflectSafe} - Normalizes normal first
+  *
+  * @category Transform
+  * @since 0.7.0
+  */
+ public static reflectUnchecked(
+  v: ReadonlyVector2Like,
+  unitNormal: ReadonlyVector2Like,
+  out?: Vector2,
+ ): Vector2 {
+  const d2 = 2 * Vector2.dot(v, unitNormal);
+  return this.ensureOut(out).set(v.x - d2 * unitNormal.x, v.y - d2 * unitNormal.y);
  }
 
  /**
@@ -1445,51 +2012,10 @@ export class Vector2 implements Vector2Like {
   * - CW (-90°): `(y, -x)`
   *
   * @category Transform
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static perpendicular(v: ReadonlyVector2Like, clockwise = false, out?: Vector2): Vector2 {
   return clockwise ? this.ensureOut(out).set(v.y, -v.x) : this.ensureOut(out).set(-v.y, v.x);
- }
-
- /**
-  * Unit perpendicular. Throws if v is zero.
-  *
-  * @param v - Source vector.
-  * @param clockwise - CW if true, CCW if false.
-  * @param out - Optional output vector.
-  * @returns Unit perpendicular vector.
-  * @throws {RangeError} If v has zero length.
-  *
-  * @category Transform
-  * @since 0.8.0
-  */
- public static unitPerpendicular(
-  v: ReadonlyVector2Like,
-  clockwise = false,
-  out?: Vector2,
- ): Vector2 {
-  const perp = this.perpendicular(v, clockwise, out);
-  return Vector2.normalize(perp, perp);
- }
-
- /**
-  * Safe unit perpendicular. Returns (0, 0) if v is zero.
-  *
-  * @param v - Source vector.
-  * @param clockwise - CW if true, CCW if false.
-  * @param out - Optional output vector.
-  * @returns Unit perpendicular vector or zero.
-  *
-  * @category Transform
-  * @since 0.8.0
-  */
- public static unitPerpendicularSafe(
-  v: ReadonlyVector2Like,
-  clockwise = false,
-  out?: Vector2,
- ): Vector2 {
-  const perp = this.perpendicular(v, clockwise, out);
-  return Vector2.normalizeSafe(perp, perp);
  }
 
  /**
@@ -1500,8 +2026,14 @@ export class Vector2 implements Vector2Like {
   * @param out - Optional output vector.
   * @returns Rotated vector.
   *
+  * @example
+  * ```typescript
+  * const v = new Vector2(1, 0);
+  * const rotated = Vector2.rotate(v, Math.PI / 2); // (0, 1) - 90° CCW
+  * ```
+  *
   * @category Transform
-  * @since 0.1.0
+  * @since 0.7.0
   */
  public static rotate(v: ReadonlyVector2Like, angle: number, out?: Vector2): Vector2 {
   const { cos, sin } = sinCos(angle);
@@ -1518,7 +2050,7 @@ export class Vector2 implements Vector2Like {
   * @returns Rotated vector.
   *
   * @category Transform
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static rotateCS(v: ReadonlyVector2Like, c: number, s: number, out?: Vector2): Vector2 {
   return this.ensureOut(out).set(v.x * c - v.y * s, v.x * s + v.y * c);
@@ -1533,8 +2065,15 @@ export class Vector2 implements Vector2Like {
   * @param out - Optional output vector.
   * @returns Rotated vector.
   *
+  * @example
+  * ```typescript
+  * const point = new Vector2(2, 0);
+  * const center = new Vector2(1, 0);
+  * const rotated = Vector2.rotateAround(point, center, Math.PI); // (0, 0)
+  * ```
+  *
   * @category Transform
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static rotateAround(
   v: ReadonlyVector2Like,
@@ -1562,7 +2101,7 @@ export class Vector2 implements Vector2Like {
   * Optimal when rotating many points around the same center.
   *
   * @category Transform
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static rotateAroundCS(
   v: ReadonlyVector2Like,
@@ -1577,80 +2116,45 @@ export class Vector2 implements Vector2Like {
  }
 
  /**
-  * Midpoint between a and b.
-  *
-  * @param a - First endpoint.
-  * @param b - Second endpoint.
-  * @param out - Optional output vector.
-  * @returns Midpoint vector.
-  *
-  * @category Transform
-  * @since 0.8.0
-  */
- public static midpoint(a: ReadonlyVector2Like, b: ReadonlyVector2Like, out?: Vector2): Vector2 {
-  return this.ensureOut(out).set((a.x + b.x) * 0.5, (a.y + b.y) * 0.5);
- }
-
- /**
   * Box2D-style cross: vector × scalar = (s*y, -s*x).
+  * Scalar is on the RIGHT side of the cross product.
   *
   * @param v - Source vector.
-  * @param s - Scalar factor.
+  * @param s - Scalar factor (on right).
   * @param out - Optional output vector.
   * @returns Perpendicular scaled vector (CW rotation).
   *
+  * @see {@link crossScalarLeft} - For scalar on left side
+  *
   * @category Transform
-  * @since 0.8.0
+  * @since 0.7.0
   */
- public static crossVS(v: ReadonlyVector2Like, s: number, out?: Vector2): Vector2 {
+ public static crossScalarRight(v: ReadonlyVector2Like, s: number, out?: Vector2): Vector2 {
   return this.ensureOut(out).set(s * v.y, -s * v.x);
  }
 
  /**
   * Box2D-style cross: scalar × vector = (-s*y, s*x).
+  * Scalar is on the LEFT side of the cross product.
   *
-  * @param s - Scalar factor.
+  * @param s - Scalar factor (on left).
   * @param v - Source vector.
   * @param out - Optional output vector.
   * @returns Perpendicular scaled vector (CCW rotation).
   *
-  * @category Transform
-  * @since 0.8.0
-  */
- public static crossSV(s: number, v: ReadonlyVector2Like, out?: Vector2): Vector2 {
-  return this.ensureOut(out).set(-s * v.y, s * v.x);
- }
-
- /**
-  * Computes tangent vector from scalar rotation rate and radius vector.
-  *
-  * @param omega - Scalar rotation rate (radians per unit time).
-  * @param r - Radius vector from rotation center.
-  * @param out - Optional output vector.
-  * @returns Tangent vector `(-ω*r.y, ω*r.x)`.
-  *
-  * @remarks
-  * Mathematically equivalent to `crossSV(omega, r)`.
-  * In 2D, a scalar "angular rate" crossed with a position vector
-  * yields the perpendicular (tangent) velocity at that position.
+  * @see {@link crossScalarRight} - For scalar on right side
   *
   * @example
   * ```typescript
-  * const omega = Math.PI;
-  * const r = new Vector2(1, 0);
-  * const tangent = Vector2.angularToLinearVelocity(omega, r);
-  * // tangent ≈ (0, π)
+  * const v = new Vector2(1, 0);
+  * const perp = Vector2.crossScalarLeft(1, v); // (0, 1) - CCW perpendicular
   * ```
   *
   * @category Transform
-  * @since 0.9.0
+  * @since 0.7.0
   */
- public static angularToLinearVelocity(
-  omega: number,
-  r: ReadonlyVector2Like,
-  out?: Vector2,
- ): Vector2 {
-  return Vector2.crossSV(omega, r, out);
+ public static crossScalarLeft(s: number, v: ReadonlyVector2Like, out?: Vector2): Vector2 {
+  return this.ensureOut(out).set(-s * v.y, s * v.x);
  }
 
  /* ======================================================================== */
@@ -1661,7 +2165,7 @@ export class Vector2 implements Vector2Like {
   * Applies a Rotation2 (unit complex) to a vector.
   *
   * @param v - Vector to transform.
-  * @param rotation - Rotation with c (cos) and s (sin) components.
+  * @param rotation - Rotation2 with cos and sin components.
   * @param out - Optional output vector.
   * @returns Rotated vector.
   *
@@ -1670,9 +2174,9 @@ export class Vector2 implements Vector2Like {
   * Uses interface for loose coupling.
   *
   * @category Transform Integration
-  * @since 0.9.0
+  * @since 0.7.0
   */
- public static applyRotation(
+ public static applyRotation2(
   v: ReadonlyVector2Like,
   rotation: ReadonlyRotation2Like,
   out?: Vector2,
@@ -1692,8 +2196,15 @@ export class Vector2 implements Vector2Like {
   * Computes: [m00*x + m10*y, m01*x + m11*y] (column-major convention).
   * Uses interface for loose coupling.
   *
+  * @example
+  * ```typescript
+  * const v = new Vector2(1, 0);
+  * const mat = Matrix2.fromRotation(Math.PI / 2); // 90° rotation
+  * const result = Vector2.applyMatrix2(v, mat); // (0, 1)
+  * ```
+  *
   * @category Transform Integration
-  * @since 0.9.0
+  * @since 0.7.0
   */
  public static applyMatrix2(
   v: ReadonlyVector2Like,
@@ -1707,10 +2218,57 @@ export class Vector2 implements Vector2Like {
  }
 
  /**
+  * Transforms a vector by a 3x3 matrix (includes translation and perspective).
+  *
+  * @param v - Vector to transform (treated as a point).
+  * @param matrix - 3x3 transformation matrix.
+  * @param out - Optional output vector.
+  * @returns Transformed vector.
+  *
+  * @remarks
+  * For affine matrices (m02=0, m12=0, m22=1), computes:
+  * `[m00*x + m10*y + m20, m01*x + m11*y + m21]`
+  *
+  * For projective matrices, divides by the homogeneous coordinate w.
+  *
+  * This treats the vector as a point (applies translation).
+  * For direction vectors (no translation), use Matrix3.transformVector.
+  *
+  * Uses interface for loose coupling to avoid circular dependencies.
+  *
+  * @example
+  * ```typescript
+  * const m = { m00: 1, m01: 0, m02: 0, m10: 0, m11: 1, m12: 0, m20: 10, m21: 20, m22: 1 };
+  * const v = { x: 1, y: 2 };
+  * const result = Vector2.applyMatrix3(v, m); // (11, 22)
+  * ```
+  *
+  * @category Transform Integration
+  * @since 0.7.0
+  */
+ public static applyMatrix3(
+  v: ReadonlyVector2Like,
+  matrix: ReadonlyMatrix3Like,
+  out?: Vector2,
+ ): Vector2 {
+  const { x, y } = v;
+  const w = matrix.m02 * x + matrix.m12 * y + matrix.m22;
+  const rx = matrix.m00 * x + matrix.m10 * y + matrix.m20;
+  const ry = matrix.m01 * x + matrix.m11 * y + matrix.m21;
+
+  // Optimization: skip division for affine matrices (w ≈ 1)
+  if (isNearZero(w - 1)) {
+   return this.ensureOut(out).set(rx, ry);
+  }
+  const invW = safeDivide(1, w);
+  return this.ensureOut(out).set(rx * invW, ry * invW);
+ }
+
+ /**
   * Applies a full 2D transform (scale → rotate → translate) to a vector.
   *
   * @param v - Vector to transform.
-  * @param transform - Transform with position, rotation (angle), and scale.
+  * @param transform - Transform2 with position, rotation (angle), and scale.
   * @param out - Optional output vector.
   * @returns Transformed vector.
   *
@@ -1718,15 +2276,22 @@ export class Vector2 implements Vector2Like {
   * Transform order: Scale first, then rotate, then translate.
   * Uses interface for loose coupling.
   *
+  * @example
+  * ```typescript
+  * const v = new Vector2(1, 0);
+  * const t = Transform2.fromValues(10, 0, Math.PI, 2, 2); // pos(10,0), rot=180°, scale=2
+  * const result = Vector2.applyTransform2(v, t); // scaled, rotated, translated
+  * ```
+  *
   * @category Transform Integration
-  * @since 0.9.0
+  * @since 0.7.0
   */
- public static applyTransform(
+ public static applyTransform2(
   v: ReadonlyVector2Like,
   transform: ReadonlyTransform2Like,
   out?: Vector2,
  ): Vector2 {
-  const { cos, sin } = sinCos(transform.rotation);
+  const { cos, sin } = transform.rotation;
   const sx = v.x * transform.scale.x;
   const sy = v.y * transform.scale.y;
   return this.ensureOut(out).set(
@@ -1736,20 +2301,44 @@ export class Vector2 implements Vector2Like {
  }
 
  /**
-  * Creates a vector from a complex number.
+  * Applies a complex number as a rotation to a vector.
   *
-  * @param complex - Complex number with real and imag components.
+  * @param v - Vector to transform.
+  * @param complex - Complex number (will be normalized first).
   * @param out - Optional output vector.
-  * @returns Vector with x=real, y=imag.
+  * @returns Rotated vector.
   *
   * @remarks
-  * Uses interface for loose coupling with Complex class.
+  * The complex number is normalized before applying to ensure
+  * a pure rotation without scaling. For unit complex numbers,
+  * this is equivalent to complex multiplication.
   *
-  * @category Factory
-  * @since 0.9.0
+  * Mathematically equivalent to treating the vector as a complex number
+  * and multiplying: (v.x + i*v.y) * (c.real + i*c.imag) / |c|
+  *
+  * @example
+  * ```typescript
+  * const c = { real: Math.SQRT1_2, imag: Math.SQRT1_2 }; // 45° rotation
+  * const v = { x: 1, y: 0 };
+  * const rotated = Vector2.applyComplex(v, c); // ≈ (0.707, 0.707)
+  * ```
+  *
+  * @category Transform Integration
+  * @since 0.7.0
   */
- public static fromComplex(complex: ReadonlyComplexLike, out?: Vector2): Vector2 {
-  return this.ensureOut(out).set(complex.real, complex.imag);
+ public static applyComplex(
+  v: ReadonlyVector2Like,
+  complex: ReadonlyComplexLike,
+  out?: Vector2,
+ ): Vector2 {
+  const magSq = complex.real * complex.real + complex.imag * complex.imag;
+  if (isNearZero(magSq)) {
+   return this.clone(v, out);
+  }
+  const invMag = 1 / safeSqrt(magSq);
+  const c = complex.real * invMag;
+  const s = complex.imag * invMag;
+  return this.ensureOut(out).set(c * v.x - s * v.y, s * v.x + c * v.y);
  }
 
  /* ======================================================================== */
@@ -1763,7 +2352,7 @@ export class Vector2 implements Vector2Like {
   * @returns True if both components are zero.
   *
   * @category Comparison
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static isZero(v: ReadonlyVector2Like): boolean {
   return v.x === 0 && v.y === 0;
@@ -1777,9 +2366,9 @@ export class Vector2 implements Vector2Like {
   * @returns True if |x| ≤ epsilon and |y| ≤ epsilon.
   *
   * @category Comparison
-  * @since 0.8.0
+  * @since 0.7.0
   */
- public static nearZero(v: ReadonlyVector2Like, epsilon = EPSILON): boolean {
+ public static isNearZero(v: ReadonlyVector2Like, epsilon = EPSILON): boolean {
   return isNearZero(v.x, epsilon) && isNearZero(v.y, epsilon);
  }
 
@@ -1794,7 +2383,7 @@ export class Vector2 implements Vector2Like {
   * Use {@link nearEquals} for comparing results of floating-point operations.
   *
   * @category Comparison
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static exactEquals(a: ReadonlyVector2Like, b: ReadonlyVector2Like): boolean {
   return a.x === b.x && a.y === b.y;
@@ -1813,7 +2402,7 @@ export class Vector2 implements Vector2Like {
   * This scales with value magnitude, making it robust for both small and large values.
   *
   * @category Comparison
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static nearEquals(
   a: ReadonlyVector2Like,
@@ -1830,10 +2419,10 @@ export class Vector2 implements Vector2Like {
   * @returns True if v is unit length.
   *
   * @category Comparison
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static isUnit(v: ReadonlyVector2Like): boolean {
-  return scalarNearEquals(Vector2.length(v), 1);
+  return scalarNearEquals(Vector2.magnitude(v), 1);
  }
 
  /**
@@ -1843,7 +2432,7 @@ export class Vector2 implements Vector2Like {
   * @returns True if both components are finite.
   *
   * @category Comparison
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static isFinite(v: ReadonlyVector2Like): boolean {
   return Number.isFinite(v.x) && Number.isFinite(v.y);
@@ -1856,10 +2445,28 @@ export class Vector2 implements Vector2Like {
   * @returns True if any component is NaN.
   *
   * @category Comparison
-  * @since 0.9.0
+  * @since 0.7.0
   */
  public static hasNaN(v: ReadonlyVector2Like): boolean {
   return Number.isNaN(v.x) || Number.isNaN(v.y);
+ }
+
+ /**
+  * Tests if any component is infinite (±Infinity).
+  *
+  * @param v - Vector to test.
+  * @returns True if any component is ±Infinity.
+  *
+  * @remarks
+  * Distinguishes infinity from NaN. Use {@link isFinite} to check for both.
+  *
+  * @category Comparison
+  * @since 0.7.0
+  */
+ public static hasInfinity(v: ReadonlyVector2Like): boolean {
+  return (
+   (!Number.isFinite(v.x) && !Number.isNaN(v.x)) || (!Number.isFinite(v.y) && !Number.isNaN(v.y))
+  );
  }
 
  /**
@@ -1871,7 +2478,7 @@ export class Vector2 implements Vector2Like {
   * @returns True if vectors are parallel.
   *
   * @category Comparison
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static isParallel(
   a: ReadonlyVector2Like,
@@ -1890,7 +2497,7 @@ export class Vector2 implements Vector2Like {
   * @returns True if vectors are perpendicular.
   *
   * @category Comparison
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static isPerpendicular(
   a: ReadonlyVector2Like,
@@ -1927,6 +2534,8 @@ export class Vector2 implements Vector2Like {
   *
   * @param xOrSource - X component, array, or object.
   * @param y - Y component (when first arg is a number).
+  * @throws {RangeError} If array has less than 2 elements.
+  * @throws {TypeError} If arguments are invalid.
   *
   * @example
   * ```typescript
@@ -1955,6 +2564,7 @@ export class Vector2 implements Vector2Like {
   } else {
    throw new TypeError('Vector2: invalid constructor arguments');
   }
+  // Pure math: no assertions - Infinity/NaN are valid IEEE 754 values
  }
 
  /* ======================================================================== */
@@ -1966,8 +2576,12 @@ export class Vector2 implements Vector2Like {
   * @returns New unit vector.
   */
  public get normalized(): Vector2 {
-  const length = this.length();
-  return isNearZero(length) ? new Vector2(0, 0) : new Vector2(this.x / length, this.y / length);
+  const lengthSq = this.magnitudeSquared();
+  if (isNearZero(lengthSq)) {
+   return new Vector2(0, 0);
+  }
+  const inv = 1 / safeSqrt(lengthSq);
+  return new Vector2(this.x * inv, this.y * inv);
  }
 
  /**
@@ -1983,7 +2597,7 @@ export class Vector2 implements Vector2Like {
   * @returns New absolute-valued vector.
   */
  public get absolute(): Vector2 {
-  return new Vector2(scalarAbs(this.x), scalarAbs(this.y));
+  return new Vector2(Math.abs(this.x), Math.abs(this.y));
  }
 
  /* ======================================================================== */
@@ -2045,6 +2659,45 @@ export class Vector2 implements Vector2Like {
   */
  public copy(v: ReadonlyVector2Like): this {
   return this.set(v.x, v.y);
+ }
+
+ /**
+  * Sets this vector from polar coordinates.
+  * @param angle - Angle in radians (CCW from +X).
+  * @param radius - Distance from origin (default 1).
+  * @returns This for chaining.
+  *
+  * @category Initialization
+  * @since 0.7.0
+  */
+ public setFromAngle(angle: number, radius = 1): this {
+  const { cos, sin } = sinCos(angle);
+  return this.set(cos * radius, sin * radius);
+ }
+
+ /**
+  * Sets this vector from array values.
+  * @param array - Source array.
+  * @param offset - Starting index (default 0).
+  * @returns This for chaining.
+  *
+  * @category Initialization
+  * @since 0.7.0
+  */
+ public setFromArray(array: ArrayLike<number>, offset = 0): this {
+  return this.set(array[offset]!, array[offset + 1]!);
+ }
+
+ /**
+  * Sets this vector from a complex number.
+  * @param complex - Source complex (real→x, imag→y).
+  * @returns This for chaining.
+  *
+  * @category Initialization
+  * @since 0.7.0
+  */
+ public setFromComplex(complex: ReadonlyComplexLike): this {
+  return this.set(complex.real, complex.imag);
  }
 
  /**
@@ -2114,8 +2767,12 @@ export class Vector2 implements Vector2Like {
 
  /**
   * Adds v component-wise.
+  *
   * @param v - Vector to add.
   * @returns This for chaining.
+  *
+  * @category Arithmetic
+  * @since 0.7.0
   */
  public add(v: ReadonlyVector2Like): this {
   this.x += v.x;
@@ -2125,8 +2782,12 @@ export class Vector2 implements Vector2Like {
 
  /**
   * Adds scalar to both components.
+  *
   * @param s - Scalar to add.
   * @returns This for chaining.
+  *
+  * @category Arithmetic
+  * @since 0.7.0
   */
  public addScalar(s: number): this {
   this.x += s;
@@ -2136,8 +2797,12 @@ export class Vector2 implements Vector2Like {
 
  /**
   * Subtracts v component-wise.
+  *
   * @param v - Vector to subtract.
   * @returns This for chaining.
+  *
+  * @category Arithmetic
+  * @since 0.7.0
   */
  public subtract(v: ReadonlyVector2Like): this {
   this.x -= v.x;
@@ -2147,8 +2812,12 @@ export class Vector2 implements Vector2Like {
 
  /**
   * Subtracts scalar from both components.
+  *
   * @param s - Scalar to subtract.
   * @returns This for chaining.
+  *
+  * @category Arithmetic
+  * @since 0.7.0
   */
  public subtractScalar(s: number): this {
   this.x -= s;
@@ -2163,7 +2832,7 @@ export class Vector2 implements Vector2Like {
   * @returns This for chaining.
   *
   * @category Arithmetic
-  * @since 0.1.0
+  * @since 0.7.0
   */
  public multiply(v: ReadonlyVector2Like): this {
   this.x *= v.x;
@@ -2178,7 +2847,7 @@ export class Vector2 implements Vector2Like {
   * @returns This for chaining.
   *
   * @category Arithmetic
-  * @since 0.1.0
+  * @since 0.7.0
   */
  public scale(s: number): this {
   this.x *= s;
@@ -2187,35 +2856,77 @@ export class Vector2 implements Vector2Like {
  }
 
  /**
-  * Divides by v component-wise (safe).
+  * Divides by v component-wise (strict).
   *
   * @param v - Divisor vector.
   * @returns This for chaining.
+  * @throws {RangeError} If any component of v is near zero.
   *
-  * @remarks
-  * Uses safeDivide internally - division by zero returns 0 per component.
+  * @see {@link divideSafe} - Sets to 0 per component instead of throwing
+  * @see {@link divideUnchecked} - No validation
   *
   * @category Arithmetic
-  * @since 0.1.0
+  * @since 0.7.0
   */
  public divide(v: ReadonlyVector2Like): this {
-  this.x = safeDivide(this.x, v.x);
-  this.y = safeDivide(this.y, v.y);
+  if (isNearZero(v.x) || isNearZero(v.y)) {
+   throw new RangeError('Vector2.divide: cannot divide by near-zero component');
+  }
+  this.x = this.x / v.x;
+  this.y = this.y / v.y;
   return this;
  }
 
  /**
-  * Divides by scalar (safe).
+  * Divides by v component-wise (safe).
   *
-  * @param s - Scalar divisor (if near zero, sets to (0, 0)).
-  * @returns This for chaining.
+  * @param v - Divisor vector.
+  * @returns This for chaining (0 if divisor near zero).
   *
   * @category Arithmetic
-  * @since 0.1.0
+  * @since 0.7.0
+  */
+ public divideSafe(v: ReadonlyVector2Like): this {
+  this.x = isNearZero(v.x) ? 0 : this.x / v.x;
+  this.y = isNearZero(v.y) ? 0 : this.y / v.y;
+  return this;
+ }
+
+ /**
+  * Divides by v component-wise (unchecked).
+  *
+  * @param v - Divisor vector (must have non-zero components).
+  * @returns This for chaining.
+  *
+  * @remarks
+  * **⚠️ Precondition:** `v.x ≠ 0` and `v.y ≠ 0`.
+  *
+  * @category Arithmetic
+  * @since 0.7.0
+  */
+ public divideUnchecked(v: ReadonlyVector2Like): this {
+  this.x = this.x / v.x;
+  this.y = this.y / v.y;
+  return this;
+ }
+
+ /**
+  * Divides by scalar (strict).
+  *
+  * @param s - Scalar divisor.
+  * @returns This for chaining.
+  * @throws {RangeError} If scalar is near zero.
+  *
+  * @remarks
+  * For safe division that returns zeros, use {@link divideScalarSafe}.
+  * For hot paths, use {@link divideScalarUnchecked}.
+  *
+  * @category Arithmetic
+  * @since 0.7.0
   */
  public divideScalar(s: number): this {
   if (isNearZero(s)) {
-   return this.set(0, 0);
+   throw new RangeError('Vector2.divideScalar: cannot divide by zero or near-zero scalar');
   }
   const inv = 1 / s;
   this.x *= inv;
@@ -2227,12 +2938,18 @@ export class Vector2 implements Vector2Like {
   * Safe scalar division. If |s| ≤ EPSILON, sets to (0, 0).
   * @param s - Scalar divisor.
   * @returns This for chaining.
+  *
+  * @category Arithmetic
+  * @since 0.7.0
   */
  public divideScalarSafe(s: number): this {
-  if (s === 0 || isNearZero(s)) {
+  if (isNearZero(s)) {
    return this.set(0, 0);
   }
-  return this.divideScalar(s);
+  const inv = 1 / s;
+  this.x *= inv;
+  this.y *= inv;
+  return this;
  }
 
  /**
@@ -2257,7 +2974,7 @@ export class Vector2 implements Vector2Like {
   * ```
   *
   * @category Arithmetic
-  * @since 1.1.0
+  * @since 0.7.0
   */
  public divideScalarUnchecked(s: number): this {
   const inv = 1 / s;
@@ -2268,7 +2985,11 @@ export class Vector2 implements Vector2Like {
 
  /**
   * Negates both components.
+  *
   * @returns This for chaining.
+  *
+  * @category Arithmetic
+  * @since 0.7.0
   */
  public negate(): this {
   this.x = -this.x;
@@ -2328,8 +3049,8 @@ export class Vector2 implements Vector2Like {
   * @throws {RangeError} If any component is zero.
   */
  public inverse(): this {
-  if (this.x === 0 || this.y === 0) {
-   throw new RangeError('Vector2.inverse: cannot invert zero component');
+  if (isNearZero(this.x) || isNearZero(this.y)) {
+   throw new RangeError('Vector2.inverse: cannot invert near-zero component');
   }
   this.x = 1 / this.x;
   this.y = 1 / this.y;
@@ -2343,6 +3064,24 @@ export class Vector2 implements Vector2Like {
  public inverseSafe(): this {
   this.x = isNearZero(this.x) ? 0 : 1 / this.x;
   this.y = isNearZero(this.y) ? 0 : 1 / this.y;
+  return this;
+ }
+
+ /**
+  * Unchecked reciprocal for hot paths.
+  *
+  * @returns This for chaining.
+  *
+  * @remarks
+  * **⚠️ Precondition:** Both components must be non-zero.
+  * Calling with zero produces Infinity.
+  *
+  * @category Numeric Transform
+  * @since 0.7.0
+  */
+ public inverseUnchecked(): this {
+  this.x = 1 / this.x;
+  this.y = 1 / this.y;
   return this;
  }
 
@@ -2380,18 +3119,21 @@ export class Vector2 implements Vector2Like {
  }
 
  /**
-  * Euclidean length.
+  * Euclidean magnitude (length).
   * @returns The Euclidean norm.
+  *
+  * @category Geometry
+  * @since 0.7.0
   */
- public length(): number {
-  return safeSqrt(this.x * this.x + this.y * this.y);
+ public magnitude(): number {
+  return hypot(this.x, this.y);
  }
 
  /**
   * Squared length.
   * @returns The squared length.
   */
- public lengthSquared(): number {
+ public magnitudeSquared(): number {
   return this.x * this.x + this.y * this.y;
  }
 
@@ -2400,7 +3142,7 @@ export class Vector2 implements Vector2Like {
   * @returns The Manhattan norm.
   */
  public manhattanLength(): number {
-  return scalarAbs(this.x) + scalarAbs(this.y);
+  return Math.abs(this.x) + Math.abs(this.y);
  }
 
  /**
@@ -2452,7 +3194,7 @@ export class Vector2 implements Vector2Like {
   * @returns Angle in radians.
   */
  public angle(): number {
-  return DeterministicMath.atan2(this.y, this.x);
+  return atan2(this.y, this.x);
  }
 
  /**
@@ -2483,7 +3225,7 @@ export class Vector2 implements Vector2Like {
   * @throws {RangeError} If zero length.
   */
  public normalize(): this {
-  const length = this.length();
+  const length = this.magnitude();
   if (isNearZero(length)) {
    throw new RangeError('Vector2.normalize: cannot normalize zero-length vector');
   }
@@ -2495,7 +3237,7 @@ export class Vector2 implements Vector2Like {
   * @returns This for chaining.
   */
  public normalizeSafe(): this {
-  const lengthSq = this.lengthSquared();
+  const lengthSq = this.magnitudeSquared();
   if (isNearZero(lengthSq)) {
    return this.set(0, 0);
   }
@@ -2519,17 +3261,17 @@ export class Vector2 implements Vector2Like {
   * @example
   * ```typescript
   * // Only use when you know the vector is non-zero
-  * if (v.lengthSquared() > 0) {
+  * if (v.magnitudeSquared() > 0) {
   *   v.normalizeUnchecked();
   * }
   * ```
   *
   * @category Transform
-  * @since 1.1.0
+  * @since 0.7.0
   */
  public normalizeUnchecked(): this {
   const lengthSq = this.x * this.x + this.y * this.y;
-  const inv = 1 / DeterministicMath.sqrt(lengthSq);
+  const inv = 1 / sqrt(lengthSq);
   this.x *= inv;
   this.y *= inv;
   return this;
@@ -2537,29 +3279,29 @@ export class Vector2 implements Vector2Like {
 
  /**
   * Sets the length.
-  * @param newLength - Desired magnitude.
+  * @param newMagnitude - Desired magnitude.
   * @returns This for chaining.
   * @throws {RangeError} If zero length or negative.
   */
- public setLength(newLength: number): this {
-  if (newLength < 0) {
-   throw new RangeError('Vector2.setLength: length must be non-negative');
+ public setMagnitude(newMagnitude: number): this {
+  if (newMagnitude < 0) {
+   throw new RangeError('Vector2.setMagnitude: length must be non-negative');
   }
-  const length = this.length();
+  const length = this.magnitude();
   if (isNearZero(length)) {
-   throw new RangeError('Vector2.setLength: cannot set length on zero vector');
+   throw new RangeError('Vector2.setMagnitude: cannot set length on zero vector');
   }
-  return this.scale(newLength / length);
+  return this.scale(newMagnitude / length);
  }
 
  /**
-  * Safe setLength. Zero vectors become (newLength, 0).
-  * @param newLength - Desired magnitude.
+  * Safe setMagnitude. Zero vectors become (newMagnitude, 0).
+  * @param newMagnitude - Desired magnitude.
   * @returns This for chaining.
   */
- public setLengthSafe(newLength: number): this {
-  const nn = newLength < 0 ? 0 : newLength;
-  const length = this.length();
+ public setMagnitudeSafe(newMagnitude: number): this {
+  const nn = newMagnitude < 0 ? 0 : newMagnitude;
+  const length = this.magnitude();
   if (isNearZero(length)) {
    return this.set(nn, 0);
   }
@@ -2567,12 +3309,12 @@ export class Vector2 implements Vector2Like {
  }
 
  /**
-  * Sets heading while preserving length.
+  * Sets angle (direction) while preserving length.
   * @param angle - New heading in radians.
   * @returns This for chaining.
   */
- public setHeading(angle: number): this {
-  const magnitude = this.length();
+ public setAngle(angle: number): this {
+  const magnitude = this.magnitude();
   const { cos, sin } = sinCos(angle);
   return this.set(cos * magnitude, sin * magnitude);
  }
@@ -2607,11 +3349,11 @@ export class Vector2 implements Vector2Like {
   * @param maxLength - Maximum magnitude.
   * @returns This for chaining.
   */
- public clampLength(minLength: number, maxLength: number): this {
-  const length = this.length();
+ public clampMagnitude(minLength: number, maxLength: number): this {
+  const length = this.magnitude();
   if (isNearZero(length)) return this;
-  const newLength = clamp(length, minLength, maxLength);
-  return this.scale(newLength / length);
+  const newMagnitude = clamp(length, minLength, maxLength);
+  return this.scale(newMagnitude / length);
  }
 
  /**
@@ -2620,7 +3362,7 @@ export class Vector2 implements Vector2Like {
   * @returns This for chaining.
   */
  public limit(maxLength: number): this {
-  const lengthSq = this.lengthSquared();
+  const lengthSq = this.magnitudeSquared();
   if (lengthSq > maxLength * maxLength) {
    const scale = maxLength / safeSqrt(lengthSq);
    this.scale(scale);
@@ -2634,8 +3376,8 @@ export class Vector2 implements Vector2Like {
   * @returns This for chaining.
   */
  public min(v: ReadonlyVector2Like): this {
-  this.x = scalarMin(this.x, v.x);
-  this.y = scalarMin(this.y, v.y);
+  this.x = Math.min(this.x, v.x);
+  this.y = Math.min(this.y, v.y);
   return this;
  }
 
@@ -2645,8 +3387,36 @@ export class Vector2 implements Vector2Like {
   * @returns This for chaining.
   */
  public max(v: ReadonlyVector2Like): this {
-  this.x = scalarMax(this.x, v.x);
-  this.y = scalarMax(this.y, v.y);
+  this.x = Math.max(this.x, v.x);
+  this.y = Math.max(this.y, v.y);
+  return this;
+ }
+
+ /**
+  * Component-wise minimum with scalar.
+  * @param s - Scalar bound.
+  * @returns This for chaining.
+  *
+  * @category Constraint
+  * @since 0.7.0
+  */
+ public minScalar(s: number): this {
+  this.x = Math.min(this.x, s);
+  this.y = Math.min(this.y, s);
+  return this;
+ }
+
+ /**
+  * Component-wise maximum with scalar.
+  * @param s - Scalar bound.
+  * @returns This for chaining.
+  *
+  * @category Constraint
+  * @since 0.7.0
+  */
+ public maxScalar(s: number): this {
+  this.x = Math.max(this.x, s);
+  this.y = Math.max(this.y, s);
   return this;
  }
 
@@ -2655,8 +3425,8 @@ export class Vector2 implements Vector2Like {
   * @returns This for chaining.
   */
  public abs(): this {
-  this.x = scalarAbs(this.x);
-  this.y = scalarAbs(this.y);
+  this.x = Math.abs(this.x);
+  this.y = Math.abs(this.y);
   return this;
  }
 
@@ -2701,12 +3471,22 @@ export class Vector2 implements Vector2Like {
  }
 
  /**
+  * Applies Math.trunc to both components (rounds towards zero).
+  * @returns This for chaining.
+  */
+ public trunc(): this {
+  this.x = Math.trunc(this.x);
+  this.y = Math.trunc(this.y);
+  return this;
+ }
+
+ /**
   * Projects onto axis.
   * @param axis - Projection axis.
   * @returns This for chaining.
   */
  public project(axis: ReadonlyVector2Like): this {
-  const denom = Vector2.lengthSquared(axis);
+  const denom = Vector2.magnitudeSquared(axis);
   if (isNearZero(denom)) {
    return this.set(0, 0);
   }
@@ -2740,7 +3520,7 @@ export class Vector2 implements Vector2Like {
   * @returns This for chaining.
   */
  public reflectSafe(normal: ReadonlyVector2Like): this {
-  const lengthSq = Vector2.lengthSquared(normal);
+  const lengthSq = Vector2.magnitudeSquared(normal);
   if (isNearZero(lengthSq)) {
    return this;
   }
@@ -2766,34 +3546,6 @@ export class Vector2 implements Vector2Like {
    this.y = x;
   }
   return this;
- }
-
- /**
-  * Makes this vector a unit perpendicular.
-  *
-  * @param clockwise - CW if true, CCW if false.
-  * @returns This for chaining.
-  *
-  * @category Transform
-  * @since 0.8.0
-  */
- public unitPerpendicular(clockwise = false): this {
-  this.perpendicular(clockwise);
-  return this.normalize();
- }
-
- /**
-  * Safe unit perpendicular. Sets to (0, 0) if this is near zero.
-  *
-  * @param clockwise - CW if true, CCW if false.
-  * @returns This for chaining.
-  *
-  * @category Transform
-  * @since 0.8.0
-  */
- public unitPerpendicularSafe(clockwise = false): this {
-  this.perpendicular(clockwise);
-  return this.normalizeSafe();
  }
 
  /**
@@ -2849,12 +3601,29 @@ export class Vector2 implements Vector2Like {
   * @returns This for chaining.
   */
  public reject(onto: ReadonlyVector2Like): this {
-  const denom = Vector2.lengthSquared(onto);
+  const denom = Vector2.magnitudeSquared(onto);
   if (isNearZero(denom)) {
    return this;
   }
   const s = this.dot(onto) / denom;
   return this.set(this.x - onto.x * s, this.y - onto.y * s);
+ }
+
+ /**
+  * Rejection onto a unit axis (hot path).
+  *
+  * @param unitAxis - Unit-length axis.
+  * @returns This for chaining.
+  *
+  * @remarks
+  * Use when you know the axis is already normalized.
+  *
+  * @category Transform
+  * @since 0.7.0
+  */
+ public rejectOnUnit(unitAxis: ReadonlyVector2Like): this {
+  const s = this.dot(unitAxis);
+  return this.set(this.x - unitAxis.x * s, this.y - unitAxis.y * s);
  }
 
  /**
@@ -2890,7 +3659,7 @@ export class Vector2 implements Vector2Like {
   * @returns This for chaining.
   *
   * @category Interpolation
-  * @since 0.1.0
+  * @since 0.7.0
   */
  public lerp(end: ReadonlyVector2Like, t: number): this {
   this.x = lerp(this.x, end.x, t);
@@ -2905,24 +3674,10 @@ export class Vector2 implements Vector2Like {
   * @returns This for chaining.
   *
   * @category Interpolation
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public lerpClamped(end: ReadonlyVector2Like, t: number): this {
   return this.lerp(end, saturate(t));
- }
-
- /**
-  * Linear interpolation without clamping t (alias for lerp).
-  *
-  * @param end - Target vector.
-  * @param t - Interpolation factor (not clamped).
-  * @returns This for chaining.
-  *
-  * @category Interpolation
-  * @since 0.9.0
-  */
- public lerpUnclamped(end: ReadonlyVector2Like, t: number): this {
-  return this.lerp(end, t);
  }
 
  /**
@@ -2932,34 +3687,11 @@ export class Vector2 implements Vector2Like {
   * @returns This for chaining.
   *
   * @category Interpolation
-  * @since 0.1.0
+  * @since 0.7.0
   */
  public slerp(end: ReadonlyVector2Like, t: number): this {
-  const lengthA = this.length();
-  const lengthB = Vector2.length(end);
-
-  if (isNearZero(lengthA) || isNearZero(lengthB)) {
-   return this.lerp(end, t);
-  }
-
-  const ax = this.x / lengthA;
-  const ay = this.y / lengthA;
-  const bx = end.x / lengthB;
-  const by = end.y / lengthB;
-
-  const dot = clamp(ax * bx + ay * by, -1, 1);
-  const theta = safeAcos(dot);
-
-  if (isNearZero(theta)) {
-   return this.lerp(end, t);
-  }
-
-  const sinTheta = DeterministicMath.sin(theta);
-  const wa = DeterministicMath.sin((1 - t) * theta) / sinTheta;
-  const wb = DeterministicMath.sin(t * theta) / sinTheta;
-  const lengthInterp = lerp(lengthA, lengthB, t);
-
-  return this.set((wa * ax + wb * bx) * lengthInterp, (wa * ay + wb * by) * lengthInterp);
+  Vector2.slerp(this, end, t, this);
+  return this;
  }
 
  /**
@@ -2969,7 +3701,7 @@ export class Vector2 implements Vector2Like {
   * @returns This for chaining.
   *
   * @category Interpolation
-  * @since 0.9.0
+  * @since 0.7.0
   */
  public slerpClamped(end: ReadonlyVector2Like, t: number): this {
   return this.slerp(end, saturate(t));
@@ -2982,12 +3714,11 @@ export class Vector2 implements Vector2Like {
   * @returns This for chaining.
   *
   * @category Interpolation
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public smoothStep(end: ReadonlyVector2Like, t: number): this {
-  const tt = saturate(t);
-  const factor = tt * tt * (3 - 2 * tt);
-  return this.lerp(end, factor);
+  Vector2.smoothStep(this, end, t, this);
+  return this;
  }
 
  /* ======================================================================== */
@@ -2997,12 +3728,14 @@ export class Vector2 implements Vector2Like {
  /**
   * Tests if exactly zero.
   * @returns True if both components are zero.
+  *
+  * @see {@link isNearZero} For tolerance-based comparison.
+  *
+  * @category Comparison
+  * @since 0.7.0
   */
- public isZero(epsilon = 0): boolean {
-  if (epsilon === 0) {
-   return this.x === 0 && this.y === 0;
-  }
-  return isNearZero(this.x, epsilon) && isNearZero(this.y, epsilon);
+ public isZero(): boolean {
+  return this.x === 0 && this.y === 0;
  }
 
  /**
@@ -3014,7 +3747,7 @@ export class Vector2 implements Vector2Like {
   * Use {@link nearEquals} for comparing results of floating-point operations.
   *
   * @category Comparison
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public exactEquals(v: ReadonlyVector2Like): boolean {
   return Vector2.exactEquals(this, v);
@@ -3030,7 +3763,7 @@ export class Vector2 implements Vector2Like {
   * Uses relative tolerance: `|a - b| <= epsilon * max(1, |a|, |b|)` per component.
   *
   * @category Comparison
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public nearEquals(v: ReadonlyVector2Like, epsilon = EPSILON): boolean {
   return relativeEquals(this.x, v.x, epsilon) && relativeEquals(this.y, v.y, epsilon);
@@ -3043,10 +3776,10 @@ export class Vector2 implements Vector2Like {
   * @returns True if both components are within epsilon of zero.
   *
   * @category Comparison
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public isNearZero(epsilon = EPSILON): boolean {
-  return Vector2.nearZero(this, epsilon);
+  return Vector2.isNearZero(this, epsilon);
  }
 
  /**
@@ -3054,7 +3787,7 @@ export class Vector2 implements Vector2Like {
   * @returns True if |length - 1| ≤ EPSILON.
   */
  public isUnit(): boolean {
-  return scalarNearEquals(this.length(), 1);
+  return scalarNearEquals(this.magnitude(), 1);
  }
 
  /**
@@ -3071,6 +3804,14 @@ export class Vector2 implements Vector2Like {
   */
  public hasNaN(): boolean {
   return Number.isNaN(this.x) || Number.isNaN(this.y);
+ }
+
+ /**
+  * Tests if any component is infinite (±Infinity).
+  * @returns True if any component is ±Infinity.
+  */
+ public hasInfinity(): boolean {
+  return Vector2.hasInfinity(this);
  }
 
  /**
@@ -3145,7 +3886,7 @@ export class Vector2 implements Vector2Like {
   * @returns Formatted string.
   *
   * @category Conversion
-  * @since 0.1.0
+  * @since 0.7.0
   */
  public toString(precision = 4): string {
   return `Vector2(${this.x.toFixed(precision)}, ${this.y.toFixed(precision)})`;
@@ -3169,7 +3910,7 @@ export class Vector2 implements Vector2Like {
   * Does not create a Complex instance to avoid circular dependencies.
   *
   * @category Conversion
-  * @since 0.9.0
+  * @since 0.7.0
   */
  public toComplexLike(): { real: number; imag: number } {
   return { real: this.x, imag: this.y };
@@ -3178,22 +3919,6 @@ export class Vector2 implements Vector2Like {
  /* ======================================================================== */
  /* Readonly Getters (New Vectors)                                           */
  /* ======================================================================== */
-
- /**
-  * Returns perpendicular vector rotated 90° clockwise.
-  * @returns New Vector2(y, -x).
-  */
- public get perpCW(): Vector2 {
-  return new Vector2(this.y, -this.x);
- }
-
- /**
-  * Returns perpendicular vector rotated 90° counter-clockwise.
-  * @returns New Vector2(-y, x).
-  */
- public get perpCCW(): Vector2 {
-  return new Vector2(-this.y, this.x);
- }
 
  /**
   * Returns a copy with x negated.
@@ -3216,35 +3941,11 @@ export class Vector2 implements Vector2Like {
  /* ======================================================================== */
 
  /**
-  * Returns midpoint between this and other as a new vector.
-  * @param other - Second endpoint.
-  * @returns New midpoint vector.
-  */
- public midpointTo(other: ReadonlyVector2Like): Vector2 {
-  return Vector2.midpoint(this, other);
- }
-
- /**
-  * Sets this vector to the midpoint between itself and v.
-  *
-  * @param v - The other vector.
-  * @returns This for chaining.
-  *
-  * @category Transform
-  * @since 0.8.0
-  */
- public midpoint(v: ReadonlyVector2Like): this {
-  this.x = (this.x + v.x) * 0.5;
-  this.y = (this.y + v.y) * 0.5;
-  return this;
- }
-
- /**
   * Applies step function: sets components to 0 where < edge, else 1.
   * @param edge - Threshold vector.
   * @returns This for chaining.
   */
- public stepBy(edge: ReadonlyVector2Like): this {
+ public step(edge: ReadonlyVector2Like): this {
   this.x = scalarStep(edge.x, this.x);
   this.y = scalarStep(edge.y, this.y);
   return this;
@@ -3255,11 +3956,14 @@ export class Vector2 implements Vector2Like {
  /* ======================================================================== */
 
  /**
-  * Applies a rotation (unit complex) to this vector in place.
-  * @param rotation - Rotation with c (cos) and s (sin) components.
+  * Applies a Rotation2 (unit complex) to this vector in place.
+  * @param rotation - Rotation2 with cos and sin components.
   * @returns This for chaining.
+  *
+  * @category Transform Integration
+  * @since 0.7.0
   */
- public applyRotation(rotation: ReadonlyRotation2Like): this {
+ public applyRotation2(rotation: ReadonlyRotation2Like): this {
   const rx = rotation.cos * this.x - rotation.sin * this.y;
   const ry = rotation.sin * this.x + rotation.cos * this.y;
   return this.set(rx, ry);
@@ -3277,16 +3981,76 @@ export class Vector2 implements Vector2Like {
  }
 
  /**
-  * Applies a full 2D transform (scale → rotate → translate) in place.
-  * @param transform - Transform with position, rotation, and scale.
+  * Transforms this vector by a 3x3 matrix in place (includes translation and perspective).
+  * @param matrix - 3x3 transformation matrix.
   * @returns This for chaining.
+  *
+  * @remarks
+  * Treats this vector as a point (applies translation).
+  * For projective matrices, divides by the homogeneous coordinate w.
+  *
+  * @category Transform Integration
+  * @since 0.7.0
   */
- public applyTransform(transform: ReadonlyTransform2Like): this {
-  const { cos, sin } = sinCos(transform.rotation);
+ public applyMatrix3(matrix: ReadonlyMatrix3Like): this {
+  const { x, y } = this;
+  const w = matrix.m02 * x + matrix.m12 * y + matrix.m22;
+  const rx = matrix.m00 * x + matrix.m10 * y + matrix.m20;
+  const ry = matrix.m01 * x + matrix.m11 * y + matrix.m21;
+
+  if (isNearZero(w - 1)) {
+   return this.set(rx, ry);
+  }
+  const invW = safeDivide(1, w);
+  return this.set(rx * invW, ry * invW);
+ }
+
+ /**
+  * Applies a full 2D transform (scale → rotate → translate) in place.
+  * @param transform - Transform2 with position, rotation, and scale.
+  * @returns This for chaining.
+  *
+  * @category Transform Integration
+  * @since 0.7.0
+  */
+ public applyTransform2(transform: ReadonlyTransform2Like): this {
+  const { cos, sin } = transform.rotation;
   const sx = this.x * transform.scale.x;
   const sy = this.y * transform.scale.y;
   this.x = sx * cos - sy * sin + transform.position.x;
   this.y = sx * sin + sy * cos + transform.position.y;
   return this;
+ }
+
+ /**
+  * Applies a complex number as a rotation to this vector in place.
+  * @param complex - Complex number (will be normalized first).
+  * @returns This for chaining.
+  *
+  * @remarks
+  * The complex number is normalized before applying to ensure
+  * a pure rotation without scaling.
+  *
+  * @example
+  * ```typescript
+  * const c = { real: Math.SQRT1_2, imag: Math.SQRT1_2 }; // 45° rotation
+  * const v = new Vector2(1, 0);
+  * v.applyComplex(c); // v ≈ (0.707, 0.707)
+  * ```
+  *
+  * @category Transform Integration
+  * @since 0.7.0
+  */
+ public applyComplex(complex: ReadonlyComplexLike): this {
+  const magSq = complex.real * complex.real + complex.imag * complex.imag;
+  if (isNearZero(magSq)) {
+   return this;
+  }
+  const invMag = 1 / safeSqrt(magSq);
+  const c = complex.real * invMag;
+  const s = complex.imag * invMag;
+  const rx = c * this.x - s * this.y;
+  const ry = s * this.x + c * this.y;
+  return this.set(rx, ry);
  }
 }

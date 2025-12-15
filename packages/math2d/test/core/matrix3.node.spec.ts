@@ -1,9 +1,15 @@
+/**
+ * @file test/core/matrix3.node.spec.ts
+ * @module @lenguados/math2d/core
+ * @description Tests for Matrix3 core behavior.
+ */
+
 import { describe, expect, it } from '@jest/globals';
 
 import { Matrix3 } from '../../src/core/matrix3';
 import { Vector2 } from '../../src/core/vector2';
 
-const DIGITS = 10;
+const DIGITS = 8; // toBeCloseTo decimal digits (8 for float tolerance)
 
 function expectVecClose(vector: Vector2, x: number, y: number, digits = DIGITS): void {
  expect(vector.x).toBeCloseTo(x, digits);
@@ -35,7 +41,7 @@ describe('Matrix3', () => {
 
   it('fromTransform composes translation/rotation/scale', () => {
    expect.hasAssertions();
-   const mat = Matrix3.fromTransform(new Vector2(10, -4), Math.PI / 4, new Vector2(2, 1));
+   const mat = Matrix3.fromTransform2(new Vector2(10, -4), Math.PI / 4, new Vector2(2, 1));
    expectMatTranslation(mat, 10, -4);
    expect(mat.isAffine()).toBe(true);
   });
@@ -81,7 +87,7 @@ describe('Matrix3', () => {
 
   it('inverse produces matrix that yields identity when multiplied', () => {
    expect.hasAssertions();
-   const transform = Matrix3.fromTransform(new Vector2(5, -2), Math.PI / 3, 2);
+   const transform = Matrix3.fromTransform2(new Vector2(5, -2), Math.PI / 3, 2);
    const inv = Matrix3.inverse(transform, new Matrix3());
    const composed = Matrix3.multiply(transform, inv);
    expect(composed.isIdentity()).toBe(true);
@@ -96,14 +102,14 @@ describe('Matrix3', () => {
  describe('Transform application', () => {
   it('transformPoint applies translation and scale', () => {
    expect.hasAssertions();
-   const mat = Matrix3.fromTransform(new Vector2(10, 5), 0, new Vector2(2, 3));
+   const mat = Matrix3.fromTransform2(new Vector2(10, 5), 0, new Vector2(2, 3));
    const result = mat.transformPoint(new Vector2(2, 2));
    expectVecClose(result, 14, 11);
   });
 
   it('transformVector ignores translation', () => {
    expect.hasAssertions();
-   const mat = Matrix3.fromTransform(new Vector2(100, 200), Math.PI / 2, 1);
+   const mat = Matrix3.fromTransform2(new Vector2(100, 200), Math.PI / 2, 1);
    const vector = mat.transformVector(new Vector2(1, 0));
    expectVecClose(vector, 0, 1);
   });
@@ -140,7 +146,7 @@ describe('Matrix3', () => {
  describe('Queries', () => {
   it('getTranslation/getScale/getRotation report components', () => {
    expect.hasAssertions();
-   const mat = Matrix3.fromTransform(new Vector2(7, -3), Math.PI / 4, new Vector2(3, 4));
+   const mat = Matrix3.fromTransform2(new Vector2(7, -3), Math.PI / 4, new Vector2(3, 4));
    const translation = mat.getTranslation();
    expectVecClose(translation, 7, -3);
 
@@ -279,7 +285,7 @@ describe('Matrix3', () => {
 
   it('multiply multiplies with another matrix', () => {
    expect.hasAssertions();
-   const m = Matrix3.IDENTITY.clone();
+   const m = new Matrix3();
    m.multiply(Matrix3.fromScale(new Vector2(2, 2)));
    expect(m.m00).toBe(2);
   });
@@ -293,7 +299,7 @@ describe('Matrix3', () => {
 
   it('translate adds translation', () => {
    expect.hasAssertions();
-   const m = Matrix3.IDENTITY.clone();
+   const m = new Matrix3();
    m.translate(new Vector2(5, 10));
    expect(m.m20).toBe(5);
    expect(m.m21).toBe(10);
@@ -301,15 +307,40 @@ describe('Matrix3', () => {
 
   it('rotate rotates the matrix', () => {
    expect.hasAssertions();
-   const m = Matrix3.IDENTITY.clone();
+   const m = new Matrix3();
    m.rotate(Math.PI / 2);
    expect(m.m00).toBeCloseTo(0);
    expect(m.m01).toBeCloseTo(1);
   });
 
+  it('rotateCS rotates using precomputed cos/sin', () => {
+   expect.hasAssertions();
+   const m = new Matrix3();
+   const cos = Math.cos(Math.PI / 2);
+   const sin = Math.sin(Math.PI / 2);
+   m.rotateCS(cos, sin);
+   expect(m.m00).toBeCloseTo(0);
+   expect(m.m01).toBeCloseTo(1);
+  });
+
+  it('static rotateCS matches static rotate', () => {
+   expect.hasAssertions();
+   const m1 = Matrix3.fromTranslation({ x: 100, y: 50 });
+   const m2 = Matrix3.fromTranslation({ x: 100, y: 50 });
+   const angle = Math.PI / 4;
+   const cos = Math.cos(angle);
+   const sin = Math.sin(angle);
+   const r1 = Matrix3.rotate(m1, angle);
+   const r2 = Matrix3.rotateCS(m2, cos, sin);
+   expect(r1.m00).toBeCloseTo(r2.m00);
+   expect(r1.m01).toBeCloseTo(r2.m01);
+   expect(r1.m10).toBeCloseTo(r2.m10);
+   expect(r1.m11).toBeCloseTo(r2.m11);
+  });
+
   it('scale scales all matrix elements', () => {
    expect.hasAssertions();
-   const m = Matrix3.IDENTITY.clone();
+   const m = new Matrix3();
    m.scale(2);
    expect(m.m00).toBe(2);
    expect(m.m11).toBe(2);
@@ -382,21 +413,21 @@ describe('Matrix3', () => {
 
   it('add instance method', () => {
    expect.hasAssertions();
-   const m = Matrix3.IDENTITY.clone();
+   const m = new Matrix3();
    m.add(Matrix3.IDENTITY);
    expect(m.m00).toBe(2);
   });
 
   it('subtract instance method', () => {
    expect.hasAssertions();
-   const m = Matrix3.IDENTITY.clone();
+   const m = new Matrix3();
    m.subtract(Matrix3.IDENTITY);
    expect(m.m00).toBe(0);
   });
 
   it('negate instance method', () => {
    expect.hasAssertions();
-   const m = Matrix3.IDENTITY.clone();
+   const m = new Matrix3();
    m.negate();
    expect(m.m00).toBe(-1);
   });
@@ -420,7 +451,7 @@ describe('Matrix3', () => {
 
   it('transformPoint handles perspective divide', () => {
    expect.hasAssertions();
-   const mat = Matrix3.IDENTITY.clone();
+   const mat = new Matrix3();
    mat.m22 = 2; // Non-1 w component
    const point = new Vector2(4, 6);
    const result = Matrix3.transformPoint(mat, point);
@@ -437,7 +468,7 @@ describe('Matrix3', () => {
 
   it('negate negates all elements', () => {
    expect.hasAssertions();
-   const mat = Matrix3.IDENTITY.clone();
+   const mat = new Matrix3();
    const negated = Matrix3.negate(mat);
    expect(negated.m00).toBe(-1);
    expect(negated.m11).toBe(-1);
@@ -448,7 +479,7 @@ describe('Matrix3', () => {
  describe('Decomposition', () => {
   it('decompose extracts translation/rotation/scale', () => {
    expect.hasAssertions();
-   const original = Matrix3.fromTransform(new Vector2(10, 20), 0, new Vector2(2, 2));
+   const original = Matrix3.fromTransform2(new Vector2(10, 20), 0, new Vector2(2, 2));
    const decomposed = Matrix3.decompose(original);
    expect(decomposed.translation.x).toBeCloseTo(10, 5);
    expect(decomposed.translation.y).toBeCloseTo(20, 5);
@@ -492,7 +523,7 @@ describe('Matrix3', () => {
  describe('Instance Methods', () => {
   it('multiplyScalar scales all elements', () => {
    expect.hasAssertions();
-   const m = Matrix3.IDENTITY.clone();
+   const m = new Matrix3();
    m.multiplyScalar(2);
    expect(m.m00).toBeCloseTo(2);
    expect(m.m11).toBeCloseTo(2);
@@ -650,13 +681,13 @@ describe('Matrix3', () => {
   });
 
   it('fromTransform with uniform scale', () => {
-   const m = Matrix3.fromTransform({ x: 10, y: 20 }, 0, 2);
+   const m = Matrix3.fromTransform2({ x: 10, y: 20 }, 0, 2);
    expect(m.m00).toBe(2);
    expect(m.m20).toBe(10);
   });
 
   it('fromTransform with non-uniform scale', () => {
-   const m = Matrix3.fromTransform({ x: 5, y: 5 }, 0, { x: 2, y: 3 });
+   const m = Matrix3.fromTransform2({ x: 5, y: 5 }, 0, { x: 2, y: 3 });
    expect(m.m00).toBe(2);
    expect(m.m11).toBe(3);
   });
@@ -882,7 +913,7 @@ describe('Matrix3', () => {
   it('decompose extracts translation, rotation, and scale', () => {
    expect.hasAssertions();
    // Create a matrix with known transform
-   const m = Matrix3.fromTransform(new Vector2(10, 20), Math.PI / 4, new Vector2(2, 3));
+   const m = Matrix3.fromTransform2(new Vector2(10, 20), Math.PI / 4, new Vector2(2, 3));
    const result = Matrix3.decompose(m);
 
    expect(result.translation.x).toBeCloseTo(10);
@@ -1063,7 +1094,7 @@ describe('Matrix3', () => {
 
  describe('Coverage - Static Decompose', () => {
   it('decompose extracts translation, rotation, and scale', () => {
-   const m = Matrix3.fromTransform({ x: 10, y: 20 }, Math.PI / 4, { x: 2, y: 2 });
+   const m = Matrix3.fromTransform2({ x: 10, y: 20 }, Math.PI / 4, { x: 2, y: 2 });
    const result = Matrix3.decompose(m);
    expect(result.translation.x).toBeCloseTo(10);
    expect(result.translation.y).toBeCloseTo(20);
@@ -1177,7 +1208,7 @@ describe('Matrix3', () => {
 
   it('decompose with combined transform', () => {
    expect.hasAssertions();
-   const m = Matrix3.fromTransform(new Vector2(10, 20), Math.PI / 6, new Vector2(2, 3));
+   const m = Matrix3.fromTransform2(new Vector2(10, 20), Math.PI / 6, new Vector2(2, 3));
    const result = Matrix3.decompose(m);
    expect(result.translation.x).toBeCloseTo(10, 5);
    expect(result.rotation).toBeCloseTo(Math.PI / 6, 5);
@@ -1372,10 +1403,10 @@ describe('Matrix3', () => {
  });
 
  describe('Static Interpolation Extended', () => {
-  it('lerpUnclamped allows extrapolation', () => {
+  it('lerp allows extrapolation', () => {
    const a = Matrix3.IDENTITY;
    const b = Matrix3.fromScale(new Vector2(3, 3));
-   const result = Matrix3.lerpUnclamped(a, b, 2);
+   const result = Matrix3.lerp(a, b, 2);
    expect(result.m00).toBeCloseTo(5); // 1 + 2*(3-1) = 5
   });
 
@@ -1398,7 +1429,7 @@ describe('Matrix3', () => {
 
   it('nearZero checks for near-zero matrix', () => {
    const m = new Matrix3(1e-10, 1e-10, 1e-10, 1e-10, 1e-10, 1e-10, 1e-10, 1e-10, 1e-10);
-   expect(Matrix3.nearZero(m)).toBe(true);
+   expect(Matrix3.isNearZero(m)).toBe(true);
   });
 
   it('isFinite checks for finite elements', () => {
@@ -1429,9 +1460,9 @@ describe('Matrix3', () => {
    expect(Matrix3.isDiagonal(Matrix3.fromTranslation(new Vector2(1, 0)))).toBe(false);
   });
 
-  it('isSingular checks for singular matrix', () => {
-   expect(Matrix3.isSingular(Matrix3.ZERO)).toBe(true);
-   expect(Matrix3.isSingular(Matrix3.IDENTITY)).toBe(false);
+  it('isInvertible checks for invertible matrix', () => {
+   expect(Matrix3.isInvertible(Matrix3.ZERO)).toBe(false);
+   expect(Matrix3.isInvertible(Matrix3.IDENTITY)).toBe(true);
   });
 
   it('isOrthogonal checks for orthogonal matrix', () => {
@@ -1537,7 +1568,7 @@ describe('Matrix3', () => {
 
  describe('Instance Scalar Arithmetic', () => {
   it('addScalar modifies in place', () => {
-   const m = Matrix3.IDENTITY.clone();
+   const m = new Matrix3();
    m.addScalar(5);
    expect(m.m00).toBe(6);
    expect(m.m01).toBe(5);
@@ -1554,25 +1585,43 @@ describe('Matrix3', () => {
    m.divideScalar(2);
    expect(m.m00).toBe(2);
   });
+
+  it('divideScalarUnchecked divides without validation', () => {
+   const m = new Matrix3(4, 4, 4, 4, 4, 4, 4, 4, 4);
+   m.divideScalarUnchecked(2);
+   expect(m.m00).toBe(2);
+  });
+
+  it('divideScalarSafe returns zero matrix for zero divisor', () => {
+   const m = new Matrix3(4, 4, 4, 4, 4, 4, 4, 4, 4);
+   m.divideScalarSafe(0);
+   expect(m.m00).toBe(0);
+  });
+
+  it('static divideScalarUnchecked divides without validation', () => {
+   const m = new Matrix3(4, 4, 4, 4, 4, 4, 4, 4, 4);
+   const result = Matrix3.divideScalarUnchecked(m, 2);
+   expect(result.m00).toBe(2);
+  });
  });
 
  describe('Instance Interpolation Extended', () => {
   it('lerp modifies in place', () => {
-   const m = Matrix3.IDENTITY.clone();
+   const m = new Matrix3();
    const target = Matrix3.fromScale(new Vector2(3, 3));
    m.lerp(target, 0.5);
    expect(m.m00).toBeCloseTo(2);
   });
 
-  it('lerpUnclamped modifies in place', () => {
-   const m = Matrix3.IDENTITY.clone();
+  it('lerp allows extrapolation', () => {
+   const m = new Matrix3();
    const target = Matrix3.fromScale(new Vector2(3, 3));
-   m.lerpUnclamped(target, 2);
+   m.lerp(target, 2);
    expect(m.m00).toBeCloseTo(5);
   });
 
   it('smoothStep modifies in place', () => {
-   const m = Matrix3.IDENTITY.clone();
+   const m = new Matrix3();
    const target = Matrix3.fromScale(new Vector2(5, 5));
    m.smoothStep(target, 0.5); // t=0.5 → smooth interpolation
    // smoothStep(0.5) = 0.5 * 0.5 * (3 - 2 * 0.5) = 0.5
@@ -1589,7 +1638,7 @@ describe('Matrix3', () => {
 
   it('nearZero checks for near-zero', () => {
    const m = new Matrix3(1e-10, 1e-10, 1e-10, 1e-10, 1e-10, 1e-10, 1e-10, 1e-10, 1e-10);
-   expect(m.nearZero()).toBe(true);
+   expect(m.isNearZero()).toBe(true);
   });
 
   it('isFinite checks for finite elements', () => {
@@ -1614,8 +1663,8 @@ describe('Matrix3', () => {
    expect(Matrix3.IDENTITY.isDiagonal()).toBe(true);
   });
 
-  it('isSingular checks singularity', () => {
-   expect(Matrix3.ZERO.isSingular()).toBe(true);
+  it('isInvertible checks invertibility', () => {
+   expect(Matrix3.ZERO.isInvertible()).toBe(false);
   });
 
   it('isOrthogonal checks orthogonality', () => {
@@ -1768,7 +1817,8 @@ describe('Matrix3', () => {
   });
 
   it('constructor throws on invalid arguments', () => {
-   expect(() => new Matrix3('invalid' as unknown as number)).toThrow(TypeError);
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   expect(() => new Matrix3('invalid' as any)).toThrow(TypeError);
   });
  });
 
@@ -1852,6 +1902,634 @@ describe('Matrix3', () => {
     values.push(v);
    }
    expect(values).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+  });
+ });
+
+ describe('Coverage - Static translate/rotate/scaleBy', () => {
+  it('static translate translates matrix', () => {
+   const m = Matrix3.IDENTITY;
+   const result = Matrix3.translate(m, { x: 5, y: 10 });
+   expect(result.m20).toBe(5);
+   expect(result.m21).toBe(10);
+  });
+
+  it('static rotate rotates matrix', () => {
+   const m = Matrix3.IDENTITY;
+   const result = Matrix3.rotate(m, Math.PI / 2);
+   expect(result.m00).toBeCloseTo(0, DIGITS);
+   expect(result.m01).toBeCloseTo(1, DIGITS);
+  });
+
+  it('static scaleBy with scalar', () => {
+   const m = Matrix3.IDENTITY;
+   const result = Matrix3.scaleBy(m, 2);
+   expect(result.m00).toBe(2);
+   expect(result.m11).toBe(2);
+  });
+
+  it('static scaleBy with vector', () => {
+   const m = Matrix3.IDENTITY;
+   const result = Matrix3.scaleBy(m, { x: 2, y: 3 });
+   expect(result.m00).toBe(2);
+   expect(result.m11).toBe(3);
+  });
+ });
+
+ describe('Coverage - Static smoothStep', () => {
+  it('static smoothStep interpolates smoothly', () => {
+   const a = Matrix3.IDENTITY;
+   const b = Matrix3.fromScale(new Vector2(5, 5));
+   const result = Matrix3.smoothStep(a, b, 0.5);
+   expect(result.m00).toBeCloseTo(3, DIGITS);
+  });
+ });
+
+ describe('Coverage - Static lerpClamped', () => {
+  it('static lerpClamped clamps t', () => {
+   const a = Matrix3.IDENTITY;
+   const b = Matrix3.fromScale(new Vector2(3, 3));
+   const result = Matrix3.lerpClamped(a, b, 2);
+   expect(result.m00).toBeCloseTo(3, DIGITS);
+  });
+ });
+
+ describe('Coverage - Instance translate/rotate/scaleBy', () => {
+  it('instance translate translates', () => {
+   const m = new Matrix3();
+   m.translate({ x: 5, y: 10 });
+   expect(m.m20).toBe(5);
+   expect(m.m21).toBe(10);
+  });
+
+  it('instance rotate rotates', () => {
+   const m = new Matrix3();
+   m.rotate(Math.PI / 2);
+   expect(m.m00).toBeCloseTo(0, DIGITS);
+  });
+
+  it('instance scaleBy with scalar', () => {
+   const m = new Matrix3();
+   m.scaleBy(2);
+   expect(m.m00).toBe(2);
+  });
+
+  it('instance scaleBy with vector', () => {
+   const m = new Matrix3();
+   m.scaleBy({ x: 2, y: 3 });
+   expect(m.m00).toBe(2);
+   expect(m.m11).toBe(3);
+  });
+ });
+
+ describe('Coverage - Object.freeze on matrix', () => {
+  it('Object.freeze freezes the matrix object', () => {
+   const m = new Matrix3(1, 2, 3, 4, 5, 6, 7, 8, 9);
+   const frozen = Object.freeze(m);
+   expect(frozen).toBe(m);
+   expect(Object.isFrozen(frozen)).toBe(true);
+  });
+ });
+
+ describe('Coverage - Instance smoothStep', () => {
+  it('instance smoothStep interpolates', () => {
+   const m = new Matrix3();
+   const target = Matrix3.fromScale(new Vector2(5, 5));
+   m.smoothStep(target, 0.5);
+   expect(m.m00).toBeCloseTo(3, DIGITS);
+  });
+ });
+
+ describe('Coverage - Static isFinite and hasNaN', () => {
+  it('static isFinite returns true for finite matrix', () => {
+   expect(Matrix3.isFinite(Matrix3.IDENTITY)).toBe(true);
+  });
+
+  it('static isFinite returns false for infinite', () => {
+   expect(
+    Matrix3.isFinite({
+     m00: Infinity,
+     m01: 0,
+     m02: 0,
+     m10: 0,
+     m11: 1,
+     m12: 0,
+     m20: 0,
+     m21: 0,
+     m22: 1,
+    }),
+   ).toBe(false);
+  });
+
+  it('static hasNaN returns false for normal matrix', () => {
+   expect(Matrix3.hasNaN(Matrix3.IDENTITY)).toBe(false);
+  });
+
+  it('static hasNaN returns true for NaN', () => {
+   expect(
+    Matrix3.hasNaN({ m00: NaN, m01: 0, m02: 0, m10: 0, m11: 1, m12: 0, m20: 0, m21: 0, m22: 1 }),
+   ).toBe(true);
+  });
+ });
+
+ describe('Coverage - Static hasInfinity', () => {
+  it('hasInfinity returns false for finite matrix', () => {
+   expect(Matrix3.hasInfinity(Matrix3.IDENTITY)).toBe(false);
+  });
+
+  it('hasInfinity returns true for Infinity', () => {
+   expect(
+    Matrix3.hasInfinity({
+     m00: Infinity,
+     m01: 0,
+     m02: 0,
+     m10: 0,
+     m11: 1,
+     m12: 0,
+     m20: 0,
+     m21: 0,
+     m22: 1,
+    }),
+   ).toBe(true);
+  });
+
+  it('hasInfinity returns false for NaN (not infinity)', () => {
+   expect(
+    Matrix3.hasInfinity({
+     m00: NaN,
+     m01: 0,
+     m02: 0,
+     m10: 0,
+     m11: 1,
+     m12: 0,
+     m20: 0,
+     m21: 0,
+     m22: 1,
+    }),
+   ).toBe(false);
+  });
+ });
+
+ describe('Coverage - Instance hasInfinity', () => {
+  it('instance hasInfinity returns false for finite', () => {
+   const m = Matrix3.IDENTITY;
+   expect(m.hasInfinity()).toBe(false);
+  });
+
+  it('instance hasInfinity returns true for infinite', () => {
+   const m = new Matrix3(Infinity, 0, 0, 0, 1, 0, 0, 0, 1);
+   expect(m.hasInfinity()).toBe(true);
+  });
+ });
+
+ describe('Coverage - Static copy', () => {
+  it('static copy copies to destination', () => {
+   const source = Matrix3.fromTranslation({ x: 5, y: 10 });
+   const destination = new Matrix3();
+   const result = Matrix3.copy(source, destination);
+   expect(result).toBe(destination);
+   expect(destination.m20).toBe(5);
+   expect(destination.m21).toBe(10);
+  });
+ });
+
+ describe('Coverage - fromObject', () => {
+  it('creates matrix from plain object', () => {
+   const object = {
+    m00: 1,
+    m01: 2,
+    m02: 3,
+    m10: 4,
+    m11: 5,
+    m12: 6,
+    m20: 7,
+    m21: 8,
+    m22: 9,
+   };
+   const result = Matrix3.fromObject(object);
+   expect(result.m00).toBe(1);
+   expect(result.m22).toBe(9);
+  });
+ });
+
+ describe('Coverage - inverseSafe', () => {
+  it('returns identity for singular matrix', () => {
+   const singular = new Matrix3(1, 2, 3, 4, 5, 6, 7, 8, 9);
+   const inv = Matrix3.inverseSafe(singular);
+   expect(inv.isIdentity()).toBe(true);
+  });
+
+  it('returns inverse for invertible matrix', () => {
+   const m = Matrix3.fromScale({ x: 2, y: 4 });
+   const inv = Matrix3.inverseSafe(m);
+   expect(inv.m00).toBeCloseTo(0.5, DIGITS);
+   expect(inv.m11).toBeCloseTo(0.25, DIGITS);
+  });
+ });
+
+ describe('Coverage - Additional static transforms', () => {
+  it('scaleBy applies non-uniform scale', () => {
+   const m = new Matrix3();
+   m.scaleBy({ x: 2, y: 3 });
+   expect(m.m00).toBeCloseTo(2, DIGITS);
+   expect(m.m11).toBeCloseTo(3, DIGITS);
+  });
+
+  it('translateBy translates matrix', () => {
+   const m = new Matrix3();
+   m.translate({ x: 10, y: 20 });
+   expect(m.m20).toBe(10);
+   expect(m.m21).toBe(20);
+  });
+ });
+
+ describe('Coverage - Static determinant', () => {
+  it('determinant returns matrix determinant', () => {
+   const m = Matrix3.fromScale({ x: 2, y: 3 });
+   expect(Matrix3.determinant(m)).toBeCloseTo(6, DIGITS);
+  });
+ });
+
+ describe('Coverage - Static multiply', () => {
+  it('multiply multiplies two matrices', () => {
+   const a = Matrix3.fromTranslation({ x: 5, y: 0 });
+   const b = Matrix3.fromTranslation({ x: 0, y: 10 });
+   const result = Matrix3.multiply(a, b);
+   expect(result.m20).toBeCloseTo(5, DIGITS);
+   expect(result.m21).toBeCloseTo(10, DIGITS);
+  });
+ });
+
+ describe('Coverage - Static transpose', () => {
+  it('transpose transposes matrix', () => {
+   const m = new Matrix3(1, 2, 3, 4, 5, 6, 7, 8, 9);
+   const t = Matrix3.transpose(m);
+   expect(t.m01).toBe(m.m10);
+   expect(t.m10).toBe(m.m01);
+  });
+ });
+
+ describe('Coverage - Static fromRotation', () => {
+  it('fromRotation creates rotation matrix', () => {
+   const m = Matrix3.fromRotation(Math.PI / 2);
+   expect(m.m00).toBeCloseTo(0, DIGITS);
+   expect(m.m01).toBeCloseTo(1, DIGITS);
+  });
+ });
+
+ describe('Coverage - Static add', () => {
+  it('add adds two matrices', () => {
+   const a = Matrix3.IDENTITY;
+   const b = Matrix3.IDENTITY;
+   const result = Matrix3.add(a, b);
+   expect(result.m00).toBe(2);
+   expect(result.m11).toBe(2);
+  });
+ });
+
+ describe('Coverage - Static subtract', () => {
+  it('subtract subtracts two matrices', () => {
+   const a = Matrix3.fromScale({ x: 2, y: 2 });
+   const b = Matrix3.IDENTITY;
+   const result = Matrix3.subtract(a, b);
+   expect(result.m00).toBe(1);
+   expect(result.m11).toBe(1);
+  });
+ });
+
+ describe('Coverage - Static lerp', () => {
+  it('lerp interpolates between matrices', () => {
+   const a = Matrix3.IDENTITY;
+   const b = Matrix3.fromScale({ x: 3, y: 3 });
+   const result = Matrix3.lerp(a, b, 0.5);
+   expect(result.m00).toBeCloseTo(2, DIGITS);
+   expect(result.m11).toBeCloseTo(2, DIGITS);
+  });
+ });
+
+ describe('Coverage - Instance determinant', () => {
+  it('determinant returns matrix determinant', () => {
+   const m = Matrix3.fromScale({ x: 2, y: 3 });
+   expect(m.determinant()).toBeCloseTo(6, DIGITS);
+  });
+ });
+
+ describe('Coverage - Instance multiply', () => {
+  it('multiply multiplies in place', () => {
+   const a = Matrix3.fromTranslation({ x: 5, y: 0 }).clone();
+   const b = Matrix3.fromTranslation({ x: 0, y: 10 });
+   a.multiply(b);
+   expect(a.m20).toBeCloseTo(5, DIGITS);
+   expect(a.m21).toBeCloseTo(10, DIGITS);
+  });
+ });
+
+ describe('Coverage - Instance transpose', () => {
+  it('transpose transposes in place', () => {
+   const m = new Matrix3(1, 2, 3, 4, 5, 6, 7, 8, 9);
+   const orig01 = m.m01;
+   const orig10 = m.m10;
+   m.transpose();
+   expect(m.m01).toBe(orig10);
+   expect(m.m10).toBe(orig01);
+  });
+ });
+
+ describe('Coverage - Instance add', () => {
+  it('add adds in place', () => {
+   const a = new Matrix3();
+   a.add(Matrix3.IDENTITY);
+   expect(a.m00).toBe(2);
+   expect(a.m11).toBe(2);
+  });
+ });
+
+ describe('Coverage - Instance subtract', () => {
+  it('subtract subtracts in place', () => {
+   const a = Matrix3.fromScale({ x: 2, y: 2 }).clone();
+   a.subtract(Matrix3.IDENTITY);
+   expect(a.m00).toBe(1);
+   expect(a.m11).toBe(1);
+  });
+ });
+
+ describe('Coverage - Instance lerp', () => {
+  it('lerp interpolates in place', () => {
+   const a = new Matrix3();
+   a.lerp(Matrix3.fromScale({ x: 3, y: 3 }), 0.5);
+   expect(a.m00).toBeCloseTo(2, DIGITS);
+   expect(a.m11).toBeCloseTo(2, DIGITS);
+  });
+ });
+
+ describe('Coverage - Static fromArray (basic)', () => {
+  it('fromArray creates from array', () => {
+   const array = [1, 0, 0, 0, 1, 0, 0, 0, 1];
+   const m = Matrix3.fromArray(array);
+   expect(m.m00).toBe(1);
+   expect(m.m11).toBe(1);
+  });
+ });
+
+ describe('Coverage - Instance toArray', () => {
+  it('toArray returns array', () => {
+   const m = Matrix3.IDENTITY;
+   const array = m.toArray();
+   expect(array[0]).toBe(1);
+   expect(array[4]).toBe(1);
+   expect(array[8]).toBe(1);
+  });
+ });
+
+ describe('Coverage - Static nearEquals', () => {
+  it('nearEquals checks approximate equality', () => {
+   const a = Matrix3.IDENTITY;
+   const b = new Matrix3();
+   expect(Matrix3.nearEquals(a, b)).toBe(true);
+  });
+ });
+
+ // === BRANCH COVERAGE: L2645-2656, L2982-3013 ===
+ describe('Coverage - Instance addScalar', () => {
+  it('addScalar adds scalar to all elements', () => {
+   const m = new Matrix3(0, 0, 0, 0, 0, 0, 0, 0, 0);
+   m.addScalar(1);
+   expect(m.m00).toBe(1);
+   expect(m.m11).toBe(1);
+   expect(m.m22).toBe(1);
+  });
+ });
+
+ describe('Coverage - Instance subtractScalar', () => {
+  it('subtractScalar subtracts scalar from all elements', () => {
+   const m = new Matrix3(2, 2, 2, 2, 2, 2, 2, 2, 2);
+   m.subtractScalar(1);
+   expect(m.m00).toBe(1);
+   expect(m.m11).toBe(1);
+   expect(m.m22).toBe(1);
+  });
+ });
+
+ describe('Coverage - Instance floor', () => {
+  it('floor floors all elements', () => {
+   const m = new Matrix3(1.7, 1.7, 1.7, 1.7, 1.7, 1.7, 1.7, 1.7, 1.7);
+   m.floor();
+   expect(m.m00).toBe(1);
+   expect(m.m11).toBe(1);
+   expect(m.m22).toBe(1);
+  });
+ });
+
+ describe('Coverage - Instance ceil', () => {
+  it('ceil ceils all elements', () => {
+   const m = new Matrix3(1.3, 1.3, 1.3, 1.3, 1.3, 1.3, 1.3, 1.3, 1.3);
+   m.ceil();
+   expect(m.m00).toBe(2);
+   expect(m.m11).toBe(2);
+   expect(m.m22).toBe(2);
+  });
+ });
+
+ describe('Coverage - Instance round', () => {
+  it('round rounds all elements', () => {
+   const m = new Matrix3(1.4, 1.6, 1.5, 1.4, 1.6, 1.5, 1.4, 1.6, 1.5);
+   m.round();
+   expect(m.m00).toBe(1);
+   expect(m.m01).toBe(2);
+   expect(m.m02).toBe(2);
+  });
+ });
+
+ describe('Coverage - Instance scale', () => {
+  it('scale scales all elements', () => {
+   const m = new Matrix3();
+   m.scale(2);
+   expect(m.m00).toBe(2);
+   expect(m.m11).toBe(2);
+  });
+ });
+
+ describe('Coverage - Instance multiplyScalar', () => {
+  it('multiplyScalar multiplies all elements', () => {
+   const m = new Matrix3();
+   m.multiplyScalar(3);
+   expect(m.m00).toBe(3);
+   expect(m.m11).toBe(3);
+  });
+ });
+
+ describe('Coverage - Ortho Edge Cases', () => {
+  it('ortho handles zero width/height (produces Infinity)', () => {
+   const m = Matrix3.ortho(0, 0, 0, 0);
+   expect(m.m00).toBe(Infinity);
+   expect(m.m11).toBe(Infinity);
+  });
+ });
+
+ describe('Coverage - Large inputs', () => {
+  it('fromRotation handles large angle', () => {
+   const m = Matrix3.fromRotation(100 * Math.PI);
+   expect(m.m00).toBeCloseTo(1);
+   expect(m.m01).toBeCloseTo(0);
+  });
+ });
+
+ describe('Coverage - fromRows method', () => {
+  it('fromRows creates matrix from row vectors', () => {
+   const m = Matrix3.fromRows([1, 2, 3], [4, 5, 6], [7, 8, 9]);
+   expect(m.m00).toBe(1);
+   expect(m.m10).toBe(2);
+   expect(m.m20).toBe(3);
+   expect(m.m01).toBe(4);
+   expect(m.m11).toBe(5);
+   expect(m.m21).toBe(6);
+  });
+
+  it('fromRows uses out parameter', () => {
+   const out = new Matrix3();
+   const result = Matrix3.fromRows([1, 0, 0], [0, 1, 0], [0, 0, 1], out);
+   expect(result).toBe(out);
+  });
+ });
+
+ describe('Coverage - static copy', () => {
+  it('copy copies matrix to destination', () => {
+   const source = Matrix3.fromTranslation({ x: 5, y: 10 });
+   const destination = new Matrix3();
+   const result = Matrix3.copy(source, destination);
+   expect(result).toBe(destination);
+   expect(destination.m20).toBe(5);
+   expect(destination.m21).toBe(10);
+  });
+ });
+
+ describe('Coverage - isFinite/hasNaN static', () => {
+  it('isFinite returns true for finite matrix', () => {
+   expect(Matrix3.isFinite(Matrix3.IDENTITY)).toBe(true);
+  });
+
+  it('isFinite returns false for Infinity', () => {
+   const m = new Matrix3(Infinity, 0, 0, 0, 1, 0, 0, 0, 1);
+   expect(Matrix3.isFinite(m)).toBe(false);
+  });
+
+  it('hasNaN returns false for valid matrix', () => {
+   expect(Matrix3.hasNaN(Matrix3.IDENTITY)).toBe(false);
+  });
+
+  it('hasNaN returns true for NaN', () => {
+   const m = new Matrix3(NaN, 0, 0, 0, 1, 0, 0, 0, 1);
+   expect(Matrix3.hasNaN(m)).toBe(true);
+  });
+ });
+
+ describe('Coverage - divideScalar variants', () => {
+  it('divideScalar divides all elements', () => {
+   const m = new Matrix3(4, 4, 4, 4, 4, 4, 4, 4, 4);
+   const result = Matrix3.divideScalar(m, 2);
+   expect(result.m00).toBe(2);
+   expect(result.m11).toBe(2);
+  });
+
+  it('divideScalar throws on zero', () => {
+   expect(() => Matrix3.divideScalar(Matrix3.IDENTITY, 0)).toThrow(RangeError);
+  });
+
+  it('divideScalarSafe returns zero on zero divisor', () => {
+   const result = Matrix3.divideScalarSafe(Matrix3.IDENTITY, 0);
+   expect(result.m00).toBe(0);
+   expect(result.m11).toBe(0);
+  });
+
+  it('divideScalarSafe divides normally for non-zero', () => {
+   const m = new Matrix3(4, 4, 4, 4, 4, 4, 4, 4, 4);
+   const result = Matrix3.divideScalarSafe(m, 2);
+   expect(result.m00).toBe(2);
+  });
+ });
+
+ describe('Coverage - fromColumns', () => {
+  it('fromColumns creates matrix from column vectors', () => {
+   const m = Matrix3.fromColumns([1, 2, 3], [4, 5, 6], [7, 8, 9]);
+   expect(m.m00).toBe(1);
+   expect(m.m01).toBe(2);
+   expect(m.m02).toBe(3);
+   expect(m.m10).toBe(4);
+   expect(m.m11).toBe(5);
+  });
+ });
+
+ describe('Coverage - fromRotation with Rotation2Like', () => {
+  it('fromRotation accepts Rotation2Like object', () => {
+   const rotation = { cos: 0, sin: 1 };
+   const m = Matrix3.fromRotation(rotation);
+   expect(m.m00).toBeCloseTo(0);
+   expect(m.m01).toBeCloseTo(1);
+  });
+ });
+
+ describe('Coverage - Static scaleBy', () => {
+  it('scaleBy with scalar', () => {
+   const m = Matrix3.fromTranslation({ x: 10, y: 5 });
+   const result = Matrix3.scaleBy(m, 2);
+   expect(result.m00).toBe(2);
+   expect(result.m11).toBe(2);
+  });
+
+  it('scaleBy with vector', () => {
+   const m = Matrix3.fromTranslation({ x: 10, y: 5 });
+   const result = Matrix3.scaleBy(m, { x: 2, y: 3 });
+   expect(result.m00).toBe(2);
+   expect(result.m11).toBe(3);
+  });
+ });
+
+ describe('Coverage - Static copy method', () => {
+  it('copy copies source to destination', () => {
+   const source = new Matrix3(1, 2, 3, 4, 5, 6, 7, 8, 9);
+   const destination = new Matrix3();
+   const result = Matrix3.copy(source, destination);
+   expect(result).toBe(destination);
+   expect(destination.m00).toBe(1);
+   expect(destination.m22).toBe(9);
+  });
+ });
+
+ describe('Coverage - Static transpose method', () => {
+  it('transpose transposes matrix', () => {
+   const m = new Matrix3(1, 2, 3, 4, 5, 6, 7, 8, 9);
+   const result = Matrix3.transpose(m);
+   expect(result.m01).toBe(4);
+   expect(result.m10).toBe(2);
+  });
+ });
+
+ describe('Coverage - Instance multiplyScalar operation', () => {
+  it('multiplyScalar multiplies all elements by scalar', () => {
+   const m = new Matrix3(1, 2, 3, 4, 5, 6, 7, 8, 9);
+   m.multiplyScalar(2);
+   expect(m.m00).toBe(2);
+   expect(m.m11).toBe(10);
+   expect(m.m22).toBe(18);
+  });
+ });
+
+ describe('Coverage - Instance addScalar operation', () => {
+  it('addScalar adds scalar to all elements', () => {
+   const m = new Matrix3(1, 2, 3, 4, 5, 6, 7, 8, 9);
+   m.addScalar(10);
+   expect(m.m00).toBe(11);
+   expect(m.m11).toBe(15);
+   expect(m.m22).toBe(19);
+  });
+ });
+
+ describe('Coverage - Instance subtractScalar operation', () => {
+  it('subtractScalar subtracts scalar from all elements', () => {
+   const m = new Matrix3(10, 20, 30, 40, 50, 60, 70, 80, 90);
+   m.subtractScalar(5);
+   expect(m.m00).toBe(5);
+   expect(m.m11).toBe(45);
+   expect(m.m22).toBe(85);
   });
  });
 });

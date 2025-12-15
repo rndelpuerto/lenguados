@@ -3,7 +3,17 @@
  "version": "0.6.0",
  "description": "Core 2-D math utilities for the Lenguado physics-engine family.",
  "keywords": [
-  "math2d"
+  "math2d",
+  "vector2",
+  "matrix2",
+  "matrix3",
+  "rotation",
+  "transform",
+  "physics",
+  "game-math",
+  "2d-math",
+  "deterministic",
+  "typescript"
  ],
  "homepage": "https://github.com/rndelpuerto/lenguados#readme",
  "bugs": {
@@ -15,6 +25,7 @@
   "directory": "packages/math2d"
  },
  "license": "Apache-2.0",
+ "sideEffects": false,
  "author": "Ricardo Nicolás del Puerto Camacho",
  "contributors": [
   "Ricardo Nicolás del Puerto Camacho"

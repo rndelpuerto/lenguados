@@ -2,9 +2,9 @@
 
 > **inverseLerp**(`a`, `b`, `value`): `number`
 
-Defined in: [src/auxiliary/scalar/interpolation.ts:86](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/auxiliary/scalar/interpolation.ts#L86)
+Defined in: [src/auxiliary/scalar/interpolation.ts:89](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/auxiliary/scalar/interpolation.ts#L89)
 
-Inverse linear interpolation.
+Inverse linear interpolation (strict).
 Returns t such that lerp(a, b, t) = value.
 
 ## Parameters
@@ -13,33 +13,41 @@ Returns t such that lerp(a, b, t) = value.
 
 `number`
 
-Start value
+Start value.
 
 ### b
 
 `number`
 
-End value
+End value.
 
 ### value
 
 `number`
 
-Value to find t for
+Value to find t for.
 
 ## Returns
 
 `number`
 
-Interpolation factor t
+Interpolation factor t.
+
+## Throws
+
+If a === b (degenerate range).
+
+## See
+
+- [inverseLerpSafe](inverseLerpSafe.md) - Returns 0 if range is degenerate
+- [inverseLerpUnchecked](inverseLerpUnchecked.md) - No validation
 
 ## Example
 
 ```typescript
-inverseLerp(0, 10, 5);     // 0.5
-inverseLerp(0, 10, 0);     // 0
-inverseLerp(0, 10, 10);    // 1
-inverseLerp(0, 10, 20);    // 2 (extrapolation)
+inverseLerp(0, 10, 5); // 0.5
+inverseLerp(0, 10, 0); // 0
+inverseLerp(0, 10, 10); // 1
 ```
 
 ## Since

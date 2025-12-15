@@ -2,7 +2,7 @@
 
 > **parseJSONData**\<`TData`\>(`data`): `TData` \| `undefined`
 
-Defined in: [src/utils/parse-json-data.ts:1](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/common/src/utils/parse-json-data.ts#L1)
+Defined in: [src/utils/parse-json-data.ts:1](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/common/src/utils/parse-json-data.ts#L1)
 
 ## Type Parameters
 

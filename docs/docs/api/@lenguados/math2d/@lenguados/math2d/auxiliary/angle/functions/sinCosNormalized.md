@@ -2,7 +2,7 @@
 
 > **sinCosNormalized**(`angle`): [`SinCos`](../interfaces/SinCos.md)
 
-Defined in: [src/auxiliary/angle/operations.ts:118](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/auxiliary/angle/operations.ts#L118)
+Defined in: [src/auxiliary/angle/operations.ts:117](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/auxiliary/angle/operations.ts#L117)
 
 Computes sine and cosine of a normalized angle.
 Normalizes the angle to [-π, π) before computing.
@@ -13,13 +13,13 @@ Normalizes the angle to [-π, π) before computing.
 
 `number`
 
-Angle in radians (will be normalized)
+Angle in radians (will be normalized).
 
 ## Returns
 
 [`SinCos`](../interfaces/SinCos.md)
 
-Object with sin and cos properties
+Object with sin and cos properties.
 
 ## Example
 

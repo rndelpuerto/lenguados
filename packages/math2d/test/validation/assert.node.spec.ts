@@ -1,6 +1,7 @@
 /**
  * @file test/validation/assert.node.spec.ts
- * @description Tests for the assertion system
+ * @module @lenguados/math2d/validation
+ * @description Tests for the assertion system.
  */
 
 import { performance } from 'node:perf_hooks';
@@ -9,15 +10,21 @@ import { describe, expect, it, beforeEach, afterAll } from '@jest/globals';
 
 import {
  assert,
+ assertComplexLike,
  assertFinite,
+ assertIntervalLike,
  assertMatrix2,
+ assertMatrix2Like,
+ assertMatrix3,
  assertNonNegative,
  assertNonZero,
  assertPositive,
  assertRange,
  assertRotation2,
  assertSafeInteger,
+ assertTransform2Like,
  assertVector2,
+ assertVector2Like,
  areAssertionsEnabled,
  setAssertionsEnabled,
 } from '../../src/validation/assert';
@@ -300,6 +307,244 @@ describe('Validation Assert Module', () => {
 
   it('assertSafeInteger uses default name when not provided', () => {
    expect(() => assertSafeInteger(1.5)).toThrow('value');
+  });
+ });
+
+ describe('Coverage - assertMatrix3', () => {
+  beforeEach(() => {
+   setAssertionsEnabled(true);
+  });
+
+  it('passes for valid Matrix3 values', () => {
+   expect(() => assertMatrix3(1, 0, 0, 0, 1, 0, 0, 0, 1)).not.toThrow();
+  });
+
+  it('throws for NaN in m00', () => {
+   expect(() => assertMatrix3(NaN, 0, 0, 0, 1, 0, 0, 0, 1)).toThrow('[0,0]');
+  });
+
+  it('throws for NaN in m01', () => {
+   expect(() => assertMatrix3(1, NaN, 0, 0, 1, 0, 0, 0, 1)).toThrow('[0,1]');
+  });
+
+  it('throws for NaN in m02', () => {
+   expect(() => assertMatrix3(1, 0, NaN, 0, 1, 0, 0, 0, 1)).toThrow('[0,2]');
+  });
+
+  it('throws for NaN in m10', () => {
+   expect(() => assertMatrix3(1, 0, 0, NaN, 1, 0, 0, 0, 1)).toThrow('[1,0]');
+  });
+
+  it('throws for NaN in m11', () => {
+   expect(() => assertMatrix3(1, 0, 0, 0, NaN, 0, 0, 0, 1)).toThrow('[1,1]');
+  });
+
+  it('throws for NaN in m12', () => {
+   expect(() => assertMatrix3(1, 0, 0, 0, 1, NaN, 0, 0, 1)).toThrow('[1,2]');
+  });
+
+  it('throws for NaN in m20', () => {
+   expect(() => assertMatrix3(1, 0, 0, 0, 1, 0, NaN, 0, 1)).toThrow('[2,0]');
+  });
+
+  it('throws for NaN in m21', () => {
+   expect(() => assertMatrix3(1, 0, 0, 0, 1, 0, 0, NaN, 1)).toThrow('[2,1]');
+  });
+
+  it('throws for NaN in m22', () => {
+   expect(() => assertMatrix3(1, 0, 0, 0, 1, 0, 0, 0, NaN)).toThrow('[2,2]');
+  });
+
+  it('uses custom name in error', () => {
+   expect(() => assertMatrix3(NaN, 0, 0, 0, 1, 0, 0, 0, 1, 'myMatrix')).toThrow('myMatrix');
+  });
+ });
+
+ describe('Coverage - assertMatrix2 all branches', () => {
+  beforeEach(() => {
+   setAssertionsEnabled(true);
+  });
+
+  it('throws for NaN in m01', () => {
+   expect(() => assertMatrix2(1, NaN, 0, 1)).toThrow('[0,1]');
+  });
+
+  it('throws for NaN in m10', () => {
+   expect(() => assertMatrix2(1, 0, NaN, 1)).toThrow('[1,0]');
+  });
+
+  it('throws for NaN in m11', () => {
+   expect(() => assertMatrix2(1, 0, 0, NaN)).toThrow('[1,1]');
+  });
+ });
+
+ describe('assertVector2Like', () => {
+  beforeEach(() => {
+   setAssertionsEnabled(true);
+  });
+
+  it('accepts valid Vector2Like object', () => {
+   expect(() => assertVector2Like({ x: 1, y: 2 })).not.toThrow();
+   expect(() => assertVector2Like({ x: 0, y: 0 })).not.toThrow();
+   expect(() => assertVector2Like({ x: -100, y: 100 })).not.toThrow();
+  });
+
+  it('throws for null', () => {
+   expect(() => assertVector2Like(null)).toThrow();
+  });
+
+  it('throws for non-object', () => {
+   expect(() => assertVector2Like('string' as unknown)).toThrow();
+   expect(() => assertVector2Like(123 as unknown)).toThrow();
+  });
+
+  it('throws for missing x', () => {
+   expect(() => assertVector2Like({ y: 2 } as unknown)).toThrow();
+  });
+
+  it('throws for missing y', () => {
+   expect(() => assertVector2Like({ x: 1 } as unknown)).toThrow();
+  });
+
+  it('throws for non-numeric x', () => {
+   expect(() => assertVector2Like({ x: 'bad', y: 2 } as unknown)).toThrow();
+  });
+
+  it('uses custom name in error', () => {
+   expect(() => assertVector2Like(null, 'myVec')).toThrow('myVec');
+  });
+ });
+
+ describe('assertMatrix2Like', () => {
+  beforeEach(() => {
+   setAssertionsEnabled(true);
+  });
+
+  it('accepts valid Matrix2Like object', () => {
+   expect(() => assertMatrix2Like({ m00: 1, m01: 0, m10: 0, m11: 1 })).not.toThrow();
+  });
+
+  it('throws for null', () => {
+   expect(() => assertMatrix2Like(null)).toThrow();
+  });
+
+  it('throws for missing elements', () => {
+   expect(() => assertMatrix2Like({ m00: 1, m01: 0, m10: 0 } as unknown)).toThrow();
+  });
+
+  it('throws for non-numeric elements', () => {
+   expect(() => assertMatrix2Like({ m00: 'bad', m01: 0, m10: 0, m11: 1 } as unknown)).toThrow();
+  });
+
+  it('uses custom name in error', () => {
+   expect(() => assertMatrix2Like(null, 'myMatrix')).toThrow('myMatrix');
+  });
+ });
+
+ describe('assertComplexLike', () => {
+  beforeEach(() => {
+   setAssertionsEnabled(true);
+  });
+
+  it('accepts valid ComplexLike object', () => {
+   expect(() => assertComplexLike({ real: 1, imag: 2 })).not.toThrow();
+   expect(() => assertComplexLike({ real: 0, imag: 0 })).not.toThrow();
+  });
+
+  it('throws for null', () => {
+   expect(() => assertComplexLike(null)).toThrow();
+  });
+
+  it('throws for missing real', () => {
+   expect(() => assertComplexLike({ imag: 2 } as unknown)).toThrow();
+  });
+
+  it('throws for missing imag', () => {
+   expect(() => assertComplexLike({ real: 1 } as unknown)).toThrow();
+  });
+
+  it('uses custom name in error', () => {
+   expect(() => assertComplexLike(null, 'myComplex')).toThrow('myComplex');
+  });
+ });
+
+ describe('assertIntervalLike', () => {
+  beforeEach(() => {
+   setAssertionsEnabled(true);
+  });
+
+  it('accepts valid IntervalLike object', () => {
+   expect(() => assertIntervalLike({ min: 0, max: 10 })).not.toThrow();
+  });
+
+  it('throws for null', () => {
+   expect(() => assertIntervalLike(null)).toThrow();
+  });
+
+  it('throws for missing min', () => {
+   expect(() => assertIntervalLike({ max: 10 } as unknown)).toThrow();
+  });
+
+  it('throws for missing max', () => {
+   expect(() => assertIntervalLike({ min: 0 } as unknown)).toThrow();
+  });
+
+  it('uses custom name in error', () => {
+   expect(() => assertIntervalLike(null, 'myInterval')).toThrow('myInterval');
+  });
+ });
+
+ describe('assertTransform2Like', () => {
+  beforeEach(() => {
+   setAssertionsEnabled(true);
+  });
+
+  it('accepts valid Transform2Like object', () => {
+   expect(() =>
+    assertTransform2Like({
+     position: { x: 0, y: 0 },
+     rotation: 0,
+     scale: { x: 1, y: 1 },
+    }),
+   ).not.toThrow();
+  });
+
+  it('throws for null', () => {
+   expect(() => assertTransform2Like(null)).toThrow();
+  });
+
+  it('throws for invalid position', () => {
+   expect(() =>
+    assertTransform2Like({
+     position: null,
+     rotation: 0,
+     scale: { x: 1, y: 1 },
+    } as unknown),
+   ).toThrow();
+  });
+
+  it('throws for invalid rotation', () => {
+   expect(() =>
+    assertTransform2Like({
+     position: { x: 0, y: 0 },
+     rotation: 'bad',
+     scale: { x: 1, y: 1 },
+    } as unknown),
+   ).toThrow();
+  });
+
+  it('throws for invalid scale', () => {
+   expect(() =>
+    assertTransform2Like({
+     position: { x: 0, y: 0 },
+     rotation: 0,
+     scale: null,
+    } as unknown),
+   ).toThrow();
+  });
+
+  it('uses custom name in error', () => {
+   expect(() => assertTransform2Like(null, 'myTransform')).toThrow('myTransform');
   });
  });
 });

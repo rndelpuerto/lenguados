@@ -1,5 +1,6 @@
 /**
  * @file test/properties/complex.property.node.spec.ts
+ * @module @lenguados/math2d/core
  * @description Property-based tests for Complex numbers.
  */
 

@@ -21,7 +21,7 @@
 - **Constants**: π, τ, EPSILON, degree↔radian factors.
 - **Scalar utilities**: clamp, sign, lerp, normalize, smoothStep, epsilonEquals, relativeEquals, saturate.
 - **Vector2**: mutable, chainable 2‑D vectors with robust numerics, safe variants, and alloc‑free static helpers.
-- **Matrix2**: 2×2 row‑major matrices (column‑vector convention) with rotation/scale/shear, algebra, inversion & solving.
+- **Matrix2**: 2×2 column‑major matrices with rotation/scale/shear, algebra, inversion & solving.
 
 ---
 
@@ -96,6 +96,99 @@ import {
 >    out = new Vector2();
 >   Vector2.add(a, b, out); // writes into `out` instead of allocating
 >   ```
+
+### Hot Path Optimization Patterns
+
+For performance-critical code (physics simulation loops, batch processing), the library provides specialized patterns:
+
+#### CS Methods (Precomputed Cosine/Sine)
+
+When rotating many vectors by the same angle, avoid recomputing `cos`/`sin`:
+
+```ts
+import { sinCos } from '@lenguados/math2d';
+
+// ❌ Slow: computes cos/sin for each vector
+vectors.forEach((v) => v.rotate(angle));
+
+// ✅ Fast: compute once, reuse
+const { cos, sin } = sinCos(angle);
+vectors.forEach((v) => v.rotateCS(cos, sin));
+```
+
+Methods ending in `CS` accept precomputed cosine/sine: `rotateCS`, `rotateAroundCS`, `fromRotationCS`.
+
+#### Unchecked Methods
+
+For hot paths where input validity is guaranteed, use `*Unchecked` methods:
+
+```ts
+// ❌ Safe but slower (validates input)
+v.divideScalar(length);
+
+// ✅ Fast (no validation, caller ensures length ≠ 0)
+if (length !== 0) {
+ v.divideScalarUnchecked(length);
+}
+```
+
+Available unchecked methods: `divideScalarUnchecked`, `normalizeUnchecked`.
+
+#### Rotation2 for Batched Rotations
+
+For repeatedly rotating many points, use `Rotation2` to store cos/sin:
+
+```ts
+import { Rotation2 } from '@lenguados/math2d';
+
+const rotation = Rotation2.fromAngle(angle);
+
+// Apply to many vectors efficiently
+vectors.forEach((v) => v.applyRotation(rotation));
+```
+
+### API Consistency: Strict / Safe / Unchecked
+
+Methods that may fail on invalid input follow a consistent naming pattern:
+
+| Variant           | Behavior               | Use Case                    |
+| ----------------- | ---------------------- | --------------------------- |
+| `method`          | Throws on invalid      | Default, catches bugs early |
+| `methodSafe`      | Returns fallback value | Graceful degradation        |
+| `methodUnchecked` | No validation          | Hot paths, caller validates |
+
+Example with `divideScalar`:
+
+```ts
+// Throws RangeError if scalar ≈ 0
+v.divideScalar(scalar);
+
+// Returns (0, 0) if scalar ≈ 0
+v.divideScalarSafe(scalar);
+
+// No check - produces Infinity/NaN if scalar = 0
+v.divideScalarUnchecked(scalar);
+```
+
+### Tolerance Constants
+
+The library uses two distinct tolerance values:
+
+| Constant           | Value    | Purpose                                  |
+| ------------------ | -------- | ---------------------------------------- |
+| `EPSILON`          | `1e-10`  | Approximate equality comparisons         |
+| `MIN_SAFE_DIVISOR` | `≈2e-16` | Safe division (avoid underflow/overflow) |
+
+```ts
+import { EPSILON } from '@lenguados/math2d';
+import { MIN_SAFE_DIVISOR } from '@lenguados/math2d/auxiliary/numeric/safety';
+
+// EPSILON: "Are these values approximately equal?"
+isNearZero(value, EPSILON);
+
+// MIN_SAFE_DIVISOR: "Is this divisor safe to use?"
+safeDivide(a, b, MIN_SAFE_DIVISOR);
+```
 
 ---
 
@@ -253,7 +346,7 @@ _(New in this release: **Vector2** and **Matrix2**. Additional modules (Matrix3,
 - **Direction & angles:** `direction(from,to)`, `angle(v)`, `angleTo(a,b)`, `angleBetween(a,b)`.
 - **Numeric transforms:** `floor`, `ceil`, `round`, `abs`, `inverse`, `inverseSafe`, `swap`.
 - **Constraints:** `clamp(v,min,max)`, `clampScalar`, `clampLength(min,max)`, `limit(maxLength)`, `min(a,b)`, `max(a,b)`.
-- **Vector transforms:** `normalize`, `normalizeSafe`, `setLength`, `setLengthSafe`, `setHeading`,
+- **Vector transforms:** `normalize`, `normalizeSafe`, `setLength`, `setLengthSafe`, `setAngle`,
   `project`, `projectOnUnit`, `projectSafe`, `reflect`, `reflectSafe`,
   `perpendicular(clockwise=false)`, `unitPerpendicular`, `unitPerpendicularSafe`,
   `rotate`, `rotateCS`, `rotateAround`, `rotateAroundCS`,
@@ -272,7 +365,7 @@ _(New in this release: **Vector2** and **Matrix2**. Additional modules (Matrix3,
 - **Direction & angles:** `directionTo(target)`, `angle()`, `angleTo(v)`, `angleBetween(v)`.
 - **Numeric transforms:** `floor`, `ceil`, `round`, `abs`, getter `absolute`, `inverse`, `inverseSafe`, `swap`.
 - **Constraints:** `clamp(min,max)`, `clampScalar(min,max)`, `clampLength(min,max)`, `limit(maxLen)`, `min(v)`, `max(v)`.
-- **Vector transforms:** `normalize`, `normalizeSafe`, getter `normalized`, `setLength`, `setLengthSafe`, `setHeading`,
+- **Vector transforms:** `normalize`, `normalizeSafe`, getter `normalized`, `setLength`, `setLengthSafe`, `setAngle`,
   `project(axis)`, `projectSafe(axis)`, `projectOnUnit(unitAxis)`, `reflect(unitNormal)`, `reflectSafe(normal)`,
   `perpendicular(clockwise)`, `unitPerpendicular(clockwise)`, `unitPerpendicularSafe(clockwise)`,
   `rotate(angle)`, `rotateCS(c,s)`, `rotateAround(center,angle)`, `rotateAroundCS(center,c,s)`,

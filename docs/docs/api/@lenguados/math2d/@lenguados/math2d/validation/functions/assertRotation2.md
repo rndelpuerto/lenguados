@@ -2,7 +2,7 @@
 
 > **assertRotation2**(`cos`, `sin`, `name?`): `void`
 
-Defined in: [src/validation/assert.ts:367](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/validation/assert.ts#L367)
+Defined in: [src/validation/assert.ts:509](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/validation/assert.ts#L509)
 
 Asserts that Rotation2-like components are finite.
 
@@ -12,19 +12,19 @@ Asserts that Rotation2-like components are finite.
 
 `number`
 
-Cosine component
+Cosine component to validate.
 
 ### sin
 
 `number`
 
-Sine component
+Sine component to validate.
 
 ### name?
 
 `string`
 
-Rotation name for error messages
+Rotation name for error messages (optional).
 
 ## Returns
 
@@ -32,13 +32,23 @@ Rotation name for error messages
 
 ## Throws
 
-If assertions enabled and any component is not finite
+If assertions enabled and any component is not finite.
+
+## Remarks
+
+Validates both cos and sin are finite (not NaN, not Infinity).
+Does NOT validate that cos² + sin² = 1 (unit constraint).
+No-op when assertions are disabled.
 
 ## Example
 
 ```typescript
 function createRotation(cos: number, sin: number): Rotation2 {
-  assertRotation2(cos, sin, 'input');
-  return new Rotation2(cos, sin);
+ assertRotation2(cos, sin, 'input');
+ return new Rotation2(cos, sin);
 }
 ```
+
+## Since
+
+0.1.0

@@ -1,7 +1,7 @@
 /**
  * @file auxiliary/numeric/safety.ts
  * @module @lenguados/math2d/auxiliary/numeric
- * @description Safe arithmetic operations that handle edge cases gracefully
+ * @description Safe arithmetic operations that handle edge cases gracefully.
  *
  * @remarks
  * This module provides operations that return safe numeric values
@@ -9,28 +9,34 @@
  * see {@link ./guards}.
  *
  * **Determinism Guarantee**: Mathematical operations that could vary across
- * JavaScript engines (sqrt) are delegated to {@link DeterministicMath} to
- * ensure cross-platform reproducibility for physics simulations, lockstep
- * networking, and replay systems.
+ * JavaScript engines are delegated to deterministic-kernels.
  */
 
-import { DeterministicMath } from '../../deterministic/deterministic-math';
+import { acosSafe, asinSafe, log, pow, sqrtSafe } from '../../deterministic/deterministic-kernels';
 import { PrecisionMath } from '../../deterministic/precision-math';
 import { clamp } from '../scalar/arithmetic';
+import { EPSILON } from '../scalar/constants';
 
 /**
  * Minimum safe value for division operations.
  * Below this value, division results may be unreliable.
+ *
+ * @remarks
+ * Uses the same EPSILON (1e-10) as {@link isNearZero} for consistency.
+ * This ensures that `safeDivide` and `isNearZero` have coherent behavior.
+ *
  * @constant {number}
+ * @category Safety
+ * @since 0.7.0
  */
-export const MIN_SAFE_DIVISOR = Number.EPSILON;
+export const MIN_SAFE_DIVISOR = EPSILON;
 
 /**
  * Safe division with fallback to 0.
- * @param numerator - Dividend
- * @param denominator - Divisor
- * @param epsilon - Minimum safe divisor (default: MIN_SAFE_DIVISOR)
- * @returns Result or 0 if denominator is too small
+ * @param numerator - Dividend.
+ * @param denominator - Divisor.
+ * @param epsilon - Minimum safe divisor (default: MIN_SAFE_DIVISOR).
+ * @returns Result or 0 if denominator is too small.
  *
  * @example
  * ```typescript
@@ -41,7 +47,7 @@ export const MIN_SAFE_DIVISOR = Number.EPSILON;
  * ```
  *
  * @category Safety
- * @since 1.0.0
+ * @since 0.7.0
  */
 export function safeDivide(
  numerator: number,
@@ -53,9 +59,9 @@ export function safeDivide(
 
 /**
  * Safe reciprocal (1/x).
- * @param value - Value to invert
- * @param epsilon - Minimum safe value (default: MIN_SAFE_DIVISOR)
- * @returns Reciprocal or 0 if value is too small
+ * @param value - Value to invert.
+ * @param epsilon - Minimum safe value (default: MIN_SAFE_DIVISOR).
+ * @returns Reciprocal or 0 if value is too small.
  *
  * @example
  * ```typescript
@@ -65,110 +71,42 @@ export function safeDivide(
  * ```
  *
  * @category Safety
- * @since 1.0.0
+ * @since 0.7.0
  */
 export function safeReciprocal(value: number, epsilon: number = MIN_SAFE_DIVISOR): number {
  return Math.abs(value) < epsilon ? 0 : 1 / value;
 }
 
+/* ========================================================================== */
+/* Re-exports from deterministic-kernels                                       */
+/* ========================================================================== */
+
 /**
  * Safe deterministic square root (clamps negatives to 0).
- * @param value - Value to take square root of
- * @returns Square root or 0 for negative values
- *
- * @remarks
- * **Determinism Guarantee:** Uses {@link DeterministicMath.sqrtSafe} which
- * implements Newton-Raphson iteration for cross-platform reproducibility.
- *
- * While IEEE 754 requires sqrt to be correctly rounded, different JavaScript
- * engines (V8, SpiderMonkey, JSC) may produce slightly different results for
- * edge cases (denormals, very small values). This function ensures bit-exact
- * results across all platforms, critical for:
- * - **Lockstep networking** in multiplayer games
- * - **Replay systems** where input must reproduce exact simulation
- * - **Unit testing** across different CI environments
- *
- * **Performance:** ~10ns per call (vs ~2ns for native Math.sqrt).
- * Acceptable overhead for physics simulations.
- *
- * @example
- * ```typescript
- * safeSqrt(4);      // 2
- * safeSqrt(0);      // 0
- * safeSqrt(-1);     // 0 (clamped, avoids NaN)
- * safeSqrt(-0.001); // 0 (clamped)
- * ```
- *
- * @category Safety
- * @since 1.0.0
+ * Re-exported from deterministic-kernels for convenience.
+ * @see {@link sqrtSafe}
  */
-export function safeSqrt(value: number): number {
- return DeterministicMath.sqrtSafe(value);
-}
+export { sqrtSafe as safeSqrt };
 
 /**
  * Safe deterministic arc cosine (clamps input to [-1, 1]).
- * @param value - Value to take arc cosine of
- * @returns Arc cosine in radians
- *
- * @remarks
- * **Determinism Guarantee:** Uses {@link DeterministicMath.acosSafe} which
- * computes acos using the identity `acos(x) = atan2(sqrt(1-x²), x)` with
- * deterministic sqrt and atan2 implementations.
- *
- * This ensures cross-platform reproducibility for physics simulations,
- * lockstep networking, and replay systems.
- *
- * @example
- * ```typescript
- * safeAcos(0.5);    // Math.PI / 3
- * safeAcos(1);      // 0
- * safeAcos(-1);     // Math.PI
- * safeAcos(2);      // 0 (clamped to 1)
- * safeAcos(-2);     // Math.PI (clamped to -1)
- * ```
- *
- * @category Safety
- * @since 1.0.0
+ * Re-exported from deterministic-kernels for convenience.
+ * @see {@link acosSafe}
  */
-export function safeAcos(value: number): number {
- return DeterministicMath.acosSafe(value);
-}
+export { acosSafe as safeAcos };
 
 /**
  * Safe deterministic arc sine (clamps input to [-1, 1]).
- * @param value - Value to take arc sine of
- * @returns Arc sine in radians
- *
- * @remarks
- * **Determinism Guarantee:** Uses {@link DeterministicMath.asinSafe} which
- * computes asin using the identity `asin(x) = atan2(x, sqrt(1-x²))` with
- * deterministic sqrt and atan2 implementations.
- *
- * This ensures cross-platform reproducibility for physics simulations,
- * lockstep networking, and replay systems.
- *
- * @example
- * ```typescript
- * safeAsin(0.5);    // Math.PI / 6
- * safeAsin(1);      // Math.PI / 2
- * safeAsin(-1);     // -Math.PI / 2
- * safeAsin(2);      // Math.PI / 2 (clamped to 1)
- * safeAsin(-2);     // -Math.PI / 2 (clamped to -1)
- * ```
- *
- * @category Safety
- * @since 1.0.0
+ * Re-exported from deterministic-kernels for convenience.
+ * @see {@link asinSafe}
  */
-export function safeAsin(value: number): number {
- return DeterministicMath.asinSafe(value);
-}
+export { asinSafe as safeAsin };
 
 /**
  * Safe logarithm (returns -Infinity for <= 0).
- * @param value - Value to take logarithm of
- * @param base - Logarithm base (default: Math.E for natural log)
- * @returns Logarithm or -Infinity for non-positive values
+ * @param value - Value to take logarithm of.
+ * @param base - Logarithm base (default: Math.E for natural log).
+ * @returns Logarithm or -Infinity for non-positive values.
  *
  * @example
  * ```typescript
@@ -180,20 +118,20 @@ export function safeAsin(value: number): number {
  * ```
  *
  * @category Safety
- * @since 1.0.0
+ * @since 0.7.0
  */
 export function safeLog(value: number, base: number = Math.E): number {
  if (value <= 0) {
   return -Infinity;
  }
- return base === Math.E ? Math.log(value) : Math.log(value) / Math.log(base);
+ return base === Math.E ? log(value) : log(value) / log(base);
 }
 
 /**
  * Safe power that handles edge cases.
- * @param base - Base value
- * @param exponent - Exponent
- * @returns Result with special case handling
+ * @param base - Base value.
+ * @param exponent - Exponent.
+ * @returns Result with special case handling.
  *
  * @remarks
  * Handles edge cases like:
@@ -210,7 +148,7 @@ export function safeLog(value: number, base: number = Math.E): number {
  * ```
  *
  * @category Safety
- * @since 1.0.0
+ * @since 0.7.0
  */
 export function safePow(base: number, exponent: number): number {
  // Handle special cases
@@ -223,14 +161,14 @@ export function safePow(base: number, exponent: number): number {
   return NaN; // Would result in complex number
  }
 
- return Math.pow(base, exponent);
+ return pow(base, exponent);
 }
 
 /**
  * Safe modulo that handles negative divisor.
- * @param dividend - Value to divide
- * @param divisor - Divisor
- * @returns Modulo result or 0 if divisor is 0
+ * @param dividend - Value to divide.
+ * @param divisor - Divisor.
+ * @returns Modulo result or 0 if divisor is 0.
  *
  * @remarks
  * Unlike the % operator, this ensures the result has the same
@@ -246,7 +184,7 @@ export function safePow(base: number, exponent: number): number {
  * ```
  *
  * @category Safety
- * @since 1.0.0
+ * @since 0.7.0
  */
 export function safeMod(dividend: number, divisor: number): number {
  if (divisor === 0) return 0;
@@ -264,8 +202,8 @@ export function safeMod(dividend: number, divisor: number): number {
 /**
  * Kahan summation algorithm for improved precision.
  * Compensates for floating-point errors in large sums.
- * @param values - Array of numbers to sum
- * @returns Sum with reduced rounding error
+ * @param values - Array of numbers to sum.
+ * @returns Sum with reduced rounding error.
  *
  * @example
  * ```typescript
@@ -275,7 +213,7 @@ export function safeMod(dividend: number, divisor: number): number {
  * ```
  *
  * @category Safety
- * @since 1.0.0
+ * @since 0.7.0
  */
 export function robustSum(values: number[]): number {
  return PrecisionMath.kahanSum(values);
@@ -284,8 +222,8 @@ export function robustSum(values: number[]): number {
 /**
  * Neumaier summation - improved Kahan algorithm.
  * Even more robust for values of varying magnitudes.
- * @param values - Array of numbers to sum
- * @returns Sum with minimized error
+ * @param values - Array of numbers to sum.
+ * @returns Sum with minimized error.
  *
  * @example
  * ```typescript
@@ -294,7 +232,7 @@ export function robustSum(values: number[]): number {
  * ```
  *
  * @category Safety
- * @since 1.0.0
+ * @since 0.7.0
  */
 export function neumaierSum(values: number[]): number {
  return PrecisionMath.neumaierSum(values);
@@ -302,9 +240,9 @@ export function neumaierSum(values: number[]): number {
 
 /**
  * Compensated product using error-free transformation.
- * @param a - First factor
- * @param b - Second factor
- * @returns Object with product and error term
+ * @param a - First factor.
+ * @param b - Second factor.
+ * @returns Object with product and error term.
  *
  * @example
  * ```typescript
@@ -315,7 +253,7 @@ export function neumaierSum(values: number[]): number {
  * ```
  *
  * @category Safety
- * @since 1.0.0
+ * @since 0.7.0
  */
 export function compensatedProduct(a: number, b: number): { product: number; error: number } {
  return PrecisionMath.twoProduct(a, b);
@@ -323,10 +261,10 @@ export function compensatedProduct(a: number, b: number): { product: number; err
 
 /**
  * Safe linear interpolation that avoids overflow.
- * @param a - Start value
- * @param b - End value
- * @param t - Interpolation factor
- * @returns Interpolated value
+ * @param a - Start value.
+ * @param b - End value.
+ * @param t - Interpolation factor.
+ * @returns Interpolated value.
  *
  * @example
  * ```typescript
@@ -336,7 +274,7 @@ export function compensatedProduct(a: number, b: number): { product: number; err
  * ```
  *
  * @category Safety
- * @since 1.0.0
+ * @since 0.7.0
  */
 export function safeLerp(a: number, b: number, t: number): number {
  // Avoid catastrophic cancellation and overflow
@@ -351,17 +289,17 @@ export function safeLerp(a: number, b: number, t: number): number {
  }
 }
 
-// ============================================================================
-// Sanitization Functions (moved from guards.ts for cohesion)
-// ============================================================================
+/* ========================================================================== */
+/* Sanitization Functions (moved from guards.ts for cohesion)                 */
+/* ========================================================================== */
 
 /**
  * Validates and cleans numeric value.
- * @param value - Value to sanitize
- * @param fallback - Value to use if input is invalid (default: 0)
- * @param min - Minimum allowed value (default: -Number.MAX_VALUE)
- * @param max - Maximum allowed value (default: Number.MAX_VALUE)
- * @returns Clean value or fallback
+ * @param value - Value to sanitize.
+ * @param fallback - Value to use if input is invalid (default: 0).
+ * @param min - Minimum allowed value (default: -Number.MAX_VALUE).
+ * @param max - Maximum allowed value (default: Number.MAX_VALUE).
+ * @returns Clean value or fallback.
  *
  * @remarks
  * Combines validation with clamping. Use when you need to ensure
@@ -378,7 +316,7 @@ export function safeLerp(a: number, b: number, t: number): number {
  * ```
  *
  * @category Safety
- * @since 1.0.0
+ * @since 0.7.0
  */
 export function sanitizeNumber(
  value: number,
@@ -394,9 +332,9 @@ export function sanitizeNumber(
 
 /**
  * Ensures finite value, replaces NaN/Infinity.
- * @param value - Value to check
- * @param fallback - Replacement for non-finite values (default: 0)
- * @returns Finite value or fallback
+ * @param value - Value to check.
+ * @param fallback - Replacement for non-finite values (default: 0).
+ * @returns Finite value or fallback.
  *
  * @remarks
  * Use when you need to guarantee a finite result from calculations
@@ -412,7 +350,7 @@ export function sanitizeNumber(
  * ```
  *
  * @category Safety
- * @since 1.0.0
+ * @since 0.7.0
  */
 export function ensureFinite(value: number, fallback: number = 0): number {
  return Number.isFinite(value) ? value : fallback;

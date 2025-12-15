@@ -1,8 +1,8 @@
-# Variable: RAD\_TO\_DEG
+# Variable: RAD_TO_DEG
 
-> `const` **RAD\_TO\_DEG**: `number`
+> `const` **RAD_TO_DEG**: `number`
 
-Defined in: [src/auxiliary/scalar/constants.ts:129](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/auxiliary/scalar/constants.ts#L129)
+Defined in: [src/auxiliary/scalar/constants.ts:160](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/auxiliary/scalar/constants.ts#L160)
 
 Conversion factor from radians to degrees.
 

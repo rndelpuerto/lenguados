@@ -2,7 +2,7 @@
 
 > **safeLerp**(`a`, `b`, `t`): `number`
 
-Defined in: [src/auxiliary/numeric/safety.ts:341](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/auxiliary/numeric/safety.ts#L341)
+Defined in: [src/auxiliary/numeric/safety.ts:349](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/auxiliary/numeric/safety.ts#L349)
 
 Safe linear interpolation that avoids overflow.
 
@@ -12,25 +12,25 @@ Safe linear interpolation that avoids overflow.
 
 `number`
 
-Start value
+Start value.
 
 ### b
 
 `number`
 
-End value
+End value.
 
 ### t
 
 `number`
 
-Interpolation factor
+Interpolation factor.
 
 ## Returns
 
 `number`
 
-Interpolated value
+Interpolated value.
 
 ## Example
 

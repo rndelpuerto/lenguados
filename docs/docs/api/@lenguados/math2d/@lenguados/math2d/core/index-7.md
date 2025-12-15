@@ -6,11 +6,12 @@ core/vector2.ts
 
 ## Description
 
-Industrial-grade mutable 2D vector implementation.
+Two-dimensional vector implementation for the Lenguado 2-D physics-engine family.
 
 ## Remarks
 
 **Angle & rotation conventions**
+
 - Angles are in radians, measured from the +X axis with **counter-clockwise (CCW)** positive.
 - Vectors are treated as column vectors; rotations use the standard matrix:
   ```
@@ -19,6 +20,7 @@ Industrial-grade mutable 2D vector implementation.
   ```
 
 **Design principles**
+
 - Instance methods mutate `this` for fluent chaining.
 - Static methods are pure and accept an optional `out` parameter to avoid allocations.
 - Trigonometric and square-root operations delegate to [DeterministicMath](../deterministic/classes/DeterministicMath.md).
@@ -37,3 +39,7 @@ Industrial-grade mutable 2D vector implementation.
 ### isVector2Like
 
 Re-exports [isVector2Like](../types/functions/isVector2Like.md)
+
+## Types
+
+- [ReadonlyVector2](type-aliases/ReadonlyVector2.md)

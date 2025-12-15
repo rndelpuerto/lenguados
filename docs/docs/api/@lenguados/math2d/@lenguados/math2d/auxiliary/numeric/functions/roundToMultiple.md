@@ -2,7 +2,7 @@
 
 > **roundToMultiple**(`value`, `multiple`): `number`
 
-Defined in: [src/auxiliary/numeric/rounding.ts:74](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/auxiliary/numeric/rounding.ts#L74)
+Defined in: [src/auxiliary/numeric/rounding.ts:74](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/auxiliary/numeric/rounding.ts#L74)
 
 Rounds to nearest multiple.
 
@@ -12,27 +12,27 @@ Rounds to nearest multiple.
 
 `number`
 
-Value to round
+Value to round.
 
 ### multiple
 
 `number`
 
-Multiple to round to
+Multiple to round to.
 
 ## Returns
 
 `number`
 
-Rounded value
+Rounded value.
 
 ## Example
 
 ```typescript
-roundToMultiple(7, 5);         // 5
-roundToMultiple(8, 5);         // 10
-roundToMultiple(23, 10);       // 20
-roundToMultiple(1.7, 0.5);     // 1.5
+roundToMultiple(7, 5); // 5
+roundToMultiple(8, 5); // 10
+roundToMultiple(23, 10); // 20
+roundToMultiple(1.7, 0.5); // 1.5
 ```
 
 ## Since

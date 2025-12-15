@@ -1,5 +1,5 @@
 /**
- * @file utils/performance.ts
+ * @file src/utils/performance.ts
  * @module @lenguados/math2d/utils
  * @description Lightweight utilities for profiling and measuring execution time.
  *
@@ -27,21 +27,45 @@
  * ```
  */
 
+/* ========================================================================== */
+/* Internal State                                                             */
+/* ========================================================================== */
+
 const hasPerformanceNow =
  typeof globalThis !== 'undefined' &&
  !!globalThis.performance &&
  typeof globalThis.performance.now === 'function';
 
+/* ========================================================================== */
+/* Timestamp Utilities                                                        */
+/* ========================================================================== */
+
 /**
  * Returns a high-resolution timestamp when available, falling back to `Date.now()`.
+ *
  * @returns Timestamp in milliseconds.
+ *
+ * @example
+ * ```typescript
+ * const start = timestamp();
+ * ```
+ *
+ * @category Utility
+ * @since 0.7.0
  */
 export function timestamp(): number {
  return hasPerformanceNow ? globalThis.performance.now() : Date.now();
 }
 
+/* ========================================================================== */
+/* Measurement Types                                                          */
+/* ========================================================================== */
+
 /**
  * Result of a synchronous performance measurement.
+ *
+ * @category Types
+ * @since 0.7.0
  */
 export interface Measurement<T> {
  /** Identifier for the measurement. */
@@ -54,9 +78,19 @@ export interface Measurement<T> {
 
 /**
  * Measures a synchronous function, returning its result and duration.
- * @param label - Identifier for the measurement
- * @param fn - Function to execute
- * @returns Measurement metadata
+ *
+ * @param label - Identifier for the measurement.
+ * @param function_ - Function to execute.
+ * @returns Measurement metadata.
+ *
+ * @example
+ * ```typescript
+ * const result = measure('tick', () => 42);
+ * console.log(result.duration);
+ * ```
+ *
+ * @category Utility
+ * @since 0.7.0
  */
 export function measure<T>(label: string, function_: () => T): Measurement<T> {
  const start = timestamp();
@@ -67,9 +101,19 @@ export function measure<T>(label: string, function_: () => T): Measurement<T> {
 
 /**
  * Measures an asynchronous function, returning its result and duration.
- * @param label - Identifier for the measurement
- * @param fn - Async function to execute
- * @returns Measurement metadata
+ *
+ * @param label - Identifier for the measurement.
+ * @param function_ - Async function to execute.
+ * @returns Measurement metadata.
+ *
+ * @example
+ * ```typescript
+ * const result = await measureAsync('load', async () => 42);
+ * console.log(result.duration);
+ * ```
+ *
+ * @category Utility
+ * @since 0.7.0
  */
 export async function measureAsync<T>(
  label: string,
@@ -83,8 +127,18 @@ export async function measureAsync<T>(
 
 /**
  * Accumulates measurements into a target collector.
- * @param collector - Map to accumulate measurements into
- * @param measurement - Measurement to record
+ *
+ * @param collector - Map to accumulate measurements into.
+ * @param measurement - Measurement to record.
+ *
+ * @example
+ * ```typescript
+ * const collector = new Map<string, Measurement<number>[]>();
+ * recordMeasurement(collector, measure('tick', () => 1));
+ * ```
+ *
+ * @category Utility
+ * @since 0.7.0
  */
 export function recordMeasurement<T>(
  collector: Map<string, Measurement<T>[]>,
@@ -100,6 +154,9 @@ export function recordMeasurement<T>(
 
 /**
  * Summary statistics for a collection of measurements.
+ *
+ * @category Types
+ * @since 0.7.0
  */
 export interface MeasurementSummary {
  /** Identifier for the measurement set. */
@@ -118,8 +175,17 @@ export interface MeasurementSummary {
 
 /**
  * Computes summary statistics for every label within a measurement collector.
- * @param collector - Map produced via {@link recordMeasurement}
- * @returns Map of label to summary statistics
+ *
+ * @param collector - Map produced via {@link recordMeasurement}.
+ * @returns Map of label to summary statistics.
+ *
+ * @example
+ * ```typescript
+ * const summaries = summarizeMeasurements(new Map());
+ * ```
+ *
+ * @category Utility
+ * @since 0.7.0
  */
 export function summarizeMeasurements<T>(
  collector: Map<string, Measurement<T>[]>,
@@ -168,8 +234,24 @@ export function summarizeMeasurements<T>(
 /**
  * Formats a measurement summary into a human-friendly string. Values are shown
  * with three decimal places by default.
- * @param summary - Summary statistics to format
- * @returns Human-readable string
+ *
+ * @param summary - Summary statistics to format.
+ * @returns Human-readable string.
+ *
+ * @example
+ * ```typescript
+ * const text = formatSummary({
+ *  label: 'tick',
+ *  count: 1,
+ *  totalDuration: 2,
+ *  minDuration: 2,
+ *  maxDuration: 2,
+ *  meanDuration: 2,
+ * });
+ * ```
+ *
+ * @category Utility
+ * @since 0.7.0
  */
 export function formatSummary(summary: MeasurementSummary): string {
  const format = (value: number): string => value.toFixed(3);
@@ -180,15 +262,32 @@ export function formatSummary(summary: MeasurementSummary): string {
  )}ms, max=${format(summary.maxDuration)}ms`;
 }
 
+/* ========================================================================== */
+/* Measurement Collectors                                                     */
+/* ========================================================================== */
+
 /**
  * Convenience wrapper around {@link recordMeasurement} and {@link summarizeMeasurements}.
+ *
+ * @example
+ * ```typescript
+ * const collector = new MeasurementCollector<number>();
+ * collector.record(measure('tick', () => 1));
+ * ```
+ *
+ * @category Utility
+ * @since 0.7.0
  */
 export class MeasurementCollector<T> {
  private readonly measurements = new Map<string, Measurement<T>[]>();
 
  /**
   * Records a measurement in the collector.
-  * @param measurement - Measurement to record
+  *
+  * @param measurement - Measurement to record.
+  *
+  * @category Utility
+  * @since 0.7.0
   */
  record(measurement: Measurement<T>): void {
   recordMeasurement(this.measurements, measurement);
@@ -196,7 +295,11 @@ export class MeasurementCollector<T> {
 
  /**
   * Records multiple measurements in sequence.
-  * @param measurements - Iterable of measurements to record
+  *
+  * @param measurements - Iterable of measurements to record.
+  *
+  * @category Utility
+  * @since 0.7.0
   */
  recordMany(measurements: Iterable<Measurement<T>>): void {
   for (const measurement of measurements) {
@@ -206,6 +309,9 @@ export class MeasurementCollector<T> {
 
  /**
   * Clears all recorded measurements.
+  *
+  * @category Utility
+  * @since 0.7.0
   */
  clear(): void {
   this.measurements.clear();
@@ -213,7 +319,11 @@ export class MeasurementCollector<T> {
 
  /**
   * Returns a snapshot of the underlying measurements map.
-  * @returns Read-only view of recorded measurements
+  *
+  * @returns Read-only view of recorded measurements.
+  *
+  * @category Utility
+  * @since 0.7.0
   */
  get entries(): ReadonlyMap<string, readonly Measurement<T>[]> {
   return this.measurements;
@@ -221,7 +331,11 @@ export class MeasurementCollector<T> {
 
  /**
   * Computes summary statistics for the recorded measurements.
-  * @returns Map of label to summary statistics
+  *
+  * @returns Map of label to summary statistics.
+  *
+  * @category Utility
+  * @since 0.7.0
   */
  summarize(): Map<string, MeasurementSummary> {
   return summarizeMeasurements(this.measurements);
@@ -229,7 +343,11 @@ export class MeasurementCollector<T> {
 
  /**
   * Convenience helper returning all summaries as an array.
-  * @returns Array of summary statistics
+  *
+  * @returns Array of summary statistics.
+  *
+  * @category Utility
+  * @since 0.7.0
   */
  summarizeArray(): MeasurementSummary[] {
   return Array.from(this.summarize().values());
@@ -237,7 +355,11 @@ export class MeasurementCollector<T> {
 
  /**
   * Formats summaries using {@link formatSummary}.
-  * @returns Array of formatted summary strings
+  *
+  * @returns Array of formatted summary strings.
+  *
+  * @category Utility
+  * @since 0.7.0
   */
  formatSummaries(): string[] {
   return this.summarizeArray().map(formatSummary);

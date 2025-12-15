@@ -1,6 +1,7 @@
 /**
  * @file test/types/type-guards.node.spec.ts
- * @description Tests for type guards in types/index.ts
+ * @module @lenguados/math2d/types
+ * @description Tests for type guards in types/index.ts.
  */
 
 import { describe, expect, test } from '@jest/globals';
@@ -197,7 +198,7 @@ describe('Type Guards', () => {
    expect(
     isTransform2Like({
      position: { x: 0, y: 0 },
-     rotation: 0,
+     rotation: { cos: 1, sin: 0 },
      scale: { x: 1, y: 1 },
     }),
    ).toBe(true);
@@ -205,7 +206,7 @@ describe('Type Guards', () => {
    expect(
     isTransform2Like({
      position: { x: 100, y: 50 },
-     rotation: Math.PI / 4,
+     rotation: { cos: Math.SQRT1_2, sin: Math.SQRT1_2 },
      scale: { x: 2, y: 2 },
     }),
    ).toBe(true);
@@ -218,7 +219,7 @@ describe('Type Guards', () => {
 
   test('returns false for objects missing properties', () => {
    expect(isTransform2Like({ position: { x: 0, y: 0 } })).toBe(false);
-   expect(isTransform2Like({ rotation: 0 })).toBe(false);
+   expect(isTransform2Like({ rotation: { cos: 1, sin: 0 } })).toBe(false);
    expect(isTransform2Like({})).toBe(false);
   });
 
@@ -226,7 +227,7 @@ describe('Type Guards', () => {
    expect(
     isTransform2Like({
      position: { x: 0 }, // missing y
-     rotation: 0,
+     rotation: { cos: 1, sin: 0 },
      scale: { x: 1, y: 1 },
     }),
    ).toBe(false);
@@ -234,7 +235,7 @@ describe('Type Guards', () => {
    expect(
     isTransform2Like({
      position: { x: 0, y: 0 },
-     rotation: '0', // wrong type
+     rotation: 0, // wrong type - number instead of Rotation2Like
      scale: { x: 1, y: 1 },
     }),
    ).toBe(false);
@@ -242,7 +243,7 @@ describe('Type Guards', () => {
    expect(
     isTransform2Like({
      position: { x: 0, y: 0 },
-     rotation: 0,
+     rotation: { cos: 1, sin: 0 },
      scale: null, // not Vector2Like
     }),
    ).toBe(false);

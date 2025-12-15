@@ -2,9 +2,9 @@
 
 > **repeat**(`value`, `length`): `number`
 
-Defined in: [src/auxiliary/numeric/wrapping.ts:121](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/auxiliary/numeric/wrapping.ts#L121)
+Defined in: [src/auxiliary/numeric/wrapping.ts:223](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/auxiliary/numeric/wrapping.ts#L223)
 
-Repeats value in range with smooth blend.
+Repeats value in range (strict).
 
 ## Parameters
 
@@ -12,19 +12,23 @@ Repeats value in range with smooth blend.
 
 `number`
 
-Value to repeat
+Value to repeat.
 
 ### length
 
 `number`
 
-Period of repetition
+Period of repetition.
 
 ## Returns
 
 `number`
 
-Repeated value in [0, length)
+Repeated value in [0, length).
+
+## Throws
+
+If length <= 0.
 
 ## Remarks
 
@@ -34,11 +38,16 @@ Always returns positive values.
 ## Example
 
 ```typescript
-repeat(3, 2);        // 1
-repeat(5, 2);        // 1
-repeat(-1, 2);       // 1
-repeat(2, 2);        // 0
+repeat(3, 2); // 1
+repeat(5, 2); // 1
+repeat(-1, 2); // 1
+repeat(2, 2); // 0
 ```
+
+## See
+
+- [repeatSafe](repeatSafe.md) - Returns 0 if length is invalid
+- [repeatUnchecked](repeatUnchecked.md) - No validation
 
 ## Since
 

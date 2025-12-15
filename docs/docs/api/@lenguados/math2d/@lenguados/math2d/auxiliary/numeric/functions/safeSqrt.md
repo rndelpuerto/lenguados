@@ -2,7 +2,7 @@
 
 > **safeSqrt**(`value`): `number`
 
-Defined in: [src/auxiliary/numeric/safety.ts:105](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/auxiliary/numeric/safety.ts#L105)
+Defined in: [src/auxiliary/numeric/safety.ts:113](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/auxiliary/numeric/safety.ts#L113)
 
 Safe deterministic square root (clamps negatives to 0).
 
@@ -12,13 +12,13 @@ Safe deterministic square root (clamps negatives to 0).
 
 `number`
 
-Value to take square root of
+Value to take square root of.
 
 ## Returns
 
 `number`
 
-Square root or 0 for negative values
+Square root or 0 for negative values.
 
 ## Remarks
 
@@ -29,6 +29,7 @@ While IEEE 754 requires sqrt to be correctly rounded, different JavaScript
 engines (V8, SpiderMonkey, JSC) may produce slightly different results for
 edge cases (denormals, very small values). This function ensures bit-exact
 results across all platforms, critical for:
+
 - **Lockstep networking** in multiplayer games
 - **Replay systems** where input must reproduce exact simulation
 - **Unit testing** across different CI environments
@@ -39,9 +40,9 @@ Acceptable overhead for physics simulations.
 ## Example
 
 ```typescript
-safeSqrt(4);      // 2
-safeSqrt(0);      // 0
-safeSqrt(-1);     // 0 (clamped, avoids NaN)
+safeSqrt(4); // 2
+safeSqrt(0); // 0
+safeSqrt(-1); // 0 (clamped, avoids NaN)
 safeSqrt(-0.001); // 0 (clamped)
 ```
 

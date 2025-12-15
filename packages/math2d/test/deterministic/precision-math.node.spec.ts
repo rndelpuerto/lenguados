@@ -1,3 +1,9 @@
+/**
+ * @file test/deterministic/precision-math.node.spec.ts
+ * @module @lenguados/math2d/deterministic
+ * @description Tests for PrecisionMath operations.
+ */
+
 import { describe, expect, it } from '@jest/globals';
 
 import { PrecisionMath } from '../../src/deterministic/precision-math';

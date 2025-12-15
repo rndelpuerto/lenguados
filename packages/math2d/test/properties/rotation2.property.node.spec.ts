@@ -1,9 +1,7 @@
 /**
- * @file properties/rotation2.property.node.spec.ts
- * @description Property-based tests for Rotation2 class.
- *
- * These tests verify mathematical invariants that should hold for all inputs,
- * using randomly generated test cases via fast-check.
+ * @file test/properties/rotation2.property.node.spec.ts
+ * @module @lenguados/math2d/core
+ * @description Property-based tests for Rotation2.
  */
 
 import { describe, it } from '@jest/globals';
@@ -69,13 +67,13 @@ describe('Rotation2 Properties', () => {
  });
 
  describe('Angle Relationships', () => {
-  it('should satisfy: fromAngle(angle).angle() ≈ angle (normalized)', () => {
+  it('should satisfy: fromAngle(angle).angle ≈ angle (normalized)', () => {
    // Use more limited angle range to avoid precision issues near boundaries
    const arbSafeAngle = fc.integer({ min: -31415, max: 31415 }).map((n) => n / 10000);
    fc.assert(
     fc.property(arbSafeAngle, (angle) => {
      const r = Rotation2.fromAngle(angle);
-     const extractedAngle = r.angle();
+     const extractedAngle = r.angle;
      // Normalize angle to [-π, π]
      const normalizedInput = Math.atan2(Math.sin(angle), Math.cos(angle));
      const diff = Math.abs(normalizedInput - extractedAngle);
@@ -88,8 +86,8 @@ describe('Rotation2 Properties', () => {
    fc.assert(
     fc.property(arbRotation2, arbRotation2, (a, b) => {
      const composed = Rotation2.multiply(a, b);
-     const sumAngle = a.angle() + b.angle();
-     const composedAngle = composed.angle();
+     const sumAngle = a.angle + b.angle;
+     const composedAngle = composed.angle;
      // Normalize both to [-π, π]
      const normalizedSum = Math.atan2(Math.sin(sumAngle), Math.cos(sumAngle));
      // Use larger tolerance for accumulated error
@@ -104,8 +102,8 @@ describe('Rotation2 Properties', () => {
    fc.assert(
     fc.property(arbRotation2, arbUnitVector2, (r, v) => {
      const rotated = Rotation2.apply(r, v);
-     const originalLength = Vector2.length(v);
-     const rotatedLength = Vector2.length(rotated);
+     const originalLength = Vector2.magnitude(v);
+     const rotatedLength = Vector2.magnitude(rotated);
      return Math.abs(originalLength - rotatedLength) < TEST_TOLERANCE;
     }),
    );

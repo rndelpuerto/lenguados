@@ -1,10 +1,15 @@
+/* istanbul ignore file */
 /**
  * @file test/arbitraries.ts
+ * @module @lenguados/math2d/test
  * @description Custom fast-check arbitraries for math2d types.
  *
+ * @remarks
  * Usage:
- *   import * as fc from 'fast-check';
- *   import { arbVector2, arbRotation2 } from './arbitraries';
+ * ```typescript
+ * import * as fc from 'fast-check';
+ * import { arbVector2, arbRotation2 } from './arbitraries';
+ * ```
  *
  * @example
  * ```typescript
@@ -67,7 +72,7 @@ export const arbAngleNearZero = fc.integer({ min: -1000, max: 1000 }).map((n) =>
 export const arbVector2 = fc.tuple(arbCoordinate, arbCoordinate).map(([x, y]) => new Vector2(x, y));
 
 /** Non-zero Vector2 */
-export const arbNonZeroVector2 = arbVector2.filter((v) => v.lengthSquared() > 1e-20);
+export const arbNonZeroVector2 = arbVector2.filter((v) => v.magnitudeSquared() > 1e-20);
 
 /** Unit Vector2 */
 export const arbUnitVector2 = arbAngle.map((angle) => Vector2.fromAngle(angle));

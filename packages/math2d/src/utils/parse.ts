@@ -1,9 +1,9 @@
 /**
  * @file src/utils/parse.ts
- * @module math2d/utils/parse
- * @description
- * Parsing and serialization utilities for mathematical types.
+ * @module @lenguados/math2d/utils
+ * @description Parsing and formatting utilities for math2d types.
  *
+ * @remarks
  * Provides consistent string parsing for all math types, supporting
  * various formats commonly used in configuration files and data interchange.
  *
@@ -12,8 +12,7 @@
  * - Consistent error handling
  * - Support for both creation and in-place parsing (out parameter)
  *
- * @remarks
- * All trigonometric operations use {@link DeterministicMath} for
+ * All trigonometric operations use deterministic kernels for
  * cross-platform reproducibility.
  *
  * @migration
@@ -37,27 +36,43 @@
  */
 
 import { DEG_TO_RAD, RAD_TO_DEG } from '../auxiliary/scalar/constants';
+import { Complex, type ReadonlyComplex } from '../core/complex';
+import { Interval, type ReadonlyInterval } from '../core/interval';
 import { Matrix2, type ReadonlyMatrix2 } from '../core/matrix2';
 import { Matrix3, type ReadonlyMatrix3 } from '../core/matrix3';
-import { Rotation2, type ReadonlyRotation2 } from '../core/rotation2';
+import { Rotation2 } from '../core/rotation2';
 import { Transform2, type ReadonlyTransform2 } from '../core/transform2';
 import { Vector2, type ReadonlyVector2 } from '../core/vector2';
-import { DeterministicMath } from '../deterministic/deterministic-math';
+import { atan2 } from '../deterministic/deterministic-kernels';
+import type { ReadonlyRotation2Like } from '../types';
+
+/* ========================================================================== */
+/* Vector2 Parsing and Formatting                                             */
+/* ========================================================================== */
 
 /**
  * Parses a string representation of a 2D vector.
  *
+ * @param string_ - Input string to parse.
+ * @param out - Optional output vector to avoid allocation. Defaults to `new Vector2()`.
+ * @returns The `out` vector containing the parsed values.
+ * @throws {Error} If the string cannot be parsed.
+ *
+ * @remarks
  * Supported formats:
  * - "x,y" (comma-separated)
  * - "x y" (space-separated)
  * - "(x,y)" (with parentheses)
  * - "[x,y]" (with brackets)
- * - "\{x:n, y:n\}" (JSON-like)
+ * - "{x:n, y:n}" (JSON-like)
  *
- * @param str - String to parse
- * @param out - Optional output vector (default: new Vector2)
- * @returns Parsed vector
- * @throws {Error} If the string cannot be parsed
+ * @example
+ * ```typescript
+ * const v = parseVector2("(1, 2)");
+ * ```
+ *
+ * @category Serialization
+ * @since 0.7.0
  */
 export function parseVector2(string_: string, out = new Vector2()): Vector2 {
  // Trim whitespace
@@ -98,10 +113,21 @@ export function parseVector2(string_: string, out = new Vector2()): Vector2 {
 /**
  * Formats a 2D vector as a string.
  *
- * @param v - Vector to format
- * @param format - Output format: 'csv', 'space', 'json', 'brackets'
- * @param precision - Number of decimal places (default: full precision)
- * @returns Formatted string
+ * @param v - Vector to format.
+ * @param format - Output format. Defaults to `'csv'`.
+ * @param precision - Number of decimal places. Defaults to full precision.
+ * @returns Formatted string.
+ *
+ * @remarks
+ * Supported formats: 'csv', 'space', 'json', 'brackets'.
+ *
+ * @example
+ * ```typescript
+ * const text = formatVector2(new Vector2(1, 2), 'brackets');
+ * ```
+ *
+ * @category Serialization
+ * @since 0.7.0
  */
 export function formatVector2(
  v: ReadonlyVector2,
@@ -123,19 +149,33 @@ export function formatVector2(
  }
 }
 
+/* ========================================================================== */
+/* Rotation2 Parsing and Formatting                                           */
+/* ========================================================================== */
+
 /**
  * Parses a string representation of a 2D rotation.
  *
+ * @param string_ - Input string to parse.
+ * @param out - Optional output rotation to avoid allocation. Defaults to `new Rotation2()`.
+ * @returns The `out` rotation containing the parsed values.
+ * @throws {Error} If the string cannot be parsed.
+ *
+ * @remarks
  * Supported formats:
  * - "angle" (single number in radians)
  * - "90deg" (with degree suffix)
  * - "c,s" (cosine,sine components)
- * - "\{c:n, s:n\}" (JSON-like)
+ * - "{c:n, s:n}" (JSON-like)
+ * - "{cos:n, sin:n}" (JSON-like)
  *
- * @param str - String to parse
- * @param out - Optional output rotation (default: new Rotation2)
- * @returns Parsed rotation
- * @throws {Error} If the string cannot be parsed
+ * @example
+ * ```typescript
+ * const r = parseRotation2("90deg");
+ * ```
+ *
+ * @category Serialization
+ * @since 0.7.0
  */
 export function parseRotation2(string_: string, out = new Rotation2()): Rotation2 {
  const trimmed = string_.trim();
@@ -188,23 +228,34 @@ export function parseRotation2(string_: string, out = new Rotation2()): Rotation
 /**
  * Formats a 2D rotation as a string.
  *
- * @param r - Rotation to format
- * @param format - Output format: 'radians', 'degrees', 'components', 'json'
- * @param precision - Number of decimal places
- * @returns Formatted string
+ * @param r - Rotation to format.
+ * @param format - Output format. Defaults to `'radians'`.
+ * @param precision - Number of decimal places. Defaults to full precision.
+ * @returns Formatted string.
+ *
+ * @remarks
+ * Supported formats: 'radians', 'degrees', 'components', 'json'.
+ *
+ * @example
+ * ```typescript
+ * const text = formatRotation2(Rotation2.fromAngle(Math.PI / 2), 'degrees');
+ * ```
+ *
+ * @category Serialization
+ * @since 0.7.0
  */
 export function formatRotation2(
- r: ReadonlyRotation2,
+ r: ReadonlyRotation2Like,
  format: 'radians' | 'degrees' | 'components' | 'json' = 'radians',
  precision?: number,
 ): string {
  switch (format) {
   case 'radians': {
-   const angle = DeterministicMath.atan2(r.sin, r.cos);
+   const angle = atan2(r.sin, r.cos);
    return precision !== undefined ? angle.toFixed(precision) : angle.toString();
   }
   case 'degrees': {
-   const angle = DeterministicMath.atan2(r.sin, r.cos) * RAD_TO_DEG;
+   const angle = atan2(r.sin, r.cos) * RAD_TO_DEG;
    const string_ = precision !== undefined ? angle.toFixed(precision) : angle.toString();
    return `${string_}deg`;
   }
@@ -221,19 +272,32 @@ export function formatRotation2(
  }
 }
 
+/* ========================================================================== */
+/* Matrix2 Parsing and Formatting                                             */
+/* ========================================================================== */
+
 /**
  * Parses a string representation of a 2x2 matrix.
  *
+ * @param string_ - Input string to parse.
+ * @param out - Optional output matrix to avoid allocation. Defaults to `new Matrix2()`.
+ * @returns The `out` matrix containing the parsed values.
+ * @throws {Error} If the string cannot be parsed.
+ *
+ * @remarks
  * Supported formats:
  * - "m00,m01,m10,m11" (row-major, comma-separated)
  * - "m00 m01 m10 m11" (row-major, space-separated)
  * - "[[m00,m01],[m10,m11]]" (nested arrays)
  * - JSON format
  *
- * @param str - String to parse
- * @param out - Optional output matrix (default: new Matrix2)
- * @returns Parsed matrix
- * @throws {Error} If the string cannot be parsed
+ * @example
+ * ```typescript
+ * const m = parseMatrix2("1,0,0,1");
+ * ```
+ *
+ * @category Serialization
+ * @since 0.7.0
  */
 export function parseMatrix2(string_: string, out = new Matrix2()): Matrix2 {
  const trimmed = string_.trim();
@@ -280,10 +344,21 @@ export function parseMatrix2(string_: string, out = new Matrix2()): Matrix2 {
 /**
  * Formats a 2x2 matrix as a string.
  *
- * @param m - Matrix to format
- * @param format - Output format
- * @param precision - Number of decimal places
- * @returns Formatted string
+ * @param m - Matrix to format.
+ * @param format - Output format. Defaults to `'flat'`.
+ * @param precision - Number of decimal places. Defaults to full precision.
+ * @returns Formatted string.
+ *
+ * @remarks
+ * Supported formats: 'flat', 'nested', 'json'.
+ *
+ * @example
+ * ```typescript
+ * const text = formatMatrix2(parseMatrix2("1,0,0,1"), 'json');
+ * ```
+ *
+ * @category Serialization
+ * @since 0.7.0
  */
 export function formatMatrix2(
  m: ReadonlyMatrix2,
@@ -307,13 +382,32 @@ export function formatMatrix2(
  }
 }
 
+/* ========================================================================== */
+/* Matrix3 Parsing and Formatting                                             */
+/* ========================================================================== */
+
 /**
  * Parses a string representation of a 3x3 matrix.
  *
- * @param str - String to parse
- * @param out - Optional output matrix (default: new Matrix3)
- * @returns Parsed matrix
- * @throws {Error} If the string cannot be parsed
+ * @param string_ - Input string to parse.
+ * @param out - Optional output matrix to avoid allocation. Defaults to `new Matrix3()`.
+ * @returns The `out` matrix containing the parsed values.
+ * @throws {Error} If the string cannot be parsed.
+ *
+ * @remarks
+ * Supported formats:
+ * - "m00,m01,m02,m10,m11,m12,m20,m21,m22" (row-major, comma-separated)
+ * - "m00 m01 m02 m10 m11 m12 m20 m21 m22" (row-major, space-separated)
+ * - "[[m00,m01,m02],[m10,m11,m12],[m20,m21,m22]]" (nested arrays)
+ * - JSON format
+ *
+ * @example
+ * ```typescript
+ * const m = parseMatrix3("1,0,0,0,1,0,0,0,1");
+ * ```
+ *
+ * @category Serialization
+ * @since 0.7.0
  */
 export function parseMatrix3(string_: string, out = new Matrix3()): Matrix3 {
  const trimmed = string_.trim();
@@ -383,10 +477,21 @@ export function parseMatrix3(string_: string, out = new Matrix3()): Matrix3 {
 /**
  * Formats a 3x3 matrix as a string.
  *
- * @param m - Matrix to format
- * @param format - Output format
- * @param precision - Number of decimal places
- * @returns Formatted string
+ * @param m - Matrix to format.
+ * @param format - Output format. Defaults to `'flat'`.
+ * @param precision - Number of decimal places. Defaults to full precision.
+ * @returns Formatted string.
+ *
+ * @remarks
+ * Supported formats: 'flat', 'nested', 'json'.
+ *
+ * @example
+ * ```typescript
+ * const text = formatMatrix3(parseMatrix3("1,0,0,0,1,0,0,0,1"));
+ * ```
+ *
+ * @category Serialization
+ * @since 0.7.0
  */
 export function formatMatrix3(
  m: ReadonlyMatrix3,
@@ -420,18 +525,31 @@ export function formatMatrix3(
  }
 }
 
+/* ========================================================================== */
+/* Transform2 Parsing and Formatting                                          */
+/* ========================================================================== */
+
 /**
  * Parses a string representation of a 2D transform.
  *
+ * @param string_ - Input string to parse.
+ * @param out - Optional output transform to avoid allocation. Defaults to `new Transform2()`.
+ * @returns The `out` transform containing the parsed values.
+ * @throws {Error} If the string cannot be parsed.
+ *
+ * @remarks
  * Supported formats:
  * - "px,py,c,s" (position x,y and rotation cos,sin)
  * - "px py c s" (space-separated)
- * - JSON format with p and r properties
+ * - JSON format with `p` and `r` properties
  *
- * @param str - String to parse
- * @param out - Optional output transform (default: new Transform2)
- * @returns Parsed transform
- * @throws {Error} If the string cannot be parsed
+ * @example
+ * ```typescript
+ * const t = parseTransform2("0,0,1,0");
+ * ```
+ *
+ * @category Serialization
+ * @since 0.7.0
  */
 export function parseTransform2(string_: string, out = new Transform2()): Transform2 {
  const trimmed = string_.trim();
@@ -449,7 +567,7 @@ export function parseTransform2(string_: string, out = new Transform2()): Transf
      typeof object.r.sin === 'number'
     ) {
      out.position.set(object.p.x, object.p.y);
-     out.rotation = DeterministicMath.atan2(object.r.sin, object.r.cos);
+     out.rotation.copy({ cos: object.r.cos, sin: object.r.sin });
      return out;
     }
     // Legacy format with c/s
@@ -460,7 +578,7 @@ export function parseTransform2(string_: string, out = new Transform2()): Transf
      typeof object.r.s === 'number'
     ) {
      out.position.set(object.p.x, object.p.y);
-     out.rotation = DeterministicMath.atan2(object.r.s, object.r.c);
+     out.rotation.copy({ cos: object.r.c, sin: object.r.s });
      return out;
     }
    }
@@ -480,17 +598,28 @@ export function parseTransform2(string_: string, out = new Transform2()): Transf
  }
 
  // Format is px, py, c, s
- const rotation = DeterministicMath.atan2(values[3]!, values[2]!);
+ const rotation = atan2(values[3]!, values[2]!);
  return Transform2.fromValues(values[0]!, values[1]!, rotation, 1, 1, out);
 }
 
 /**
  * Formats a 2D transform as a string.
  *
- * @param t - Transform to format
- * @param format - Output format: 'flat', 'json'
- * @param precision - Number of decimal places
- * @returns Formatted string
+ * @param t - Transform to format.
+ * @param format - Output format. Defaults to `'flat'`.
+ * @param precision - Number of decimal places. Defaults to full precision.
+ * @returns Formatted string.
+ *
+ * @remarks
+ * Supported formats: 'flat', 'json'.
+ *
+ * @example
+ * ```typescript
+ * const text = formatTransform2(parseTransform2("0,0,1,0"), 'json');
+ * ```
+ *
+ * @category Serialization
+ * @since 0.7.0
  */
 export function formatTransform2(
  t: ReadonlyTransform2,
@@ -498,16 +627,253 @@ export function formatTransform2(
  precision?: number,
 ): string {
  const fmt = (n: number) => (precision !== undefined ? n.toFixed(precision) : n.toString());
- const cos = DeterministicMath.cos(t.rotation);
- const sin = DeterministicMath.sin(t.rotation);
+ const cosValue = t.rotation.cos;
+ const sinValue = t.rotation.sin;
 
  switch (format) {
   case 'flat':
-   return `${fmt(t.position.x)},${fmt(t.position.y)},${fmt(cos)},${fmt(sin)}`;
+   return `${fmt(t.position.x)},${fmt(t.position.y)},${fmt(cosValue)},${fmt(sinValue)}`;
   case 'json':
    return JSON.stringify({
     p: { x: parseFloat(fmt(t.position.x)), y: parseFloat(fmt(t.position.y)) },
-    r: { cos: parseFloat(fmt(cos)), sin: parseFloat(fmt(sin)) },
+    r: { cos: parseFloat(fmt(cosValue)), sin: parseFloat(fmt(sinValue)) },
    });
+ }
+}
+
+/* ========================================================================== */
+/* Complex Parsing and Formatting                                              */
+/* ========================================================================== */
+
+/**
+ * Parses a string representation of a complex number.
+ *
+ * @param string_ - Input string to parse.
+ * @param out - Optional output complex to avoid allocation. Defaults to `new Complex()`.
+ * @returns The `out` complex containing the parsed values.
+ * @throws {Error} If the string cannot be parsed.
+ *
+ * @remarks
+ * Supported formats:
+ * - "a+bi" or "a-bi" (standard mathematical notation)
+ * - "a,b" (comma-separated real,imag)
+ * - "(a,b)" (with parentheses)
+ * - "{real:a, imag:b}" (JSON-like)
+ *
+ * @example
+ * ```typescript
+ * const c1 = parseComplex("3+4i");     // 3 + 4i
+ * const c2 = parseComplex("3,-4");     // 3 - 4i
+ * const c3 = parseComplex("{\"real\":1,\"imag\":0}"); // 1 + 0i
+ * ```
+ *
+ * @category Serialization
+ * @since 0.7.0
+ */
+export function parseComplex(string_: string, out = new Complex()): Complex {
+ const trimmed = string_.trim();
+
+ // Try JSON format first
+ if (trimmed.startsWith('{') && trimmed.endsWith('}')) {
+  try {
+   const object = JSON.parse(trimmed);
+   if (typeof object.real === 'number' && typeof object.imag === 'number') {
+    return out.set(object.real, object.imag);
+   }
+  } catch {
+   // Fall through
+  }
+ }
+
+ // Try mathematical notation: a+bi, a-bi
+ const mathMatch = trimmed.match(/^([+-]?[\d.]+)\s*([+-])\s*([\d.]+)i$/);
+ if (mathMatch) {
+  const real = parseFloat(mathMatch[1]!);
+  const sign = mathMatch[2] === '-' ? -1 : 1;
+  const imag = sign * parseFloat(mathMatch[3]!);
+  if (!isNaN(real) && !isNaN(imag)) {
+   return out.set(real, imag);
+  }
+ }
+
+ // Try pure imaginary: bi, +bi, -bi
+ const pureImagMatch = trimmed.match(/^([+-]?[\d.]+)i$/);
+ if (pureImagMatch) {
+  const imag = parseFloat(pureImagMatch[1]!);
+  if (!isNaN(imag)) {
+   return out.set(0, imag);
+  }
+ }
+
+ // Remove parentheses/brackets
+ const cleaned = trimmed.replace(/^[([{]|[)\]}]$/g, '');
+
+ // Split by comma or space
+ const parts = cleaned.split(/[,\s]+/).filter((p) => p.length > 0);
+
+ if (parts.length !== 2) {
+  throw new Error(`parseComplex: expected 2 components, got ${parts.length} in "${string_}"`);
+ }
+
+ const real = parseFloat(parts[0]!);
+ const imag = parseFloat(parts[1]!);
+
+ if (isNaN(real) || isNaN(imag)) {
+  throw new Error(`parseComplex: invalid numbers in "${string_}"`);
+ }
+
+ return out.set(real, imag);
+}
+
+/**
+ * Formats a complex number as a string.
+ *
+ * @param c - Complex number to format.
+ * @param format - Output format. Defaults to `'math'`.
+ * @param precision - Number of decimal places. Defaults to full precision.
+ * @returns Formatted string.
+ *
+ * @remarks
+ * Supported formats:
+ * - 'math': "a+bi" or "a-bi" (standard mathematical notation)
+ * - 'csv': "a,b" (comma-separated)
+ * - 'json': '{"real":a,"imag":b}'
+ *
+ * @example
+ * ```typescript
+ * formatComplex(new Complex(3, 4), 'math');   // "3+4i"
+ * formatComplex(new Complex(3, -4), 'math');  // "3-4i"
+ * formatComplex(new Complex(3, 4), 'csv');    // "3,4"
+ * ```
+ *
+ * @category Serialization
+ * @since 0.7.0
+ */
+export function formatComplex(
+ c: ReadonlyComplex,
+ format: 'math' | 'csv' | 'json' = 'math',
+ precision?: number,
+): string {
+ const fmt = (n: number) => (precision !== undefined ? n.toFixed(precision) : n.toString());
+ const real = fmt(c.real);
+ const imag = fmt(c.imag);
+
+ switch (format) {
+  case 'math':
+   return c.imag >= 0 ? `${real}+${imag}i` : `${real}${imag}i`;
+  case 'csv':
+   return `${real},${imag}`;
+  case 'json':
+   return `{"real":${real},"imag":${imag}}`;
+ }
+}
+
+/* ========================================================================== */
+/* Interval Parsing and Formatting                                             */
+/* ========================================================================== */
+
+/**
+ * Parses a string representation of an interval.
+ *
+ * @param string_ - Input string to parse.
+ * @param out - Optional output interval to avoid allocation. Defaults to `new Interval()`.
+ * @returns The `out` interval containing the parsed values.
+ * @throws {Error} If the string cannot be parsed.
+ *
+ * @remarks
+ * Supported formats:
+ * - "[a,b]" (standard interval notation)
+ * - "(a,b)" (open interval notation, but creates closed)
+ * - "a,b" (comma-separated)
+ * - "{min:a, max:b}" (JSON-like)
+ *
+ * @example
+ * ```typescript
+ * const i1 = parseInterval("[0,1]");    // [0, 1]
+ * const i2 = parseInterval("-5,5");     // [-5, 5]
+ * const i3 = parseInterval("{\"min\":0,\"max\":100}"); // [0, 100]
+ * ```
+ *
+ * @category Serialization
+ * @since 0.7.0
+ */
+export function parseInterval(string_: string, out = new Interval()): Interval {
+ const trimmed = string_.trim();
+
+ // Try JSON format first
+ if (trimmed.startsWith('{') && trimmed.endsWith('}')) {
+  try {
+   const object = JSON.parse(trimmed);
+   if (typeof object.min === 'number' && typeof object.max === 'number') {
+    return out.set(object.min, object.max);
+   }
+  } catch {
+   // Fall through
+  }
+ }
+
+ // Remove brackets/parentheses
+ const cleaned = trimmed.replace(/^[([{]|[)\]}]$/g, '');
+
+ // Split by comma or space
+ const parts = cleaned.split(/[,\s]+/).filter((p) => p.length > 0);
+
+ if (parts.length !== 2) {
+  throw new Error(`parseInterval: expected 2 values, got ${parts.length} in "${string_}"`);
+ }
+
+ const min = parseFloat(parts[0]!);
+ const max = parseFloat(parts[1]!);
+
+ if (isNaN(min) || isNaN(max)) {
+  throw new Error(`parseInterval: invalid numbers in "${string_}"`);
+ }
+
+ if (min > max) {
+  throw new Error(`parseInterval: min (${min}) must not exceed max (${max})`);
+ }
+
+ return out.set(min, max);
+}
+
+/**
+ * Formats an interval as a string.
+ *
+ * @param interval - Interval to format.
+ * @param format - Output format. Defaults to `'brackets'`.
+ * @param precision - Number of decimal places. Defaults to full precision.
+ * @returns Formatted string.
+ *
+ * @remarks
+ * Supported formats:
+ * - 'brackets': "[a,b]" (standard interval notation)
+ * - 'csv': "a,b" (comma-separated)
+ * - 'json': '{"min":a,"max":b}'
+ *
+ * @example
+ * ```typescript
+ * formatInterval(new Interval(0, 1), 'brackets');  // "[0,1]"
+ * formatInterval(new Interval(-5, 5), 'csv');      // "-5,5"
+ * ```
+ *
+ * @category Serialization
+ * @since 0.7.0
+ */
+export function formatInterval(
+ interval: ReadonlyInterval,
+ format: 'brackets' | 'csv' | 'json' = 'brackets',
+ precision?: number,
+): string {
+ const fmt = (n: number) => (precision !== undefined ? n.toFixed(precision) : n.toString());
+ const min = fmt(interval.min);
+ const max = fmt(interval.max);
+
+ switch (format) {
+  case 'brackets':
+   return `[${min},${max}]`;
+  case 'csv':
+   return `${min},${max}`;
+  case 'json':
+   return `{"min":${min},"max":${max}}`;
  }
 }

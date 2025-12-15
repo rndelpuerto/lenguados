@@ -2,7 +2,7 @@
 
 > **wrapAngle**(`angle`, `period`): `number`
 
-Defined in: [src/auxiliary/angle/normalization.ts:133](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/auxiliary/angle/normalization.ts#L133)
+Defined in: [src/auxiliary/angle/normalization.ts:133](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/auxiliary/angle/normalization.ts#L133)
 
 Wraps angle to specific period.
 
@@ -12,26 +12,26 @@ Wraps angle to specific period.
 
 `number`
 
-Angle to wrap
+Angle to wrap.
 
 ### period
 
 `number` = `TAU`
 
-Period (default: 2π)
+Period (default: 2π).
 
 ## Returns
 
 `number`
 
-Wrapped angle in [0, period)
+Wrapped angle in [0, period).
 
 ## Example
 
 ```typescript
-wrapAngle(Math.PI, Math.PI);          // 0
-wrapAngle(3 * Math.PI, 2 * Math.PI);  // Math.PI
-wrapAngle(370, 360);                  // 10 (degrees example)
+wrapAngle(Math.PI, Math.PI); // 0
+wrapAngle(3 * Math.PI, 2 * Math.PI); // Math.PI
+wrapAngle(370, 360); // 10 (degrees example)
 ```
 
 ## Since

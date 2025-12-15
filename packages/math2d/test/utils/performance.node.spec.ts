@@ -1,3 +1,9 @@
+/**
+ * @file test/utils/performance.node.spec.ts
+ * @module @lenguados/math2d/utils
+ * @description Tests for performance measurement utilities.
+ */
+
 import { describe, expect, it } from '@jest/globals';
 
 import {

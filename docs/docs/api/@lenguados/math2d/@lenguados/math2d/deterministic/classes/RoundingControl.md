@@ -1,6 +1,6 @@
 # Class: RoundingControl
 
-Defined in: [src/deterministic/rounding-control.ts:52](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/deterministic/rounding-control.ts#L52)
+Defined in: [src/deterministic/rounding-control.ts:62](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/deterministic/rounding-control.ts#L62)
 
 Provides explicit control over rounding operations for deterministic behavior.
 JavaScript doesn't provide native rounding mode control, so this class
@@ -10,11 +10,15 @@ implements various rounding strategies explicitly.
 
 ```typescript
 // Different rounding modes
-RoundingControl.round(2.5, RoundingMode.NEAREST_EVEN);  // 2 (banker's)
-RoundingControl.round(2.5, RoundingMode.NEAREST_AWAY);  // 3
-RoundingControl.round(2.5, RoundingMode.FLOOR);         // 2
-RoundingControl.round(2.5, RoundingMode.CEIL);          // 3
+RoundingControl.round(2.5, RoundingMode.NEAREST_EVEN); // 2 (banker's)
+RoundingControl.round(2.5, RoundingMode.NEAREST_AWAY); // 3
+RoundingControl.round(2.5, RoundingMode.FLOOR); // 2
+RoundingControl.round(2.5, RoundingMode.CEIL); // 3
 ```
+
+## Since
+
+0.1.0
 
 ## Constructors
 
@@ -26,13 +30,13 @@ RoundingControl.round(2.5, RoundingMode.CEIL);          // 3
 
 `RoundingControl`
 
-## Methods
+## Rounding
 
 ### ceil()
 
 > `static` **ceil**(`value`): `number`
 
-Defined in: [src/deterministic/rounding-control.ts:125](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/deterministic/rounding-control.ts#L125)
+Defined in: [src/deterministic/rounding-control.ts:159](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/deterministic/rounding-control.ts#L159)
 
 Rounds towards positive infinity (ceiling).
 
@@ -42,21 +46,25 @@ Rounds towards positive infinity (ceiling).
 
 `number`
 
-Value to round
+Value to round.
 
 #### Returns
 
 `number`
 
-Rounded value
+Rounded value.
 
-***
+#### Since
+
+0.1.0
+
+---
 
 ### floor()
 
 > `static` **floor**(`value`): `number`
 
-Defined in: [src/deterministic/rounding-control.ts:135](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/deterministic/rounding-control.ts#L135)
+Defined in: [src/deterministic/rounding-control.ts:173](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/deterministic/rounding-control.ts#L173)
 
 Rounds towards negative infinity (floor).
 
@@ -66,21 +74,25 @@ Rounds towards negative infinity (floor).
 
 `number`
 
-Value to round
+Value to round.
 
 #### Returns
 
 `number`
 
-Rounded value
+Rounded value.
 
-***
+#### Since
+
+0.1.0
+
+---
 
 ### nearestAway()
 
 > `static` **nearestAway**(`value`): `number`
 
-Defined in: [src/deterministic/rounding-control.ts:115](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/deterministic/rounding-control.ts#L115)
+Defined in: [src/deterministic/rounding-control.ts:145](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/deterministic/rounding-control.ts#L145)
 
 Rounds to nearest integer, ties away from zero.
 Traditional rounding taught in schools.
@@ -91,21 +103,25 @@ Traditional rounding taught in schools.
 
 `number`
 
-Value to round
+Value to round.
 
 #### Returns
 
 `number`
 
-Rounded value
+Rounded value.
 
-***
+#### Since
+
+0.1.0
+
+---
 
 ### nearestEven()
 
 > `static` **nearestEven**(`value`): `number`
 
-Defined in: [src/deterministic/rounding-control.ts:97](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/deterministic/rounding-control.ts#L97)
+Defined in: [src/deterministic/rounding-control.ts:123](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/deterministic/rounding-control.ts#L123)
 
 Rounds to nearest integer, ties to even (banker's rounding).
 Reduces bias in repeated rounding operations.
@@ -116,21 +132,25 @@ Reduces bias in repeated rounding operations.
 
 `number`
 
-Value to round
+Value to round.
 
 #### Returns
 
 `number`
 
-Rounded value
+Rounded value.
 
-***
+#### Since
+
+0.1.0
+
+---
 
 ### quantizeToFixed()
 
 > `static` **quantizeToFixed**(`value`, `fractionalBits`, `mode`): `number`
 
-Defined in: [src/deterministic/rounding-control.ts:200](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/deterministic/rounding-control.ts#L200)
+Defined in: [src/deterministic/rounding-control.ts:254](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/deterministic/rounding-control.ts#L254)
 
 Quantizes value to fixed-point representation.
 Useful for ensuring consistent precision.
@@ -141,25 +161,25 @@ Useful for ensuring consistent precision.
 
 `number`
 
-Value to quantize
+Value to quantize.
 
 ##### fractionalBits
 
 `number`
 
-Number of fractional bits
+Number of fractional bits.
 
 ##### mode
 
 [`RoundingMode`](../enumerations/RoundingMode.md) = `RoundingMode.NEAREST_EVEN`
 
-Rounding mode
+Rounding mode.
 
 #### Returns
 
 `number`
 
-Quantized value
+Quantized value.
 
 #### Example
 
@@ -168,13 +188,17 @@ Quantized value
 const quantized = RoundingControl.quantizeToFixed(3.14159, 16);
 ```
 
-***
+#### Since
+
+0.1.0
+
+---
 
 ### rangeReduce()
 
 > `static` **rangeReduce**(`value`, `period`): `number`
 
-Defined in: [src/deterministic/rounding-control.ts:249](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/deterministic/rounding-control.ts#L249)
+Defined in: [src/deterministic/rounding-control.ts:315](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/deterministic/rounding-control.ts#L315)
 
 Performs range reduction for periodic functions.
 Reduces value to [0, period) using exact arithmetic.
@@ -185,27 +209,31 @@ Reduces value to [0, period) using exact arithmetic.
 
 `number`
 
-Value to reduce
+Value to reduce.
 
 ##### period
 
 `number`
 
-Period of the function
+Period of the function.
 
 #### Returns
 
 `number`
 
-Reduced value in [0, period)
+Reduced value in [0, period).
 
-***
+#### Since
+
+0.1.0
+
+---
 
 ### round()
 
 > `static` **round**(`value`, `mode`): `number`
 
-Defined in: [src/deterministic/rounding-control.ts:59](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/deterministic/rounding-control.ts#L59)
+Defined in: [src/deterministic/rounding-control.ts:77](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/deterministic/rounding-control.ts#L77)
 
 Rounds a value according to the specified rounding mode.
 
@@ -215,27 +243,31 @@ Rounds a value according to the specified rounding mode.
 
 `number`
 
-Value to round
+Value to round.
 
 ##### mode
 
 [`RoundingMode`](../enumerations/RoundingMode.md)
 
-Rounding mode to use
+Rounding mode to use.
 
 #### Returns
 
 `number`
 
-Rounded value
+Rounded value.
 
-***
+#### Since
+
+0.1.0
+
+---
 
 ### roundToMultiple()
 
 > `static` **roundToMultiple**(`value`, `multiple`, `mode`): `number`
 
-Defined in: [src/deterministic/rounding-control.ts:170](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/deterministic/rounding-control.ts#L170)
+Defined in: [src/deterministic/rounding-control.ts:220](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/deterministic/rounding-control.ts#L220)
 
 Rounds to nearest multiple using given mode.
 
@@ -245,33 +277,37 @@ Rounds to nearest multiple using given mode.
 
 `number`
 
-Value to round
+Value to round.
 
 ##### multiple
 
 `number`
 
-Multiple to round to
+Multiple to round to.
 
 ##### mode
 
 [`RoundingMode`](../enumerations/RoundingMode.md) = `RoundingMode.NEAREST_EVEN`
 
-Rounding mode
+Rounding mode.
 
 #### Returns
 
 `number`
 
-Rounded value
+Rounded value.
 
-***
+#### Since
+
+0.1.0
+
+---
 
 ### roundToPlaces()
 
 > `static` **roundToPlaces**(`value`, `places`, `mode`): `number`
 
-Defined in: [src/deterministic/rounding-control.ts:147](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/deterministic/rounding-control.ts#L147)
+Defined in: [src/deterministic/rounding-control.ts:193](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/deterministic/rounding-control.ts#L193)
 
 Rounds to specified number of decimal places using given mode.
 
@@ -281,33 +317,37 @@ Rounds to specified number of decimal places using given mode.
 
 `number`
 
-Value to round
+Value to round.
 
 ##### places
 
 `number`
 
-Number of decimal places
+Number of decimal places.
 
 ##### mode
 
 [`RoundingMode`](../enumerations/RoundingMode.md) = `RoundingMode.NEAREST_EVEN`
 
-Rounding mode
+Rounding mode.
 
 #### Returns
 
 `number`
 
-Rounded value
+Rounded value.
 
-***
+#### Since
+
+0.1.0
+
+---
 
 ### stochasticRound()
 
 > `static` **stochasticRound**(`value`, `random`): `number`
 
-Defined in: [src/deterministic/rounding-control.ts:233](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/deterministic/rounding-control.ts#L233)
+Defined in: [src/deterministic/rounding-control.ts:295](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/deterministic/rounding-control.ts#L295)
 
 Applies stochastic rounding using provided random value.
 Useful for Monte Carlo simulations where bias matters.
@@ -318,19 +358,19 @@ Useful for Monte Carlo simulations where bias matters.
 
 `number`
 
-Value to round
+Value to round.
 
 ##### random
 
 `number`
 
-Random value in [0, 1)
+Random value in [0, 1).
 
 #### Returns
 
 `number`
 
-Rounded value
+Rounded value.
 
 #### Example
 
@@ -340,13 +380,17 @@ Rounded value
 const rounded = RoundingControl.stochasticRound(2.7, Math.random());
 ```
 
-***
+#### Since
+
+0.1.0
+
+---
 
 ### truncate()
 
 > `static` **truncate**(`value`): `number`
 
-Defined in: [src/deterministic/rounding-control.ts:86](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/deterministic/rounding-control.ts#L86)
+Defined in: [src/deterministic/rounding-control.ts:108](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/deterministic/rounding-control.ts#L108)
 
 Truncates towards zero.
 
@@ -356,10 +400,14 @@ Truncates towards zero.
 
 `number`
 
-Value to truncate
+Value to truncate.
 
 #### Returns
 
 `number`
 
-Truncated value
+Truncated value.
+
+#### Since
+
+0.1.0

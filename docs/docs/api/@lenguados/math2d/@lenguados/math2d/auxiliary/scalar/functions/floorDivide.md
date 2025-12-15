@@ -2,7 +2,7 @@
 
 > **floorDivide**(`value`, `divisor`): `number`
 
-Defined in: [src/auxiliary/scalar/arithmetic.ts:316](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/auxiliary/scalar/arithmetic.ts#L316)
+Defined in: [src/auxiliary/scalar/arithmetic.ts:448](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/auxiliary/scalar/arithmetic.ts#L448)
 
 Returns the floor of value/divisor.
 Useful for grid cell calculations.
@@ -13,26 +13,26 @@ Useful for grid cell calculations.
 
 `number`
 
-Numerator
+Numerator.
 
 ### divisor
 
 `number`
 
-Denominator
+Denominator.
 
 ## Returns
 
 `number`
 
-Floor of division
+Floor of division.
 
 ## Example
 
 ```typescript
-floorDivide(7, 3);      // 2
-floorDivide(-7, 3);     // -3
-floorDivide(6, 3);      // 2
+floorDivide(7, 3); // 2
+floorDivide(-7, 3); // -3
+floorDivide(6, 3); // 2
 ```
 
 ## Since

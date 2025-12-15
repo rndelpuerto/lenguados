@@ -2,7 +2,7 @@
 
 > `const` **Constants**: `object`
 
-Defined in: [src/auxiliary/scalar/constants.ts:271](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/auxiliary/scalar/constants.ts#L271)
+Defined in: [src/auxiliary/scalar/constants.ts:302](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/auxiliary/scalar/constants.ts#L302)
 
 Unified constants object for convenient access.
 
@@ -10,9 +10,26 @@ Unified constants object for convenient access.
 
 ## Angular
 
-#### HALF\_PI
+#### ANGLE_EPSILON
 
-> **HALF\_PI**: `number`
+> **ANGLE_EPSILON**: `1e-12`
+
+Angle epsilon for near-zero angle comparisons.
+
+##### Remarks
+
+Used in DeterministicMath for detecting angles near zero
+where special handling may be needed.
+
+##### Constant
+
+##### Since
+
+0.13.0
+
+#### HALF_PI
+
+> **HALF_PI**: `number`
 
 Half of π ≈ 1.5707963267949 (90 degrees).
 
@@ -34,9 +51,9 @@ Mathematical constant π (pi) ≈ 3.14159265358979.
 
 1.0.0
 
-#### QUARTER\_PI
+#### QUARTER_PI
 
-> **QUARTER\_PI**: `number`
+> **QUARTER_PI**: `number`
 
 Quarter of π ≈ 0.785398163397448 (45 degrees).
 
@@ -65,9 +82,9 @@ more intuitive than π for angular calculations.
 
 ## Conversion
 
-#### DEG\_TO\_RAD
+#### DEG_TO_RAD
 
-> **DEG\_TO\_RAD**: `number`
+> **DEG_TO_RAD**: `number`
 
 Conversion factor from degrees to radians.
 
@@ -83,9 +100,9 @@ const radians = degrees * DEG_TO_RAD;
 
 1.0.0
 
-#### GRAD\_TO\_RAD
+#### GRAD_TO_RAD
 
-> **GRAD\_TO\_RAD**: `number`
+> **GRAD_TO_RAD**: `number`
 
 Conversion factor from gradians to radians.
 
@@ -100,9 +117,9 @@ Gradians (also called gon or grade) divide a right angle into 100 units.
 
 1.0.0
 
-#### RAD\_TO\_DEG
+#### RAD_TO_DEG
 
-> **RAD\_TO\_DEG**: `number`
+> **RAD_TO_DEG**: `number`
 
 Conversion factor from radians to degrees.
 
@@ -118,9 +135,9 @@ const degrees = radians * RAD_TO_DEG;
 
 1.0.0
 
-#### RAD\_TO\_GRAD
+#### RAD_TO_GRAD
 
-> **RAD\_TO\_GRAD**: `number`
+> **RAD_TO_GRAD**: `number`
 
 Conversion factor from radians to gradians.
 
@@ -130,9 +147,9 @@ Conversion factor from radians to gradians.
 
 1.0.0
 
-#### RAD\_TO\_TURN
+#### RAD_TO_TURN
 
-> **RAD\_TO\_TURN**: `number`
+> **RAD_TO_TURN**: `number`
 
 Conversion factor from radians to turns (full rotations).
 
@@ -149,9 +166,9 @@ const turns = radians * RAD_TO_TURN;
 
 1.0.0
 
-#### TURN\_TO\_RAD
+#### TURN_TO_RAD
 
-> **TURN\_TO\_RAD**: `number`
+> **TURN_TO_RAD**: `number`
 
 Conversion factor from turns to radians.
 
@@ -186,9 +203,9 @@ Base of natural logarithms. Fundamental in calculus and exponential growth.
 
 1.0.0
 
-#### GOLDEN\_RATIO
+#### GOLDEN_RATIO
 
-> **GOLDEN\_RATIO**: `number`
+> **GOLDEN_RATIO**: `number`
 
 Golden ratio φ (phi) ≈ 1.6180339887.
 
@@ -203,9 +220,9 @@ Has the property that φ² = φ + 1.
 
 1.0.0
 
-#### LN\_10
+#### LN_10
 
-> **LN\_10**: `number`
+> **LN_10**: `number`
 
 Natural logarithm of 10 ≈ 2.302585092994.
 
@@ -215,9 +232,9 @@ Natural logarithm of 10 ≈ 2.302585092994.
 
 1.0.0
 
-#### LN\_2
+#### LN_2
 
-> **LN\_2**: `number`
+> **LN_2**: `number`
 
 Natural logarithm of 2 ≈ 0.693147180559945.
 
@@ -227,9 +244,9 @@ Natural logarithm of 2 ≈ 0.693147180559945.
 
 1.0.0
 
-#### SQRT\_2
+#### SQRT_2
 
-> **SQRT\_2**: `number`
+> **SQRT_2**: `number`
 
 Square root of 2 ≈ 1.41421356237.
 
@@ -243,9 +260,9 @@ The diagonal of a unit square. Commonly used in 2D geometry.
 
 1.0.0
 
-#### SQRT\_HALF
+#### SQRT_HALF
 
-> **SQRT\_HALF**: `number`
+> **SQRT_HALF**: `number`
 
 Square root of 1/2 ≈ 0.707106781187.
 
@@ -261,9 +278,9 @@ Equals 1/√2 = √2/2. Common in rotation calculations (45° sin/cos).
 
 ## Numeric Limits
 
-#### MAX\_SAFE\_INTEGER\_F64
+#### MAX_SAFE_INTEGER_F64
 
-> **MAX\_SAFE\_INTEGER\_F64**: `number`
+> **MAX_SAFE_INTEGER_F64**: `number`
 
 Maximum safe integer in float64 (2^53 - 1).
 
@@ -289,6 +306,7 @@ Default epsilon for floating-point comparisons.
 ##### Remarks
 
 This value (1e-10) provides a good balance between:
+
 - Precision: Can distinguish values differing by more than 1e-10
 - Robustness: Absorbs typical floating-point rounding errors
 
@@ -302,9 +320,9 @@ widely varying magnitudes.
 
 1.0.0
 
-#### EPSILON\_SQUARED
+#### EPSILON_SQUARED
 
-> **EPSILON\_SQUARED**: `number`
+> **EPSILON_SQUARED**: `number`
 
 Square of epsilon for area/volume comparisons.
 
@@ -318,6 +336,24 @@ to maintain consistent tolerance behavior.
 ##### Since
 
 1.0.0
+
+#### ITERATIVE_TOLERANCE
+
+> **ITERATIVE_TOLERANCE**: `0.000001`
+
+Tolerance for iterative angle algorithms.
+
+##### Remarks
+
+Used in iterative angle operations (like constraint solving) where
+a looser tolerance than EPSILON is acceptable for convergence.
+Value of 1e-6 provides good balance between precision and performance.
+
+##### Constant
+
+##### Since
+
+0.14.0
 
 ## Example
 

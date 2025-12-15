@@ -1,6 +1,6 @@
 # Interface: ReadonlyRotation2Like
 
-Defined in: [src/types/index.ts:110](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/types/index.ts#L110)
+Defined in: [src/types/index.ts:135](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/types/index.ts#L135)
 
 Readonly interface for 2D rotation represented as cosine/sine components.
 
@@ -11,6 +11,7 @@ This is mathematically equivalent to a unit complex number or a
 rotation matrix R = [[cos, -sin], [sin, cos]].
 
 For a rotation of angle θ:
+
 - `cos` = cos(θ)
 - `sin` = sin(θ)
 
@@ -19,10 +20,14 @@ For a rotation of angle θ:
 ```typescript
 // 45-degree rotation
 const rot: ReadonlyRotation2Like = {
-  cos: Math.cos(Math.PI / 4),  // ≈ 0.707
-  sin: Math.sin(Math.PI / 4),  // ≈ 0.707
+ cos: Math.cos(Math.PI / 4), // ≈ 0.707
+ sin: Math.sin(Math.PI / 4), // ≈ 0.707
 };
 ```
+
+## Since
+
+0.1.0
 
 ## Properties
 
@@ -30,18 +35,18 @@ const rot: ReadonlyRotation2Like = {
 
 > `readonly` **cos**: `number`
 
-Defined in: [src/types/index.ts:115](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/types/index.ts#L115)
+Defined in: [src/types/index.ts:140](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/types/index.ts#L140)
 
 Cosine component of the rotation.
 For a rotation of angle θ, this equals cos(θ).
 
-***
+---
 
 ### sin
 
 > `readonly` **sin**: `number`
 
-Defined in: [src/types/index.ts:121](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/types/index.ts#L121)
+Defined in: [src/types/index.ts:146](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/types/index.ts#L146)
 
 Sine component of the rotation.
 For a rotation of angle θ, this equals sin(θ).

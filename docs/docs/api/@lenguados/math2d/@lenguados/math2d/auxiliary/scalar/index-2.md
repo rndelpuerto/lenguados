@@ -6,13 +6,14 @@ auxiliary/scalar/constants.ts
 
 ## Description
 
-Mathematical constants for scalar operations
+Mathematical constants for scalar operations.
 
 ## Angular
 
-- [HALF\_PI](variables/HALF_PI.md)
+- [ANGLE_EPSILON](variables/ANGLE_EPSILON.md)
+- [HALF_PI](variables/HALF_PI.md)
 - [PI](variables/PI.md)
-- [QUARTER\_PI](variables/QUARTER_PI.md)
+- [QUARTER_PI](variables/QUARTER_PI.md)
 - [TAU](variables/TAU.md)
 
 ## Collection
@@ -21,27 +22,28 @@ Mathematical constants for scalar operations
 
 ## Conversion
 
-- [DEG\_TO\_RAD](variables/DEG_TO_RAD.md)
-- [GRAD\_TO\_RAD](variables/GRAD_TO_RAD.md)
-- [RAD\_TO\_DEG](variables/RAD_TO_DEG.md)
-- [RAD\_TO\_GRAD](variables/RAD_TO_GRAD.md)
-- [RAD\_TO\_TURN](variables/RAD_TO_TURN.md)
-- [TURN\_TO\_RAD](variables/TURN_TO_RAD.md)
+- [DEG_TO_RAD](variables/DEG_TO_RAD.md)
+- [GRAD_TO_RAD](variables/GRAD_TO_RAD.md)
+- [RAD_TO_DEG](variables/RAD_TO_DEG.md)
+- [RAD_TO_GRAD](variables/RAD_TO_GRAD.md)
+- [RAD_TO_TURN](variables/RAD_TO_TURN.md)
+- [TURN_TO_RAD](variables/TURN_TO_RAD.md)
 
 ## Mathematical
 
 - [E](variables/E.md)
-- [GOLDEN\_RATIO](variables/GOLDEN_RATIO.md)
-- [LN\_10](variables/LN_10.md)
-- [LN\_2](variables/LN_2.md)
-- [SQRT\_2](variables/SQRT_2.md)
-- [SQRT\_HALF](variables/SQRT_HALF.md)
+- [GOLDEN_RATIO](variables/GOLDEN_RATIO.md)
+- [LN_10](variables/LN_10.md)
+- [LN_2](variables/LN_2.md)
+- [SQRT_2](variables/SQRT_2.md)
+- [SQRT_HALF](variables/SQRT_HALF.md)
 
 ## Numeric Limits
 
-- [MAX\_SAFE\_INTEGER\_F64](variables/MAX_SAFE_INTEGER_F64.md)
+- [MAX_SAFE_INTEGER_F64](variables/MAX_SAFE_INTEGER_F64.md)
 
 ## Tolerance
 
 - [EPSILON](variables/EPSILON.md)
-- [EPSILON\_SQUARED](variables/EPSILON_SQUARED.md)
+- [EPSILON_SQUARED](variables/EPSILON_SQUARED.md)
+- [ITERATIVE_TOLERANCE](variables/ITERATIVE_TOLERANCE.md)

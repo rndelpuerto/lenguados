@@ -2,7 +2,7 @@
 
 > **bezierInterp**(`t`, `p0`, `p1`, `p2`, `p3`): `number`
 
-Defined in: [src/auxiliary/scalar/interpolation.ts:235](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/auxiliary/scalar/interpolation.ts#L235)
+Defined in: [src/auxiliary/scalar/interpolation.ts:215](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/auxiliary/scalar/interpolation.ts#L215)
 
 Bezier interpolation using control points.
 
@@ -12,37 +12,37 @@ Bezier interpolation using control points.
 
 `number`
 
-Parameter [0, 1]
+Parameter [0, 1].
 
 ### p0
 
 `number`
 
-Start point
+Start point.
 
 ### p1
 
 `number`
 
-Control point 1
+Control point 1.
 
 ### p2
 
 `number`
 
-Control point 2
+Control point 2.
 
 ### p3
 
 `number`
 
-End point
+End point.
 
 ## Returns
 
 `number`
 
-Interpolated value
+Interpolated value.
 
 ## Remarks
 

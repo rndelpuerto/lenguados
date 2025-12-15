@@ -2,7 +2,7 @@
 
 > **remap**(`value`, `inMin`, `inMax`, `outMin`, `outMax`): `number`
 
-Defined in: [src/auxiliary/scalar/arithmetic.ts:161](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/auxiliary/scalar/arithmetic.ts#L161)
+Defined in: [src/auxiliary/scalar/arithmetic.ts:163](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/auxiliary/scalar/arithmetic.ts#L163)
 
 Linear mapping from [inMin, inMax] to [outMin, outMax].
 
@@ -12,44 +12,48 @@ Linear mapping from [inMin, inMax] to [outMin, outMax].
 
 `number`
 
-Value to remap
+Value to remap.
 
 ### inMin
 
 `number`
 
-Input range minimum
+Input range minimum.
 
 ### inMax
 
 `number`
 
-Input range maximum
+Input range maximum.
 
 ### outMin
 
 `number`
 
-Output range minimum
+Output range minimum.
 
 ### outMax
 
 `number`
 
-Output range maximum
+Output range maximum.
 
 ## Returns
 
 `number`
 
-Remapped value
+Remapped value.
 
 ## Example
 
 ```typescript
-remap(5, 0, 10, 0, 100);    // 50
-remap(75, 0, 100, -1, 1);   // 0.5
+remap(5, 0, 10, 0, 100); // 50
+remap(75, 0, 100, -1, 1); // 0.5
 ```
+
+## See
+
+[remapSafe](remapSafe.md) - Returns outMin if ranges are degenerate
 
 ## Since
 

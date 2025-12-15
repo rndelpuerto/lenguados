@@ -1,16 +1,28 @@
+/**
+ * @file test/utils/parse.node.spec.ts
+ * @module @lenguados/math2d/utils
+ * @description Tests for parsing and formatting utilities.
+ */
+
 import { describe, expect, it } from '@jest/globals';
 
+import { Complex } from '../../src/core/complex';
+import { Interval } from '../../src/core/interval';
 import { Matrix2 } from '../../src/core/matrix2';
 import { Matrix3 } from '../../src/core/matrix3';
 import { Rotation2 } from '../../src/core/rotation2';
 import { Transform2 } from '../../src/core/transform2';
 import { Vector2 } from '../../src/core/vector2';
 import {
+ formatComplex,
+ formatInterval,
  formatMatrix2,
  formatMatrix3,
  formatRotation2,
  formatTransform2,
  formatVector2,
+ parseComplex,
+ parseInterval,
  parseMatrix2,
  parseMatrix3,
  parseRotation2,
@@ -254,14 +266,14 @@ describe('utils/parse', () => {
    const t = parseTransform2('1,2,1,0');
    expect(t.position.x).toBeCloseTo(1);
    expect(t.position.y).toBeCloseTo(2);
-   expect(t.rotation).toBeCloseTo(0, 5);
+   expect(t.rotation.angle).toBeCloseTo(0, 5);
   });
 
   it('parses JSON format with cos/sin', () => {
    const t = parseTransform2('{"p":{"x":5,"y":6},"r":{"cos":1,"sin":0}}');
    expect(t.position.x).toBeCloseTo(5);
    expect(t.position.y).toBeCloseTo(6);
-   expect(t.rotation).toBeCloseTo(0, 5);
+   expect(t.rotation.angle).toBeCloseTo(0, 5);
   });
 
   it('parses legacy JSON format with c/s', () => {
@@ -405,6 +417,89 @@ describe('utils/parse', () => {
    const m = parseMatrix3(json);
    expect(m.m00).toBe(1);
    expect(m.m11).toBe(1);
+  });
+ });
+
+ describe('parseComplex', () => {
+  it('parses math notation (a+bi)', () => {
+   const c = parseComplex('3+4i');
+   expect(c.real).toBe(3);
+   expect(c.imag).toBe(4);
+  });
+
+  it('parses math notation (a-bi)', () => {
+   const c = parseComplex('3-4i');
+   expect(c.real).toBe(3);
+   expect(c.imag).toBe(-4);
+  });
+
+  it('parses csv format', () => {
+   const c = parseComplex('5,6');
+   expect(c.real).toBe(5);
+   expect(c.imag).toBe(6);
+  });
+
+  it('parses JSON format', () => {
+   const c = parseComplex('{"real":1,"imag":2}');
+   expect(c.real).toBe(1);
+   expect(c.imag).toBe(2);
+  });
+
+  it('throws on invalid format', () => {
+   expect(() => parseComplex('invalid')).toThrow();
+  });
+ });
+
+ describe('formatComplex', () => {
+  it('formats as math notation', () => {
+   expect(formatComplex(new Complex(3, 4), 'math')).toBe('3+4i');
+   expect(formatComplex(new Complex(3, -4), 'math')).toBe('3-4i');
+  });
+
+  it('formats as csv', () => {
+   expect(formatComplex(new Complex(3, 4), 'csv')).toBe('3,4');
+  });
+
+  it('formats as json', () => {
+   expect(formatComplex(new Complex(3, 4), 'json')).toBe('{"real":3,"imag":4}');
+  });
+ });
+
+ describe('parseInterval', () => {
+  it('parses bracket format', () => {
+   const interval = parseInterval('[0,10]');
+   expect(interval.min).toBe(0);
+   expect(interval.max).toBe(10);
+  });
+
+  it('parses csv format', () => {
+   const interval = parseInterval('5,15');
+   expect(interval.min).toBe(5);
+   expect(interval.max).toBe(15);
+  });
+
+  it('parses JSON format', () => {
+   const interval = parseInterval('{"min":1,"max":9}');
+   expect(interval.min).toBe(1);
+   expect(interval.max).toBe(9);
+  });
+
+  it('throws on min > max', () => {
+   expect(() => parseInterval('10,5')).toThrow();
+  });
+ });
+
+ describe('formatInterval', () => {
+  it('formats as brackets', () => {
+   expect(formatInterval(new Interval(0, 10), 'brackets')).toBe('[0,10]');
+  });
+
+  it('formats as csv', () => {
+   expect(formatInterval(new Interval(3, 7), 'csv')).toBe('3,7');
+  });
+
+  it('formats as json', () => {
+   expect(formatInterval(new Interval(1, 5), 'json')).toBe('{"min":1,"max":5}');
   });
  });
 });

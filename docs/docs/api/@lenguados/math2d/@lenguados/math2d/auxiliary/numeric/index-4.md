@@ -6,7 +6,7 @@ auxiliary/numeric/wrapping.ts
 
 ## Description
 
-Specialized value wrapping and modulo operations
+Specialized value wrapping and modulo operations.
 
 ## Remarks
 
@@ -26,6 +26,12 @@ semantic clarity when comparing different modulo behaviors.
 ## Wrapping
 
 - [flooredMod](functions/flooredMod.md)
+- [flooredModSafe](functions/flooredModSafe.md)
+- [flooredModUnchecked](functions/flooredModUnchecked.md)
 - [mirror](functions/mirror.md)
+- [mirrorSafe](functions/mirrorSafe.md)
+- [mirrorUnchecked](functions/mirrorUnchecked.md)
 - [repeat](functions/repeat.md)
+- [repeatSafe](functions/repeatSafe.md)
+- [repeatUnchecked](functions/repeatUnchecked.md)
 - [truncatedMod](functions/truncatedMod.md)

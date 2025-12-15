@@ -2,7 +2,7 @@
 
 > **isFinite**(`value`): `boolean`
 
-Defined in: [src/auxiliary/numeric/guards.ts:38](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/auxiliary/numeric/guards.ts#L38)
+Defined in: [src/auxiliary/numeric/guards.ts:38](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/auxiliary/numeric/guards.ts#L38)
 
 Tests if value is finite (not NaN, ±Infinity).
 
@@ -12,22 +12,22 @@ Tests if value is finite (not NaN, ±Infinity).
 
 `number`
 
-Value to test
+Value to test.
 
 ## Returns
 
 `boolean`
 
-True if finite number
+True if finite number.
 
 ## Example
 
 ```typescript
-isFinite(42);            // true
-isFinite(0);             // true
-isFinite(NaN);           // false
-isFinite(Infinity);      // false
-isFinite(-Infinity);     // false
+isFinite(42); // true
+isFinite(0); // true
+isFinite(NaN); // false
+isFinite(Infinity); // false
+isFinite(-Infinity); // false
 ```
 
 ## Since

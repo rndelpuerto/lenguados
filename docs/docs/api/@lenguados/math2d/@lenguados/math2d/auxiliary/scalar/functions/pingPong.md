@@ -2,10 +2,9 @@
 
 > **pingPong**(`value`, `min`, `max`): `number`
 
-Defined in: [src/auxiliary/scalar/arithmetic.ts:216](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/auxiliary/scalar/arithmetic.ts#L216)
+Defined in: [src/auxiliary/scalar/arithmetic.ts:300](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/auxiliary/scalar/arithmetic.ts#L300)
 
-Ping-pongs value in [min, max] range.
-Bounces back and forth instead of wrapping.
+Ping-pongs value in [min, max] range (strict).
 
 ## Parameters
 
@@ -13,32 +12,40 @@ Bounces back and forth instead of wrapping.
 
 `number`
 
-Value to ping-pong
+Value to ping-pong.
 
 ### min
 
 `number`
 
-Lower bound
+Lower bound.
 
 ### max
 
 `number`
 
-Upper bound
+Upper bound.
 
 ## Returns
 
 `number`
 
-Ping-ponged value
+Ping-ponged value.
+
+## Throws
+
+If range is invalid (max <= min).
+
+## See
+
+- [pingPongSafe](pingPongSafe.md) - Returns min if invalid
+- [pingPongUnchecked](pingPongUnchecked.md) - No validation
 
 ## Example
 
 ```typescript
-pingPong(3, 0, 2);    // 1 (bounces back from 2)
-pingPong(5, 0, 2);    // 1 (continues bouncing)
-pingPong(-1, 0, 2);   // 1 (bounces from 0)
+pingPong(3, 0, 2); // 1 (bounces back from 2)
+pingPong(5, 0, 2); // 1 (continues bouncing)
 ```
 
 ## Since

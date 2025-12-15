@@ -1,8 +1,12 @@
 # Interface: MeasurementSummary
 
-Defined in: [src/utils/performance.ts:104](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/utils/performance.ts#L104)
+Defined in: [src/utils/performance.ts:161](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/utils/performance.ts#L161)
 
 Summary statistics for a collection of measurements.
+
+## Since
+
+0.1.0
 
 ## Properties
 
@@ -10,56 +14,56 @@ Summary statistics for a collection of measurements.
 
 > **count**: `number`
 
-Defined in: [src/utils/performance.ts:108](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/utils/performance.ts#L108)
+Defined in: [src/utils/performance.ts:165](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/utils/performance.ts#L165)
 
 Number of samples recorded.
 
-***
+---
 
 ### label
 
 > **label**: `string`
 
-Defined in: [src/utils/performance.ts:106](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/utils/performance.ts#L106)
+Defined in: [src/utils/performance.ts:163](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/utils/performance.ts#L163)
 
 Identifier for the measurement set.
 
-***
+---
 
 ### maxDuration
 
 > **maxDuration**: `number`
 
-Defined in: [src/utils/performance.ts:114](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/utils/performance.ts#L114)
+Defined in: [src/utils/performance.ts:171](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/utils/performance.ts#L171)
 
 Maximum duration observed.
 
-***
+---
 
 ### meanDuration
 
 > **meanDuration**: `number`
 
-Defined in: [src/utils/performance.ts:116](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/utils/performance.ts#L116)
+Defined in: [src/utils/performance.ts:173](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/utils/performance.ts#L173)
 
 Arithmetic mean of the recorded durations.
 
-***
+---
 
 ### minDuration
 
 > **minDuration**: `number`
 
-Defined in: [src/utils/performance.ts:112](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/utils/performance.ts#L112)
+Defined in: [src/utils/performance.ts:169](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/utils/performance.ts#L169)
 
 Minimum duration observed.
 
-***
+---
 
 ### totalDuration
 
 > **totalDuration**: `number`
 
-Defined in: [src/utils/performance.ts:110](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/utils/performance.ts#L110)
+Defined in: [src/utils/performance.ts:167](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/utils/performance.ts#L167)
 
 Sum of all recorded durations.

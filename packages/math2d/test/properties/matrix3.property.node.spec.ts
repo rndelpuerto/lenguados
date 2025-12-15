@@ -1,5 +1,6 @@
 /**
  * @file test/properties/matrix3.property.node.spec.ts
+ * @module @lenguados/math2d/core
  * @description Property-based tests for Matrix3.
  */
 
@@ -106,8 +107,8 @@ describe('Matrix3 Property-Based Tests', () => {
    fc.assert(
     fc.property(arbRotationMatrix3, arbVector2, (rot, v) => {
      const result = Matrix3.transformPoint(rot, v);
-     const originalDistribution = Vector2.length(v);
-     const resultDistribution = Vector2.length(result);
+     const originalDistribution = Vector2.magnitude(v);
+     const resultDistribution = Vector2.magnitude(result);
      return (
       Math.abs(originalDistribution - resultDistribution) <
       TEST_TOLERANCE * Math.max(originalDistribution, 1)

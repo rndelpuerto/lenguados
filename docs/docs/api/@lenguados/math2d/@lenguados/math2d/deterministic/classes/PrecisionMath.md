@@ -1,6 +1,6 @@
 # Class: PrecisionMath
 
-Defined in: [src/deterministic/precision-math.ts:57](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/deterministic/precision-math.ts#L57)
+Defined in: [src/deterministic/precision-math.ts:73](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/deterministic/precision-math.ts#L73)
 
 High-precision arithmetic operations using error compensation.
 These algorithms track and compensate for rounding errors in floating-point arithmetic.
@@ -13,9 +13,13 @@ const sum = PrecisionMath.kahanSum([0.1, 0.2, 0.3, 0.4]);
 
 // Two-sum for exact error tracking
 const { sum, error } = PrecisionMath.twoSum(1e20, 1);
-console.log(sum);    // 1e20 (lost precision)
-console.log(error);  // 1 (exact error)
+console.log(sum); // 1e20 (lost precision)
+console.log(error); // 1 (exact error)
 ```
+
+## Since
+
+0.1.0
 
 ## Constructors
 
@@ -27,13 +31,13 @@ console.log(error);  // 1 (exact error)
 
 `PrecisionMath`
 
-## Methods
+## Precision
 
 ### compensatedDot()
 
 > `static` **compensatedDot**(`a`, `b`): [`CompensatedResult`](../interfaces/CompensatedResult.md)
 
-Defined in: [src/deterministic/precision-math.ts:234](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/deterministic/precision-math.ts#L234)
+Defined in: [src/deterministic/precision-math.ts:291](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/deterministic/precision-math.ts#L291)
 
 Compensated dot product of two vectors.
 
@@ -43,31 +47,35 @@ Compensated dot product of two vectors.
 
 readonly `number`[]
 
-First vector
+First vector.
 
 ##### b
 
 readonly `number`[]
 
-Second vector
+Second vector.
 
 #### Returns
 
 [`CompensatedResult`](../interfaces/CompensatedResult.md)
 
-Compensated dot product
+Compensated dot product.
 
 #### Throws
 
-If vectors have different lengths
+If vectors have different lengths.
 
-***
+#### Since
+
+0.1.0
+
+---
 
 ### compensatedProduct()
 
 > `static` **compensatedProduct**(`values`): [`CompensatedResult`](../interfaces/CompensatedResult.md)
 
-Defined in: [src/deterministic/precision-math.ts:208](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/deterministic/precision-math.ts#L208)
+Defined in: [src/deterministic/precision-math.ts:261](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/deterministic/precision-math.ts#L261)
 
 Compensated multiplication using error tracking.
 
@@ -77,21 +85,25 @@ Compensated multiplication using error tracking.
 
 readonly `number`[]
 
-Array of numbers to multiply
+Array of numbers to multiply.
 
 #### Returns
 
 [`CompensatedResult`](../interfaces/CompensatedResult.md)
 
-Compensated product
+Compensated product.
 
-***
+#### Since
+
+0.1.0
+
+---
 
 ### extendedSum()
 
 > `static` **extendedSum**(`values`): [`CompensatedResult`](../interfaces/CompensatedResult.md)
 
-Defined in: [src/deterministic/precision-math.ts:259](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/deterministic/precision-math.ts#L259)
+Defined in: [src/deterministic/precision-math.ts:320](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/deterministic/precision-math.ts#L320)
 
 Extended precision addition using compensation.
 
@@ -101,21 +113,25 @@ Extended precision addition using compensation.
 
 readonly [`CompensatedResult`](../interfaces/CompensatedResult.md)[]
 
-Values to sum with their errors
+Values to sum with their errors.
 
 #### Returns
 
 [`CompensatedResult`](../interfaces/CompensatedResult.md)
 
-Sum with combined error
+Sum with combined error.
 
-***
+#### Since
+
+0.1.0
+
+---
 
 ### fastTwoSum()
 
 > `static` **fastTwoSum**(`a`, `b`): [`TwoSumResult`](../interfaces/TwoSumResult.md)
 
-Defined in: [src/deterministic/precision-math.ts:157](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/deterministic/precision-math.ts#L157)
+Defined in: [src/deterministic/precision-math.ts:198](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/deterministic/precision-math.ts#L198)
 
 Fast two-sum when |a| >= |b| is known.
 More efficient than general two-sum.
@@ -126,27 +142,31 @@ More efficient than general two-sum.
 
 `number`
 
-Larger operand (by magnitude)
+Larger operand (by magnitude).
 
 ##### b
 
 `number`
 
-Smaller operand (by magnitude)
+Smaller operand (by magnitude).
 
 #### Returns
 
 [`TwoSumResult`](../interfaces/TwoSumResult.md)
 
-Sum and error
+Sum and error.
 
-***
+#### Since
+
+0.1.0
+
+---
 
 ### kahanSum()
 
 > `static` **kahanSum**(`values`): `number`
 
-Defined in: [src/deterministic/precision-math.ts:83](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/deterministic/precision-math.ts#L83)
+Defined in: [src/deterministic/precision-math.ts:108](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/deterministic/precision-math.ts#L108)
 
 Kahan summation algorithm for accurate sum of many numbers.
 Compensates for rounding errors in floating-point addition.
@@ -157,13 +177,13 @@ Compensates for rounding errors in floating-point addition.
 
 readonly `number`[]
 
-Array of numbers to sum
+Array of numbers to sum.
 
 #### Returns
 
 `number`
 
-Compensated sum
+Compensated sum.
 
 #### Example
 
@@ -174,13 +194,17 @@ const standard = [0.1, 0.2, 0.3].reduce((a, b) => a + b, 0);
 const kahan = PrecisionMath.kahanSum([0.1, 0.2, 0.3]);
 ```
 
-***
+#### Since
+
+0.1.0
+
+---
 
 ### neumaierSum()
 
 > `static` **neumaierSum**(`values`): `number`
 
-Defined in: [src/deterministic/precision-math.ts:104](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/deterministic/precision-math.ts#L104)
+Defined in: [src/deterministic/precision-math.ts:133](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/deterministic/precision-math.ts#L133)
 
 Neumaier summation - improved Kahan algorithm.
 Better handles cases where values vary greatly in magnitude.
@@ -191,21 +215,25 @@ Better handles cases where values vary greatly in magnitude.
 
 readonly `number`[]
 
-Array of numbers to sum
+Array of numbers to sum.
 
 #### Returns
 
 `number`
 
-Compensated sum
+Compensated sum.
 
-***
+#### Since
+
+0.1.0
+
+---
 
 ### twoProduct()
 
 > `static` **twoProduct**(`a`, `b`): [`TwoProductResult`](../interfaces/TwoProductResult.md)
 
-Defined in: [src/deterministic/precision-math.ts:175](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/deterministic/precision-math.ts#L175)
+Defined in: [src/deterministic/precision-math.ts:220](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/deterministic/precision-math.ts#L220)
 
 Two-product algorithm: exact floating-point multiplication.
 
@@ -215,32 +243,36 @@ Two-product algorithm: exact floating-point multiplication.
 
 `number`
 
-First operand
+First operand.
 
 ##### b
 
 `number`
 
-Second operand
+Second operand.
 
 #### Returns
 
 [`TwoProductResult`](../interfaces/TwoProductResult.md)
 
-Product and error such that a * b = product + error exactly
+Product and error such that a \* b = product + error exactly.
 
 #### Remarks
 
 Uses FMA (Fused Multiply-Add) if available, otherwise falls back
 to Veltkamp splitting for exact multiplication.
 
-***
+#### Since
+
+0.1.0
+
+---
 
 ### twoSum()
 
 > `static` **twoSum**(`a`, `b`): [`TwoSumResult`](../interfaces/TwoSumResult.md)
 
-Defined in: [src/deterministic/precision-math.ts:137](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/deterministic/precision-math.ts#L137)
+Defined in: [src/deterministic/precision-math.ts:174](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/deterministic/precision-math.ts#L174)
 
 Two-sum algorithm: exact floating-point addition.
 Returns both the rounded sum and the exact error.
@@ -251,21 +283,25 @@ Returns both the rounded sum and the exact error.
 
 `number`
 
-First operand
+First operand.
 
 ##### b
 
 `number`
 
-Second operand
+Second operand.
 
 #### Returns
 
 [`TwoSumResult`](../interfaces/TwoSumResult.md)
 
-Sum and error such that a + b = sum + error exactly
+Sum and error such that a + b = sum + error exactly.
 
 #### Remarks
 
 Based on Knuth's algorithm. The error term captures the
 exact rounding error, allowing for extended precision.
+
+#### Since
+
+0.1.0

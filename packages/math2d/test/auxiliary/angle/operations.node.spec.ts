@@ -1,5 +1,5 @@
 /**
- * @file tests/auxiliary/angle/operations.spec.ts
+ * @file test/auxiliary/angle/operations.node.spec.ts
  * @module @lenguados/math2d/auxiliary/angle
  * @description Tests for angular operations helpers.
  */
@@ -212,10 +212,11 @@ describe('angle/operations', () => {
    expect(angleAverage([Math.PI / 3])).toBeCloseTo(Math.PI / 3, 5);
   });
 
-  test('handles opposite angles', () => {
+  test('handles opposite angles (undefined mean, returns 0)', () => {
    const avg = angleAverage([0, Math.PI]);
-   // Average of 0 and π using unit vectors gives π/2
-   expect(avg).toBeCloseTo(Math.PI / 2, 5);
+   // Opposite angles cancel: cos(0)+cos(π)=0, sin(0)+sin(π)=0
+   // Circular mean is undefined for balanced/opposite angles, returns 0
+   expect(avg).toBeCloseTo(0, 5);
   });
 
   test('handles multiple angles correctly', () => {
@@ -232,9 +233,10 @@ describe('angle/operations', () => {
  });
 
  describe('angleWeightedAverage', () => {
-  test('weights angles correctly', () => {
+  test('opposite angles with equal weights (undefined mean, returns 0)', () => {
    const result = angleWeightedAverage([0, Math.PI], [1, 1]);
-   expect(result).toBeCloseTo(Math.PI / 2, 5);
+   // Opposite angles cancel with equal weights, circular mean undefined
+   expect(result).toBeCloseTo(0, 5);
   });
 
   test('higher weight biases toward that angle', () => {

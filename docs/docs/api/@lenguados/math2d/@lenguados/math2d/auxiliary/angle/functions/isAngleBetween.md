@@ -2,7 +2,7 @@
 
 > **isAngleBetween**(`angle`, `start`, `end`, `inclusive`): `boolean`
 
-Defined in: [src/auxiliary/angle/operations.ts:235](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/auxiliary/angle/operations.ts#L235)
+Defined in: [src/auxiliary/angle/operations.ts:238](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/auxiliary/angle/operations.ts#L238)
 
 Tests if angle is between start and end (CCW).
 
@@ -12,31 +12,31 @@ Tests if angle is between start and end (CCW).
 
 `number`
 
-Angle to test
+Angle to test.
 
 ### start
 
 `number`
 
-Start angle
+Start angle.
 
 ### end
 
 `number`
 
-End angle
+End angle.
 
 ### inclusive
 
 `boolean` = `true`
 
-Whether to include boundaries (default: true)
+Whether to include boundaries (default: true).
 
 ## Returns
 
 `boolean`
 
-True if angle is in the CCW arc from start to end
+True if angle is in the CCW arc from start to end.
 
 ## Remarks
 
@@ -46,10 +46,10 @@ is traversed in the positive (CCW) direction.
 ## Example
 
 ```typescript
-isAngleBetween(Math.PI / 4, 0, Math.PI / 2);      // true
-isAngleBetween(3 * Math.PI / 2, 0, Math.PI);      // false
-isAngleBetween(0, 0, Math.PI, true);              // true (on boundary)
-isAngleBetween(0, 0, Math.PI, false);             // false (boundary excluded)
+isAngleBetween(Math.PI / 4, 0, Math.PI / 2); // true
+isAngleBetween((3 * Math.PI) / 2, 0, Math.PI); // false
+isAngleBetween(0, 0, Math.PI, true); // true (on boundary)
+isAngleBetween(0, 0, Math.PI, false); // false (boundary excluded)
 ```
 
 ## Since

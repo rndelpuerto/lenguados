@@ -1,7 +1,7 @@
 /**
  * @file auxiliary/numeric/guards.ts
  * @module @lenguados/math2d/auxiliary/numeric
- * @description Numeric type guards (boolean predicates)
+ * @description Numeric type guards (boolean predicates).
  *
  * @remarks
  * This module provides boolean predicates for testing numeric values.
@@ -20,8 +20,8 @@
 
 /**
  * Tests if value is finite (not NaN, ±Infinity).
- * @param value - Value to test
- * @returns True if finite number
+ * @param value - Value to test.
+ * @returns True if finite number.
  *
  * @example
  * ```typescript
@@ -33,7 +33,7 @@
  * ```
  *
  * @category Guards
- * @since 1.0.0
+ * @since 0.7.0
  */
 export function isFinite(value: number): boolean {
  return Number.isFinite(value);
@@ -41,8 +41,8 @@ export function isFinite(value: number): boolean {
 
 /**
  * Tests if value is NaN.
- * @param value - Value to test
- * @returns True if NaN
+ * @param value - Value to test.
+ * @returns True if NaN.
  *
  * @example
  * ```typescript
@@ -53,7 +53,7 @@ export function isFinite(value: number): boolean {
  * ```
  *
  * @category Guards
- * @since 1.0.0
+ * @since 0.7.0
  */
 export function isNaN(value: number): boolean {
  return Number.isNaN(value);
@@ -61,8 +61,8 @@ export function isNaN(value: number): boolean {
 
 /**
  * Tests if value is positive infinity.
- * @param value - Value to test
- * @returns True if positive infinity
+ * @param value - Value to test.
+ * @returns True if positive infinity.
  *
  * @example
  * ```typescript
@@ -73,7 +73,7 @@ export function isNaN(value: number): boolean {
  * ```
  *
  * @category Guards
- * @since 1.0.0
+ * @since 0.7.0
  */
 export function isPositiveInfinity(value: number): boolean {
  return value === Infinity;
@@ -81,8 +81,8 @@ export function isPositiveInfinity(value: number): boolean {
 
 /**
  * Tests if value is negative infinity.
- * @param value - Value to test
- * @returns True if negative infinity
+ * @param value - Value to test.
+ * @returns True if negative infinity.
  *
  * @example
  * ```typescript
@@ -93,7 +93,7 @@ export function isPositiveInfinity(value: number): boolean {
  * ```
  *
  * @category Guards
- * @since 1.0.0
+ * @since 0.7.0
  */
 export function isNegativeInfinity(value: number): boolean {
  return value === -Infinity;
@@ -101,8 +101,8 @@ export function isNegativeInfinity(value: number): boolean {
 
 /**
  * Tests if value is any infinity.
- * @param value - Value to test
- * @returns True if positive or negative infinity
+ * @param value - Value to test.
+ * @returns True if positive or negative infinity.
  *
  * @example
  * ```typescript
@@ -113,7 +113,7 @@ export function isNegativeInfinity(value: number): boolean {
  * ```
  *
  * @category Guards
- * @since 1.0.0
+ * @since 0.7.0
  */
 export function isInfinity(value: number): boolean {
  return value === Infinity || value === -Infinity;
@@ -128,8 +128,8 @@ const SMALLEST_NORMAL = 2.2250738585072014e-308; // 2^-1022
 
 /**
  * Tests if value is a denormal number.
- * @param value - Value to test
- * @returns True if denormal
+ * @param value - Value to test.
+ * @returns True if denormal.
  *
  * @remarks
  * Denormal (or subnormal) numbers are very small numbers that
@@ -146,7 +146,7 @@ const SMALLEST_NORMAL = 2.2250738585072014e-308; // 2^-1022
  * ```
  *
  * @category Guards
- * @since 1.0.0
+ * @since 0.7.0
  */
 export function isDenormal(value: number): boolean {
  return value !== 0 && Math.abs(value) < SMALLEST_NORMAL;
@@ -154,8 +154,8 @@ export function isDenormal(value: number): boolean {
 
 /**
  * Tests if value is in safe integer range.
- * @param value - Value to test
- * @returns True if safe integer
+ * @param value - Value to test.
+ * @returns True if safe integer.
  *
  * @example
  * ```typescript
@@ -166,7 +166,7 @@ export function isDenormal(value: number): boolean {
  * ```
  *
  * @category Guards
- * @since 1.0.0
+ * @since 0.7.0
  */
 export function isSafeInteger(value: number): boolean {
  return Number.isSafeInteger(value);
@@ -174,10 +174,10 @@ export function isSafeInteger(value: number): boolean {
 
 /**
  * Tests if value is in range [min, max].
- * @param value - Value to test
- * @param min - Lower bound (inclusive)
- * @param max - Upper bound (inclusive)
- * @returns True if value is within range
+ * @param value - Value to test.
+ * @param min - Lower bound (inclusive).
+ * @param max - Upper bound (inclusive).
+ * @returns True if value is within range.
  *
  * @example
  * ```typescript
@@ -188,7 +188,7 @@ export function isSafeInteger(value: number): boolean {
  * ```
  *
  * @category Guards
- * @since 1.0.0
+ * @since 0.7.0
  */
 export function isInRange(value: number, min: number, max: number): boolean {
  return value >= min && value <= max;

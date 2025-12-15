@@ -1,3 +1,9 @@
+/**
+ * @file test/deterministic/rounding-control.node.spec.ts
+ * @module @lenguados/math2d/deterministic
+ * @description Tests for RoundingControl behaviors.
+ */
+
 import { describe, expect, it } from '@jest/globals';
 
 import { RoundingControl, RoundingMode } from '../../src/deterministic/rounding-control';

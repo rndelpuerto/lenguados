@@ -2,7 +2,7 @@
 
 > **freezeInterval**(`interval`): [`ReadonlyInterval`](../type-aliases/ReadonlyInterval.md)
 
-Defined in: [src/core/interval.ts:48](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/core/interval.ts#L48)
+Defined in: [src/core/interval.ts:55](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L55)
 
 Permanently freezes an [Interval](../classes/Interval.md) instance so it can no longer be mutated.
 

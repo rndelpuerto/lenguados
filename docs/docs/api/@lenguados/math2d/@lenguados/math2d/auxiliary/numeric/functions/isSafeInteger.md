@@ -2,7 +2,7 @@
 
 > **isSafeInteger**(`value`): `boolean`
 
-Defined in: [src/auxiliary/numeric/guards.ts:171](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/auxiliary/numeric/guards.ts#L171)
+Defined in: [src/auxiliary/numeric/guards.ts:171](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/auxiliary/numeric/guards.ts#L171)
 
 Tests if value is in safe integer range.
 
@@ -12,21 +12,21 @@ Tests if value is in safe integer range.
 
 `number`
 
-Value to test
+Value to test.
 
 ## Returns
 
 `boolean`
 
-True if safe integer
+True if safe integer.
 
 ## Example
 
 ```typescript
-isSafeInteger(42);                     // true
+isSafeInteger(42); // true
 isSafeInteger(Number.MAX_SAFE_INTEGER); // true
 isSafeInteger(Number.MAX_SAFE_INTEGER + 1); // false
-isSafeInteger(3.14);                   // false
+isSafeInteger(3.14); // false
 ```
 
 ## Since

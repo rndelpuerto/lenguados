@@ -2,7 +2,7 @@
 
 > **formatSummary**(`summary`): `string`
 
-Defined in: [src/utils/performance.ts:174](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/utils/performance.ts#L174)
+Defined in: [src/utils/performance.ts:256](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/utils/performance.ts#L256)
 
 Formats a measurement summary into a human-friendly string. Values are shown
 with three decimal places by default.
@@ -13,10 +13,27 @@ with three decimal places by default.
 
 [`MeasurementSummary`](../interfaces/MeasurementSummary.md)
 
-Summary statistics to format
+Summary statistics to format.
 
 ## Returns
 
 `string`
 
-Human-readable string
+Human-readable string.
+
+## Example
+
+```typescript
+const text = formatSummary({
+ label: 'tick',
+ count: 1,
+ totalDuration: 2,
+ minDuration: 2,
+ maxDuration: 2,
+ meanDuration: 2,
+});
+```
+
+## Since
+
+0.1.0

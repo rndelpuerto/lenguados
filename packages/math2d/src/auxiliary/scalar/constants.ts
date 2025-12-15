@@ -1,7 +1,7 @@
 /**
  * @file auxiliary/scalar/constants.ts
  * @module @lenguados/math2d/auxiliary/scalar
- * @description Mathematical constants for scalar operations
+ * @description Mathematical constants for scalar operations.
  */
 
 /* ========================================================================== */
@@ -22,7 +22,7 @@
  *
  * @constant {number}
  * @category Tolerance
- * @since 1.0.0
+ * @since 0.7.0
  */
 export const EPSILON = 1e-10;
 
@@ -35,9 +35,27 @@ export const EPSILON = 1e-10;
  *
  * @constant {number}
  * @category Tolerance
- * @since 1.0.0
+ * @since 0.7.0
  */
 export const EPSILON_SQUARED = EPSILON * EPSILON;
+
+/**
+ * Tolerance for iterative angle algorithms.
+ *
+ * @remarks
+ * Used in iterative angle operations (like constraint solving) where
+ * a looser tolerance than EPSILON is acceptable for convergence.
+ * Value of 1e-6 provides good balance between precision and performance.
+ *
+ * @constant {number}
+ * @category Tolerance
+ * @since 0.7.0
+ */
+export const ITERATIVE_TOLERANCE = 1e-6;
+
+/* ========================================================================== */
+/* Numeric Limits                                                            */
+/* ========================================================================== */
 
 /**
  * Maximum safe integer in float64 (2^53 - 1).
@@ -48,7 +66,7 @@ export const EPSILON_SQUARED = EPSILON * EPSILON;
  *
  * @constant {number}
  * @category Numeric Limits
- * @since 1.0.0
+ * @since 0.7.0
  */
 export const MAX_SAFE_INTEGER_F64 = Number.MAX_SAFE_INTEGER;
 
@@ -61,7 +79,7 @@ export const MAX_SAFE_INTEGER_F64 = Number.MAX_SAFE_INTEGER;
  *
  * @constant {number}
  * @category Angular
- * @since 1.0.0
+ * @since 0.7.0
  */
 export const PI = Math.PI;
 
@@ -74,7 +92,7 @@ export const PI = Math.PI;
  *
  * @constant {number}
  * @category Angular
- * @since 1.0.0
+ * @since 0.7.0
  */
 export const TAU = 2 * Math.PI;
 
@@ -83,7 +101,7 @@ export const TAU = 2 * Math.PI;
  *
  * @constant {number}
  * @category Angular
- * @since 1.0.0
+ * @since 0.7.0
  */
 export const HALF_PI = Math.PI / 2;
 
@@ -92,9 +110,22 @@ export const HALF_PI = Math.PI / 2;
  *
  * @constant {number}
  * @category Angular
- * @since 1.0.0
+ * @since 0.7.0
  */
 export const QUARTER_PI = Math.PI / 4;
+
+/**
+ * Angle epsilon for near-zero angle comparisons.
+ *
+ * @remarks
+ * Used in deterministic kernels for detecting angles near zero
+ * where special handling may be needed.
+ *
+ * @constant {number}
+ * @category Angular
+ * @since 0.7.0
+ */
+export const ANGLE_EPSILON = 1e-12;
 
 /* ========================================================================== */
 /* Conversion Factors                                                         */
@@ -110,7 +141,7 @@ export const QUARTER_PI = Math.PI / 4;
  *
  * @constant {number}
  * @category Conversion
- * @since 1.0.0
+ * @since 0.7.0
  */
 export const DEG_TO_RAD = Math.PI / 180;
 
@@ -124,7 +155,7 @@ export const DEG_TO_RAD = Math.PI / 180;
  *
  * @constant {number}
  * @category Conversion
- * @since 1.0.0
+ * @since 0.7.0
  */
 export const RAD_TO_DEG = 180 / Math.PI;
 
@@ -139,7 +170,7 @@ export const RAD_TO_DEG = 180 / Math.PI;
  *
  * @constant {number}
  * @category Conversion
- * @since 1.0.0
+ * @since 0.7.0
  */
 export const RAD_TO_TURN = 1 / TAU;
 
@@ -154,7 +185,7 @@ export const RAD_TO_TURN = 1 / TAU;
  *
  * @constant {number}
  * @category Conversion
- * @since 1.0.0
+ * @since 0.7.0
  */
 export const TURN_TO_RAD = TAU;
 
@@ -167,7 +198,7 @@ export const TURN_TO_RAD = TAU;
  *
  * @constant {number}
  * @category Conversion
- * @since 1.0.0
+ * @since 0.7.0
  */
 export const GRAD_TO_RAD = PI / 200;
 
@@ -176,7 +207,7 @@ export const GRAD_TO_RAD = PI / 200;
  *
  * @constant {number}
  * @category Conversion
- * @since 1.0.0
+ * @since 0.7.0
  */
 export const RAD_TO_GRAD = 200 / PI;
 
@@ -192,7 +223,7 @@ export const RAD_TO_GRAD = 200 / PI;
  *
  * @constant {number}
  * @category Mathematical
- * @since 1.0.0
+ * @since 0.7.0
  */
 export const SQRT_2 = Math.SQRT2;
 
@@ -204,7 +235,7 @@ export const SQRT_2 = Math.SQRT2;
  *
  * @constant {number}
  * @category Mathematical
- * @since 1.0.0
+ * @since 0.7.0
  */
 export const SQRT_HALF = Math.SQRT1_2;
 
@@ -213,7 +244,7 @@ export const SQRT_HALF = Math.SQRT1_2;
  *
  * @constant {number}
  * @category Mathematical
- * @since 1.0.0
+ * @since 0.7.0
  */
 export const LN_2 = Math.LN2;
 
@@ -222,7 +253,7 @@ export const LN_2 = Math.LN2;
  *
  * @constant {number}
  * @category Mathematical
- * @since 1.0.0
+ * @since 0.7.0
  */
 export const LN_10 = Math.LN10;
 
@@ -235,9 +266,9 @@ export const LN_10 = Math.LN10;
  *
  * @constant {number}
  * @category Mathematical
- * @since 1.0.0
+ * @since 0.7.0
  */
-export const GOLDEN_RATIO = (1 + Math.sqrt(5)) / 2;
+export const GOLDEN_RATIO = 1.618033988749895;
 
 /**
  * Euler's number e ≈ 2.718281828459045.
@@ -247,7 +278,7 @@ export const GOLDEN_RATIO = (1 + Math.sqrt(5)) / 2;
  *
  * @constant {number}
  * @category Mathematical
- * @since 1.0.0
+ * @since 0.7.0
  */
 export const E = Math.E;
 
@@ -266,16 +297,18 @@ export const E = Math.E;
  *
  * @constant
  * @category Collection
- * @since 1.0.0
+ * @since 0.7.0
  */
 export const Constants = {
  EPSILON,
  EPSILON_SQUARED,
+ ITERATIVE_TOLERANCE,
  MAX_SAFE_INTEGER_F64,
  PI,
  TAU,
  HALF_PI,
  QUARTER_PI,
+ ANGLE_EPSILON,
  DEG_TO_RAD,
  RAD_TO_DEG,
  RAD_TO_TURN,

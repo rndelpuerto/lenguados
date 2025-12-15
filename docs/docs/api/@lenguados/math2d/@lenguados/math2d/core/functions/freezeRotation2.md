@@ -2,7 +2,7 @@
 
 > **freezeRotation2**(`rotation`): [`ReadonlyRotation2`](../type-aliases/ReadonlyRotation2.md)
 
-Defined in: [src/core/rotation2.ts:103](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/core/rotation2.ts#L103)
+Defined in: [src/core/rotation2.ts:106](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L106)
 
 Permanently freezes a [Rotation2](../classes/Rotation2.md) instance so it can no longer be mutated.
 

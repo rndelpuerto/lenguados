@@ -2,7 +2,7 @@
 
 > **isDenormal**(`value`): `boolean`
 
-Defined in: [src/auxiliary/numeric/guards.ts:151](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/auxiliary/numeric/guards.ts#L151)
+Defined in: [src/auxiliary/numeric/guards.ts:151](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/auxiliary/numeric/guards.ts#L151)
 
 Tests if value is a denormal number.
 
@@ -12,13 +12,13 @@ Tests if value is a denormal number.
 
 `number`
 
-Value to test
+Value to test.
 
 ## Returns
 
 `boolean`
 
-True if denormal
+True if denormal.
 
 ## Remarks
 
@@ -30,10 +30,10 @@ less than 2^-1022 (approximately 2.225e-308) but not zero.
 ## Example
 
 ```typescript
-isDenormal(1e-300);        // false (normal)
-isDenormal(1e-308);        // true (denormal)
-isDenormal(5e-324);        // true (denormal, smallest positive number)
-isDenormal(0);             // false
+isDenormal(1e-300); // false (normal)
+isDenormal(1e-308); // true (denormal)
+isDenormal(5e-324); // true (denormal, smallest positive number)
+isDenormal(0); // false
 ```
 
 ## Since

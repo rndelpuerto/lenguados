@@ -1,15 +1,15 @@
 /**
  * @file auxiliary/angle/conversion.ts
  * @module @lenguados/math2d/auxiliary/angle
- * @description Angular unit conversion operations
+ * @description Angular unit conversion operations.
  */
 
 import { TAU, DEG_TO_RAD, RAD_TO_DEG, GRAD_TO_RAD, RAD_TO_GRAD } from '../scalar/constants';
 
 /**
  * Converts degrees to radians.
- * @param degrees - Angle in degrees
- * @returns Angle in radians
+ * @param degrees - Angle in degrees.
+ * @returns Angle in radians.
  *
  * @example
  * ```typescript
@@ -19,7 +19,7 @@ import { TAU, DEG_TO_RAD, RAD_TO_DEG, GRAD_TO_RAD, RAD_TO_GRAD } from '../scalar
  * ```
  *
  * @category Conversion
- * @since 1.0.0
+ * @since 0.7.0
  */
 export function degreesToRadians(degrees: number): number {
  return degrees * DEG_TO_RAD;
@@ -27,8 +27,8 @@ export function degreesToRadians(degrees: number): number {
 
 /**
  * Converts radians to degrees.
- * @param radians - Angle in radians
- * @returns Angle in degrees
+ * @param radians - Angle in radians.
+ * @returns Angle in degrees.
  *
  * @example
  * ```typescript
@@ -38,7 +38,7 @@ export function degreesToRadians(degrees: number): number {
  * ```
  *
  * @category Conversion
- * @since 1.0.0
+ * @since 0.7.0
  */
 export function radiansToDegrees(radians: number): number {
  return radians * RAD_TO_DEG;
@@ -46,8 +46,8 @@ export function radiansToDegrees(radians: number): number {
 
 /**
  * Converts turns to radians (1 turn = TAU radians = 2π radians).
- * @param turns - Number of turns
- * @returns Angle in radians
+ * @param turns - Number of turns.
+ * @returns Angle in radians.
  *
  * @example
  * ```typescript
@@ -58,7 +58,7 @@ export function radiansToDegrees(radians: number): number {
  * ```
  *
  * @category Conversion
- * @since 1.0.0
+ * @since 0.7.0
  */
 export function turnsToRadians(turns: number): number {
  return turns * TAU;
@@ -66,8 +66,8 @@ export function turnsToRadians(turns: number): number {
 
 /**
  * Converts radians to turns (1 turn = TAU radians = 2π radians).
- * @param radians - Angle in radians
- * @returns Number of turns
+ * @param radians - Angle in radians.
+ * @returns Number of turns.
  *
  * @example
  * ```typescript
@@ -78,7 +78,7 @@ export function turnsToRadians(turns: number): number {
  * ```
  *
  * @category Conversion
- * @since 1.0.0
+ * @since 0.7.0
  */
 export function radiansToTurns(radians: number): number {
  return radians / TAU;
@@ -87,8 +87,8 @@ export function radiansToTurns(radians: number): number {
 /**
  * Converts gradians to radians (400 gradians = 2π radians).
  * Also known as gon or grade.
- * @param gradians - Angle in gradians
- * @returns Angle in radians
+ * @param gradians - Angle in gradians.
+ * @returns Angle in radians.
  *
  * @remarks
  * Gradians are used in some surveying applications where
@@ -103,7 +103,7 @@ export function radiansToTurns(radians: number): number {
  * ```
  *
  * @category Conversion
- * @since 1.0.0
+ * @since 0.7.0
  */
 export function gradiansToRadians(gradians: number): number {
  return gradians * GRAD_TO_RAD;
@@ -112,8 +112,8 @@ export function gradiansToRadians(gradians: number): number {
 /**
  * Converts radians to gradians (400 gradians = 2π radians).
  * Also known as gon or grade.
- * @param radians - Angle in radians
- * @returns Angle in gradians
+ * @param radians - Angle in radians.
+ * @returns Angle in gradians.
  *
  * @example
  * ```typescript
@@ -124,7 +124,7 @@ export function gradiansToRadians(gradians: number): number {
  * ```
  *
  * @category Conversion
- * @since 1.0.0
+ * @since 0.7.0
  */
 export function radiansToGradians(radians: number): number {
  return radians * RAD_TO_GRAD;

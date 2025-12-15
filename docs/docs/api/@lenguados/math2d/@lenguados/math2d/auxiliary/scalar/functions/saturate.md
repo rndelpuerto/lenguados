@@ -2,7 +2,7 @@
 
 > **saturate**(`value`): `number`
 
-Defined in: [src/auxiliary/scalar/arithmetic.ts:119](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/auxiliary/scalar/arithmetic.ts#L119)
+Defined in: [src/auxiliary/scalar/arithmetic.ts:119](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/auxiliary/scalar/arithmetic.ts#L119)
 
 Saturates value to [0, 1] range.
 Commonly used for colors, interpolation factors.
@@ -13,20 +13,20 @@ Commonly used for colors, interpolation factors.
 
 `number`
 
-Value to saturate
+Value to saturate.
 
 ## Returns
 
 `number`
 
-Saturated value in [0, 1]
+Saturated value in [0, 1].
 
 ## Example
 
 ```typescript
-saturate(-0.5);  // 0
-saturate(0.5);   // 0.5
-saturate(1.5);   // 1
+saturate(-0.5); // 0
+saturate(0.5); // 0.5
+saturate(1.5); // 1
 ```
 
 ## Since

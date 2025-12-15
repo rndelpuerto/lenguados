@@ -8,11 +8,14 @@ core/interval.ts
 
 Deterministic closed-interval arithmetic helpers.
 
+## Core
+
+- [Interval](classes/Interval.md)
+
 ## Helpers
 
 - [freezeInterval](functions/freezeInterval.md)
 
-## Other
+## Types
 
-- [Interval](classes/Interval.md)
 - [ReadonlyInterval](type-aliases/ReadonlyInterval.md)

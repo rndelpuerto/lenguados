@@ -1,68 +1,104 @@
 /**
  * @file src/utils/random-source.ts
- * @module math2d/utils/random-source
- * @description
- * Random number source abstraction for deterministic and non-deterministic random generation.
+ * @module @lenguados/math2d/utils
+ * @description Random number source abstractions for deterministic sampling.
  *
+ * @remarks
  * This allows the math2d library to support:
  * - Default Math.random() for typical use
  * - Seeded random for deterministic simulations
  * - Custom random sources for testing or specialized needs
  *
- * @remarks
  * **Note on Math.floor usage**: This module uses `Math.floor` directly for
  * integer conversion because it's IEEE 754 deterministic and the random
  * sources handle their own determinism guarantees.
  */
 
-import { abs } from '../auxiliary/scalar/arithmetic';
+/* ========================================================================== */
+/* Types                                                                       */
+/* ========================================================================== */
 
 /**
- * Interface for random number generation sources.
+ * Defines a uniform random number source with optional seeding.
+ *
+ * @remarks
  * Implementations must provide uniform distribution in [0, 1).
+ *
+ * @category Types
+ * @since 0.7.0
  * @public
  */
 export interface RandomSource {
  /**
-  * Generate a random number in the range [0, 1).
-  * Must return values with uniform distribution.
-  * @returns A random number in [0, 1)
+  * Generates a random number in the range [0, 1).
+  *
+  * @returns A random number in [0, 1).
+  *
+  * @category Utility
+  * @since 0.7.0
   */
  next(): number;
 
  /**
-  * Generate a random integer in the range [0, max).
-  * @param max - Exclusive upper bound (must be positive)
-  * @returns A random integer in [0, max)
+  * Generates a random integer in the range [0, max).
+  *
+  * @param max - Exclusive upper bound (must be positive).
+  * @returns A random integer in [0, max).
+  *
+  * @category Utility
+  * @since 0.7.0
   */
  nextInt(max: number): number;
 
  /**
-  * Optional: Seed the random number generator.
-  * Not all sources support seeding (e.g., Math.random).
-  * @param seed - Integer seed value
+  * Seeds the random number generator when supported.
+  *
+  * @param seed - Integer seed value.
+  *
+  * @remarks
+  * Not all sources support seeding (for example, Math.random()).
+  *
+  * @category Utility
+  * @since 0.7.0
   */
  seed?(seed: number): void;
 }
 
+/* ========================================================================== */
+/* Random Sources                                                             */
+/* ========================================================================== */
+
 /**
- * Default random source using Math.random().
- * This is not seedable and not deterministic.
+ * Non-deterministic random source backed by `Math.random`.
+ *
+ * @remarks
+ * This source is not seedable and is not deterministic.
+ *
+ * @category Utility
+ * @since 0.7.0
  * @public
  */
 export class MathRandomSource implements RandomSource {
  /**
-  * Generate a random number using Math.random().
-  * @returns A random number in [0, 1)
+  * Generates a random number using Math.random().
+  *
+  * @returns A random number in [0, 1).
+  *
+  * @category Utility
+  * @since 0.7.0
   */
  next(): number {
   return Math.random();
  }
 
  /**
-  * Generate a random integer using Math.random().
-  * @param max - Exclusive upper bound
-  * @returns A random integer in [0, max)
+  * Generates a random integer using Math.random().
+  *
+  * @param max - Exclusive upper bound.
+  * @returns A random integer in [0, max).
+  *
+  * @category Utility
+  * @since 0.7.0
   */
  nextInt(max: number): number {
   return Math.floor(Math.random() * max);
@@ -70,9 +106,14 @@ export class MathRandomSource implements RandomSource {
 }
 
 /**
- * Seeded random source using a linear congruential generator (LCG).
- * Based on Park & Miller's "minimal standard" generator.
- * Provides deterministic pseudo-random numbers when seeded.
+ * Deterministic random source using a linear congruential generator (LCG).
+ *
+ * @remarks
+ * Based on Park and Miller's "minimal standard" generator and provides
+ * deterministic pseudo-random numbers when seeded.
+ *
+ * @category Utility
+ * @since 0.7.0
  * @public
  */
 export class SeededRandomSource implements RandomSource {
@@ -84,19 +125,26 @@ export class SeededRandomSource implements RandomSource {
  private state: number;
 
  /**
-  * Create a new seeded random source.
-  * @param seed - Initial seed value (defaults to current time)
+  * Creates a new seeded random source.
+  *
+  * @param seed - Initial seed value. Defaults to the current time.
   */
  constructor(seed?: number) {
-  this.state = seed !== undefined ? abs(seed | 0) || 1 : Date.now();
+  this.state = seed !== undefined ? Math.abs(seed | 0) || 1 : Date.now();
   // Ensure state is in valid range [1, M-1]
   this.state = (this.state % (SeededRandomSource.M - 1)) + 1;
  }
 
  /**
-  * Generate the next random number.
-  * Uses Park & Miller's algorithm with Schrage's method to avoid overflow.
-  * @returns A random number in [0, 1)
+  * Generates the next random number.
+  *
+  * @returns A random number in [0, 1).
+  *
+  * @remarks
+  * Uses Park and Miller's algorithm with Schrage's method to avoid overflow.
+  *
+  * @category Utility
+  * @since 0.7.0
   */
  next(): number {
   const k = Math.floor(this.state / SeededRandomSource.Q);
@@ -112,36 +160,58 @@ export class SeededRandomSource implements RandomSource {
  }
 
  /**
-  * Generate a random integer.
-  * @param max - Exclusive upper bound
-  * @returns A random integer in [0, max)
+  * Generates a random integer.
+  *
+  * @param max - Exclusive upper bound.
+  * @returns A random integer in [0, max).
+  *
+  * @category Utility
+  * @since 0.7.0
   */
  nextInt(max: number): number {
   return Math.floor(this.next() * max);
  }
 
  /**
-  * Re-seed the generator.
-  * @param seed - New seed value
+  * Re-seeds the generator.
+  *
+  * @param seed - New seed value.
+  *
+  * @category Utility
+  * @since 0.7.0
   */
  seed(seed: number): void {
-  this.state = abs(seed | 0) || 1;
+  this.state = Math.abs(seed | 0) || 1;
   this.state = (this.state % (SeededRandomSource.M - 1)) + 1;
  }
 
  /**
-  * Get the current internal state.
-  * Useful for saving/restoring random generator state.
-  * @returns Current state value
+  * Returns the current internal state.
+  *
+  * @returns Current state value.
+  *
+  * @remarks
+  * Useful for saving and restoring random generator state.
+  *
+  * @category Utility
+  * @since 0.7.0
   */
  getState(): number {
   return this.state;
  }
 
  /**
-  * Set the internal state directly.
+  * Sets the internal state directly.
+  *
+  * @param state - State value to set.
+  *
+  * @remarks
   * Useful for restoring a previously saved state.
-  * @param state - State value to set
+  *
+  * @throws {RangeError} If `state` is outside [1, M - 1].
+  *
+  * @category Utility
+  * @since 0.7.0
   */
  setState(state: number): void {
   if (state <= 0 || state >= SeededRandomSource.M) {
@@ -151,16 +221,29 @@ export class SeededRandomSource implements RandomSource {
  }
 }
 
+/* ========================================================================== */
+/* Default Source Configuration                                               */
+/* ========================================================================== */
+
 /**
  * Global default random source.
- * Can be replaced to change random behavior globally.
+ *
+ * @remarks
+ * Replace this to change random behavior globally.
+ *
+ * @category Utility
+ * @since 0.7.0
  * @public
  */
 export let defaultRandomSource: RandomSource = new MathRandomSource();
 
 /**
- * Set the global default random source.
- * @param source - New default random source
+ * Sets the global default random source.
+ *
+ * @param source - New default random source.
+ *
+ * @category Utility
+ * @since 0.7.0
  * @public
  */
 export function setDefaultRandomSource(source: RandomSource): void {
@@ -168,8 +251,12 @@ export function setDefaultRandomSource(source: RandomSource): void {
 }
 
 /**
- * Get the global default random source.
- * @returns Current default random source
+ * Returns the global default random source.
+ *
+ * @returns Current default random source.
+ *
+ * @category Utility
+ * @since 0.7.0
  * @public
  */
 export function getDefaultRandomSource(): RandomSource {

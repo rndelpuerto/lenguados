@@ -1,6 +1,7 @@
 /**
  * @file test/auxiliary/angle/interpolation.node.spec.ts
- * @description Tests for angular interpolation functions
+ * @module @lenguados/math2d/auxiliary/angle
+ * @description Tests for angular interpolation functions.
  */
 
 import { describe, expect, it } from '@jest/globals';

@@ -1,8 +1,12 @@
 # Interface: Transform2Like
 
-Defined in: [src/types/index.ts:198](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/types/index.ts#L198)
+Defined in: [src/types/index.ts:244](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/types/index.ts#L244)
 
 Mutable interface for 2D transforms.
+
+## Since
+
+0.1.0
 
 ## Properties
 
@@ -10,20 +14,20 @@ Mutable interface for 2D transforms.
 
 > **position**: [`Vector2Like`](Vector2Like.md)
 
-Defined in: [src/types/index.ts:199](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/types/index.ts#L199)
+Defined in: [src/types/index.ts:245](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/types/index.ts#L245)
 
-***
+---
 
 ### rotation
 
 > **rotation**: `number`
 
-Defined in: [src/types/index.ts:200](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/types/index.ts#L200)
+Defined in: [src/types/index.ts:246](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/types/index.ts#L246)
 
-***
+---
 
 ### scale
 
 > **scale**: [`Vector2Like`](Vector2Like.md)
 
-Defined in: [src/types/index.ts:201](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/types/index.ts#L201)
+Defined in: [src/types/index.ts:247](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/types/index.ts#L247)

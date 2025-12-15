@@ -2,11 +2,11 @@
 
 ## File
 
-deterministic/RoundingControl.ts
+deterministic/rounding-control.ts
 
 ## Description
 
-Explicit rounding control for deterministic operations
+Explicit rounding control for deterministic operations.
 
 ## Remarks
 
@@ -22,12 +22,9 @@ instead of the `validation/assert` module for two reasons:
 
 ## See
 
-validation/assert for development-only assertions
+validation/assert for development-only assertions.
 
-## Enumerations
+## Rounding
 
 - [RoundingMode](enumerations/RoundingMode.md)
-
-## Classes
-
 - [RoundingControl](classes/RoundingControl.md)

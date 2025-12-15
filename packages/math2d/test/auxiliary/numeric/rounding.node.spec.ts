@@ -1,5 +1,6 @@
 /**
- * @file tests/auxiliary/numeric/rounding.node.spec.ts
+ * @file test/auxiliary/numeric/rounding.node.spec.ts
+ * @module @lenguados/math2d/auxiliary/numeric
  * @description Tests for rounding and quantization operations.
  */
 

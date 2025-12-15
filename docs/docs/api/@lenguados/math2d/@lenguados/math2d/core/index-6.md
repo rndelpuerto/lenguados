@@ -8,11 +8,15 @@ core/transform2.ts
 
 Deterministic 2D transform combining translation, rotation, and scale.
 
+## Core
+
+- [Transform2](classes/Transform2.md)
+
 ## Helpers
 
 - [freezeTransform2](functions/freezeTransform2.md)
 
-## Other
+## Types
 
 ### Transform2Like
 

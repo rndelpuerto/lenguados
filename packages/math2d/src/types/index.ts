@@ -1,15 +1,22 @@
 /**
- * @file src/types/index.ts
+ * @file types/index.ts
  * @module @lenguados/math2d/types
  * @description Shared type definitions and type guards for math2d.
+ *
+ * @remarks
+ * This module centralizes structural types and runtime shape checks shared
+ * across the math2d package.
  */
 
-// ============================================================================
-// Vector2 Types
-// ============================================================================
+/* ========================================================================== */
+/* Vector2 Types                                                              */
+/* ========================================================================== */
 
 /**
  * Readonly interface for objects with x,y components.
+ *
+ * @category Types
+ * @since 0.7.0
  */
 export interface ReadonlyVector2Like {
  readonly x: number;
@@ -18,18 +25,24 @@ export interface ReadonlyVector2Like {
 
 /**
  * Mutable interface for objects with x,y components.
+ *
+ * @category Types
+ * @since 0.7.0
  */
 export interface Vector2Like {
  x: number;
  y: number;
 }
 
-// ============================================================================
-// Matrix2 Types
-// ============================================================================
+/* ========================================================================== */
+/* Matrix2 Types                                                              */
+/* ========================================================================== */
 
 /**
  * Readonly interface for 2x2 matrix components.
+ *
+ * @category Types
+ * @since 0.7.0
  */
 export interface ReadonlyMatrix2Like {
  readonly m00: number;
@@ -40,6 +53,9 @@ export interface ReadonlyMatrix2Like {
 
 /**
  * Mutable interface for 2x2 matrix components.
+ *
+ * @category Types
+ * @since 0.7.0
  */
 export interface Matrix2Like {
  m00: number;
@@ -48,12 +64,15 @@ export interface Matrix2Like {
  m11: number;
 }
 
-// ============================================================================
-// Matrix3 Types
-// ============================================================================
+/* ========================================================================== */
+/* Matrix3 Types                                                              */
+/* ========================================================================== */
 
 /**
  * Readonly interface for 3x3 matrix components.
+ *
+ * @category Types
+ * @since 0.7.0
  */
 export interface ReadonlyMatrix3Like {
  readonly m00: number;
@@ -69,6 +88,9 @@ export interface ReadonlyMatrix3Like {
 
 /**
  * Mutable interface for 3x3 matrix components.
+ *
+ * @category Types
+ * @since 0.7.0
  */
 export interface Matrix3Like {
  m00: number;
@@ -82,9 +104,9 @@ export interface Matrix3Like {
  m22: number;
 }
 
-// ============================================================================
-// Rotation2 Types
-// ============================================================================
+/* ========================================================================== */
+/* Rotation2 Types                                                            */
+/* ========================================================================== */
 
 /**
  * Readonly interface for 2D rotation represented as cosine/sine components.
@@ -106,6 +128,9 @@ export interface Matrix3Like {
  *   sin: Math.sin(Math.PI / 4),  // ≈ 0.707
  * };
  * ```
+ *
+ * @category Types
+ * @since 0.7.0
  */
 export interface ReadonlyRotation2Like {
  /**
@@ -124,6 +149,9 @@ export interface ReadonlyRotation2Like {
 /**
  * Mutable interface for 2D rotation represented as cosine/sine components.
  * @see {@link ReadonlyRotation2Like} for detailed property documentation.
+ *
+ * @category Types
+ * @since 0.7.0
  */
 export interface Rotation2Like {
  /**
@@ -139,12 +167,15 @@ export interface Rotation2Like {
  sin: number;
 }
 
-// ============================================================================
-// Complex Types
-// ============================================================================
+/* ========================================================================== */
+/* Complex Types                                                              */
+/* ========================================================================== */
 
 /**
  * Readonly interface for complex numbers.
+ *
+ * @category Types
+ * @since 0.7.0
  */
 export interface ReadonlyComplexLike {
  readonly real: number;
@@ -153,18 +184,24 @@ export interface ReadonlyComplexLike {
 
 /**
  * Mutable interface for complex numbers.
+ *
+ * @category Types
+ * @since 0.7.0
  */
 export interface ComplexLike {
  real: number;
  imag: number;
 }
 
-// ============================================================================
-// Interval Types
-// ============================================================================
+/* ========================================================================== */
+/* Interval Types                                                             */
+/* ========================================================================== */
 
 /**
  * Readonly interface for intervals.
+ *
+ * @category Types
+ * @since 0.7.0
  */
 export interface ReadonlyIntervalLike {
  readonly min: number;
@@ -173,43 +210,53 @@ export interface ReadonlyIntervalLike {
 
 /**
  * Mutable interface for intervals.
+ *
+ * @category Types
+ * @since 0.7.0
  */
 export interface IntervalLike {
  min: number;
  max: number;
 }
 
-// ============================================================================
-// Transform2 Types
-// ============================================================================
+/* ========================================================================== */
+/* Transform2 Types                                                           */
+/* ========================================================================== */
 
 /**
  * Readonly interface for 2D transforms.
+ *
+ * @category Types
+ * @since 0.7.0
  */
 export interface ReadonlyTransform2Like {
  readonly position: ReadonlyVector2Like;
- readonly rotation: number;
+ readonly rotation: ReadonlyRotation2Like;
  readonly scale: ReadonlyVector2Like;
 }
 
 /**
  * Mutable interface for 2D transforms.
+ *
+ * @category Types
+ * @since 0.7.0
  */
 export interface Transform2Like {
  position: Vector2Like;
- rotation: number;
+ rotation: Rotation2Like;
  scale: Vector2Like;
 }
 
-// ============================================================================
-// Type Guards
-// ============================================================================
+/* ========================================================================== */
+/* Type Guards                                                                */
+/* ========================================================================== */
 
 /**
  * Internal helper to check if an object has numeric properties.
- * @param obj - Object to check
- * @param keys - Property names to verify
- * @returns True if all keys exist and are numbers
+ *
+ * @param object - Object to check.
+ * @param keys - Property names to verify.
+ * @returns True if all keys exist and are numbers.
  * @internal
  */
 function hasNumericProperties(object: Record<string, unknown>, keys: readonly string[]): boolean {
@@ -224,8 +271,8 @@ function hasNumericProperties(object: Record<string, unknown>, keys: readonly st
 /**
  * Type guard to check if value has x,y properties (Vector2Like).
  *
- * @param value - Value to check
- * @returns True if value conforms to ReadonlyVector2Like
+ * @param value - Value to check.
+ * @returns True if value conforms to ReadonlyVector2Like.
  *
  * @example
  * ```typescript
@@ -236,7 +283,7 @@ function hasNumericProperties(object: Record<string, unknown>, keys: readonly st
  * ```
  *
  * @category Type Guards
- * @since 0.1.0
+ * @since 0.7.0
  */
 export function isVector2Like(value: unknown): value is ReadonlyVector2Like {
  if (typeof value !== 'object' || value === null) return false;
@@ -246,8 +293,8 @@ export function isVector2Like(value: unknown): value is ReadonlyVector2Like {
 /**
  * Type guard to check if value has 2x2 matrix properties (Matrix2Like).
  *
- * @param value - Value to check
- * @returns True if value conforms to ReadonlyMatrix2Like
+ * @param value - Value to check.
+ * @returns True if value conforms to ReadonlyMatrix2Like.
  *
  * @example
  * ```typescript
@@ -258,7 +305,7 @@ export function isVector2Like(value: unknown): value is ReadonlyVector2Like {
  * ```
  *
  * @category Type Guards
- * @since 0.1.0
+ * @since 0.7.0
  */
 export function isMatrix2Like(value: unknown): value is ReadonlyMatrix2Like {
  if (typeof value !== 'object' || value === null) return false;
@@ -268,8 +315,8 @@ export function isMatrix2Like(value: unknown): value is ReadonlyMatrix2Like {
 /**
  * Type guard to check if value has rotation properties (Rotation2Like).
  *
- * @param value - Value to check
- * @returns True if value conforms to ReadonlyRotation2Like
+ * @param value - Value to check.
+ * @returns True if value conforms to ReadonlyRotation2Like.
  *
  * @example
  * ```typescript
@@ -280,7 +327,7 @@ export function isMatrix2Like(value: unknown): value is ReadonlyMatrix2Like {
  * ```
  *
  * @category Type Guards
- * @since 0.1.0
+ * @since 0.7.0
  */
 export function isRotation2Like(value: unknown): value is ReadonlyRotation2Like {
  if (typeof value !== 'object' || value === null) return false;
@@ -290,8 +337,8 @@ export function isRotation2Like(value: unknown): value is ReadonlyRotation2Like 
 /**
  * Type guard to check if value has 3x3 matrix properties (Matrix3Like).
  *
- * @param value - Value to check
- * @returns True if value conforms to ReadonlyMatrix3Like
+ * @param value - Value to check.
+ * @returns True if value conforms to ReadonlyMatrix3Like.
  *
  * @example
  * ```typescript
@@ -302,7 +349,7 @@ export function isRotation2Like(value: unknown): value is ReadonlyRotation2Like 
  * ```
  *
  * @category Type Guards
- * @since 0.1.0
+ * @since 0.7.0
  */
 export function isMatrix3Like(value: unknown): value is ReadonlyMatrix3Like {
  if (typeof value !== 'object' || value === null) return false;
@@ -322,8 +369,8 @@ export function isMatrix3Like(value: unknown): value is ReadonlyMatrix3Like {
 /**
  * Type guard to check if value has complex number properties (ComplexLike).
  *
- * @param value - Value to check
- * @returns True if value conforms to ReadonlyComplexLike
+ * @param value - Value to check.
+ * @returns True if value conforms to ReadonlyComplexLike.
  *
  * @example
  * ```typescript
@@ -334,7 +381,7 @@ export function isMatrix3Like(value: unknown): value is ReadonlyMatrix3Like {
  * ```
  *
  * @category Type Guards
- * @since 0.1.0
+ * @since 0.7.0
  */
 export function isComplexLike(value: unknown): value is ReadonlyComplexLike {
  if (typeof value !== 'object' || value === null) return false;
@@ -344,8 +391,8 @@ export function isComplexLike(value: unknown): value is ReadonlyComplexLike {
 /**
  * Type guard to check if value has interval properties (IntervalLike).
  *
- * @param value - Value to check
- * @returns True if value conforms to ReadonlyIntervalLike
+ * @param value - Value to check.
+ * @returns True if value conforms to ReadonlyIntervalLike.
  *
  * @example
  * ```typescript
@@ -356,7 +403,7 @@ export function isComplexLike(value: unknown): value is ReadonlyComplexLike {
  * ```
  *
  * @category Type Guards
- * @since 0.1.0
+ * @since 0.7.0
  */
 export function isIntervalLike(value: unknown): value is ReadonlyIntervalLike {
  if (typeof value !== 'object' || value === null) return false;
@@ -366,14 +413,14 @@ export function isIntervalLike(value: unknown): value is ReadonlyIntervalLike {
 /**
  * Type guard to check if value has transform2 properties (Transform2Like).
  *
- * @param value - Value to check
- * @returns True if value conforms to ReadonlyTransform2Like
+ * @param value - Value to check.
+ * @returns True if value conforms to ReadonlyTransform2Like.
  *
  * @example
  * ```typescript
  * const transform = {
  *   position: { x: 0, y: 0 },
- *   rotation: 0,
+ *   rotation: { cos: 1, sin: 0 },
  *   scale: { x: 1, y: 1 }
  * };
  * if (isTransform2Like(transform)) {
@@ -382,10 +429,10 @@ export function isIntervalLike(value: unknown): value is ReadonlyIntervalLike {
  * ```
  *
  * @category Type Guards
- * @since 0.1.0
+ * @since 0.7.0
  */
 export function isTransform2Like(value: unknown): value is ReadonlyTransform2Like {
  if (typeof value !== 'object' || value === null) return false;
  const v = value as Record<string, unknown>;
- return isVector2Like(v.position) && typeof v.rotation === 'number' && isVector2Like(v.scale);
+ return isVector2Like(v.position) && isRotation2Like(v.rotation) && isVector2Like(v.scale);
 }

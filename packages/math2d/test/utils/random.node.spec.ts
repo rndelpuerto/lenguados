@@ -1,13 +1,23 @@
+/**
+ * @file test/utils/random.node.spec.ts
+ * @module @lenguados/math2d/utils
+ * @description Tests for random generation utilities.
+ */
+
 import { describe, expect, it } from '@jest/globals';
 
+import { Complex } from '../../src/core/complex';
+import { Interval } from '../../src/core/interval';
 import { Vector2 } from '../../src/core/vector2';
 import {
+ randomComplex,
  randomGaussianVector2,
  randomInBox,
  randomInCircle,
  randomInRectangle,
  randomInTriangle,
  randomInUnitCircle,
+ randomInterval,
  randomOnCircle,
  randomOnRectangle,
  randomOnSegment,
@@ -15,6 +25,7 @@ import {
  randomRotation2,
  randomRotationMatrix2,
  randomTransform2,
+ randomUnitComplex,
  randomUnitVector2,
  randomVector2,
 } from '../../src/utils/random';
@@ -90,7 +101,7 @@ describe('utils/random', () => {
    const source = createSource();
    for (let index = 0; index < 100; index++) {
     const v = randomUnitVector2(new Vector2(), source);
-    expect(v.length()).toBeCloseTo(1, 6);
+    expect(v.magnitude()).toBeCloseTo(1, 6);
    }
   });
  });
@@ -101,7 +112,7 @@ describe('utils/random', () => {
    const radius = 5;
    for (let index = 0; index < 100; index++) {
     const p = randomOnCircle(radius, new Vector2(), source);
-    expect(p.length()).toBeCloseTo(radius, 6);
+    expect(p.magnitude()).toBeCloseTo(radius, 6);
    }
   });
  });
@@ -111,7 +122,7 @@ describe('utils/random', () => {
    const source = createSource();
    for (let index = 0; index < 100; index++) {
     const p = randomInUnitCircle(new Vector2(), source);
-    expect(p.length()).toBeLessThanOrEqual(1);
+    expect(p.magnitude()).toBeLessThanOrEqual(1);
    }
   });
  });
@@ -122,7 +133,7 @@ describe('utils/random', () => {
    const radius = 10;
    for (let index = 0; index < 100; index++) {
     const p = randomInCircle(radius, new Vector2(), source);
-    expect(p.length()).toBeLessThanOrEqual(radius);
+    expect(p.magnitude()).toBeLessThanOrEqual(radius);
    }
   });
  });
@@ -154,7 +165,7 @@ describe('utils/random', () => {
    const source = createSource();
    for (let index = 0; index < 100; index++) {
     const t = randomTransform2(undefined, source);
-    expect(t.position.length()).toBeLessThanOrEqual(1);
+    expect(t.position.magnitude()).toBeLessThanOrEqual(1);
    }
   });
  });
@@ -305,17 +316,17 @@ describe('utils/random', () => {
 
   it('randomUnitVector2 works without explicit source', () => {
    const v = randomUnitVector2();
-   expect(v.length()).toBeCloseTo(1, 6);
+   expect(v.magnitude()).toBeCloseTo(1, 6);
   });
 
   it('randomOnCircle works with default radius', () => {
    const p = randomOnCircle();
-   expect(p.length()).toBeCloseTo(1, 6);
+   expect(p.magnitude()).toBeCloseTo(1, 6);
   });
 
   it('randomInUnitCircle works without explicit source', () => {
    const p = randomInUnitCircle();
-   expect(p.length()).toBeLessThanOrEqual(1);
+   expect(p.magnitude()).toBeLessThanOrEqual(1);
   });
 
   it('randomRotation2 works without explicit source', () => {
@@ -330,7 +341,7 @@ describe('utils/random', () => {
 
   it('randomTransform2 works without explicit source', () => {
    const t = randomTransform2();
-   expect(t.position.length()).toBeLessThanOrEqual(1);
+   expect(t.position.magnitude()).toBeLessThanOrEqual(1);
   });
 
   it('randomGaussianVector2 works with defaults', () => {
@@ -450,6 +461,87 @@ describe('utils/random', () => {
    const start = new Vector2(0, 0);
    const end = new Vector2(10, 10);
    const result = randomOnSegment(start, end, out, source);
+   expect(result).toBe(out);
+  });
+ });
+
+ describe('randomComplex', () => {
+  it('generates Complex with components in specified range', () => {
+   const source = new SeededRandomSource(12345);
+   for (let index = 0; index < 100; index++) {
+    const c = randomComplex(-5, 5, new Complex(), source);
+    expect(c.real).toBeGreaterThanOrEqual(-5);
+    expect(c.real).toBeLessThan(5);
+    expect(c.imag).toBeGreaterThanOrEqual(-5);
+    expect(c.imag).toBeLessThan(5);
+   }
+  });
+
+  it('uses default range [0, 1)', () => {
+   const source = new SeededRandomSource(12345);
+   for (let index = 0; index < 100; index++) {
+    const c = randomComplex(undefined, undefined, new Complex(), source);
+    expect(c.real).toBeGreaterThanOrEqual(0);
+    expect(c.real).toBeLessThan(1);
+    expect(c.imag).toBeGreaterThanOrEqual(0);
+    expect(c.imag).toBeLessThan(1);
+   }
+  });
+
+  it('works without explicit source', () => {
+   const c = randomComplex();
+   expect(c).toBeInstanceOf(Complex);
+   expect(Number.isFinite(c.real)).toBe(true);
+   expect(Number.isFinite(c.imag)).toBe(true);
+  });
+ });
+
+ describe('randomUnitComplex', () => {
+  it('returns unit magnitude Complex', () => {
+   const source = new SeededRandomSource(12345);
+   for (let index = 0; index < 100; index++) {
+    const c = randomUnitComplex(new Complex(), source);
+    expect(c.magnitude()).toBeCloseTo(1, 6);
+   }
+  });
+
+  it('works without explicit source', () => {
+   const c = randomUnitComplex();
+   expect(c.magnitude()).toBeCloseTo(1, 6);
+  });
+ });
+
+ describe('randomInterval', () => {
+  it('generates Interval within specified bounds', () => {
+   const source = new SeededRandomSource(12345);
+   for (let index = 0; index < 100; index++) {
+    const interval = randomInterval(0, 10, new Interval(), source);
+    expect(interval.min).toBeGreaterThanOrEqual(0);
+    expect(interval.max).toBeLessThanOrEqual(10);
+    expect(interval.min).toBeLessThanOrEqual(interval.max);
+   }
+  });
+
+  it('uses default bounds [0, 1)', () => {
+   const source = new SeededRandomSource(12345);
+   for (let index = 0; index < 100; index++) {
+    const interval = randomInterval(undefined, undefined, new Interval(), source);
+    expect(interval.min).toBeGreaterThanOrEqual(0);
+    expect(interval.max).toBeLessThanOrEqual(1);
+   }
+  });
+
+  it('works without explicit source', () => {
+   const interval = randomInterval();
+   expect(interval).toBeInstanceOf(Interval);
+   expect(Number.isFinite(interval.min)).toBe(true);
+   expect(Number.isFinite(interval.max)).toBe(true);
+  });
+
+  it('reuses output interval', () => {
+   const source = new SeededRandomSource(555);
+   const out = new Interval(999, 1000);
+   const result = randomInterval(0, 10, out, source);
    expect(result).toBe(out);
   });
  });

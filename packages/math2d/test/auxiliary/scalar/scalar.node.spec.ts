@@ -1,3 +1,9 @@
+/**
+ * @file test/auxiliary/scalar/scalar.node.spec.ts
+ * @module @lenguados/math2d/auxiliary/scalar
+ * @description Tests for scalar constants and helper functions.
+ */
+
 import { describe, expect, it } from '@jest/globals';
 
 import { clamp, saturate, sign } from '../../../src/auxiliary/scalar/arithmetic';
@@ -15,12 +21,12 @@ import {
 } from '../../../src/auxiliary/scalar/constants';
 import {
  inverseLerp,
+ inverseLerpSafe,
+ inverseLerpUnchecked,
  lerp,
  lerpClamped,
  smoothStep,
  smootherStep,
- exponentialInterp,
- springInterp,
  bezierInterp,
  catmullRomInterp,
 } from '../../../src/auxiliary/scalar/interpolation';
@@ -208,50 +214,6 @@ describe('Scalar functions', () => {
   });
  });
 
- describe('exponentialInterp', () => {
-  it('at t=0 returns a', () => {
-   expect(exponentialInterp(0, 100, 0, 2)).toBe(0);
-  });
-
-  it('at t=1 returns b', () => {
-   expect(exponentialInterp(0, 100, 1, 2)).toBe(100);
-  });
-
-  it('quadratic ease-in at t=0.5', () => {
-   expect(exponentialInterp(0, 100, 0.5, 2)).toBeCloseTo(25);
-  });
-
-  it('cubic ease-in at t=0.5', () => {
-   expect(exponentialInterp(0, 100, 0.5, 3)).toBeCloseTo(12.5);
-  });
-
-  it('clamps t to [0, 1]', () => {
-   expect(exponentialInterp(0, 100, -1, 2)).toBe(0);
-   expect(exponentialInterp(0, 100, 2, 2)).toBe(100);
-  });
- });
-
- describe('springInterp', () => {
-  it('moves toward target with positive stiffness', () => {
-   const result = springInterp(0, 100, 0, 0.1, 0.5, 0.016);
-   expect(result.value).toBeGreaterThan(0);
-   expect(result.velocity).toBeGreaterThan(0);
-  });
-
-  it('applies damping to velocity', () => {
-   const result = springInterp(50, 50, 10, 0, 0.5, 0.016);
-   expect(result.velocity).toBeLessThan(10);
-  });
-
-  it('returns both value and velocity', () => {
-   const result = springInterp(0, 100, 0, 0.1, 0.9, 0.016);
-   expect(result).toHaveProperty('value');
-   expect(result).toHaveProperty('velocity');
-   expect(typeof result.value).toBe('number');
-   expect(typeof result.velocity).toBe('number');
-  });
- });
-
  describe('bezierInterp', () => {
   it('at t=0 returns p0', () => {
    expect(bezierInterp(0, 0, 0.25, 0.75, 1)).toBe(0);
@@ -360,6 +322,37 @@ describe('Scalar functions', () => {
 
   it('preserves values within range', () => {
    expect(saturate(0.5)).toBeCloseTo(0.5);
+  });
+ });
+
+ describe('inverseLerpSafe', () => {
+  it('returns 0 for degenerate range (a === b)', () => {
+   expect(inverseLerpSafe(5, 5, 10)).toBe(0);
+   expect(inverseLerpSafe(0, 0, 100)).toBe(0);
+  });
+
+  it('works like inverseLerp for valid ranges', () => {
+   expect(inverseLerpSafe(0, 10, 0)).toBe(0);
+   expect(inverseLerpSafe(0, 10, 10)).toBe(1);
+   expect(inverseLerpSafe(0, 10, 5)).toBeCloseTo(0.5);
+  });
+
+  it('extrapolates outside the range', () => {
+   expect(inverseLerpSafe(0, 10, -5)).toBe(-0.5);
+   expect(inverseLerpSafe(0, 10, 15)).toBe(1.5);
+  });
+ });
+
+ describe('inverseLerpUnchecked', () => {
+  it('computes inverse lerp without validation', () => {
+   expect(inverseLerpUnchecked(0, 10, 0)).toBe(0);
+   expect(inverseLerpUnchecked(0, 10, 10)).toBe(1);
+   expect(inverseLerpUnchecked(0, 10, 5)).toBeCloseTo(0.5);
+  });
+
+  it('extrapolates outside the range', () => {
+   expect(inverseLerpUnchecked(0, 10, -5)).toBe(-0.5);
+   expect(inverseLerpUnchecked(0, 10, 15)).toBe(1.5);
   });
  });
 });

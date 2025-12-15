@@ -2,7 +2,7 @@
 
 > **safeLog**(`value`, `base`): `number`
 
-Defined in: [src/auxiliary/numeric/safety.ts:185](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/auxiliary/numeric/safety.ts#L185)
+Defined in: [src/auxiliary/numeric/safety.ts:193](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/auxiliary/numeric/safety.ts#L193)
 
 Safe logarithm (returns -Infinity for <= 0).
 
@@ -12,28 +12,28 @@ Safe logarithm (returns -Infinity for <= 0).
 
 `number`
 
-Value to take logarithm of
+Value to take logarithm of.
 
 ### base
 
 `number` = `Math.E`
 
-Logarithm base (default: Math.E for natural log)
+Logarithm base (default: Math.E for natural log).
 
 ## Returns
 
 `number`
 
-Logarithm or -Infinity for non-positive values
+Logarithm or -Infinity for non-positive values.
 
 ## Example
 
 ```typescript
-safeLog(Math.E);         // 1
-safeLog(10, 10);         // 1
-safeLog(100, 10);        // 2
-safeLog(0);              // -Infinity
-safeLog(-1);             // -Infinity
+safeLog(Math.E); // 1
+safeLog(10, 10); // 1
+safeLog(100, 10); // 2
+safeLog(0); // -Infinity
+safeLog(-1); // -Infinity
 ```
 
 ## Since

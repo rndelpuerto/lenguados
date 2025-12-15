@@ -1,7 +1,7 @@
 /**
- * @file deterministic/PrecisionMath.ts
+ * @file deterministic/precision-math.ts
  * @module @lenguados/math2d/deterministic
- * @description High-precision arithmetic using compensation techniques
+ * @description High-precision arithmetic using compensation techniques.
  *
  * @remarks
  * This module intentionally uses inline validation to avoid circular
@@ -9,33 +9,46 @@
  * depends on auxiliary/numeric, which in turn uses PrecisionMath.
  */
 
+/* ======================================================================== */
+/* Types                                                                     */
+/* ======================================================================== */
+
 /**
- * Result of a compensated arithmetic operation
+ * Result of a compensated arithmetic operation.
+ *
+ * @category Types
+ * @since 0.7.0
  */
 export interface CompensatedResult {
- /** The primary result */
+ /** The primary result. */
  value: number;
- /** The error/compensation term */
+ /** The error/compensation term. */
  error: number;
 }
 
 /**
- * Two-sum result for exact floating-point addition
+ * Two-sum result for exact floating-point addition.
+ *
+ * @category Types
+ * @since 0.7.0
  */
 export interface TwoSumResult {
- /** The rounded sum */
+ /** The rounded sum. */
  sum: number;
- /** The exact error */
+ /** The exact error. */
  error: number;
 }
 
 /**
- * Two-product result for exact floating-point multiplication
+ * Two-product result for exact floating-point multiplication.
+ *
+ * @category Types
+ * @since 0.7.0
  */
 export interface TwoProductResult {
- /** The rounded product */
+ /** The rounded product. */
  product: number;
- /** The exact error */
+ /** The exact error. */
  error: number;
 }
 
@@ -53,24 +66,33 @@ export interface TwoProductResult {
  * console.log(sum);    // 1e20 (lost precision)
  * console.log(error);  // 1 (exact error)
  * ```
+ *
+ * @category Precision
+ * @since 0.7.0
  */
 export class PrecisionMath {
  /**
   * Inline validation to avoid circular dependency with validation module.
   * Returns 0 for non-finite values, otherwise returns the value unchanged.
-  * @param value - Value to sanitize
-  * @returns The value if finite, 0 otherwise
+  *
+  * @param value - Value to sanitize.
+  * @returns The value if finite, 0 otherwise.
   * @internal
   */
  private static sanitize(value: number): number {
   return Number.isFinite(value) ? value : 0;
  }
 
+ /* ======================================================================== */
+ /* Summation                                                                */
+ /* ======================================================================== */
+
  /**
   * Kahan summation algorithm for accurate sum of many numbers.
   * Compensates for rounding errors in floating-point addition.
-  * @param values - Array of numbers to sum
-  * @returns Compensated sum
+  *
+  * @param values - Array of numbers to sum.
+  * @returns Compensated sum.
   *
   * @example
   * ```typescript
@@ -79,6 +101,9 @@ export class PrecisionMath {
   * // Kahan sum maintains precision
   * const kahan = PrecisionMath.kahanSum([0.1, 0.2, 0.3]);
   * ```
+  *
+  * @category Precision
+  * @since 0.7.0
   */
  static kahanSum(values: readonly number[]): number {
   let sum = 0;
@@ -98,8 +123,12 @@ export class PrecisionMath {
  /**
   * Neumaier summation - improved Kahan algorithm.
   * Better handles cases where values vary greatly in magnitude.
-  * @param values - Array of numbers to sum
-  * @returns Compensated sum
+  *
+  * @param values - Array of numbers to sum.
+  * @returns Compensated sum.
+  *
+  * @category Precision
+  * @since 0.7.0
   */
  static neumaierSum(values: readonly number[]): number {
   let sum = 0;
@@ -123,16 +152,24 @@ export class PrecisionMath {
   return sum + compensation;
  }
 
+ /* ======================================================================== */
+ /* Error-Free Transforms                                                    */
+ /* ======================================================================== */
+
  /**
   * Two-sum algorithm: exact floating-point addition.
   * Returns both the rounded sum and the exact error.
-  * @param a - First operand
-  * @param b - Second operand
-  * @returns Sum and error such that a + b = sum + error exactly
+  *
+  * @param a - First operand.
+  * @param b - Second operand.
+  * @returns Sum and error such that a + b = sum + error exactly.
   *
   * @remarks
   * Based on Knuth's algorithm. The error term captures the
   * exact rounding error, allowing for extended precision.
+  *
+  * @category Precision
+  * @since 0.7.0
   */
  static twoSum(a: number, b: number): TwoSumResult {
   const sanitizedA = this.sanitize(a);
@@ -150,9 +187,13 @@ export class PrecisionMath {
  /**
   * Fast two-sum when |a| >= |b| is known.
   * More efficient than general two-sum.
-  * @param a - Larger operand (by magnitude)
-  * @param b - Smaller operand (by magnitude)
-  * @returns Sum and error
+  *
+  * @param a - Larger operand (by magnitude).
+  * @param b - Smaller operand (by magnitude).
+  * @returns Sum and error.
+  *
+  * @category Precision
+  * @since 0.7.0
   */
  static fastTwoSum(a: number, b: number): TwoSumResult {
   const sanitizedA = this.sanitize(a);
@@ -164,13 +205,17 @@ export class PrecisionMath {
 
  /**
   * Two-product algorithm: exact floating-point multiplication.
-  * @param a - First operand
-  * @param b - Second operand
-  * @returns Product and error such that a * b = product + error exactly
+  *
+  * @param a - First operand.
+  * @param b - Second operand.
+  * @returns Product and error such that a * b = product + error exactly.
   *
   * @remarks
   * Uses FMA (Fused Multiply-Add) if available, otherwise falls back
   * to Veltkamp splitting for exact multiplication.
+  *
+  * @category Precision
+  * @since 0.7.0
   */
  static twoProduct(a: number, b: number): TwoProductResult {
   const sanitizedA = this.sanitize(a);
@@ -200,10 +245,18 @@ export class PrecisionMath {
   return { product, error };
  }
 
+ /* ======================================================================== */
+ /* Compensated Operations                                                   */
+ /* ======================================================================== */
+
  /**
   * Compensated multiplication using error tracking.
-  * @param values - Array of numbers to multiply
-  * @returns Compensated product
+  *
+  * @param values - Array of numbers to multiply.
+  * @returns Compensated product.
+  *
+  * @category Precision
+  * @since 0.7.0
   */
  static compensatedProduct(values: readonly number[]): CompensatedResult {
   if (values.length === 0) {
@@ -225,11 +278,15 @@ export class PrecisionMath {
 
  /**
   * Compensated dot product of two vectors.
-  * @param a - First vector
-  * @param b - Second vector
-  * @returns Compensated dot product
   *
-  * @throws {Error} If vectors have different lengths
+  * @param a - First vector.
+  * @param b - Second vector.
+  * @returns Compensated dot product.
+  *
+  * @throws {Error} If vectors have different lengths.
+  *
+  * @category Precision
+  * @since 0.7.0
   */
  static compensatedDot(a: readonly number[], b: readonly number[]): CompensatedResult {
   if (a.length !== b.length) {
@@ -253,8 +310,12 @@ export class PrecisionMath {
 
  /**
   * Extended precision addition using compensation.
-  * @param values - Values to sum with their errors
-  * @returns Sum with combined error
+  *
+  * @param values - Values to sum with their errors.
+  * @returns Sum with combined error.
+  *
+  * @category Precision
+  * @since 0.7.0
   */
  static extendedSum(values: readonly CompensatedResult[]): CompensatedResult {
   // Sum primary values

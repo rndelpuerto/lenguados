@@ -2,7 +2,7 @@
 
 > **safeMod**(`dividend`, `divisor`): `number`
 
-Defined in: [src/auxiliary/numeric/safety.ts:251](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/auxiliary/numeric/safety.ts#L251)
+Defined in: [src/auxiliary/numeric/safety.ts:259](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/auxiliary/numeric/safety.ts#L259)
 
 Safe modulo that handles negative divisor.
 
@@ -12,19 +12,19 @@ Safe modulo that handles negative divisor.
 
 `number`
 
-Value to divide
+Value to divide.
 
 ### divisor
 
 `number`
 
-Divisor
+Divisor.
 
 ## Returns
 
 `number`
 
-Modulo result or 0 if divisor is 0
+Modulo result or 0 if divisor is 0.
 
 ## Remarks
 
@@ -34,11 +34,11 @@ sign as the divisor (Euclidean modulo).
 ## Example
 
 ```typescript
-safeMod(7, 3);       // 1
-safeMod(-7, 3);      // 2 (not -1)
-safeMod(7, -3);      // -2 (not 1)
-safeMod(-7, -3);     // -1
-safeMod(5, 0);       // 0 (safe fallback)
+safeMod(7, 3); // 1
+safeMod(-7, 3); // 2 (not -1)
+safeMod(7, -3); // -2 (not 1)
+safeMod(-7, -3); // -1
+safeMod(5, 0); // 0 (safe fallback)
 ```
 
 ## Since

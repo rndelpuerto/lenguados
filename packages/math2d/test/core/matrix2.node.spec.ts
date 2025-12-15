@@ -1,7 +1,15 @@
+/**
+ * @file test/core/matrix2.node.spec.ts
+ * @module @lenguados/math2d/core
+ * @description Tests for Matrix2 core behavior.
+ */
+
 import { describe, expect, it } from '@jest/globals';
 
 import { Matrix2 } from '../../src/core/matrix2';
 import { Vector2 } from '../../src/core/vector2';
+
+const DIGITS = 8; // toBeCloseTo decimal digits (8 for float tolerance)
 
 describe('Matrix2', () => {
  describe('Constants', () => {
@@ -613,7 +621,7 @@ describe('Matrix2', () => {
 
   it('transformVector transforms a vector', () => {
    const m = Matrix2.fromRotation(Math.PI / 2);
-   const v = { x: 1, y: 0 };
+   const v = new Vector2(1, 0);
    const result = m.transformVector(v);
    expect(result.x).toBeCloseTo(0);
    expect(result.y).toBeCloseTo(1);
@@ -621,7 +629,7 @@ describe('Matrix2', () => {
 
   it('transformVector with out parameter', () => {
    const m = Matrix2.fromScale(2);
-   const v = { x: 3, y: 4 };
+   const v = new Vector2(3, 4);
    const out = new Vector2();
    m.transformVector(v, out);
    expect(out.x).toBe(6);
@@ -1004,11 +1012,14 @@ describe('Matrix2', () => {
   });
 
   it('throws on short array', () => {
-   expect(() => new Matrix2([1, 2, 3] as [number, number, number, number])).toThrow(RangeError);
+   expect(() => new Matrix2([1, 2, 3] as unknown as [number, number, number, number])).toThrow(
+    RangeError,
+   );
   });
 
   it('throws on invalid arguments', () => {
-   expect(() => new Matrix2('invalid' as unknown as number)).toThrow(TypeError);
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   expect(() => new Matrix2('invalid' as any)).toThrow(TypeError);
   });
 
   it('constructs identity by default', () => {
@@ -1144,10 +1155,10 @@ describe('Matrix2', () => {
  });
 
  describe('Static Interpolation Extended', () => {
-  it('lerpUnclamped allows t outside [0,1]', () => {
+  it('lerp allows t outside [0,1]', () => {
    const a = new Matrix2(0, 0, 0, 0);
    const b = new Matrix2(10, 10, 10, 10);
-   const result = Matrix2.lerpUnclamped(a, b, 1.5);
+   const result = Matrix2.lerp(a, b, 1.5);
    expect(result.m00).toBe(15);
    expect(result.m11).toBe(15);
   });
@@ -1174,8 +1185,8 @@ describe('Matrix2', () => {
 
   it('nearZero tests if all components are near zero', () => {
    const m = new Matrix2(0.0001, -0.0001, 0.00001, -0.00001);
-   expect(Matrix2.nearZero(m, 0.001)).toBe(true);
-   expect(Matrix2.nearZero(m, 0.0000001)).toBe(false);
+   expect(Matrix2.isNearZero(m, 0.001)).toBe(true);
+   expect(Matrix2.isNearZero(m, 0.0000001)).toBe(false);
   });
 
   it('hasNaN detects NaN in matrix', () => {
@@ -1210,9 +1221,16 @@ describe('Matrix2', () => {
    expect(Matrix2.isDiagonal(nonDiagonal)).toBe(false);
   });
 
-  it('isSingular tests if matrix is singular', () => {
-   expect(Matrix2.isSingular(Matrix2.ZERO)).toBe(true);
-   expect(Matrix2.isSingular(Matrix2.IDENTITY)).toBe(false);
+  it('isInvertible tests if matrix is invertible', () => {
+   expect(Matrix2.isInvertible(Matrix2.ZERO)).toBe(false);
+   expect(Matrix2.isInvertible(Matrix2.IDENTITY)).toBe(true);
+  });
+
+  it('isOrthogonal static tests if matrix is orthogonal', () => {
+   expect(Matrix2.isOrthogonal(Matrix2.IDENTITY)).toBe(true);
+   expect(Matrix2.isOrthogonal(Matrix2.fromRotation(Math.PI / 4))).toBe(true);
+   expect(Matrix2.isOrthogonal(new Matrix2(2, 0, 0, 2))).toBe(false);
+   expect(Matrix2.isOrthogonal(new Matrix2(1, 2, 3, 4))).toBe(false);
   });
  });
 
@@ -1277,6 +1295,27 @@ describe('Matrix2', () => {
    m.divideScalar(10);
    expect(m.m00).toBe(1);
    expect(m.m11).toBe(4);
+  });
+
+  it('divideScalarUnchecked divides without validation', () => {
+   const m = new Matrix2(10, 20, 30, 40);
+   m.divideScalarUnchecked(10);
+   expect(m.m00).toBe(1);
+   expect(m.m11).toBe(4);
+  });
+
+  it('divideScalarSafe returns zero matrix for zero divisor', () => {
+   const m = new Matrix2(10, 20, 30, 40);
+   m.divideScalarSafe(0);
+   expect(m.m00).toBe(0);
+   expect(m.m11).toBe(0);
+  });
+
+  it('static divideScalarUnchecked divides without validation', () => {
+   const m = new Matrix2(10, 20, 30, 40);
+   const result = Matrix2.divideScalarUnchecked(m, 10);
+   expect(result.m00).toBe(1);
+   expect(result.m11).toBe(4);
   });
 
   it('multiplyScalar is alias for scale', () => {
@@ -1394,7 +1433,7 @@ describe('Matrix2', () => {
 
   it('nearZero tests if near zero', () => {
    const m = new Matrix2(0.0001, -0.0001, 0, 0);
-   expect(m.nearZero(0.001)).toBe(true);
+   expect(m.isNearZero(0.001)).toBe(true);
   });
 
   it('hasNaN detects NaN', () => {
@@ -1422,9 +1461,9 @@ describe('Matrix2', () => {
    expect(m.isDiagonal()).toBe(true);
   });
 
-  it('isSingular checks singularity', () => {
+  it('isInvertible checks invertibility', () => {
    const m = new Matrix2(1, 2, 2, 4);
-   expect(m.isSingular()).toBe(true);
+   expect(m.isInvertible()).toBe(false);
   });
  });
 
@@ -1434,6 +1473,29 @@ describe('Matrix2', () => {
    m.rotate(Math.PI / 2);
    expect(m.m00).toBeCloseTo(0);
    expect(m.m01).toBeCloseTo(1);
+  });
+
+  it('rotateCS rotates using precomputed cos/sin', () => {
+   const m = new Matrix2(1, 0, 0, 1);
+   const cos = Math.cos(Math.PI / 2);
+   const sin = Math.sin(Math.PI / 2);
+   m.rotateCS(cos, sin);
+   expect(m.m00).toBeCloseTo(0);
+   expect(m.m01).toBeCloseTo(1);
+  });
+
+  it('static rotateCS matches static rotate', () => {
+   const m1 = Matrix2.fromScale({ x: 2, y: 1 });
+   const m2 = Matrix2.fromScale({ x: 2, y: 1 });
+   const angle = Math.PI / 4;
+   const cos = Math.cos(angle);
+   const sin = Math.sin(angle);
+   const r1 = Matrix2.rotate(m1, angle);
+   const r2 = Matrix2.rotateCS(m2, cos, sin);
+   expect(r1.m00).toBeCloseTo(r2.m00);
+   expect(r1.m01).toBeCloseTo(r2.m01);
+   expect(r1.m10).toBeCloseTo(r2.m10);
+   expect(r1.m11).toBeCloseTo(r2.m11);
   });
 
   it('scaleBy with vector scales per-axis', () => {
@@ -1550,11 +1612,11 @@ describe('Matrix2', () => {
    expect(result.m00).toBeCloseTo(3);
   });
 
-  it('lerpUnclamped allows extrapolation', () => {
+  it('lerp allows extrapolation', () => {
    expect.hasAssertions();
    const a = Matrix2.IDENTITY;
    const b = Matrix2.fromScale(3);
-   const result = Matrix2.lerpUnclamped(a, b, 2);
+   const result = Matrix2.lerp(a, b, 2);
    expect(result.m00).toBeCloseTo(5);
   });
  });
@@ -1574,7 +1636,7 @@ describe('Matrix2', () => {
  describe('Additional Instance Methods Coverage', () => {
   it('smoothStep instance method', () => {
    expect.hasAssertions();
-   const m = Matrix2.IDENTITY.clone();
+   const m = new Matrix2();
    const target = Matrix2.fromScale(5);
    m.smoothStep(target, 0.5);
    expect(m.m00).toBeCloseTo(3);
@@ -1604,6 +1666,541 @@ describe('Matrix2', () => {
     values.push(v);
    }
    expect(values).toEqual([5, 6, 7, 8]);
+  });
+ });
+
+ describe('Coverage - Static lerpClamped', () => {
+  it('static lerpClamped clamps t to [0, 1]', () => {
+   const a = Matrix2.IDENTITY;
+   const b = Matrix2.fromScale(3);
+   const result = Matrix2.lerpClamped(a, b, 2);
+   expect(result.m00).toBeCloseTo(3, DIGITS);
+  });
+
+  it('static lerpClamped clamps negative t', () => {
+   const a = Matrix2.IDENTITY;
+   const b = Matrix2.fromScale(3);
+   const result = Matrix2.lerpClamped(a, b, -1);
+   expect(result.m00).toBeCloseTo(1, DIGITS);
+  });
+ });
+
+ describe('Coverage - Static smoothStep', () => {
+  it('static smoothStep interpolates smoothly', () => {
+   const a = Matrix2.IDENTITY;
+   const b = Matrix2.fromScale(5);
+   const result = Matrix2.smoothStep(a, b, 0.5);
+   expect(result.m00).toBeCloseTo(3, DIGITS);
+  });
+ });
+
+ describe('Coverage - Static scaleBy', () => {
+  it('static scaleBy with scalar', () => {
+   const m = Matrix2.IDENTITY;
+   const result = Matrix2.scaleBy(m, 2);
+   expect(result.m00).toBe(2);
+   expect(result.m11).toBe(2);
+  });
+
+  it('static scaleBy with vector', () => {
+   const m = Matrix2.IDENTITY;
+   const result = Matrix2.scaleBy(m, { x: 2, y: 3 });
+   expect(result.m00).toBe(2);
+   expect(result.m11).toBe(3);
+  });
+ });
+
+ describe('Coverage - Static rotate', () => {
+  it('static rotate rotates matrix', () => {
+   const m = Matrix2.IDENTITY;
+   const result = Matrix2.rotate(m, Math.PI / 2);
+   expect(result.m00).toBeCloseTo(0, DIGITS);
+   expect(result.m01).toBeCloseTo(1, DIGITS);
+  });
+ });
+
+ describe('Coverage - Instance determinant/trace/frobeniusNorm', () => {
+  it('determinant returns correct value', () => {
+   const m = new Matrix2(1, 2, 3, 4);
+   expect(m.determinant()).toBe(1 * 4 - 2 * 3);
+  });
+
+  it('trace returns sum of diagonal', () => {
+   const m = new Matrix2(5, 2, 3, 7);
+   expect(m.trace()).toBe(12);
+  });
+
+  it('frobeniusNorm returns correct norm', () => {
+   const m = new Matrix2(1, 2, 3, 4);
+   expect(m.frobeniusNorm()).toBeCloseTo(Math.sqrt(1 + 4 + 9 + 16), DIGITS);
+  });
+ });
+
+ describe('Coverage - Object.freeze on matrix', () => {
+  it('Object.freeze freezes the matrix object', () => {
+   const m = new Matrix2(1, 2, 3, 4);
+   const frozen = Object.freeze(m);
+   expect(frozen).toBe(m);
+   expect(Object.isFrozen(frozen)).toBe(true);
+  });
+ });
+
+ describe('Coverage - Instance scaleBy and rotate', () => {
+  it('instance scaleBy with scalar', () => {
+   const m = new Matrix2();
+   m.scaleBy(2);
+   expect(m.m00).toBe(2);
+  });
+
+  it('instance scaleBy with vector', () => {
+   const m = new Matrix2();
+   m.scaleBy({ x: 2, y: 3 });
+   expect(m.m00).toBe(2);
+   expect(m.m11).toBe(3);
+  });
+
+  it('instance rotate rotates', () => {
+   const m = new Matrix2();
+   m.rotate(Math.PI / 2);
+   expect(m.m00).toBeCloseTo(0, DIGITS);
+  });
+ });
+
+ describe('Coverage - Static isFinite and hasNaN', () => {
+  it('static isFinite returns true for finite matrix', () => {
+   expect(Matrix2.isFinite(Matrix2.IDENTITY)).toBe(true);
+  });
+
+  it('static isFinite returns false for infinite', () => {
+   expect(Matrix2.isFinite({ m00: Infinity, m01: 0, m10: 0, m11: 1 })).toBe(false);
+  });
+
+  it('static hasNaN returns false for normal matrix', () => {
+   expect(Matrix2.hasNaN(Matrix2.IDENTITY)).toBe(false);
+  });
+
+  it('static hasNaN returns true for NaN', () => {
+   expect(Matrix2.hasNaN({ m00: NaN, m01: 0, m10: 0, m11: 1 })).toBe(true);
+  });
+ });
+
+ describe('Coverage - Static hasInfinity', () => {
+  it('hasInfinity returns false for finite matrix', () => {
+   expect(Matrix2.hasInfinity(Matrix2.IDENTITY)).toBe(false);
+  });
+
+  it('hasInfinity returns true for Infinity', () => {
+   expect(Matrix2.hasInfinity({ m00: Infinity, m01: 0, m10: 0, m11: 1 })).toBe(true);
+  });
+
+  it('hasInfinity returns false for NaN (not infinity)', () => {
+   expect(Matrix2.hasInfinity({ m00: NaN, m01: 0, m10: 0, m11: 1 })).toBe(false);
+  });
+ });
+
+ describe('Coverage - Instance hasInfinity', () => {
+  it('instance hasInfinity returns false for finite', () => {
+   const m = Matrix2.IDENTITY;
+   expect(m.hasInfinity()).toBe(false);
+  });
+
+  it('instance hasInfinity returns true for infinite', () => {
+   const m = new Matrix2(Infinity, 0, 0, 1);
+   expect(m.hasInfinity()).toBe(true);
+  });
+ });
+
+ describe('Coverage - Static scale', () => {
+  it('static scale scales all components', () => {
+   const m = new Matrix2(1, 2, 3, 4);
+   const result = Matrix2.scale(m, 2);
+   expect(result.m00).toBe(2);
+   expect(result.m01).toBe(4);
+   expect(result.m10).toBe(6);
+   expect(result.m11).toBe(8);
+  });
+
+  it('static scale with out parameter', () => {
+   const m = new Matrix2(1, 2, 3, 4);
+   const out = new Matrix2();
+   const result = Matrix2.scale(m, 3, out);
+   expect(result).toBe(out);
+   expect(out.m00).toBe(3);
+  });
+ });
+
+ describe('Coverage - Column operations', () => {
+  it('getColumn returns column 0', () => {
+   const m = new Matrix2(1, 2, 3, 4);
+   const column = m.getColumn(0);
+   expect(column.x).toBe(1);
+   expect(column.y).toBe(2);
+  });
+
+  it('getColumn returns column 1', () => {
+   const m = new Matrix2(1, 2, 3, 4);
+   const column = m.getColumn(1);
+   expect(column.x).toBe(3);
+   expect(column.y).toBe(4);
+  });
+
+  it('getColumn throws for invalid index', () => {
+   const m = new Matrix2();
+   expect(() => m.getColumn(2)).toThrow(RangeError);
+  });
+
+  it('setColumn sets column 0', () => {
+   const m = new Matrix2();
+   m.setColumn(0, { x: 5, y: 6 });
+   expect(m.m00).toBe(5);
+   expect(m.m01).toBe(6);
+  });
+
+  it('setColumn sets column 1', () => {
+   const m = new Matrix2();
+   m.setColumn(1, { x: 7, y: 8 });
+   expect(m.m10).toBe(7);
+   expect(m.m11).toBe(8);
+  });
+
+  it('setColumn throws for invalid index', () => {
+   const m = new Matrix2();
+   expect(() => m.setColumn(2, { x: 1, y: 1 })).toThrow(RangeError);
+  });
+ });
+
+ describe('Coverage - Static determinant', () => {
+  it('determinant returns matrix determinant', () => {
+   const m = Matrix2.fromScale({ x: 2, y: 3 });
+   expect(Matrix2.determinant(m)).toBeCloseTo(6, DIGITS);
+  });
+ });
+
+ describe('Coverage - Static multiply', () => {
+  it('multiply multiplies two matrices', () => {
+   const a = Matrix2.fromScale({ x: 2, y: 1 });
+   const b = Matrix2.fromScale({ x: 1, y: 3 });
+   const result = Matrix2.multiply(a, b);
+   expect(result.m00).toBeCloseTo(2, DIGITS);
+   expect(result.m11).toBeCloseTo(3, DIGITS);
+  });
+ });
+
+ describe('Coverage - Static transpose', () => {
+  it('transpose transposes matrix', () => {
+   const m = new Matrix2(1, 2, 3, 4);
+   const t = Matrix2.transpose(m);
+   expect(t.m01).toBe(m.m10);
+   expect(t.m10).toBe(m.m01);
+  });
+ });
+
+ describe('Coverage - Static fromRotation', () => {
+  it('fromRotation creates rotation matrix', () => {
+   const m = Matrix2.fromRotation(Math.PI / 2);
+   expect(m.m00).toBeCloseTo(0, DIGITS);
+   expect(m.m01).toBeCloseTo(1, DIGITS);
+  });
+ });
+
+ describe('Coverage - Static add', () => {
+  it('add adds two matrices', () => {
+   const a = Matrix2.IDENTITY;
+   const b = Matrix2.IDENTITY;
+   const result = Matrix2.add(a, b);
+   expect(result.m00).toBe(2);
+   expect(result.m11).toBe(2);
+  });
+ });
+
+ describe('Coverage - Static subtract', () => {
+  it('subtract subtracts two matrices', () => {
+   const a = Matrix2.fromScale({ x: 2, y: 2 });
+   const b = Matrix2.IDENTITY;
+   const result = Matrix2.subtract(a, b);
+   expect(result.m00).toBe(1);
+   expect(result.m11).toBe(1);
+  });
+ });
+
+ describe('Coverage - Static lerp', () => {
+  it('lerp interpolates between matrices', () => {
+   const a = Matrix2.IDENTITY;
+   const b = Matrix2.fromScale({ x: 3, y: 3 });
+   const result = Matrix2.lerp(a, b, 0.5);
+   expect(result.m00).toBeCloseTo(2, DIGITS);
+   expect(result.m11).toBeCloseTo(2, DIGITS);
+  });
+ });
+
+ describe('Coverage - Instance determinant', () => {
+  it('determinant returns matrix determinant', () => {
+   const m = Matrix2.fromScale({ x: 2, y: 3 });
+   expect(m.determinant()).toBeCloseTo(6, DIGITS);
+  });
+ });
+
+ describe('Coverage - Instance multiply', () => {
+  it('multiply multiplies in place', () => {
+   const a = Matrix2.fromScale({ x: 2, y: 1 }).clone();
+   const b = Matrix2.fromScale({ x: 1, y: 3 });
+   a.multiply(b);
+   expect(a.m00).toBeCloseTo(2, DIGITS);
+   expect(a.m11).toBeCloseTo(3, DIGITS);
+  });
+ });
+
+ describe('Coverage - Instance transpose', () => {
+  it('transpose transposes in place', () => {
+   const m = new Matrix2(1, 2, 3, 4);
+   const orig01 = m.m01;
+   const orig10 = m.m10;
+   m.transpose();
+   expect(m.m01).toBe(orig10);
+   expect(m.m10).toBe(orig01);
+  });
+ });
+
+ describe('Coverage - Instance add', () => {
+  it('add adds in place', () => {
+   const a = new Matrix2();
+   a.add(Matrix2.IDENTITY);
+   expect(a.m00).toBe(2);
+   expect(a.m11).toBe(2);
+  });
+ });
+
+ describe('Coverage - Instance subtract', () => {
+  it('subtract subtracts in place', () => {
+   const a = Matrix2.fromScale({ x: 2, y: 2 }).clone();
+   a.subtract(Matrix2.IDENTITY);
+   expect(a.m00).toBe(1);
+   expect(a.m11).toBe(1);
+  });
+ });
+
+ describe('Coverage - Instance lerp', () => {
+  it('lerp interpolates in place', () => {
+   const a = new Matrix2();
+   a.lerp(Matrix2.fromScale({ x: 3, y: 3 }), 0.5);
+   expect(a.m00).toBeCloseTo(2, DIGITS);
+   expect(a.m11).toBeCloseTo(2, DIGITS);
+  });
+ });
+
+ describe('Coverage - Static fromArray', () => {
+  it('fromArray creates from array', () => {
+   const array = [1, 0, 0, 1];
+   const m = Matrix2.fromArray(array);
+   expect(m.m00).toBe(1);
+   expect(m.m11).toBe(1);
+  });
+ });
+
+ describe('Coverage - Instance toArray', () => {
+  it('toArray returns array', () => {
+   const m = Matrix2.IDENTITY;
+   const array = m.toArray();
+   expect(array[0]).toBe(1);
+   expect(array[3]).toBe(1);
+  });
+ });
+
+ describe('Coverage - Static inverse', () => {
+  it('inverse returns inverted matrix', () => {
+   const m = Matrix2.fromScale({ x: 2, y: 4 });
+   const inv = Matrix2.inverse(m);
+   expect(inv.m00).toBeCloseTo(0.5, DIGITS);
+   expect(inv.m11).toBeCloseTo(0.25, DIGITS);
+  });
+ });
+
+ describe('Coverage - Instance inverse', () => {
+  it('inverse inverts in place', () => {
+   const m = Matrix2.fromScale({ x: 2, y: 4 }).clone();
+   m.inverse();
+   expect(m.m00).toBeCloseTo(0.5, DIGITS);
+   expect(m.m11).toBeCloseTo(0.25, DIGITS);
+  });
+ });
+
+ describe('Coverage - inverse throw', () => {
+  it('static inverse throws on singular matrix', () => {
+   const m = Matrix2.fromScale({ x: 0, y: 1 });
+   expect(() => Matrix2.inverse(m)).toThrow(RangeError);
+  });
+
+  it('instance inverse throws on singular', () => {
+   const m = Matrix2.fromScale({ x: 0, y: 1 }).clone();
+   expect(() => m.inverse()).toThrow(RangeError);
+  });
+ });
+
+ describe('Coverage - inverseSafe', () => {
+  it('static inverseSafe returns valid inverse for invertible matrix', () => {
+   const m = Matrix2.fromScale({ x: 2, y: 3 });
+   const inv = Matrix2.inverseSafe(m);
+   expect(inv).not.toBeNull();
+   expect(inv!.m00).toBeCloseTo(0.5, DIGITS);
+  });
+
+  it('instance inverseSafe returns valid inverse', () => {
+   const m = Matrix2.fromScale({ x: 2, y: 3 }).clone();
+   const inv = m.inverseSafe();
+   expect(inv).not.toBeNull();
+  });
+ });
+
+ describe('Coverage - determinant', () => {
+  it('static determinant returns det(M)', () => {
+   const m = Matrix2.fromScale({ x: 2, y: 3 });
+   expect(Matrix2.determinant(m)).toBeCloseTo(6, DIGITS);
+  });
+ });
+
+ describe('Coverage - scaleBy', () => {
+  it('scaleBy with Vector2 applies non-uniform scaling', () => {
+   const m = Matrix2.fromRotation(0);
+   const result = Matrix2.scaleBy(m, { x: 2, y: 3 });
+   expect(result.m00).toBeCloseTo(2, DIGITS);
+   expect(result.m11).toBeCloseTo(3, DIGITS);
+  });
+
+  it('scaleBy with number applies uniform scaling', () => {
+   const m = Matrix2.IDENTITY;
+   const result = Matrix2.scaleBy(m, 5);
+   expect(result.m00).toBeCloseTo(5, DIGITS);
+   expect(result.m11).toBeCloseTo(5, DIGITS);
+  });
+ });
+
+ describe('Coverage - static copy', () => {
+  it('copy copies source to destination', () => {
+   const source = new Matrix2(1, 2, 3, 4);
+   const destination = new Matrix2();
+   const result = Matrix2.copy(source, destination);
+   expect(result).toBe(destination);
+   expect(destination.m00).toBe(1);
+   expect(destination.m11).toBe(4);
+  });
+ });
+
+ describe('Coverage - fromArray negative offset', () => {
+  it('fromArray throws on negative offset', () => {
+   expect(() => Matrix2.fromArray([1, 2, 3, 4], -1)).toThrow(RangeError);
+  });
+ });
+
+ describe('Coverage - ELEMENT_COUNT', () => {
+  it('Matrix2.ELEMENT_COUNT equals 4', () => {
+   expect(Matrix2.ELEMENT_COUNT).toBe(4);
+  });
+ });
+
+ describe('Coverage - Static floor', () => {
+  it('floor applies Math.floor to elements', () => {
+   const result = Matrix2.floor(new Matrix2(1.9, 2.1, 3.7, 4.4));
+   expect(result.m00).toBe(1);
+   expect(result.m01).toBe(2);
+   expect(result.m10).toBe(3);
+   expect(result.m11).toBe(4);
+  });
+ });
+
+ describe('Coverage - Static ceil', () => {
+  it('ceil applies Math.ceil to elements', () => {
+   const result = Matrix2.ceil(new Matrix2(1.1, 2.9, 3.2, 4.6));
+   expect(result.m00).toBe(2);
+   expect(result.m01).toBe(3);
+   expect(result.m10).toBe(4);
+   expect(result.m11).toBe(5);
+  });
+ });
+
+ describe('Coverage - Static round', () => {
+  it('round applies Math.round to elements', () => {
+   const result = Matrix2.round(new Matrix2(1.4, 2.5, 3.6, 4.1));
+   expect(result.m00).toBe(1);
+   expect(result.m01).toBe(3);
+   expect(result.m10).toBe(4);
+   expect(result.m11).toBe(4);
+  });
+ });
+
+ describe('Coverage - Static clamp', () => {
+  it('clamp restricts elements to bounds', () => {
+   const matrix = new Matrix2(0, 5, -1, 10);
+   const minM = new Matrix2(1, 1, 1, 1);
+   const maxM = new Matrix2(4, 4, 4, 4);
+   const result = Matrix2.clamp(matrix, minM, maxM);
+   expect(result.m00).toBe(1);
+   expect(result.m01).toBe(4);
+   expect(result.m10).toBe(1);
+   expect(result.m11).toBe(4);
+  });
+ });
+
+ describe('Coverage - Static clampScalar', () => {
+  it('clampScalar restricts all elements to scalar bounds', () => {
+   const matrix = new Matrix2(-5, 10, 3, 20);
+   const result = Matrix2.clampScalar(matrix, 0, 5);
+   expect(result.m00).toBe(0);
+   expect(result.m01).toBe(5);
+   expect(result.m10).toBe(3);
+   expect(result.m11).toBe(5);
+  });
+ });
+
+ describe('Coverage - Static smoothStep interpolation', () => {
+  it('smoothStep interpolates with smooth curve', () => {
+   const a = new Matrix2(0, 0, 0, 0);
+   const b = new Matrix2(10, 10, 10, 10);
+   const result = Matrix2.smoothStep(a, b, 0.5);
+   expect(result.m00).toBe(5); // 0.5 smoothstepped = 0.5
+  });
+ });
+
+ describe('Coverage - Static trunc', () => {
+  it('trunc applies Math.trunc to elements', () => {
+   const result = Matrix2.trunc(new Matrix2(1.9, -2.1, 3.7, -4.4));
+   expect(result.m00).toBe(1);
+   expect(result.m01).toBe(-2);
+   expect(result.m10).toBe(3);
+   expect(result.m11).toBe(-4);
+  });
+ });
+
+ describe('Coverage - Static abs', () => {
+  it('abs applies Math.abs to elements', () => {
+   const result = Matrix2.abs(new Matrix2(-1, 2, -3, 4));
+   expect(result.m00).toBe(1);
+   expect(result.m01).toBe(2);
+   expect(result.m10).toBe(3);
+   expect(result.m11).toBe(4);
+  });
+ });
+
+ describe('Coverage - Static min', () => {
+  it('min returns element-wise minimum', () => {
+   const a = new Matrix2(1, 5, 2, 8);
+   const b = new Matrix2(3, 2, 4, 1);
+   const result = Matrix2.min(a, b);
+   expect(result.m00).toBe(1);
+   expect(result.m01).toBe(2);
+   expect(result.m10).toBe(2);
+   expect(result.m11).toBe(1);
+  });
+ });
+
+ describe('Coverage - Static max', () => {
+  it('max returns element-wise maximum', () => {
+   const a = new Matrix2(1, 5, 2, 8);
+   const b = new Matrix2(3, 2, 4, 1);
+   const result = Matrix2.max(a, b);
+   expect(result.m00).toBe(3);
+   expect(result.m01).toBe(5);
+   expect(result.m10).toBe(4);
+   expect(result.m11).toBe(8);
   });
  });
 });

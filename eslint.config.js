@@ -89,6 +89,13 @@ export default defineFlatConfig([
   // “recommended” preset merged manually because flat‑config forbids `extends`
   rules: {
    ...jestPlg.configs.recommended.rules,
+   // Recognize assertion functions: fast-check, custom test helpers
+   'jest/expect-expect': [
+    'warn',
+    {
+     assertFunctionNames: ['expect', 'fc.assert', 'expectVecClose', 'expectMatTranslation'],
+    },
+   ],
    // Allow implicit return types only in tests.
    '@typescript-eslint/explicit-function-return-type': 'off',
   },
@@ -137,6 +144,22 @@ export default defineFlatConfig([
    'unicorn/prevent-abbreviations': [
     'warn',
     {
+     allowList: {
+      // Mathematical terms
+      mod: true,
+      modSafe: true,
+      safeMod: true,
+      modUnchecked: true,
+      flooredMod: true,
+      flooredModSafe: true,
+      flooredModUnchecked: true,
+      truncatedMod: true,
+      // Common transformation parameters (standard in gl-matrix, three.js)
+      dst: true,
+      src: true,
+      dir: true,
+      rel: true,
+     },
      replacements: {
       ctx: { context: true },
       len: { length: true },

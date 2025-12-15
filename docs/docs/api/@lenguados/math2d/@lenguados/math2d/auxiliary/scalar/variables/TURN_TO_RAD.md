@@ -1,8 +1,8 @@
-# Variable: TURN\_TO\_RAD
+# Variable: TURN_TO_RAD
 
-> `const` **TURN\_TO\_RAD**: `number` = `TAU`
+> `const` **TURN_TO_RAD**: `number` = `TAU`
 
-Defined in: [src/auxiliary/scalar/constants.ts:159](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/auxiliary/scalar/constants.ts#L159)
+Defined in: [src/auxiliary/scalar/constants.ts:190](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/auxiliary/scalar/constants.ts#L190)
 
 Conversion factor from turns to radians.
 

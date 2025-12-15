@@ -1,5 +1,6 @@
 /**
  * @file test/properties/matrix2.property.node.spec.ts
+ * @module @lenguados/math2d/core
  * @description Property-based tests for Matrix2.
  */
 
@@ -67,13 +68,23 @@ describe('Matrix2 Property-Based Tests', () => {
   });
 
   it('should satisfy: det(A * B) = det(A) * det(B)', () => {
+   // Use bounded matrices to avoid floating-point overflow in determinant computation
+   const arbBoundedMatrix2 = fc
+    .tuple(
+     fc.integer({ min: -100, max: 100 }),
+     fc.integer({ min: -100, max: 100 }),
+     fc.integer({ min: -100, max: 100 }),
+     fc.integer({ min: -100, max: 100 }),
+    )
+    .map(([m00, m01, m10, m11]) => new Matrix2(m00, m01, m10, m11));
+
    fc.assert(
-    fc.property(arbMatrix2, arbMatrix2, (a, b) => {
+    fc.property(arbBoundedMatrix2, arbBoundedMatrix2, (a, b) => {
      const product = Matrix2.multiply(a, b);
      const detProduct = product.determinant();
      const detA = a.determinant();
      const detB = b.determinant();
-     // Relative tolerance for large determinants
+     // Relative tolerance for determinants
      const maxDet = Math.max(Math.abs(detA * detB), 1);
      return Math.abs(detProduct - detA * detB) < TEST_TOLERANCE * maxDet;
     }),
@@ -162,8 +173,8 @@ describe('Matrix2 Property-Based Tests', () => {
    fc.assert(
     fc.property(arbRotationMatrix2, arbVector2, (rot, v) => {
      const transformed = Matrix2.transformVector(rot, v);
-     const originalLength = Vector2.length(v);
-     const transformedLength = Vector2.length(transformed);
+     const originalLength = Vector2.magnitude(v);
+     const transformedLength = Vector2.magnitude(transformed);
      return (
       Math.abs(originalLength - transformedLength) < TEST_TOLERANCE * Math.max(originalLength, 1)
      );

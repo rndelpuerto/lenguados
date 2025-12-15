@@ -1,16 +1,26 @@
 /**
- * @file properties/vector2.property.node.spec.ts
- * @description Property-based tests for Vector2 class.
- *
- * These tests verify mathematical invariants that should hold for all inputs,
- * using randomly generated test cases via fast-check.
+ * @file test/properties/vector2.property.node.spec.ts
+ * @module @lenguados/math2d/core
+ * @description Property-based tests for Vector2.
  */
 
 import { describe, it } from '@jest/globals';
 import * as fc from 'fast-check';
 
+import { Complex } from '../../src/core/complex';
+import { Matrix2 } from '../../src/core/matrix2';
+import { Matrix3 } from '../../src/core/matrix3';
+import { Transform2 } from '../../src/core/transform2';
 import { Vector2 } from '../../src/core/vector2';
-import { arbAngle, arbNonZeroVector2, arbVector2 } from '../arbitraries';
+import {
+ arbAngle,
+ arbComplex,
+ arbMatrix2,
+ arbMatrix3,
+ arbNonZeroVector2,
+ arbTransform2,
+ arbVector2,
+} from '../arbitraries';
 
 // Using 1e-6 tolerance - realistic for floating-point operations
 const TEST_TOLERANCE = 1e-6;
@@ -135,7 +145,7 @@ describe('Vector2 Properties', () => {
    fc.assert(
     fc.property(arbVector2, (a) => {
      const dotSelf = Vector2.dot(a, a);
-     const lengthSq = Vector2.lengthSquared(a);
+     const lengthSq = Vector2.magnitudeSquared(a);
      return Math.abs(dotSelf - lengthSq) < TEST_TOLERANCE;
     }),
    );
@@ -168,7 +178,7 @@ describe('Vector2 Properties', () => {
     fc.property(arbNonZeroVector2, (v) => {
      const normalized = Vector2.normalizeSafe(v);
      if (normalized.exactEquals(Vector2.ZERO)) return true; // Underflow case
-     return Math.abs(normalized.length() - 1) < TEST_TOLERANCE;
+     return Math.abs(normalized.magnitude() - 1) < TEST_TOLERANCE;
     }),
    );
   });
@@ -263,8 +273,8 @@ describe('Vector2 Properties', () => {
    fc.assert(
     fc.property(arbVector2, arbAngle, (v, theta) => {
      const rotated = Vector2.rotate(v, theta);
-     const originalLength = Vector2.length(v);
-     const rotatedLength = Vector2.length(rotated);
+     const originalLength = Vector2.magnitude(v);
+     const rotatedLength = Vector2.magnitude(rotated);
      // Relative tolerance - 1e-6 relative error for floating point
      const tolerance = Math.max(1e-10, originalLength * 1e-6);
      return Math.abs(originalLength - rotatedLength) < tolerance;
@@ -357,6 +367,56 @@ describe('Vector2 Properties', () => {
       return result.nearEquals(a, TEST_TOLERANCE);
      },
     ),
+   );
+  });
+ });
+});
+
+describe('Vector2 Cross-Module Equivalence', () => {
+ describe('applyComplex ≡ Complex.apply', () => {
+  it('should produce identical results', () => {
+   fc.assert(
+    fc.property(arbComplex, arbVector2, (c, v) => {
+     const fromVector = Vector2.applyComplex(v, c);
+     const fromComplex = Complex.apply(c, v);
+     return fromVector.nearEquals(fromComplex, 1e-10);
+    }),
+   );
+  });
+ });
+
+ describe('applyMatrix2 ≡ Matrix2.transformVector', () => {
+  it('should produce identical results', () => {
+   fc.assert(
+    fc.property(arbMatrix2, arbVector2, (m, v) => {
+     const fromVector = Vector2.applyMatrix2(v, m);
+     const fromMatrix = Matrix2.transformVector(m, v);
+     return fromVector.nearEquals(fromMatrix, 1e-10);
+    }),
+   );
+  });
+ });
+
+ describe('applyTransform2 ≡ Transform2.transformPoint', () => {
+  it('should produce identical results', () => {
+   fc.assert(
+    fc.property(arbTransform2, arbVector2, (t, v) => {
+     const fromVector = Vector2.applyTransform2(v, t);
+     const fromTransform = Transform2.transformPoint(t, v);
+     return fromVector.nearEquals(fromTransform, 1e-10);
+    }),
+   );
+  });
+ });
+
+ describe('applyMatrix3 ≡ Matrix3.transformPoint', () => {
+  it('should produce identical results', () => {
+   fc.assert(
+    fc.property(arbMatrix3, arbVector2, (m, v) => {
+     const fromVector = Vector2.applyMatrix3(v, m);
+     const fromMatrix = Matrix3.transformPoint(m, v);
+     return fromVector.nearEquals(fromMatrix, 1e-10);
+    }),
    );
   });
  });

@@ -2,9 +2,9 @@
 
 > **assertSafeInteger**(`value`, `name?`): `void`
 
-Defined in: [src/validation/assert.ts:397](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/validation/assert.ts#L397)
+Defined in: [src/validation/assert.ts:286](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/validation/assert.ts#L286)
 
-Asserts that an integer is within safe JavaScript integer range.
+Asserts that a value is a safe JavaScript integer.
 
 ## Parameters
 
@@ -12,13 +12,13 @@ Asserts that an integer is within safe JavaScript integer range.
 
 `number`
 
-Value to check
+Numeric value to validate.
 
 ### name?
 
 `string`
 
-Parameter name for error messages
+Parameter name for error messages (optional).
 
 ## Returns
 
@@ -26,18 +26,23 @@ Parameter name for error messages
 
 ## Throws
 
-If value is not a safe integer
+If value is not a safe integer.
 
 ## Remarks
 
 Safe integers are integers that can be exactly represented as
-IEEE-754 double precision numbers. Range: -(2^53 - 1) to 2^53 - 1.
+IEEE-754 double precision numbers. Range: -(2⁵³ - 1) to 2⁵³ - 1.
+No-op when assertions are disabled.
 
 ## Example
 
 ```typescript
 function setIndex(i: number): void {
-  assertSafeInteger(i, 'index');
-  this.index = i;
+ assertSafeInteger(i, 'index');
+ this.index = i;
 }
 ```
+
+## Since
+
+0.1.0

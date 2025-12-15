@@ -1,17 +1,19 @@
 /**
  * @file auxiliary/numeric/rounding.ts
  * @module @lenguados/math2d/auxiliary/numeric
- * @description Rounding and quantization operations
+ * @description Rounding and quantization operations.
  */
 
+import { log } from '../../deterministic/deterministic-kernels';
 import { RoundingControl } from '../../deterministic/rounding-control';
 import { clamp } from '../scalar/arithmetic';
+import { LN_2 } from '../scalar/constants';
 
 /**
  * Rounds to nearest integer.
  * Uses banker's rounding (round half to even).
- * @param value - Value to round
- * @returns Rounded integer
+ * @param value - Value to round.
+ * @returns Rounded integer.
  *
  * @remarks
  * Banker's rounding reduces bias in repeated operations by
@@ -27,7 +29,7 @@ import { clamp } from '../scalar/arithmetic';
  * ```
  *
  * @category Rounding
- * @since 1.0.0
+ * @since 0.7.0
  */
 export function roundToInt(value: number): number {
  return RoundingControl.nearestEven(value);
@@ -35,9 +37,9 @@ export function roundToInt(value: number): number {
 
 /**
  * Rounds to specific decimal places.
- * @param value - Value to round
- * @param places - Number of decimal places
- * @returns Rounded value
+ * @param value - Value to round.
+ * @param places - Number of decimal places.
+ * @returns Rounded value.
  *
  * @example
  * ```typescript
@@ -47,7 +49,7 @@ export function roundToInt(value: number): number {
  * ```
  *
  * @category Rounding
- * @since 1.0.0
+ * @since 0.7.0
  */
 export function roundToPlaces(value: number, places: number): number {
  const factor = 10 ** places;
@@ -56,9 +58,9 @@ export function roundToPlaces(value: number, places: number): number {
 
 /**
  * Rounds to nearest multiple.
- * @param value - Value to round
- * @param multiple - Multiple to round to
- * @returns Rounded value
+ * @param value - Value to round.
+ * @param multiple - Multiple to round to.
+ * @returns Rounded value.
  *
  * @example
  * ```typescript
@@ -69,7 +71,7 @@ export function roundToPlaces(value: number, places: number): number {
  * ```
  *
  * @category Rounding
- * @since 1.0.0
+ * @since 0.7.0
  */
 export function roundToMultiple(value: number, multiple: number): number {
  if (multiple === 0) return value;
@@ -78,8 +80,8 @@ export function roundToMultiple(value: number, multiple: number): number {
 
 /**
  * Rounds to nearest power of two.
- * @param value - Value to round (must be positive)
- * @returns Nearest power of two
+ * @param value - Value to round (must be positive).
+ * @returns Nearest power of two.
  *
  * @example
  * ```typescript
@@ -91,12 +93,12 @@ export function roundToMultiple(value: number, multiple: number): number {
  * ```
  *
  * @category Rounding
- * @since 1.0.0
+ * @since 0.7.0
  */
 export function roundToPowerOfTwo(value: number): number {
  if (value <= 0) return 0;
 
- const log2 = Math.log2(value);
+ const log2 = log(value) / LN_2;
  const lower = 2 ** Math.floor(log2);
  const upper = 2 ** Math.ceil(log2);
 
@@ -106,10 +108,10 @@ export function roundToPowerOfTwo(value: number): number {
 
 /**
  * Snaps to grid with offset.
- * @param value - Value to snap
- * @param gridSize - Size of grid cells
- * @param offset - Grid offset (default: 0)
- * @returns Snapped value
+ * @param value - Value to snap.
+ * @param gridSize - Size of grid cells.
+ * @param offset - Grid offset (default: 0).
+ * @returns Snapped value.
  *
  * @example
  * ```typescript
@@ -120,7 +122,7 @@ export function roundToPowerOfTwo(value: number): number {
  * ```
  *
  * @category Rounding
- * @since 1.0.0
+ * @since 0.7.0
  */
 export function snapToGrid(value: number, gridSize: number, offset: number = 0): number {
  if (gridSize === 0) return value;
@@ -129,11 +131,11 @@ export function snapToGrid(value: number, gridSize: number, offset: number = 0):
 
 /**
  * Quantizes to specific number of levels.
- * @param value - Value to quantize
- * @param levels - Number of quantization levels
- * @param min - Minimum value (default: 0)
- * @param max - Maximum value (default: 1)
- * @returns Quantized value
+ * @param value - Value to quantize.
+ * @param levels - Number of quantization levels.
+ * @param min - Minimum value (default: 0).
+ * @param max - Maximum value (default: 1).
+ * @returns Quantized value.
  *
  * @example
  * ```typescript
@@ -143,7 +145,7 @@ export function snapToGrid(value: number, gridSize: number, offset: number = 0):
  * ```
  *
  * @category Rounding
- * @since 1.0.0
+ * @since 0.7.0
  */
 export function quantize(value: number, levels: number, min: number = 0, max: number = 1): number {
  if (levels <= 1) return min;
@@ -164,8 +166,8 @@ export function quantize(value: number, levels: number, min: number = 0, max: nu
 
 /**
  * Truncates to integer (towards zero).
- * @param value - Value to truncate
- * @returns Truncated integer
+ * @param value - Value to truncate.
+ * @returns Truncated integer.
  *
  * @example
  * ```typescript
@@ -176,7 +178,7 @@ export function quantize(value: number, levels: number, min: number = 0, max: nu
  * ```
  *
  * @category Rounding
- * @since 1.0.0
+ * @since 0.7.0
  */
 export function trunc(value: number): number {
  return RoundingControl.truncate(value);
@@ -184,8 +186,8 @@ export function trunc(value: number): number {
 
 /**
  * Gets fractional part.
- * @param value - Value to get fraction from
- * @returns Fractional part (always positive)
+ * @param value - Value to get fraction from.
+ * @returns Fractional part (always positive).
  *
  * @example
  * ```typescript
@@ -197,7 +199,7 @@ export function trunc(value: number): number {
  * ```
  *
  * @category Rounding
- * @since 1.0.0
+ * @since 0.7.0
  */
 export function fract(value: number): number {
  return value - Math.floor(value);

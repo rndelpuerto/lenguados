@@ -2,7 +2,7 @@
 
 > **safeAsin**(`value`): `number`
 
-Defined in: [src/auxiliary/numeric/safety.ts:163](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/auxiliary/numeric/safety.ts#L163)
+Defined in: [src/auxiliary/numeric/safety.ts:171](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/auxiliary/numeric/safety.ts#L171)
 
 Safe deterministic arc sine (clamps input to [-1, 1]).
 
@@ -12,13 +12,13 @@ Safe deterministic arc sine (clamps input to [-1, 1]).
 
 `number`
 
-Value to take arc sine of
+Value to take arc sine of.
 
 ## Returns
 
 `number`
 
-Arc sine in radians
+Arc sine in radians.
 
 ## Remarks
 
@@ -32,11 +32,11 @@ lockstep networking, and replay systems.
 ## Example
 
 ```typescript
-safeAsin(0.5);    // Math.PI / 6
-safeAsin(1);      // Math.PI / 2
-safeAsin(-1);     // -Math.PI / 2
-safeAsin(2);      // Math.PI / 2 (clamped to 1)
-safeAsin(-2);     // -Math.PI / 2 (clamped to -1)
+safeAsin(0.5); // Math.PI / 6
+safeAsin(1); // Math.PI / 2
+safeAsin(-1); // -Math.PI / 2
+safeAsin(2); // Math.PI / 2 (clamped to 1)
+safeAsin(-2); // -Math.PI / 2 (clamped to -1)
 ```
 
 ## Since

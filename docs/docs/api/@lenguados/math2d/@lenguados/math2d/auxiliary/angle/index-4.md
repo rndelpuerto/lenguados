@@ -6,7 +6,7 @@ auxiliary/angle/operations.ts
 
 ## Description
 
-Angular operations and comparisons
+Angular operations and comparisons.
 
 ## Operations
 
@@ -26,6 +26,6 @@ Angular operations and comparisons
 - [sinCosInto](functions/sinCosInto.md)
 - [sinCosNormalized](functions/sinCosNormalized.md)
 
-## Other
+## Types
 
 - [SinCos](interfaces/SinCos.md)

@@ -2,7 +2,7 @@
 
 > **freezeVector2**(`vector`): [`ReadonlyVector2`](../type-aliases/ReadonlyVector2.md)
 
-Defined in: [src/core/vector2.ts:85](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/core/vector2.ts#L85)
+Defined in: [src/core/vector2.ts:89](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/vector2.ts#L89)
 
 Permanently freezes a [Vector2](../classes/Vector2.md) instance so it can no longer be mutated.
 

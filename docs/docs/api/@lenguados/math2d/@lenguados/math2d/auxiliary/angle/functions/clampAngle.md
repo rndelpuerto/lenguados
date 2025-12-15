@@ -2,7 +2,7 @@
 
 > **clampAngle**(`angle`, `min`, `max`): `number`
 
-Defined in: [src/auxiliary/angle/operations.ts:278](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/auxiliary/angle/operations.ts#L278)
+Defined in: [src/auxiliary/angle/operations.ts:281](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/auxiliary/angle/operations.ts#L281)
 
 Clamps angle to arc between min and max.
 
@@ -12,25 +12,25 @@ Clamps angle to arc between min and max.
 
 `number`
 
-Angle to clamp
+Angle to clamp.
 
 ### min
 
 `number`
 
-Minimum angle
+Minimum angle.
 
 ### max
 
 `number`
 
-Maximum angle
+Maximum angle.
 
 ## Returns
 
 `number`
 
-Clamped angle
+Clamped angle.
 
 ## Remarks
 
@@ -39,9 +39,9 @@ Clamps to the nearest boundary of the shortest arc between min and max.
 ## Example
 
 ```typescript
-clampAngle(Math.PI / 4, 0, Math.PI / 2);      // Math.PI / 4 (within range)
-clampAngle(-Math.PI / 4, 0, Math.PI / 2);     // 0 (clamped to min)
-clampAngle(Math.PI, 0, Math.PI / 2);          // Math.PI / 2 (clamped to max)
+clampAngle(Math.PI / 4, 0, Math.PI / 2); // Math.PI / 4 (within range)
+clampAngle(-Math.PI / 4, 0, Math.PI / 2); // 0 (clamped to min)
+clampAngle(Math.PI, 0, Math.PI / 2); // Math.PI / 2 (clamped to max)
 ```
 
 ## Since

@@ -8,13 +8,16 @@ core/matrix2.ts
 
 Deterministic, allocation-aware 2×2 matrix implementation.
 
+## Core
+
+- [Matrix2](classes/Matrix2.md)
+
 ## Helpers
 
 ### isMatrix2Like
 
 Re-exports [isMatrix2Like](../types/functions/isMatrix2Like.md)
 
-## Other
+## Types
 
-- [Matrix2](classes/Matrix2.md)
 - [ReadonlyMatrix2](type-aliases/ReadonlyMatrix2.md)

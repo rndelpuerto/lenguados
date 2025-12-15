@@ -2,7 +2,7 @@
 
 > **radiansToTurns**(`radians`): `number`
 
-Defined in: [src/auxiliary/angle/conversion.ts:83](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/auxiliary/angle/conversion.ts#L83)
+Defined in: [src/auxiliary/angle/conversion.ts:83](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/auxiliary/angle/conversion.ts#L83)
 
 Converts radians to turns (1 turn = TAU radians = 2π radians).
 
@@ -12,21 +12,21 @@ Converts radians to turns (1 turn = TAU radians = 2π radians).
 
 `number`
 
-Angle in radians
+Angle in radians.
 
 ## Returns
 
 `number`
 
-Number of turns
+Number of turns.
 
 ## Example
 
 ```typescript
-radiansToTurns(2 * Math.PI);   // 1
-radiansToTurns(Math.PI);       // 0.5
-radiansToTurns(Math.PI / 2);   // 0.25
-radiansToTurns(4 * Math.PI);   // 2
+radiansToTurns(2 * Math.PI); // 1
+radiansToTurns(Math.PI); // 0.5
+radiansToTurns(Math.PI / 2); // 0.25
+radiansToTurns(4 * Math.PI); // 2
 ```
 
 ## Since

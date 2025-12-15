@@ -1,8 +1,8 @@
-# Variable: SQRT\_2
+# Variable: SQRT_2
 
-> `const` **SQRT\_2**: `number` = `Math.SQRT2`
+> `const` **SQRT_2**: `number` = `Math.SQRT2`
 
-Defined in: [src/auxiliary/scalar/constants.ts:197](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/auxiliary/scalar/constants.ts#L197)
+Defined in: [src/auxiliary/scalar/constants.ts:228](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/auxiliary/scalar/constants.ts#L228)
 
 Square root of 2 ≈ 1.41421356237.
 

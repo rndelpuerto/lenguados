@@ -12,18 +12,19 @@ Deterministic complex number implementation for advanced mathematics.
 
 ## Complex vs Rotation2: When to Use Each
 
-| Use Case | Recommended | Reason |
-|----------|-------------|--------|
-| Rotate rigid bodies | Rotation2 | Optimized, always unit magnitude |
-| Rotate sprites/vectors | Rotation2 | Simple and efficient |
-| Fourier analysis | **Complex** | Requires variable magnitude |
-| Polynomial roots | **Complex** | Needs full complex algebra |
-| Signal processing | **Complex** | Requires exp, log, powers |
-| Conformal mappings | **Complex** | General complex operations |
+| Use Case               | Recommended | Reason                           |
+| ---------------------- | ----------- | -------------------------------- |
+| Rotate rigid bodies    | Rotation2   | Optimized, always unit magnitude |
+| Rotate sprites/vectors | Rotation2   | Simple and efficient             |
+| Fourier analysis       | **Complex** | Requires variable magnitude      |
+| Polynomial roots       | **Complex** | Needs full complex algebra       |
+| Signal processing      | **Complex** | Requires exp, log, powers        |
+| Conformal mappings     | **Complex** | General complex operations       |
 
 ## Mathematical Relationship
 
 A Rotation2 is a **unit complex number** (|z| = 1):
+
 - `Rotation2(cos, sin)` ≡ `Complex(cos, sin)` where `cos² + sin² = 1`
 - Rotation composition = Complex multiplication
 - Rotation inverse = Complex conjugate (for unit complex)
@@ -44,11 +45,14 @@ const c2 = r2.toComplex();
 
 Rotation2 for 2D rotations in physics simulations
 
+## Core
+
+- [Complex](classes/Complex.md)
+
 ## Helpers
 
 - [freezeComplex](functions/freezeComplex.md)
 
-## Other
+## Types
 
-- [Complex](classes/Complex.md)
 - [ReadonlyComplex](type-aliases/ReadonlyComplex.md)

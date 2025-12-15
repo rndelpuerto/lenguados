@@ -1,7 +1,7 @@
 /**
- * @file tests/auxiliary/scalar/comparison.spec.ts
+ * @file test/auxiliary/scalar/comparison.node.spec.ts
  * @module @lenguados/math2d/auxiliary/scalar
- * @description Comprehensive tests for scalar comparison operations
+ * @description Comprehensive tests for scalar comparison operations.
  */
 
 import { describe, expect, test } from '@jest/globals';

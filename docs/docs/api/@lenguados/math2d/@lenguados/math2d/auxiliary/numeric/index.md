@@ -6,7 +6,7 @@ auxiliary/numeric/guards.ts
 
 ## Description
 
-Numeric type guards (boolean predicates)
+Numeric type guards (boolean predicates).
 
 ## Remarks
 
@@ -16,6 +16,7 @@ For safe operations that return numbers, see ./safety.
 **API Design Note:**
 Some functions like `isFinite` and `isNaN` are thin wrappers around
 `Number.*` methods. They are included for:
+
 - API consistency (all numeric guards in one place)
 - Tree-shaking (import only what you need)
 - Documentation (clear examples and edge case behavior)

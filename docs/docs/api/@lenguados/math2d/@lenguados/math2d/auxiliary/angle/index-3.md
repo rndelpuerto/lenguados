@@ -6,7 +6,7 @@ auxiliary/angle/normalization.ts
 
 ## Description
 
-Angle normalization operations
+Angle normalization operations.
 
 ## Normalization
 

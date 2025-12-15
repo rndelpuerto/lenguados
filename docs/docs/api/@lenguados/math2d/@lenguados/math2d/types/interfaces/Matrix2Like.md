@@ -1,8 +1,12 @@
 # Interface: Matrix2Like
 
-Defined in: [src/types/index.ts:44](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/types/index.ts#L44)
+Defined in: [src/types/index.ts:60](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/types/index.ts#L60)
 
 Mutable interface for 2x2 matrix components.
+
+## Since
+
+0.1.0
 
 ## Properties
 
@@ -10,28 +14,28 @@ Mutable interface for 2x2 matrix components.
 
 > **m00**: `number`
 
-Defined in: [src/types/index.ts:45](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/types/index.ts#L45)
+Defined in: [src/types/index.ts:61](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/types/index.ts#L61)
 
-***
+---
 
 ### m01
 
 > **m01**: `number`
 
-Defined in: [src/types/index.ts:46](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/types/index.ts#L46)
+Defined in: [src/types/index.ts:62](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/types/index.ts#L62)
 
-***
+---
 
 ### m10
 
 > **m10**: `number`
 
-Defined in: [src/types/index.ts:47](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/types/index.ts#L47)
+Defined in: [src/types/index.ts:63](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/types/index.ts#L63)
 
-***
+---
 
 ### m11
 
 > **m11**: `number`
 
-Defined in: [src/types/index.ts:48](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/types/index.ts#L48)
+Defined in: [src/types/index.ts:64](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/types/index.ts#L64)

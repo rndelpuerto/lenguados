@@ -2,7 +2,7 @@
 
 > **safeAcos**(`value`): `number`
 
-Defined in: [src/auxiliary/numeric/safety.ts:134](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/auxiliary/numeric/safety.ts#L134)
+Defined in: [src/auxiliary/numeric/safety.ts:142](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/auxiliary/numeric/safety.ts#L142)
 
 Safe deterministic arc cosine (clamps input to [-1, 1]).
 
@@ -12,13 +12,13 @@ Safe deterministic arc cosine (clamps input to [-1, 1]).
 
 `number`
 
-Value to take arc cosine of
+Value to take arc cosine of.
 
 ## Returns
 
 `number`
 
-Arc cosine in radians
+Arc cosine in radians.
 
 ## Remarks
 
@@ -32,11 +32,11 @@ lockstep networking, and replay systems.
 ## Example
 
 ```typescript
-safeAcos(0.5);    // Math.PI / 3
-safeAcos(1);      // 0
-safeAcos(-1);     // Math.PI
-safeAcos(2);      // 0 (clamped to 1)
-safeAcos(-2);     // Math.PI (clamped to -1)
+safeAcos(0.5); // Math.PI / 3
+safeAcos(1); // 0
+safeAcos(-1); // Math.PI
+safeAcos(2); // 0 (clamped to 1)
+safeAcos(-2); // Math.PI (clamped to -1)
 ```
 
 ## Since

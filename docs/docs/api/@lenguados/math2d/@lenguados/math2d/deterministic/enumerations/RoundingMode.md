@@ -1,8 +1,12 @@
 # Enumeration: RoundingMode
 
-Defined in: [src/deterministic/rounding-control.ts:25](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/deterministic/rounding-control.ts#L25)
+Defined in: [src/deterministic/rounding-control.ts:32](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/deterministic/rounding-control.ts#L32)
 
-Rounding modes for deterministic operations
+Rounding modes for deterministic operations.
+
+## Since
+
+0.1.0
 
 ## Enumeration Members
 
@@ -10,46 +14,46 @@ Rounding modes for deterministic operations
 
 > **CEIL**: `"ceil"`
 
-Defined in: [src/deterministic/rounding-control.ts:33](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/deterministic/rounding-control.ts#L33)
+Defined in: [src/deterministic/rounding-control.ts:40](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/deterministic/rounding-control.ts#L40)
 
 Round towards positive infinity (ceil)
 
-***
+---
 
 ### FLOOR
 
 > **FLOOR**: `"floor"`
 
-Defined in: [src/deterministic/rounding-control.ts:35](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/deterministic/rounding-control.ts#L35)
+Defined in: [src/deterministic/rounding-control.ts:42](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/deterministic/rounding-control.ts#L42)
 
 Round towards negative infinity (floor)
 
-***
+---
 
-### NEAREST\_AWAY
+### NEAREST_AWAY
 
-> **NEAREST\_AWAY**: `"nearestAway"`
+> **NEAREST_AWAY**: `"nearestAway"`
 
-Defined in: [src/deterministic/rounding-control.ts:31](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/deterministic/rounding-control.ts#L31)
+Defined in: [src/deterministic/rounding-control.ts:38](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/deterministic/rounding-control.ts#L38)
 
 Round to nearest, ties away from zero
 
-***
+---
 
-### NEAREST\_EVEN
+### NEAREST_EVEN
 
-> **NEAREST\_EVEN**: `"nearestEven"`
+> **NEAREST_EVEN**: `"nearestEven"`
 
-Defined in: [src/deterministic/rounding-control.ts:29](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/deterministic/rounding-control.ts#L29)
+Defined in: [src/deterministic/rounding-control.ts:36](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/deterministic/rounding-control.ts#L36)
 
 Round to nearest, ties to even (banker's rounding)
 
-***
+---
 
 ### TRUNCATE
 
 > **TRUNCATE**: `"truncate"`
 
-Defined in: [src/deterministic/rounding-control.ts:27](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/deterministic/rounding-control.ts#L27)
+Defined in: [src/deterministic/rounding-control.ts:34](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/deterministic/rounding-control.ts#L34)
 
 Round towards zero (truncate)

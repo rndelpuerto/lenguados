@@ -1,7 +1,7 @@
 /**
- * @file deterministic/RoundingControl.ts
+ * @file deterministic/rounding-control.ts
  * @module @lenguados/math2d/deterministic
- * @description Explicit rounding control for deterministic operations
+ * @description Explicit rounding control for deterministic operations.
  *
  * @remarks
  * **Design Decision**: This module uses inline validation (`sanitize*` methods)
@@ -14,13 +14,20 @@
  * 2. **Semantic clarity**: The `sanitize*` methods both validate AND return
  *    the sanitized value, which is cleaner for this use case.
  *
- * @see {@link validation/assert} for development-only assertions
+ * @see {@link validation/assert} for development-only assertions.
  */
 
 import { repeat } from '../auxiliary/numeric/wrapping';
 
+/* ======================================================================== */
+/* Rounding Modes                                                           */
+/* ======================================================================== */
+
 /**
- * Rounding modes for deterministic operations
+ * Rounding modes for deterministic operations.
+ *
+ * @category Rounding
+ * @since 0.7.0
  */
 export enum RoundingMode {
  /** Round towards zero (truncate) */
@@ -48,13 +55,24 @@ export enum RoundingMode {
  * RoundingControl.round(2.5, RoundingMode.FLOOR);         // 2
  * RoundingControl.round(2.5, RoundingMode.CEIL);          // 3
  * ```
+ *
+ * @category Rounding
+ * @since 0.7.0
  */
 export class RoundingControl {
+ /* ======================================================================== */
+ /* Rounding Operations                                                      */
+ /* ======================================================================== */
+
  /**
   * Rounds a value according to the specified rounding mode.
-  * @param value - Value to round
-  * @param mode - Rounding mode to use
-  * @returns Rounded value
+  *
+  * @param value - Value to round.
+  * @param mode - Rounding mode to use.
+  * @returns Rounded value.
+  *
+  * @category Rounding
+  * @since 0.7.0
   */
  static round(value: number, mode: RoundingMode): number {
   switch (mode) {
@@ -80,8 +98,12 @@ export class RoundingControl {
 
  /**
   * Truncates towards zero.
-  * @param value - Value to truncate
-  * @returns Truncated value
+  *
+  * @param value - Value to truncate.
+  * @returns Truncated value.
+  *
+  * @category Rounding
+  * @since 0.7.0
   */
  static truncate(value: number): number {
   const sanitized = this.sanitizeFinite(value, 'RoundingControl.truncate:value');
@@ -91,8 +113,12 @@ export class RoundingControl {
  /**
   * Rounds to nearest integer, ties to even (banker's rounding).
   * Reduces bias in repeated rounding operations.
-  * @param value - Value to round
-  * @returns Rounded value
+  *
+  * @param value - Value to round.
+  * @returns Rounded value.
+  *
+  * @category Rounding
+  * @since 0.7.0
   */
  static nearestEven(value: number): number {
   const sanitized = this.sanitizeFinite(value, 'RoundingControl.nearestEven:value');
@@ -109,8 +135,12 @@ export class RoundingControl {
  /**
   * Rounds to nearest integer, ties away from zero.
   * Traditional rounding taught in schools.
-  * @param value - Value to round
-  * @returns Rounded value
+  *
+  * @param value - Value to round.
+  * @returns Rounded value.
+  *
+  * @category Rounding
+  * @since 0.7.0
   */
  static nearestAway(value: number): number {
   const sanitized = this.sanitizeFinite(value, 'RoundingControl.nearestAway:value');
@@ -119,8 +149,12 @@ export class RoundingControl {
 
  /**
   * Rounds towards positive infinity (ceiling).
-  * @param value - Value to round
-  * @returns Rounded value
+  *
+  * @param value - Value to round.
+  * @returns Rounded value.
+  *
+  * @category Rounding
+  * @since 0.7.0
   */
  static ceil(value: number): number {
   const sanitized = this.sanitizeFinite(value, 'RoundingControl.ceil:value');
@@ -129,20 +163,32 @@ export class RoundingControl {
 
  /**
   * Rounds towards negative infinity (floor).
-  * @param value - Value to round
-  * @returns Rounded value
+  *
+  * @param value - Value to round.
+  * @returns Rounded value.
+  *
+  * @category Rounding
+  * @since 0.7.0
   */
  static floor(value: number): number {
   const sanitized = this.sanitizeFinite(value, 'RoundingControl.floor:value');
   return Math.floor(sanitized);
  }
 
+ /* ======================================================================== */
+ /* Quantization                                                             */
+ /* ======================================================================== */
+
  /**
   * Rounds to specified number of decimal places using given mode.
-  * @param value - Value to round
-  * @param places - Number of decimal places
-  * @param mode - Rounding mode
-  * @returns Rounded value
+  *
+  * @param value - Value to round.
+  * @param places - Number of decimal places.
+  * @param mode - Rounding mode.
+  * @returns Rounded value.
+  *
+  * @category Rounding
+  * @since 0.7.0
   */
  static roundToPlaces(
   value: number,
@@ -162,10 +208,14 @@ export class RoundingControl {
 
  /**
   * Rounds to nearest multiple using given mode.
-  * @param value - Value to round
-  * @param multiple - Multiple to round to
-  * @param mode - Rounding mode
-  * @returns Rounded value
+  *
+  * @param value - Value to round.
+  * @param multiple - Multiple to round to.
+  * @param mode - Rounding mode.
+  * @returns Rounded value.
+  *
+  * @category Rounding
+  * @since 0.7.0
   */
  static roundToMultiple(
   value: number,
@@ -186,16 +236,20 @@ export class RoundingControl {
  /**
   * Quantizes value to fixed-point representation.
   * Useful for ensuring consistent precision.
-  * @param value - Value to quantize
-  * @param fractionalBits - Number of fractional bits
-  * @param mode - Rounding mode
-  * @returns Quantized value
+  *
+  * @param value - Value to quantize.
+  * @param fractionalBits - Number of fractional bits.
+  * @param mode - Rounding mode.
+  * @returns Quantized value.
   *
   * @example
   * ```typescript
   * // 16-bit fractional precision
   * const quantized = RoundingControl.quantizeToFixed(3.14159, 16);
   * ```
+  *
+  * @category Rounding
+  * @since 0.7.0
   */
  static quantizeToFixed(
   value: number,
@@ -216,12 +270,17 @@ export class RoundingControl {
   return this.round(sanitizedValue * scale, mode) / scale;
  }
 
+ /* ======================================================================== */
+ /* Stochastic and Range Utilities                                           */
+ /* ======================================================================== */
+
  /**
   * Applies stochastic rounding using provided random value.
   * Useful for Monte Carlo simulations where bias matters.
-  * @param value - Value to round
-  * @param random - Random value in [0, 1)
-  * @returns Rounded value
+  *
+  * @param value - Value to round.
+  * @param random - Random value in [0, 1).
+  * @returns Rounded value.
   *
   * @example
   * ```typescript
@@ -229,6 +288,9 @@ export class RoundingControl {
   * // 70% chance of rounding to 3, 30% chance of rounding to 2
   * const rounded = RoundingControl.stochasticRound(2.7, Math.random());
   * ```
+  *
+  * @category Rounding
+  * @since 0.7.0
   */
  static stochasticRound(value: number, random: number): number {
   const sanitizedValue = this.sanitizeFinite(value, 'RoundingControl.stochasticRound:value');
@@ -242,9 +304,13 @@ export class RoundingControl {
  /**
   * Performs range reduction for periodic functions.
   * Reduces value to [0, period) using exact arithmetic.
-  * @param value - Value to reduce
-  * @param period - Period of the function
-  * @returns Reduced value in [0, period)
+  *
+  * @param value - Value to reduce.
+  * @param period - Period of the function.
+  * @returns Reduced value in [0, period).
+  *
+  * @category Rounding
+  * @since 0.7.0
   */
  static rangeReduce(value: number, period: number): number {
   const sanitizedValue = this.sanitizeFinite(value, 'RoundingControl.rangeReduce:value');
@@ -255,9 +321,14 @@ export class RoundingControl {
   return repeat(sanitizedValue, sanitizedPeriod);
  }
 
+ /* ======================================================================== */
+ /* Validation Helpers                                                       */
+ /* ======================================================================== */
+
  /**
   * Validates that value is finite. Always throws on invalid input.
   * @remarks Uses inline validation because configuration errors must always fail.
+  * @returns The validated finite value.
   * @internal
   */
  private static sanitizeFinite(value: number, label: string): number {
@@ -269,6 +340,7 @@ export class RoundingControl {
 
  /**
   * Validates that value is a finite integer.
+  * @returns The validated integer value.
   * @internal
   */
  private static sanitizeInteger(value: number, label: string): number {
@@ -281,6 +353,7 @@ export class RoundingControl {
 
  /**
   * Validates that value is finite and non-negative.
+  * @returns The validated non-negative value.
   * @internal
   */
  private static sanitizePositiveFinite(value: number, label: string): number {
@@ -296,6 +369,7 @@ export class RoundingControl {
   * @remarks
   * Out-of-range values are clamped to boundary values to ensure
   * deterministic behavior.
+  * @returns The sanitized random value in [0, 1).
   * @internal
   */
  private static sanitizeRandom(value: number): number {

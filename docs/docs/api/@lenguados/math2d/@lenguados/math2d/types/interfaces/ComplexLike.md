@@ -1,8 +1,12 @@
 # Interface: ComplexLike
 
-Defined in: [src/types/index.ts:157](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/types/index.ts#L157)
+Defined in: [src/types/index.ts:191](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/types/index.ts#L191)
 
 Mutable interface for complex numbers.
+
+## Since
+
+0.1.0
 
 ## Properties
 
@@ -10,12 +14,12 @@ Mutable interface for complex numbers.
 
 > **imag**: `number`
 
-Defined in: [src/types/index.ts:159](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/types/index.ts#L159)
+Defined in: [src/types/index.ts:193](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/types/index.ts#L193)
 
-***
+---
 
 ### real
 
 > **real**: `number`
 
-Defined in: [src/types/index.ts:158](https://github.com/rndelpuerto/lenguados/blob/5a1c09d8f0353db29cb52c06235fd1f375a985bd/packages/math2d/src/types/index.ts#L158)
+Defined in: [src/types/index.ts:192](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/types/index.ts#L192)

@@ -154,6 +154,12 @@ const buildPlugins = (format) => {
     sourceMap: !IS_PRODUCTION,
     minify: IS_PRODUCTION,
     target: TARGET_JS,
+    // Compile-time constant for dead code elimination
+    // In production: assertions are completely removed
+    // In development: assertions are active
+    define: {
+     __LENGUADOS_DEV__: IS_PRODUCTION ? 'false' : 'true',
+    },
    }),
   );
 
