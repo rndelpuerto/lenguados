@@ -16,11 +16,11 @@ import {
  exp,
  expSafe,
  log,
- logSafe,
+ logKernelSafe,
  pow,
+ pow2,
  sin,
  sinCos,
- sqrt,
  sqrtSafe,
  tan,
 } from '../../src/deterministic/deterministic-kernels';
@@ -28,27 +28,31 @@ import {
 const PI = Math.PI;
 
 describe('DeterministicKernels L0 Functions', () => {
- describe('sqrt', () => {
-  it('should compute square roots correctly', () => {
-   expect(sqrt(0)).toBe(0);
-   expect(sqrt(1)).toBe(1);
-   expect(sqrt(4)).toBeCloseTo(2, 14);
-   expect(sqrt(9)).toBeCloseTo(3, 14);
-   expect(sqrt(2)).toBeCloseTo(Math.sqrt(2), 14);
-   expect(sqrt(100)).toBeCloseTo(10, 14);
+ describe('pow2', () => {
+  it('should compute 2^n for normal exponents', () => {
+   expect(pow2(0)).toBe(1);
+   expect(pow2(1)).toBe(2);
+   expect(pow2(10)).toBe(1024);
+   expect(pow2(-1)).toBe(0.5);
   });
 
-  it('should handle edge cases', () => {
-   expect(sqrt(-1)).toBeNaN();
-   expect(sqrt(Infinity)).toBe(Infinity);
-   expect(sqrt(NaN)).toBeNaN();
+  it('should handle n = -1022 (smallest normal exponent)', () => {
+   expect(pow2(-1022)).toBe(2.2250738585072014e-308);
   });
 
-  it('should match Math.sqrt within 15 digits', () => {
-   for (let index = 0; index < 100; index++) {
-    const x = Math.random() * 1000;
-    expect(sqrt(x)).toBeCloseTo(Math.sqrt(x), 14);
-   }
+  it('should handle n = -1023 (first subnormal)', () => {
+   const result = pow2(-1023);
+   expect(result).toBe(5e-324 * Math.pow(2, 1074 - 1023));
+   expect(result).toBeGreaterThan(0);
+   expect(result).toBeLessThan(pow2(-1022));
+  });
+
+  it('should handle n = -1074 (smallest subnormal, 5e-324)', () => {
+   expect(pow2(-1074)).toBe(5e-324);
+  });
+
+  it('should handle n = 1023 (largest finite)', () => {
+   expect(pow2(1023)).toBe(8.98846567431158e307);
   });
  });
 
@@ -120,6 +124,20 @@ describe('DeterministicKernels L0 Functions', () => {
     expect(s * s + c * c).toBeCloseTo(1, 12);
    }
   });
+
+  it('should maintain precision for large angles (x = 1000)', () => {
+   const { sin: s, cos: c } = sinCos(1000.0);
+   expect(s).toBeCloseTo(Math.sin(1000.0), 10);
+   expect(c).toBeCloseTo(Math.cos(1000.0), 10);
+   expect(s * s + c * c).toBeCloseTo(1, 12);
+  });
+
+  it('should maintain precision for very large angles (x = 100000)', () => {
+   const { sin: s, cos: c } = sinCos(100000.0);
+   expect(s).toBeCloseTo(Math.sin(100000.0), 8);
+   expect(c).toBeCloseTo(Math.cos(100000.0), 8);
+   expect(s * s + c * c).toBeCloseTo(1, 12);
+  });
  });
 
  describe('tan', () => {
@@ -186,6 +204,34 @@ describe('DeterministicKernels L0 Functions', () => {
    expect(atan2(-Infinity, 1)).toBeCloseTo(-PI / 2, 14); // -PI/2
    expect(atan2(Infinity, -1)).toBeCloseTo(PI / 2, 14); // PI/2
    expect(atan2(-Infinity, -1)).toBeCloseTo(-PI / 2, 14); // -PI/2
+  });
+
+  it('should handle all 8 IEEE 754 signed-zero cases', () => {
+   // atan2(+0, +0) = +0
+   expect(atan2(0, 0)).toBe(0);
+   expect(Object.is(atan2(0, 0), 0)).toBe(true);
+
+   // atan2(+0, -0) = +PI
+   expect(atan2(0, -0)).toBeCloseTo(PI, 14);
+
+   // atan2(-0, +0) = -0
+   expect(Object.is(atan2(-0, 0), -0)).toBe(true);
+
+   // atan2(-0, -0) = -PI
+   expect(atan2(-0, -0)).toBeCloseTo(-PI, 14);
+
+   // atan2(+0, x>0) = +0
+   expect(atan2(0, 5)).toBe(0);
+   expect(Object.is(atan2(0, 5), 0)).toBe(true);
+
+   // atan2(-0, x>0) = -0
+   expect(Object.is(atan2(-0, 5), -0)).toBe(true);
+
+   // atan2(+0, x<0) = +PI
+   expect(atan2(0, -5)).toBeCloseTo(PI, 14);
+
+   // atan2(-0, x<0) = -PI
+   expect(atan2(-0, -5)).toBeCloseTo(-PI, 14);
   });
 
   it('should match Math.atan2', () => {
@@ -276,15 +322,48 @@ describe('DeterministicKernels L0 Functions', () => {
   });
  });
 
- describe('logSafe', () => {
+ describe('log precision near boundaries', () => {
+  it('should be accurate for values just above a power of 2', () => {
+   // log(2.0000000001) should be very close to ln(2)
+   const result = log(2.0000000001);
+   expect(result).toBeCloseTo(Math.log(2.0000000001), 10);
+  });
+
+  it('should be accurate for values just below a power of 2', () => {
+   const result = log(1.9999999999);
+   expect(result).toBeCloseTo(Math.log(1.9999999999), 10);
+  });
+
+  it('should be accurate at sqrt(2)/2 boundary', () => {
+   const sqrtHalf = 0.7071067811865476; // sqrt(2)/2
+   const result = log(sqrtHalf);
+   // -ln(2)/2 = -0.34657359027997264
+   expect(result).toBeCloseTo(-0.34657359027997264, 12);
+  });
+
+  it('should be accurate near sqrt(2)', () => {
+   const result = log(Math.SQRT2);
+   // ln(sqrt(2)) = ln(2)/2
+   expect(result).toBeCloseTo(0.34657359027997264, 12);
+  });
+
+  it('should be accurate at powers of 2', () => {
+   expect(log(2)).toBeCloseTo(Math.LN2, 12);
+   expect(log(4)).toBeCloseTo(2 * Math.LN2, 12);
+   expect(log(0.5)).toBeCloseTo(-Math.LN2, 12);
+   expect(log(0.25)).toBeCloseTo(-2 * Math.LN2, 12);
+  });
+ });
+
+ describe('logKernelSafe', () => {
   it('should return 0 for non-positive values', () => {
-   expect(logSafe(-1)).toBe(0);
-   expect(logSafe(0)).toBe(0);
-   expect(logSafe(-100)).toBe(0);
+   expect(logKernelSafe(-1)).toBe(0);
+   expect(logKernelSafe(0)).toBe(0);
+   expect(logKernelSafe(-100)).toBe(0);
   });
 
   it('should compute log for positive values', () => {
-   expect(logSafe(Math.E)).toBeCloseTo(1, 12);
+   expect(logKernelSafe(Math.E)).toBeCloseTo(1, 12);
   });
  });
 
@@ -308,11 +387,25 @@ describe('DeterministicKernels L0 Functions', () => {
     expect(exp(x)).toBeCloseTo(Math.exp(x), 6);
    }
   });
+
+  it('should handle near-overflow boundary (exp(709))', () => {
+   const result = exp(709);
+   expect(Number.isFinite(result)).toBe(true);
+   expect(result).toBeCloseTo(Math.exp(709), -300); // Very large, check order of magnitude
+   expect(result).toBeGreaterThan(0);
+  });
+
+  it('should handle near-underflow boundary (exp(-745))', () => {
+   const result = exp(-745);
+   // Near underflow: should be 0 or a very tiny denormalized number
+   expect(result).toBeGreaterThanOrEqual(0);
+   expect(result).toBeLessThan(1e-300);
+  });
  });
 
  describe('expSafe', () => {
-  it('should handle NaN by returning 1', () => {
-   expect(expSafe(NaN)).toBe(1);
+  it('should propagate NaN', () => {
+   expect(expSafe(NaN)).toBeNaN();
   });
 
   it('should handle overflow gracefully', () => {
@@ -348,10 +441,6 @@ describe('DeterministicKernels L0 Functions', () => {
     const cos1 = cos(x);
     const cos2 = cos(x);
     expect(cos1).toBe(cos2);
-
-    const sqrt1 = sqrt(x);
-    const sqrt2 = sqrt(x);
-    expect(sqrt1).toBe(sqrt2);
    }
   });
 

@@ -138,7 +138,12 @@ dist
 
 # Builds
 packages/**/lib
+packages/**/docs
 packages/**/bundle-stats.html
+
+# Claude Code local files
+CLAUDE.local.md
+.claude/settings.local.json
 
 # System files
 .DS_Store

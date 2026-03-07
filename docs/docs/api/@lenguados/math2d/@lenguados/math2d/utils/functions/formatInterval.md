@@ -2,7 +2,7 @@
 
 > **formatInterval**(`interval`, `format`, `precision?`): `string`
 
-Defined in: [src/utils/parse.ts:861](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/utils/parse.ts#L861)
+Defined in: [src/utils/parse.ts:874](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/utils/parse.ts#L874)
 
 Formats an interval as a string.
 
@@ -49,4 +49,4 @@ formatInterval(new Interval(-5, 5), 'csv'); // "-5,5"
 
 ## Since
 
-0.14.0
+0.7.0

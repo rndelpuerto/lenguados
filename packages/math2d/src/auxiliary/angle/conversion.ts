@@ -4,7 +4,7 @@
  * @description Angular unit conversion operations.
  */
 
-import { TAU, DEG_TO_RAD, RAD_TO_DEG, GRAD_TO_RAD, RAD_TO_GRAD } from '../scalar/constants';
+import { TAU, DEG_TO_RAD, RAD_TO_DEG, RAD_TO_TURN } from '../scalar/constants';
 
 /**
  * Converts degrees to radians.
@@ -81,51 +81,5 @@ export function turnsToRadians(turns: number): number {
  * @since 0.7.0
  */
 export function radiansToTurns(radians: number): number {
- return radians / TAU;
-}
-
-/**
- * Converts gradians to radians (400 gradians = 2π radians).
- * Also known as gon or grade.
- * @param gradians - Angle in gradians.
- * @returns Angle in radians.
- *
- * @remarks
- * Gradians are used in some surveying applications where
- * a right angle is exactly 100 gradians.
- *
- * @example
- * ```typescript
- * gradiansToRadians(200);   // Math.PI
- * gradiansToRadians(100);   // Math.PI / 2
- * gradiansToRadians(400);   // 2 * Math.PI
- * gradiansToRadians(50);    // Math.PI / 4
- * ```
- *
- * @category Conversion
- * @since 0.7.0
- */
-export function gradiansToRadians(gradians: number): number {
- return gradians * GRAD_TO_RAD;
-}
-
-/**
- * Converts radians to gradians (400 gradians = 2π radians).
- * Also known as gon or grade.
- * @param radians - Angle in radians.
- * @returns Angle in gradians.
- *
- * @example
- * ```typescript
- * radiansToGradians(Math.PI);       // 200
- * radiansToGradians(Math.PI / 2);   // 100
- * radiansToGradians(2 * Math.PI);   // 400
- * radiansToGradians(Math.PI / 4);   // 50
- * ```
- *
- * @category Conversion
- * @since 0.7.0
- */
-export function radiansToGradians(radians: number): number {
- return radians * RAD_TO_GRAD;
+ return radians * RAD_TO_TURN;
 }

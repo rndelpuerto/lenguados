@@ -4,60 +4,15 @@
  * @description Numeric type guards (boolean predicates).
  *
  * @remarks
- * This module provides boolean predicates for testing numeric values.
+ * This module provides boolean predicates for testing numeric values
+ * that are NOT available in the standard library.
  * For safe operations that return numbers, see {@link ./safety}.
  *
- * **API Design Note:**
- * Some functions like `isFinite` and `isNaN` are thin wrappers around
- * `Number.*` methods. They are included for:
- * - API consistency (all numeric guards in one place)
- * - Tree-shaking (import only what you need)
- * - Documentation (clear examples and edge case behavior)
- *
- * Functions like `isDenormal`, `isInfinity`, and `isInRange` provide
- * additional value not available in the standard library.
+ * For basic guards like `isFinite`, `isNaN`, `isSafeInteger`, use
+ * `Number.isFinite()`, `Number.isNaN()`, `Number.isSafeInteger()` directly.
  */
 
-/**
- * Tests if value is finite (not NaN, ±Infinity).
- * @param value - Value to test.
- * @returns True if finite number.
- *
- * @example
- * ```typescript
- * isFinite(42);            // true
- * isFinite(0);             // true
- * isFinite(NaN);           // false
- * isFinite(Infinity);      // false
- * isFinite(-Infinity);     // false
- * ```
- *
- * @category Guards
- * @since 0.7.0
- */
-export function isFinite(value: number): boolean {
- return Number.isFinite(value);
-}
-
-/**
- * Tests if value is NaN.
- * @param value - Value to test.
- * @returns True if NaN.
- *
- * @example
- * ```typescript
- * isNaN(NaN);              // true
- * isNaN(0 / 0);            // true
- * isNaN(42);               // false
- * isNaN(Infinity);         // false
- * ```
- *
- * @category Guards
- * @since 0.7.0
- */
-export function isNaN(value: number): boolean {
- return Number.isNaN(value);
-}
+import { SMALLEST_NORMAL } from '../scalar/constants';
 
 /**
  * Tests if value is positive infinity.
@@ -120,13 +75,6 @@ export function isInfinity(value: number): boolean {
 }
 
 /**
- * Smallest positive normal number in IEEE 754 double precision.
- * Numbers smaller than this (but not zero) are denormal/subnormal.
- * @internal
- */
-const SMALLEST_NORMAL = 2.2250738585072014e-308; // 2^-1022
-
-/**
  * Tests if value is a denormal number.
  * @param value - Value to test.
  * @returns True if denormal.
@@ -150,26 +98,6 @@ const SMALLEST_NORMAL = 2.2250738585072014e-308; // 2^-1022
  */
 export function isDenormal(value: number): boolean {
  return value !== 0 && Math.abs(value) < SMALLEST_NORMAL;
-}
-
-/**
- * Tests if value is in safe integer range.
- * @param value - Value to test.
- * @returns True if safe integer.
- *
- * @example
- * ```typescript
- * isSafeInteger(42);                     // true
- * isSafeInteger(Number.MAX_SAFE_INTEGER); // true
- * isSafeInteger(Number.MAX_SAFE_INTEGER + 1); // false
- * isSafeInteger(3.14);                   // false
- * ```
- *
- * @category Guards
- * @since 0.7.0
- */
-export function isSafeInteger(value: number): boolean {
- return Number.isSafeInteger(value);
 }
 
 /**

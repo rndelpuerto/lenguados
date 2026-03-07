@@ -2,7 +2,7 @@
 
 > **summarizeMeasurements**\<`T`\>(`collector`): `Map`\<`string`, [`MeasurementSummary`](../interfaces/MeasurementSummary.md)\>
 
-Defined in: [src/utils/performance.ts:190](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/utils/performance.ts#L190)
+Defined in: [src/utils/performance.ts:190](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/utils/performance.ts#L190)
 
 Computes summary statistics for every label within a measurement collector.
 
@@ -34,4 +34,4 @@ const summaries = summarizeMeasurements(new Map());
 
 ## Since
 
-0.1.0
+0.7.0

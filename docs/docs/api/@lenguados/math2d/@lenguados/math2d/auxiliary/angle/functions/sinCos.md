@@ -1,8 +1,8 @@
 # Function: sinCos()
 
-> **sinCos**(`angle`): [`SinCos`](../interfaces/SinCos.md)
+> **sinCos**(`angle`, `out?`): [`SinCos`](../interfaces/SinCos.md)
 
-Defined in: [src/auxiliary/angle/operations.ts:61](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/auxiliary/angle/operations.ts#L61)
+Defined in: [src/auxiliary/angle/operations.ts:60](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/auxiliary/angle/operations.ts#L60)
 
 Computes sine and cosine of an angle simultaneously.
 Uses deterministic math for cross-platform reproducibility.
@@ -15,6 +15,12 @@ Uses deterministic math for cross-platform reproducibility.
 
 Angle in radians.
 
+### out?
+
+[`SinCos`](../interfaces/SinCos.md)
+
+Optional output object to write sin/cos into (zero-allocation).
+
 ## Returns
 
 [`SinCos`](../interfaces/SinCos.md)
@@ -23,20 +29,23 @@ Object with sin and cos properties.
 
 ## Remarks
 
-Creates a new object on each call. For hot paths where allocation
-must be avoided, use [sinCosInto](sinCosInto.md) with a reusable object.
+When `out` is provided, writes directly to it (zero-allocation for hot paths).
+Otherwise, creates a new object.
 
 ## Example
 
 ```typescript
+// Convenience: creates new object
 const { sin, cos } = sinCos(Math.PI / 4);
-// sin ≈ 0.7071, cos ≈ 0.7071
+
+// Hot path: reuse object
+const result: SinCos = { sin: 0, cos: 0 };
+for (let i = 0; i < 1000; i++) {
+ sinCos(angles[i], result);
+ // use result.sin, result.cos...
+}
 ```
-
-## See
-
-[sinCosInto](sinCosInto.md) for zero-allocation variant.
 
 ## Since
 
-1.0.0
+0.7.0

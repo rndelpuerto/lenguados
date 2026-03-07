@@ -7,12 +7,12 @@
  * **Pattern**: Inspired by Box2D/Bullet Physics assertions with compile-time DCE.
  *
  * This module provides debug-only validation that is **completely eliminated**
- * in production builds via Dead Code Elimination (DCE). The `__LENGUADOS_DEV__`
- * compile-time constant is injected by esbuild via `rollup.config.mjs`.
+ * in production builds via Dead Code Elimination (DCE). The `process.env.NODE_ENV`
+ * ecosystem standard is used to safely trigger minifier pruning (e.g., in Vite, Webpack, Rollup).
  *
  * **Zero-Overhead Production**:
- * - Development: `__LENGUADOS_DEV__ = true` → assertions active
- * - Production: `__LENGUADOS_DEV__ = false` → all assertion code eliminated
+ * - Development: `process.env.NODE_ENV !== 'production'` → assertions active
+ * - Production: `process.env.NODE_ENV === 'production'` → all assertion code eliminated
  *
  * **Two-Layer Protection System**:
  * 1. **Assertions** (this module): Catch errors early in development (eliminated in prod)
@@ -35,32 +35,42 @@
  * // The above line becomes a no-op with ZERO runtime cost
  * ```
  *
- * @see {@link safeDivide} - Always-active safe division
- * @see {@link safeSqrt} - Always-active safe square root
+ * @see {@link divideSafe} - Always-active safe division
+ * @see {@link sqrtSafe} - Always-active safe square root
  */
+
+import {
+ isComplexLike,
+ isIntervalLike,
+ isMatrix2Like,
+ isMatrix3Like,
+ isRotation2Like,
+ isTransform2Like,
+ isVector2Like,
+} from '../types';
 
 /* ========================================================================== */
 /* Compile-Time Configuration                                                  */
 /* ========================================================================== */
 
 /**
- * Compile-time constant injected by esbuild via rollup.config.mjs.
- * - Production build: `false` → triggers DCE (Dead Code Elimination)
- * - Development build: `true` → assertions are active
+ * Resolves the development mode flag.
  *
  * @remarks
- * This must be `declare` (not `const`) for esbuild's `define` to work.
- * When not bundled (Jest/Node), falls back to `DEV_MODE` constant.
+ * **Industry Standard DCE (Dead Code Elimination)**:
+ * Modern bundlers (Vite, Webpack, Rollup) automatically replace `process.env.NODE_ENV !== 'production'`
+ * with `false` during a production build. This guarantees that all `assert` functions
+ * become unreachable (e.g. `if (false) { ... }`) and are completely stripped from the final bundle by minifiers,
+ * providing zero-overhead development assertions.
  *
  * @internal
  */
-declare const __LENGUADOS_DEV__: boolean | undefined;
+declare const process: { env: { NODE_ENV: string } } | undefined;
 
-/**
- * Runtime fallback for when __LENGUADOS_DEV__ is not injected (Jest/Node).
- * @internal
- */
-const DEV_MODE: boolean = typeof __LENGUADOS_DEV__ !== 'undefined' ? __LENGUADOS_DEV__ : true;
+const DEV_MODE: boolean =
+ typeof process !== 'undefined' && process.env && process.env.NODE_ENV === 'production'
+  ? false
+  : true;
 
 /* ========================================================================== */
 /* Runtime State (Development Only)                                            */
@@ -83,8 +93,8 @@ let assertionsEnabled = true;
  * @param enabled - `true` to enable assertions, `false` to disable.
  *
  * @remarks
- * **Development only**: This function only has effect when `__LENGUADOS_DEV__`
- * is `true` (development build). In production builds, assertions are
+ * **Development only**: This function only has effect when `process.env.NODE_ENV !== 'production'`
+ * (development build). In production builds, assertions are
  * eliminated at compile-time via DCE (Dead Code Elimination).
  *
  * The `safe*` functions in `auxiliary/numeric/safety.ts` remain active
@@ -152,14 +162,17 @@ export function areAssertionsEnabled(): boolean {
  * }
  * ```
  *
- * @category Scalar Assertion
+ * @category Assertion
  * @since 0.7.0
  */
 export function assertFinite(value: number, name?: string): void {
+ /* istanbul ignore next -- DCE: eliminated in production */
  if (!DEV_MODE) return;
  if (!assertionsEnabled) return;
  if (!Number.isFinite(value)) {
-  throw new Error(`[math2d] ${name ?? 'value'} must be finite, got ${value}`);
+  throw new Error(
+   `[math2d] ${name ?? 'value'} must be finite, got ${value}. Use ensureFinite() for a fallback value`,
+  );
  }
 }
 
@@ -182,14 +195,17 @@ export function assertFinite(value: number, name?: string): void {
  * }
  * ```
  *
- * @category Scalar Assertion
+ * @category Assertion
  * @since 0.7.0
  */
 export function assertNonZero(value: number, name?: string): void {
+ /* istanbul ignore next -- DCE: eliminated in production */
  if (!DEV_MODE) return;
  if (!assertionsEnabled) return;
  if (value === 0) {
-  throw new Error(`[math2d] ${name ?? 'value'} must not be zero`);
+  throw new Error(
+   `[math2d] ${name ?? 'value'} must not be zero. Use divideSafe() for a fallback value`,
+  );
  }
 }
 
@@ -214,13 +230,14 @@ export function assertNonZero(value: number, name?: string): void {
  * }
  * ```
  *
- * @category Scalar Assertion
+ * @category Assertion
  * @since 0.7.0
  */
 export function assertRange(value: number, min: number, max: number, name?: string): void {
+ /* istanbul ignore next -- DCE: eliminated in production */
  if (!DEV_MODE) return;
  if (!assertionsEnabled) return;
- if (value < min || value > max) {
+ if (value !== value || value < min || value > max) {
   throw new Error(`[math2d] ${name ?? 'value'} must be in [${min}, ${max}], got ${value}`);
  }
 }
@@ -244,14 +261,17 @@ export function assertRange(value: number, min: number, max: number, name?: stri
  * }
  * ```
  *
- * @category Scalar Assertion
+ * @category Assertion
  * @since 0.7.0
  */
 export function assertPositive(value: number, name?: string): void {
+ /* istanbul ignore next -- DCE: eliminated in production */
  if (!DEV_MODE) return;
  if (!assertionsEnabled) return;
  if (value <= 0) {
-  throw new Error(`[math2d] ${name ?? 'value'} must be positive (> 0), got ${value}`);
+  throw new Error(
+   `[math2d] ${name ?? 'value'} must be positive (> 0), got ${value}. Use clamp() or saturate() for a safe range`,
+  );
  }
 }
 
@@ -274,14 +294,17 @@ export function assertPositive(value: number, name?: string): void {
  * }
  * ```
  *
- * @category Scalar Assertion
+ * @category Assertion
  * @since 0.7.0
  */
 export function assertNonNegative(value: number, name?: string): void {
+ /* istanbul ignore next -- DCE: eliminated in production */
  if (!DEV_MODE) return;
  if (!assertionsEnabled) return;
  if (value < 0) {
-  throw new Error(`[math2d] ${name ?? 'value'} must be non-negative (>= 0), got ${value}`);
+  throw new Error(
+   `[math2d] ${name ?? 'value'} must be non-negative (>= 0), got ${value}. Use clamp() or saturate() for a safe range`,
+  );
  }
 }
 
@@ -305,10 +328,11 @@ export function assertNonNegative(value: number, name?: string): void {
  * }
  * ```
  *
- * @category Scalar Assertion
+ * @category Assertion
  * @since 0.7.0
  */
 export function assertSafeInteger(value: number, name?: string): void {
+ /* istanbul ignore next -- DCE: eliminated in production */
  if (!DEV_MODE) return;
  if (!assertionsEnabled) return;
  if (!Number.isSafeInteger(value)) {
@@ -337,10 +361,11 @@ export function assertSafeInteger(value: number, name?: string): void {
  * assert(index >= 0 && index < array.length, `Index ${index} out of bounds`);
  * ```
  *
- * @category Generic Assertion
+ * @category Assertion
  * @since 0.7.0
  */
 export function assert(condition: boolean, message?: string): void {
+ /* istanbul ignore next -- DCE: eliminated in production */
  if (!DEV_MODE) return;
  if (!assertionsEnabled) return;
  if (!condition) {
@@ -372,10 +397,11 @@ export function assert(condition: boolean, message?: string): void {
  * }
  * ```
  *
- * @category Type Assertion
+ * @category Assertion
  * @since 0.7.0
  */
 export function assertVector2(x: number, y: number, name?: string): void {
+ /* istanbul ignore next -- DCE: eliminated in production */
  if (!DEV_MODE) return;
  if (!assertionsEnabled) return;
  const prefix = name ? `${name}.` : '';
@@ -409,7 +435,7 @@ export function assertVector2(x: number, y: number, name?: string): void {
  * }
  * ```
  *
- * @category Type Assertion
+ * @category Assertion
  * @since 0.7.0
  */
 export function assertMatrix2(
@@ -419,6 +445,7 @@ export function assertMatrix2(
  m11: number,
  name?: string,
 ): void {
+ /* istanbul ignore next -- DCE: eliminated in production */
  if (!DEV_MODE) return;
  if (!assertionsEnabled) return;
  const prefix = name ?? 'matrix';
@@ -465,7 +492,7 @@ export function assertMatrix2(
  * }
  * ```
  *
- * @category Type Assertion
+ * @category Assertion
  * @since 0.7.0
  */
 export function assertMatrix3(
@@ -480,6 +507,7 @@ export function assertMatrix3(
  m22: number,
  name?: string,
 ): void {
+ /* istanbul ignore next -- DCE: eliminated in production */
  if (!DEV_MODE) return;
  if (!assertionsEnabled) return;
  const prefix = name ?? 'matrix';
@@ -533,10 +561,11 @@ export function assertMatrix3(
  * }
  * ```
  *
- * @category Type Assertion
+ * @category Assertion
  * @since 0.7.0
  */
 export function assertRotation2(cos: number, sin: number, name?: string): void {
+ /* istanbul ignore next -- DCE: eliminated in production */
  if (!DEV_MODE) return;
  if (!assertionsEnabled) return;
  const prefix = name ? `${name}.` : '';
@@ -545,6 +574,117 @@ export function assertRotation2(cos: number, sin: number, name?: string): void {
  }
  if (!Number.isFinite(sin)) {
   throw new Error(`[math2d] ${prefix}sin must be finite, got ${sin}`);
+ }
+}
+
+/**
+ * Asserts that Complex-like components are finite.
+ *
+ * @param real - Real component to validate.
+ * @param imag - Imaginary component to validate.
+ * @param name - Complex name for error messages (optional).
+ * @throws {Error} If assertions enabled and any component is not finite.
+ *
+ * @remarks
+ * Validates both real and imag are finite (not NaN, not Infinity).
+ * No-op when assertions are disabled.
+ *
+ * @category Assertion
+ * @since 0.8.0
+ */
+export function assertComplex(real: number, imag: number, name?: string): void {
+ /* istanbul ignore next -- DCE: eliminated in production */
+ if (!DEV_MODE) return;
+ if (!assertionsEnabled) return;
+ const prefix = name ? `${name}.` : '';
+ if (!Number.isFinite(real)) {
+  throw new Error(`[math2d] ${prefix}real must be finite, got ${real}`);
+ }
+ if (!Number.isFinite(imag)) {
+  throw new Error(`[math2d] ${prefix}imag must be finite, got ${imag}`);
+ }
+}
+
+/**
+ * Asserts that Interval components are finite and properly ordered.
+ *
+ * @param min - Minimum bound to validate.
+ * @param max - Maximum bound to validate.
+ * @param name - Interval name for error messages (optional).
+ * @throws {Error} If assertions enabled and any component is not finite or min > max.
+ *
+ * @remarks
+ * Validates both components are finite AND min <= max.
+ * No-op when assertions are disabled.
+ *
+ * @category Assertion
+ * @since 0.8.0
+ */
+export function assertInterval(min: number, max: number, name?: string): void {
+ /* istanbul ignore next -- DCE: eliminated in production */
+ if (!DEV_MODE) return;
+ if (!assertionsEnabled) return;
+ const label = name ?? 'interval';
+ if (!Number.isFinite(min)) {
+  throw new Error(`[math2d] ${label}.min must be finite, got ${min}`);
+ }
+ if (!Number.isFinite(max)) {
+  throw new Error(`[math2d] ${label}.max must be finite, got ${max}`);
+ }
+ if (min > max) {
+  throw new Error(`[math2d] ${label}.min (${min}) must not exceed ${label}.max (${max})`);
+ }
+}
+
+/**
+ * Asserts that Transform2 components are finite.
+ *
+ * @param px - Position X to validate.
+ * @param py - Position Y to validate.
+ * @param cos - Rotation cosine to validate.
+ * @param sin - Rotation sine to validate.
+ * @param sx - Scale X to validate.
+ * @param sy - Scale Y to validate.
+ * @param name - Transform name for error messages (optional).
+ * @throws {Error} If assertions enabled and any component is not finite.
+ *
+ * @remarks
+ * Validates all 6 components are finite (not NaN, not Infinity).
+ * No-op when assertions are disabled.
+ *
+ * @category Assertion
+ * @since 0.8.0
+ */
+export function assertTransform2(
+ px: number,
+ py: number,
+ cos: number,
+ sin: number,
+ sx: number,
+ sy: number,
+ name?: string,
+): void {
+ /* istanbul ignore next -- DCE: eliminated in production */
+ if (!DEV_MODE) return;
+ if (!assertionsEnabled) return;
+ const prefix = name ? `${name}.` : '';
+ if (!Number.isFinite(px)) {
+  throw new Error(`[math2d] ${prefix}position.x must be finite, got ${px}`);
+ }
+ if (!Number.isFinite(py)) {
+  throw new Error(`[math2d] ${prefix}position.y must be finite, got ${py}`);
+ }
+ if (!Number.isFinite(cos)) {
+  throw new Error(`[math2d] ${prefix}rotation.cos must be finite, got ${cos}`);
+ }
+ if (!Number.isFinite(sin)) {
+  throw new Error(`[math2d] ${prefix}rotation.sin must be finite, got ${sin}`);
+ }
+ if (!Number.isFinite(sx)) {
+  throw new Error(`[math2d] ${prefix}scale.x must be finite, got ${sx}`);
+ }
+ if (!Number.isFinite(sy)) {
+  throw new Error(`[math2d] ${prefix}scale.y must be finite, got ${sy}`);
  }
 }
 
@@ -571,22 +711,46 @@ export function assertRotation2(cos: number, sin: number, name?: string): void {
  * }
  * ```
  *
- * @category Object Assertion
+ * @category Assertion
  * @since 0.7.0
  */
 export function assertVector2Like(value: unknown, name?: string): void {
+ /* istanbul ignore next -- DCE: eliminated in production */
  if (!DEV_MODE) return;
  if (!assertionsEnabled) return;
  const label = name ?? 'value';
- if (typeof value !== 'object' || value === null) {
-  throw new Error(`[math2d] ${label} must be an object, got ${typeof value}`);
+ if (!isVector2Like(value)) {
+  throw new TypeError(`[math2d] Expected Vector2Like for ${label}, got ${typeof value}`);
  }
- const object = value as Record<string, unknown>;
- if (typeof object.x !== 'number' || !Number.isFinite(object.x)) {
-  throw new Error(`[math2d] ${label}.x must be a finite number`);
+ if (!Number.isFinite(value.x) || !Number.isFinite(value.y)) {
+  throw new Error(`[math2d] ${label}.x and .y must be finite numbers`);
  }
- if (typeof object.y !== 'number' || !Number.isFinite(object.y)) {
-  throw new Error(`[math2d] ${label}.y must be a finite number`);
+}
+
+/**
+ * Asserts that an object has valid Rotation2-like shape with finite elements.
+ *
+ * @param value - Object to validate.
+ * @param name - Object name for error messages (optional).
+ * @throws {Error} If assertions enabled and object is not Rotation2-like or has invalid elements.
+ *
+ * @remarks
+ * Validates that object has `cos` and `sin` numeric properties that are finite.
+ * No-op when assertions are disabled.
+ *
+ * @category Assertion
+ * @since 0.8.0
+ */
+export function assertRotation2Like(value: unknown, name?: string): void {
+ /* istanbul ignore next -- DCE: eliminated in production */
+ if (!DEV_MODE) return;
+ if (!assertionsEnabled) return;
+ const label = name ?? 'value';
+ if (!isRotation2Like(value)) {
+  throw new TypeError(`[math2d] Expected Rotation2Like for ${label}, got ${typeof value}`);
+ }
+ if (!Number.isFinite(value.cos) || !Number.isFinite(value.sin)) {
+  throw new Error(`[math2d] ${label}.cos and .sin must be finite numbers`);
  }
 }
 
@@ -601,21 +765,49 @@ export function assertVector2Like(value: unknown, name?: string): void {
  * Validates that object has `m00`, `m01`, `m10`, `m11` numeric properties that are finite.
  * No-op when assertions are disabled.
  *
- * @category Object Assertion
+ * @category Assertion
  * @since 0.7.0
  */
 export function assertMatrix2Like(value: unknown, name?: string): void {
+ /* istanbul ignore next -- DCE: eliminated in production */
  if (!DEV_MODE) return;
  if (!assertionsEnabled) return;
  const label = name ?? 'value';
- if (typeof value !== 'object' || value === null) {
-  throw new Error(`[math2d] ${label} must be an object, got ${typeof value}`);
+ if (!isMatrix2Like(value)) {
+  throw new TypeError(`[math2d] Expected Matrix2Like for ${label}, got ${typeof value}`);
  }
- const object = value as Record<string, unknown>;
- const elements = ['m00', 'm01', 'm10', 'm11'] as const;
- for (const element of elements) {
-  if (typeof object[element] !== 'number' || !Number.isFinite(object[element] as number)) {
-   throw new Error(`[math2d] ${label}.${element} must be a finite number`);
+ for (const key of ['m00', 'm01', 'm10', 'm11'] as const) {
+  if (!Number.isFinite(value[key])) {
+   throw new Error(`[math2d] ${label}.${key} must be a finite number`);
+  }
+ }
+}
+
+/**
+ * Asserts that an object has valid Matrix3-like shape with finite elements.
+ *
+ * @param value - Object to validate.
+ * @param name - Object name for error messages (optional).
+ * @throws {Error} If assertions enabled and object is not Matrix3-like or has invalid elements.
+ *
+ * @remarks
+ * Validates that object has `m00`..`m22` numeric properties that are finite.
+ * No-op when assertions are disabled.
+ *
+ * @category Assertion
+ * @since 0.8.0
+ */
+export function assertMatrix3Like(value: unknown, name?: string): void {
+ /* istanbul ignore next -- DCE: eliminated in production */
+ if (!DEV_MODE) return;
+ if (!assertionsEnabled) return;
+ const label = name ?? 'value';
+ if (!isMatrix3Like(value)) {
+  throw new TypeError(`[math2d] Expected Matrix3Like for ${label}, got ${typeof value}`);
+ }
+ for (const key of ['m00', 'm01', 'm02', 'm10', 'm11', 'm12', 'm20', 'm21', 'm22'] as const) {
+  if (!Number.isFinite(value[key])) {
+   throw new Error(`[math2d] ${label}.${key} must be a finite number`);
   }
  }
 }
@@ -631,22 +823,19 @@ export function assertMatrix2Like(value: unknown, name?: string): void {
  * Validates that object has `real` and `imag` numeric properties that are finite.
  * No-op when assertions are disabled.
  *
- * @category Object Assertion
+ * @category Assertion
  * @since 0.7.0
  */
 export function assertComplexLike(value: unknown, name?: string): void {
+ /* istanbul ignore next -- DCE: eliminated in production */
  if (!DEV_MODE) return;
  if (!assertionsEnabled) return;
  const label = name ?? 'value';
- if (typeof value !== 'object' || value === null) {
-  throw new Error(`[math2d] ${label} must be an object, got ${typeof value}`);
+ if (!isComplexLike(value)) {
+  throw new TypeError(`[math2d] Expected ComplexLike for ${label}, got ${typeof value}`);
  }
- const object = value as Record<string, unknown>;
- if (typeof object.real !== 'number' || !Number.isFinite(object.real)) {
-  throw new Error(`[math2d] ${label}.real must be a finite number`);
- }
- if (typeof object.imag !== 'number' || !Number.isFinite(object.imag)) {
-  throw new Error(`[math2d] ${label}.imag must be a finite number`);
+ if (!Number.isFinite(value.real) || !Number.isFinite(value.imag)) {
+  throw new Error(`[math2d] ${label}.real and .imag must be finite numbers`);
  }
 }
 
@@ -662,26 +851,23 @@ export function assertComplexLike(value: unknown, name?: string): void {
  * Also validates that min ≤ max.
  * No-op when assertions are disabled.
  *
- * @category Object Assertion
+ * @category Assertion
  * @since 0.7.0
  */
 export function assertIntervalLike(value: unknown, name?: string): void {
+ /* istanbul ignore next -- DCE: eliminated in production */
  if (!DEV_MODE) return;
  if (!assertionsEnabled) return;
  const label = name ?? 'value';
- if (typeof value !== 'object' || value === null) {
-  throw new Error(`[math2d] ${label} must be an object, got ${typeof value}`);
+ if (!isIntervalLike(value)) {
+  throw new TypeError(`[math2d] Expected IntervalLike for ${label}, got ${typeof value}`);
  }
- const object = value as Record<string, unknown>;
- if (typeof object.min !== 'number' || !Number.isFinite(object.min)) {
-  throw new Error(`[math2d] ${label}.min must be a finite number`);
+ if (!Number.isFinite(value.min) || !Number.isFinite(value.max)) {
+  throw new Error(`[math2d] ${label}.min and .max must be finite numbers`);
  }
- if (typeof object.max !== 'number' || !Number.isFinite(object.max)) {
-  throw new Error(`[math2d] ${label}.max must be a finite number`);
- }
- if ((object.min as number) > (object.max as number)) {
+ if (value.min > value.max) {
   throw new Error(
-   `[math2d] ${label}.min (${object.min}) must not exceed ${label}.max (${object.max})`,
+   `[math2d] ${label}.min (${value.min}) must not exceed ${label}.max (${value.max})`,
   );
  }
 }
@@ -694,29 +880,28 @@ export function assertIntervalLike(value: unknown, name?: string): void {
  * @throws {Error} If assertions enabled and object is not Transform2-like.
  *
  * @remarks
- * Validates that object has `position` (Vector2-like), `rotation` (number), and `scale` (Vector2-like).
+ * Validates that object has `position` (Vector2-like), `rotation` (Rotation2-like), and `scale` (Vector2-like).
  * No-op when assertions are disabled.
  *
- * @category Object Assertion
+ * @category Assertion
  * @since 0.7.0
  */
 export function assertTransform2Like(value: unknown, name?: string): void {
+ /* istanbul ignore next -- DCE: eliminated in production */
  if (!DEV_MODE) return;
  if (!assertionsEnabled) return;
  const label = name ?? 'value';
- if (typeof value !== 'object' || value === null) {
-  throw new Error(`[math2d] ${label} must be an object, got ${typeof value}`);
+ if (!isTransform2Like(value)) {
+  throw new TypeError(`[math2d] Expected Transform2Like for ${label}, got ${typeof value}`);
  }
- const object = value as Record<string, unknown>;
-
- // Validate position
- assertVector2Like(object.position, `${label}.position`);
-
- // Validate rotation
- if (typeof object.rotation !== 'number' || !Number.isFinite(object.rotation)) {
-  throw new Error(`[math2d] ${label}.rotation must be a finite number`);
+ // Finite checks for all sub-components
+ if (!Number.isFinite(value.position.x) || !Number.isFinite(value.position.y)) {
+  throw new Error(`[math2d] ${label}.position.x and .y must be finite numbers`);
  }
-
- // Validate scale
- assertVector2Like(object.scale, `${label}.scale`);
+ if (!Number.isFinite(value.rotation.cos) || !Number.isFinite(value.rotation.sin)) {
+  throw new Error(`[math2d] ${label}.rotation.cos and .sin must be finite numbers`);
+ }
+ if (!Number.isFinite(value.scale.x) || !Number.isFinite(value.scale.y)) {
+  throw new Error(`[math2d] ${label}.scale.x and .y must be finite numbers`);
+ }
 }

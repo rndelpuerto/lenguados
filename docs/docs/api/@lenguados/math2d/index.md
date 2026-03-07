@@ -419,11 +419,7 @@ _(New in this release: **Vector2** and **Matrix2**. Additional modules (Matrix3,
 All notable changes to this package are documented in the [CHANGELOG](https://github.com/rndelpuerto/lenguados/blob/main/packages/math2d/CHANGELOG.md).
 Version numbering follows [SemVer](https://semver.org/).
 
-## Deterministic
-
-- [@lenguados/math2d/deterministic](@lenguados/math2d/deterministic/index-3.md)
-
-## Other
+## Modules
 
 - [@lenguados/math2d](@lenguados/math2d/index.md)
 - [@lenguados/math2d](@lenguados/math2d/index-1.md)
@@ -452,8 +448,6 @@ Version numbering follows [SemVer](https://semver.org/).
 - [@lenguados/math2d/core](@lenguados/math2d/core/index-6.md)
 - [@lenguados/math2d/core](@lenguados/math2d/core/index-7.md)
 - [@lenguados/math2d/deterministic](@lenguados/math2d/deterministic/index.md)
-- [@lenguados/math2d/deterministic](@lenguados/math2d/deterministic/index-1.md)
-- [@lenguados/math2d/deterministic](@lenguados/math2d/deterministic/index-2.md)
 - [@lenguados/math2d/types](@lenguados/math2d/types/index.md)
 - [@lenguados/math2d/utils](@lenguados/math2d/utils/index.md)
 - [@lenguados/math2d/utils](@lenguados/math2d/utils/index-1.md)

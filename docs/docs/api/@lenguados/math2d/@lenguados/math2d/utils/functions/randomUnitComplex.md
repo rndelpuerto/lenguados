@@ -2,7 +2,7 @@
 
 > **randomUnitComplex**(`out`, `source`): [`Complex`](../../core/classes/Complex.md)
 
-Defined in: [src/utils/random.ts:639](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/utils/random.ts#L639)
+Defined in: [src/utils/random.ts:636](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/utils/random.ts#L636)
 
 Generates a random unit complex number (on the unit circle).
 
@@ -39,4 +39,4 @@ const c = randomUnitComplex(); // Random unit complex (magnitude = 1)
 
 ## Since
 
-0.14.0
+0.7.0

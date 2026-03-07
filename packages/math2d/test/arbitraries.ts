@@ -72,7 +72,7 @@ export const arbAngleNearZero = fc.integer({ min: -1000, max: 1000 }).map((n) =>
 export const arbVector2 = fc.tuple(arbCoordinate, arbCoordinate).map(([x, y]) => new Vector2(x, y));
 
 /** Non-zero Vector2 */
-export const arbNonZeroVector2 = arbVector2.filter((v) => v.magnitudeSquared() > 1e-20);
+export const arbNonZeroVector2 = arbVector2.filter((v) => v.magnitudeSq() > 1e-20);
 
 /** Unit Vector2 */
 export const arbUnitVector2 = arbAngle.map((angle) => Vector2.fromAngle(angle));

@@ -2,7 +2,7 @@
 
 > **angleFromVectors**(`x1`, `y1`, `x2`, `y2`): `number`
 
-Defined in: [src/auxiliary/angle/operations.ts:449](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/auxiliary/angle/operations.ts#L449)
+Defined in: [src/auxiliary/angle/operations.ts:290](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/auxiliary/angle/operations.ts#L290)
 
 Computes the directed angle from vector1 to vector2.
 
@@ -48,4 +48,4 @@ angleFromVectors(1, 0, -1, 0); // Math.PI (opposite)
 
 ## Since
 
-1.0.0
+0.7.0

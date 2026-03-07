@@ -2,7 +2,7 @@
 
 > **randomInterval**(`minBound`, `maxBound`, `out`, `source`): [`Interval`](../../core/classes/Interval.md)
 
-Defined in: [src/utils/random.ts:672](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/utils/random.ts#L672)
+Defined in: [src/utils/random.ts:669](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/utils/random.ts#L669)
 
 Generates a random interval within specified bounds.
 
@@ -51,4 +51,4 @@ const i = randomInterval(0, 100); // Random interval within [0, 100]
 
 ## Since
 
-0.14.0
+0.7.0

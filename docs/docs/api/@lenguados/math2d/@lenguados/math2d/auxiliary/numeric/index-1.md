@@ -61,12 +61,6 @@ Re-exports [isDenormal](functions/isDenormal.md)
 
 ---
 
-### isFinite
-
-Re-exports [isFinite](functions/isFinite.md)
-
----
-
 ### isInfinity
 
 Re-exports [isInfinity](functions/isInfinity.md)
@@ -76,12 +70,6 @@ Re-exports [isInfinity](functions/isInfinity.md)
 ### isInRange
 
 Re-exports [isInRange](functions/isInRange.md)
-
----
-
-### isNaN
-
-Re-exports [isNaN](functions/isNaN.md)
 
 ---
 
@@ -97,63 +85,15 @@ Re-exports [isPositiveInfinity](functions/isPositiveInfinity.md)
 
 ---
 
-### isSafeInteger
-
-Re-exports [isSafeInteger](functions/isSafeInteger.md)
-
----
-
 ### MIN_SAFE_DIVISOR
 
 Re-exports [MIN_SAFE_DIVISOR](variables/MIN_SAFE_DIVISOR.md)
 
 ---
 
-### mirror
-
-Re-exports [mirror](functions/mirror.md)
-
----
-
-### mirrorSafe
-
-Re-exports [mirrorSafe](functions/mirrorSafe.md)
-
----
-
-### mirrorUnchecked
-
-Re-exports [mirrorUnchecked](functions/mirrorUnchecked.md)
-
----
-
 ### neumaierSum
 
 Re-exports [neumaierSum](functions/neumaierSum.md)
-
----
-
-### quantize
-
-Re-exports [quantize](functions/quantize.md)
-
----
-
-### repeat
-
-Re-exports [repeat](functions/repeat.md)
-
----
-
-### repeatSafe
-
-Re-exports [repeatSafe](functions/repeatSafe.md)
-
----
-
-### repeatUnchecked
-
-Re-exports [repeatUnchecked](functions/repeatUnchecked.md)
 
 ---
 
@@ -189,13 +129,13 @@ Re-exports [roundToPowerOfTwo](functions/roundToPowerOfTwo.md)
 
 ### safeAcos
 
-Re-exports [safeAcos](functions/safeAcos.md)
+Renames and re-exports [acosSafe](../../deterministic/functions/acosSafe.md)
 
 ---
 
 ### safeAsin
 
-Re-exports [safeAsin](functions/safeAsin.md)
+Renames and re-exports [asinSafe](../../deterministic/functions/asinSafe.md)
 
 ---
 
@@ -217,12 +157,6 @@ Re-exports [safeLog](functions/safeLog.md)
 
 ---
 
-### safeMod
-
-Re-exports [safeMod](functions/safeMod.md)
-
----
-
 ### safePow
 
 Re-exports [safePow](functions/safePow.md)
@@ -237,7 +171,7 @@ Re-exports [safeReciprocal](functions/safeReciprocal.md)
 
 ### safeSqrt
 
-Re-exports [safeSqrt](functions/safeSqrt.md)
+Renames and re-exports [sqrtSafe](../../deterministic/functions/sqrtSafe.md)
 
 ---
 
@@ -250,15 +184,3 @@ Re-exports [sanitizeNumber](functions/sanitizeNumber.md)
 ### snapToGrid
 
 Re-exports [snapToGrid](functions/snapToGrid.md)
-
----
-
-### trunc
-
-Re-exports [trunc](functions/trunc.md)
-
----
-
-### truncatedMod
-
-Re-exports [truncatedMod](functions/truncatedMod.md)

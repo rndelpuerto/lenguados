@@ -101,6 +101,11 @@ export function saturateSigned(value: number): number {
  * remap(75, 0, 100, -1, 1);   // 0.5
  * ```
  *
+ * @remarks
+ * For large-magnitude operands, intermediate subtraction `(value - inMin)`
+ * and multiplication may lose precision due to floating-point cancellation.
+ *
+ * @throws {RangeError} If inMin === inMax (zero input range).
  * @see {@link remapSafe} - Returns outMin if ranges are degenerate
  *
  * @category Arithmetic
@@ -113,10 +118,11 @@ export function remap(
  outMin: number,
  outMax: number,
 ): number {
+ if (value === inMin) return outMin;
+ if (value === inMax) return outMax;
  const inRange = inMax - inMin;
  if (inRange === 0) {
-  // When input range is zero, return midpoint of output range
-  return (outMin + outMax) * 0.5;
+  throw new RangeError('remap: input range is zero (inMin === inMax)');
  }
  const normalized = (value - inMin) / inRange;
  return outMin + normalized * (outMax - outMin);
@@ -137,7 +143,7 @@ export function remap(
  * remapSafe(5, 5, 5, 0, 100);     // 0 (degenerate input range)
  * ```
  *
- * @see {@link remap} - Returns midpoint for degenerate range
+ * @see {@link remap} - Throws for degenerate range
  *
  * @category Arithmetic
  * @since 0.7.0
@@ -181,6 +187,31 @@ export function loop(value: number, min: number, max: number): number {
  if (range <= 0) {
   throw new RangeError('loop: invalid range (max must be greater than min)');
  }
+ const wrapped = ((value - min) % range) + min;
+ return wrapped < min ? wrapped + range : wrapped;
+}
+
+/**
+ * Loops value into [min, max) range (safe).
+ * @param value - Value to wrap.
+ * @param min - Lower bound (inclusive).
+ * @param max - Upper bound (exclusive).
+ * @returns Wrapped value, or min if range is invalid.
+ *
+ * @example
+ * ```typescript
+ * loopSafe(5, 0, 10);    // 5
+ * loopSafe(5, 5, 5);     // 5 (return min)
+ * ```
+ *
+ * @see {@link loop} - Throws for invalid range
+ *
+ * @category Arithmetic
+ * @since 0.7.0
+ */
+export function loopSafe(value: number, min: number, max: number): number {
+ const range = max - min;
+ if (range <= 0) return min;
  const wrapped = ((value - min) % range) + min;
  return wrapped < min ? wrapped + range : wrapped;
 }
@@ -236,6 +267,33 @@ export function pingPong(value: number, min: number, max: number): number {
 }
 
 /**
+ * Ping-pongs value in [min, max] range (safe).
+ * @param value - Value to ping-pong.
+ * @param min - Lower bound.
+ * @param max - Upper bound.
+ * @returns Ping-ponged value, or min if range is invalid.
+ *
+ * @example
+ * ```typescript
+ * pingPongSafe(3, 0, 2);    // 1
+ * pingPongSafe(5, 5, 5);    // 5 (return min)
+ * ```
+ *
+ * @see {@link pingPong} - Throws for invalid range
+ *
+ * @category Arithmetic
+ * @since 0.7.0
+ */
+export function pingPongSafe(value: number, min: number, max: number): number {
+ const range = max - min;
+ if (range <= 0) return min;
+ const doubleRange = range * 2;
+ let phase = (value - min) % doubleRange;
+ if (phase < 0) phase += doubleRange;
+ return phase <= range ? min + phase : max - (phase - range);
+}
+
+/**
  * Ping-pongs value in [min, max] range (unchecked).
  * @param value - Value to ping-pong.
  * @param min - Lower bound.
@@ -270,6 +328,9 @@ export function pingPongUnchecked(value: number, min: number, max: number): numb
  * step(5, 7);      // 1 (7 > 5)
  * ```
  *
+ * @remarks
+ * NaN comparisons: `step(NaN, x)` returns 1 (x is not < NaN), `step(edge, NaN)` returns 1.
+ *
  * @category Arithmetic
  * @since 0.7.0
  */
@@ -300,6 +361,29 @@ export function mod(dividend: number, divisor: number): number {
  if (divisor <= 0) {
   throw new RangeError('mod: divisor must be positive');
  }
+ const result = dividend % divisor;
+ return result < 0 ? result + divisor : result;
+}
+
+/**
+ * Modulo operation that always returns positive result (safe).
+ * @param dividend - Value to divide.
+ * @param divisor - Divisor.
+ * @returns Positive modulo result, or 0 if divisor <= 0.
+ *
+ * @example
+ * ```typescript
+ * modSafe(7, 3);      // 1
+ * modSafe(7, 0);      // 0
+ * ```
+ *
+ * @see {@link mod} - Throws for non-positive divisor
+ *
+ * @category Arithmetic
+ * @since 0.7.0
+ */
+export function modSafe(dividend: number, divisor: number): number {
+ if (divisor <= 0) return 0;
  const result = dividend % divisor;
  return result < 0 ? result + divisor : result;
 }
@@ -339,28 +423,35 @@ export function modUnchecked(dividend: number, divisor: number): number {
  * @since 0.7.0
  */
 export function floorDivide(value: number, divisor: number): number {
+ if (divisor === 0) {
+  throw new RangeError('floorDivide: divisor must not be zero');
+ }
  return Math.floor(value / divisor);
 }
 
 /**
- * Rounds to nearest integer away from zero.
- * @param value - Value to round.
- * @returns Rounded value.
- *
- * @example
- * ```typescript
- * roundAwayFromZero(1.5);     // 2
- * roundAwayFromZero(-1.5);    // -2
- * roundAwayFromZero(1.4);     // 1
- * roundAwayFromZero(-1.4);    // -1
- * ```
+ * Safe floored division. Returns 0 for zero divisor.
+ * @param value - Numerator.
+ * @param divisor - Denominator.
+ * @returns Floor of division, or 0 if divisor is zero.
  *
  * @category Arithmetic
  * @since 0.7.0
  */
-export function roundAwayFromZero(value: number): number {
- if (value >= 0) {
-  return Math.floor(value + 0.5);
- }
- return Math.ceil(value - 0.5);
+export function floorDivideSafe(value: number, divisor: number): number {
+ if (divisor === 0) return 0;
+ return Math.floor(value / divisor);
+}
+
+/**
+ * Unchecked floored division. No validation.
+ * @param value - Numerator.
+ * @param divisor - Denominator.
+ * @returns Floor of division.
+ *
+ * @category Arithmetic
+ * @since 0.7.0
+ */
+export function floorDivideUnchecked(value: number, divisor: number): number {
+ return Math.floor(value / divisor);
 }

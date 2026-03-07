@@ -7,57 +7,14 @@
 import { describe, expect, test } from '@jest/globals';
 
 import {
- isFinite,
- isNaN,
  isPositiveInfinity,
  isNegativeInfinity,
  isInfinity,
  isDenormal,
- isSafeInteger,
  isInRange,
 } from '../../../src/auxiliary/numeric/guards';
 
 describe('numeric/guards', () => {
- describe('isFinite', () => {
-  test('returns true for finite numbers', () => {
-   expect(isFinite(42)).toBe(true);
-   expect(isFinite(0)).toBe(true);
-   expect(isFinite(-42)).toBe(true);
-   expect(isFinite(3.14)).toBe(true);
-   expect(isFinite(-3.14)).toBe(true);
-  });
-
-  test('returns false for NaN', () => {
-   expect(isFinite(NaN)).toBe(false);
-   expect(isFinite(0 / 0)).toBe(false);
-  });
-
-  test('returns false for Infinity', () => {
-   expect(isFinite(Infinity)).toBe(false);
-   expect(isFinite(-Infinity)).toBe(false);
-   expect(isFinite(1 / 0)).toBe(false);
-  });
- });
-
- describe('isNaN', () => {
-  test('returns true for NaN', () => {
-   expect(isNaN(NaN)).toBe(true);
-   expect(isNaN(0 / 0)).toBe(true);
-   expect(isNaN(Math.sqrt(-1))).toBe(true);
-  });
-
-  test('returns false for numbers', () => {
-   expect(isNaN(42)).toBe(false);
-   expect(isNaN(0)).toBe(false);
-   expect(isNaN(-42)).toBe(false);
-  });
-
-  test('returns false for Infinity', () => {
-   expect(isNaN(Infinity)).toBe(false);
-   expect(isNaN(-Infinity)).toBe(false);
-  });
- });
-
  describe('isPositiveInfinity', () => {
   test('returns true for positive infinity', () => {
    expect(isPositiveInfinity(Infinity)).toBe(true);
@@ -144,33 +101,6 @@ describe('numeric/guards', () => {
   test('returns true for negative denormal numbers', () => {
    expect(isDenormal(-5e-324)).toBe(true);
    expect(isDenormal(-1e-308)).toBe(true);
-  });
- });
-
- describe('isSafeInteger', () => {
-  test('returns true for safe integers', () => {
-   expect(isSafeInteger(42)).toBe(true);
-   expect(isSafeInteger(0)).toBe(true);
-   expect(isSafeInteger(-42)).toBe(true);
-   expect(isSafeInteger(Number.MAX_SAFE_INTEGER)).toBe(true);
-   expect(isSafeInteger(Number.MIN_SAFE_INTEGER)).toBe(true);
-  });
-
-  test('returns false for values outside safe integer range', () => {
-   expect(isSafeInteger(Number.MAX_SAFE_INTEGER + 1)).toBe(false);
-   expect(isSafeInteger(Number.MIN_SAFE_INTEGER - 1)).toBe(false);
-  });
-
-  test('returns false for non-integers', () => {
-   expect(isSafeInteger(3.14)).toBe(false);
-   expect(isSafeInteger(-3.14)).toBe(false);
-   expect(isSafeInteger(0.5)).toBe(false);
-  });
-
-  test('returns false for NaN and Infinity', () => {
-   expect(isSafeInteger(NaN)).toBe(false);
-   expect(isSafeInteger(Infinity)).toBe(false);
-   expect(isSafeInteger(-Infinity)).toBe(false);
   });
  });
 

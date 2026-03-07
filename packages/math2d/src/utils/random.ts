@@ -46,7 +46,7 @@ import { Vector2, type ReadonlyVector2 } from '../core/vector2';
 import { cos, log, sin, sqrtSafe } from '../deterministic/deterministic-kernels';
 import { assertNonNegative } from '../validation/assert';
 
-import { RandomSource, defaultRandomSource } from './random-source';
+import { type RandomSource, getDefaultRandomSource } from './random-source';
 
 /* ========================================================================== */
 /* Random Vectors                                                             */
@@ -76,7 +76,7 @@ export function randomVector2(
  min = 0,
  max = 1,
  out = new Vector2(),
- source: RandomSource = defaultRandomSource,
+ source: RandomSource = getDefaultRandomSource(),
 ): Vector2 {
  const range = max - min;
  return out.set(source.next() * range + min, source.next() * range + min);
@@ -102,7 +102,7 @@ export function randomVector2(
  */
 export function randomUnitVector2(
  out = new Vector2(),
- source: RandomSource = defaultRandomSource,
+ source: RandomSource = getDefaultRandomSource(),
 ): Vector2 {
  const angle = source.next() * TAU;
  return out.set(cos(angle), sin(angle));
@@ -134,7 +134,7 @@ export function randomUnitVector2(
 export function randomOnCircle(
  radius = 1,
  out = new Vector2(),
- source: RandomSource = defaultRandomSource,
+ source: RandomSource = getDefaultRandomSource(),
 ): Vector2 {
  // Development assertion: negative radius produces inverted points (likely a bug)
  assertNonNegative(radius, 'randomOnCircle:radius');
@@ -162,7 +162,7 @@ export function randomOnCircle(
  */
 export function randomInUnitCircle(
  out = new Vector2(),
- source: RandomSource = defaultRandomSource,
+ source: RandomSource = getDefaultRandomSource(),
 ): Vector2 {
  // sqrt(r) gives uniform distribution by area
  // Use sqrtSafe for cross-platform reproducibility
@@ -193,7 +193,7 @@ export function randomInUnitCircle(
 export function randomInCircle(
  radius: number,
  out = new Vector2(),
- source: RandomSource = defaultRandomSource,
+ source: RandomSource = getDefaultRandomSource(),
 ): Vector2 {
  // Development assertion: negative radius produces inverted points (likely a bug)
  assertNonNegative(radius, 'randomInCircle:radius');
@@ -225,7 +225,7 @@ export function randomInCircle(
  */
 export function randomRotation2(
  out = new Rotation2(),
- source: RandomSource = defaultRandomSource,
+ source: RandomSource = getDefaultRandomSource(),
 ): Rotation2 {
  return Rotation2.fromAngle(source.next() * TAU, out);
 }
@@ -250,7 +250,7 @@ export function randomRotation2(
  */
 export function randomRotationMatrix2(
  out = new Matrix2(),
- source: RandomSource = defaultRandomSource,
+ source: RandomSource = getDefaultRandomSource(),
 ): Matrix2 {
  const angle = source.next() * TAU;
  return Matrix2.fromRotation(angle, out);
@@ -280,10 +280,11 @@ export function randomRotationMatrix2(
  */
 export function randomTransform2(
  out = new Transform2(),
- source: RandomSource = defaultRandomSource,
+ source: RandomSource = getDefaultRandomSource(),
 ): Transform2 {
  randomInUnitCircle(out.position, source);
  out.rotation.angle = source.next() * TAU;
+ out.scale.set(1, 1);
  return out;
 }
 
@@ -316,7 +317,7 @@ export function randomInRectangle(
  width: number,
  height: number,
  out = new Vector2(),
- source: RandomSource = defaultRandomSource,
+ source: RandomSource = getDefaultRandomSource(),
 ): Vector2 {
  return out.set((source.next() - 0.5) * width, (source.next() - 0.5) * height);
 }
@@ -349,7 +350,7 @@ export function randomInBox(
  maxX: number,
  maxY: number,
  out = new Vector2(),
- source: RandomSource = defaultRandomSource,
+ source: RandomSource = getDefaultRandomSource(),
 ): Vector2 {
  return out.set(source.next() * (maxX - minX) + minX, source.next() * (maxY - minY) + minY);
 }
@@ -378,7 +379,7 @@ export function randomOnRectangle(
  width: number,
  height: number,
  out = new Vector2(),
- source: RandomSource = defaultRandomSource,
+ source: RandomSource = getDefaultRandomSource(),
 ): Vector2 {
  const halfWidth = width * 0.5;
  const halfHeight = height * 0.5;
@@ -430,7 +431,7 @@ export function randomGaussianVector2(
  mean = 0,
  standardDeviation = 1,
  out = new Vector2(),
- source: RandomSource = defaultRandomSource,
+ source: RandomSource = getDefaultRandomSource(),
 ): Vector2 {
  // Development assertion: negative stdDev is mathematically valid but counterintuitive
  assertNonNegative(standardDeviation, 'randomGaussianVector2:standardDeviation');
@@ -476,7 +477,7 @@ export function randomOnSegment(
  start: ReadonlyVector2,
  end: ReadonlyVector2,
  out = new Vector2(),
- source: RandomSource = defaultRandomSource,
+ source: RandomSource = getDefaultRandomSource(),
 ): Vector2 {
  const t = source.next();
  return out.set(lerp(start.x, end.x, t), lerp(start.y, end.y, t));
@@ -509,7 +510,7 @@ export function randomInTriangle(
  b: ReadonlyVector2,
  c: ReadonlyVector2,
  out = new Vector2(),
- source: RandomSource = defaultRandomSource,
+ source: RandomSource = getDefaultRandomSource(),
 ): Vector2 {
  // Generate random barycentric coordinates
  let u = source.next();
@@ -553,13 +554,18 @@ export function randomOnTriangle(
  b: ReadonlyVector2,
  c: ReadonlyVector2,
  out = new Vector2(),
- source: RandomSource = defaultRandomSource,
+ source: RandomSource = getDefaultRandomSource(),
 ): Vector2 {
  // Calculate side lengths
  const ab = Vector2.distance(a, b);
  const bc = Vector2.distance(b, c);
  const ca = Vector2.distance(c, a);
  const perimeter = ab + bc + ca;
+
+ // Degenerate: zero-perimeter triangle (all vertices coincide)
+ if (perimeter === 0) {
+  return out.set(a.x, a.y);
+ }
 
  // Random position along perimeter (single random call for consistent distribution)
  const t = source.next() * perimeter;
@@ -608,7 +614,7 @@ export function randomComplex(
  min = 0,
  max = 1,
  out = new Complex(),
- source: RandomSource = defaultRandomSource,
+ source: RandomSource = getDefaultRandomSource(),
 ): Complex {
  const range = max - min;
  return out.set(source.next() * range + min, source.next() * range + min);
@@ -635,7 +641,7 @@ export function randomComplex(
  */
 export function randomUnitComplex(
  out = new Complex(),
- source: RandomSource = defaultRandomSource,
+ source: RandomSource = getDefaultRandomSource(),
 ): Complex {
  const angle = source.next() * TAU;
  return out.set(cos(angle), sin(angle));
@@ -670,7 +676,7 @@ export function randomInterval(
  minBound = 0,
  maxBound = 1,
  out = new Interval(),
- source: RandomSource = defaultRandomSource,
+ source: RandomSource = getDefaultRandomSource(),
 ): Interval {
  const range = maxBound - minBound;
  const v1 = source.next() * range + minBound;

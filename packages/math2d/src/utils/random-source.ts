@@ -105,34 +105,113 @@ export class MathRandomSource implements RandomSource {
  }
 }
 
+/* ========================================================================== */
+/* xoshiro128++ internals                                                      */
+/* ========================================================================== */
+
 /**
- * Deterministic random source using a linear congruential generator (LCG).
+ * SplitMix32 seed expansion function.
+ * Expands a single 32-bit seed into a full 128-bit xoshiro128++ state.
+ *
+ * @param seed - 32-bit integer seed.
+ * @returns 4-element array of uint32 state values.
  *
  * @remarks
- * Based on Park and Miller's "minimal standard" generator and provides
- * deterministic pseudo-random numbers when seeded.
+ * Uses the SplitMix32 algorithm per Blackman & Vigna recommendation for
+ * initializing larger state from a single seed. Constants: gamma = 0x9e3779b9,
+ * mixing multipliers 0x85ebca6b and 0xc2b2ae35, shift amounts 16/13/16.
+ *
+ * @internal
+ */
+function splitMix32(seed: number): [number, number, number, number] {
+ let z = seed | 0;
+ const result: [number, number, number, number] = [0, 0, 0, 0];
+
+ for (let index = 0; index < 4; index++) {
+  z = (z + 0x9e3779b9) | 0;
+  let t = z;
+  t = Math.imul(t ^ (t >>> 16), 0x85ebca6b);
+  t = Math.imul(t ^ (t >>> 13), 0xc2b2ae35);
+  result[index] = (t ^ (t >>> 16)) >>> 0;
+ }
+
+ // Ensure state is not all-zero (degenerate case)
+ if (result[0] === 0 && result[1] === 0 && result[2] === 0 && result[3] === 0) {
+  result[0] = 1;
+ }
+
+ return result;
+}
+
+/**
+ * 32-bit left rotation.
+ * @returns Rotated 32-bit unsigned integer.
+ * @internal
+ */
+function rotl(x: number, k: number): number {
+ return ((x << k) | (x >>> (32 - k))) >>> 0;
+}
+
+/**
+ * xoshiro128++ core step.
+ * Advances the 4 × uint32 state and returns a 32-bit unsigned integer.
+ *
+ * @returns 32-bit unsigned integer.
+ *
+ * @remarks
+ * Implements the scrambler: `rotl(s0 + s3, 7) + s0` per Blackman & Vigna (2021).
+ *
+ * @internal
+ */
+function xoshiro128pp(s: [number, number, number, number]): number {
+ // Scrambler: rotl(s[0] + s[3], 7) + s[0]
+ const result = (rotl((s[0] + s[3]) >>> 0, 7) + s[0]) >>> 0;
+
+ const t = (s[1] << 9) >>> 0;
+
+ s[2] = (s[2] ^ s[0]) >>> 0;
+ s[3] = (s[3] ^ s[1]) >>> 0;
+ s[1] = (s[1] ^ s[2]) >>> 0;
+ s[0] = (s[0] ^ s[3]) >>> 0;
+
+ s[2] = (s[2] ^ t) >>> 0;
+
+ s[3] = rotl(s[3], 11);
+
+ return result;
+}
+
+/**
+ * Deterministic random source using xoshiro128++ algorithm.
+ *
+ * @remarks
+ * Uses xoshiro128++ (Blackman & Vigna, 2021) with 4 × uint32 state for
+ * high-quality pseudo-random numbers. State is initialized via SplitMix32
+ * seed expansion. Provides unbiased integer generation via rejection sampling.
  *
  * @category Utility
  * @since 0.7.0
  * @public
  */
 export class SeededRandomSource implements RandomSource {
- private static readonly A = 16807; // Multiplier (7^5)
- private static readonly M = 2147483647; // Modulus (2^31 - 1, a Mersenne prime)
- private static readonly Q = 127773; // M / A
- private static readonly R = 2836; // M % A
-
- private state: number;
+ private state: [number, number, number, number];
 
  /**
   * Creates a new seeded random source.
   *
-  * @param seed - Initial seed value. Defaults to the current time.
+  * @param seed - Initial seed value. Defaults to sub-millisecond timestamp.
   */
  constructor(seed?: number) {
-  this.state = seed !== undefined ? Math.abs(seed | 0) || 1 : Date.now();
-  // Ensure state is in valid range [1, M-1]
-  this.state = (this.state % (SeededRandomSource.M - 1)) + 1;
+  if (seed !== undefined) {
+   this.state = splitMix32(seed | 0);
+  } else {
+   // Sub-millisecond uniqueness with Date.now() fallback
+   const now =
+    typeof globalThis.performance !== 'undefined'
+     ? (globalThis.performance.now() * 1000) | 0
+     : Date.now() | 0;
+   this.state = splitMix32(now);
+  }
  }
 
  /**
@@ -141,39 +220,49 @@ export class SeededRandomSource implements RandomSource {
   * @returns A random number in [0, 1).
   *
   * @remarks
-  * Uses Park and Miller's algorithm with Schrage's method to avoid overflow.
+  * Uses xoshiro128++ algorithm with 32-bit state for deterministic generation.
   *
   * @category Utility
   * @since 0.7.0
   */
  next(): number {
-  const k = Math.floor(this.state / SeededRandomSource.Q);
-  this.state =
-   SeededRandomSource.A * (this.state - k * SeededRandomSource.Q) - k * SeededRandomSource.R;
-
-  if (this.state < 0) {
-   this.state += SeededRandomSource.M;
-  }
-
-  // Convert to [0, 1) range
-  return (this.state - 1) / (SeededRandomSource.M - 1);
+  // Convert uint32 to [0, 1) by dividing by 2^32
+  return xoshiro128pp(this.state) / 4294967296;
  }
 
  /**
-  * Generates a random integer.
+  * Generates a random integer in [0, max).
   *
   * @param max - Exclusive upper bound.
   * @returns A random integer in [0, max).
+  *
+  * @throws {TypeError} If max is not a positive integer.
+  *
+  * @remarks
+  * Uses rejection sampling with modulo debiasing to eliminate bias.
   *
   * @category Utility
   * @since 0.7.0
   */
  nextInt(max: number): number {
-  return Math.floor(this.next() * max);
+  if (max <= 0 || !Number.isInteger(max) || max !== max) {
+   throw new TypeError(`SeededRandomSource.nextInt: max must be a positive integer, got ${max}`);
+  }
+
+  // Rejection sampling: discard values in [0, 2^32 % max) so remaining range divides evenly
+  const maxU32 = 0x100000000; // 2^32
+  const reject = maxU32 % max;
+
+  let raw: number;
+  do {
+   raw = xoshiro128pp(this.state);
+  } while (raw < reject);
+
+  return raw % max;
  }
 
  /**
-  * Re-seeds the generator.
+  * Re-seeds the generator using SplitMix32 expansion.
   *
   * @param seed - New seed value.
   *
@@ -181,14 +270,13 @@ export class SeededRandomSource implements RandomSource {
   * @since 0.7.0
   */
  seed(seed: number): void {
-  this.state = Math.abs(seed | 0) || 1;
-  this.state = (this.state % (SeededRandomSource.M - 1)) + 1;
+  this.state = splitMix32(seed | 0);
  }
 
  /**
-  * Returns the current internal state.
+  * Returns the current internal state as a 4-element uint32 array.
   *
-  * @returns Current state value.
+  * @returns Copy of the current `[s0, s1, s2, s3]` state.
   *
   * @remarks
   * Useful for saving and restoring random generator state.
@@ -196,28 +284,28 @@ export class SeededRandomSource implements RandomSource {
   * @category Utility
   * @since 0.7.0
   */
- getState(): number {
-  return this.state;
+ getState(): [number, number, number, number] {
+  return [this.state[0], this.state[1], this.state[2], this.state[3]];
  }
 
  /**
-  * Sets the internal state directly.
+  * Restores a previously saved state.
   *
-  * @param state - State value to set.
+  * @param state - 4-element uint32 state array from {@link getState}.
   *
-  * @remarks
-  * Useful for restoring a previously saved state.
-  *
-  * @throws {RangeError} If `state` is outside [1, M - 1].
+  * @throws {RangeError} If state is not a 4-element array or is all zeros.
   *
   * @category Utility
   * @since 0.7.0
   */
- setState(state: number): void {
-  if (state <= 0 || state >= SeededRandomSource.M) {
-   throw new RangeError(`State must be in range [1, ${SeededRandomSource.M - 1}]`);
+ restoreState(state: [number, number, number, number]): void {
+  if (!Array.isArray(state) || state.length !== 4) {
+   throw new RangeError('State must be a 4-element array');
   }
-  this.state = state;
+  if (state[0] === 0 && state[1] === 0 && state[2] === 0 && state[3] === 0) {
+   throw new RangeError('State must not be all zeros');
+  }
+  this.state = [state[0] >>> 0, state[1] >>> 0, state[2] >>> 0, state[3] >>> 0];
  }
 }
 
@@ -226,16 +314,10 @@ export class SeededRandomSource implements RandomSource {
 /* ========================================================================== */
 
 /**
- * Global default random source.
- *
- * @remarks
- * Replace this to change random behavior globally.
- *
- * @category Utility
- * @since 0.7.0
- * @public
+ * Global default random source (module-private).
+ * @internal
  */
-export let defaultRandomSource: RandomSource = new MathRandomSource();
+let defaultRandomSource: RandomSource = new MathRandomSource();
 
 /**
  * Sets the global default random source.

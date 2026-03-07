@@ -9,20 +9,13 @@ import { describe, expect, test } from '@jest/globals';
 import {
  angleBisector,
  angleDifference,
- angleDistance,
- anglesNearEqual,
- angleAverage,
- angleWeightedAverage,
  angleFromVectors,
- isQuadrantAngle,
  sinCosNormalized,
  clampAngle,
+ angleDistance,
+ anglesNearEqual,
  isAngleBetween,
- reflectAngle,
  sinCos,
- sinCosInto,
- principalAngle,
- type SinCos,
 } from '../../../src/auxiliary/angle/operations';
 
 describe('angle/operations', () => {
@@ -101,17 +94,6 @@ describe('angle/operations', () => {
   });
  });
 
- describe('reflectAngle', () => {
-  test('reflects across given axis', () => {
-   expect(reflectAngle(Math.PI / 4, 0)).toBeCloseTo(-Math.PI / 4);
-   expect(reflectAngle(Math.PI / 4, Math.PI / 2)).toBeCloseTo((3 * Math.PI) / 4);
-  });
-
-  test('reflects and normalizes results outside principal range', () => {
-   expect(reflectAngle(4 * Math.PI, Math.PI / 4)).toBeCloseTo(Math.PI / 2);
-  });
- });
-
  describe('sinCos', () => {
   test('returns correct sin and cos for 0', () => {
    const result = sinCos(0);
@@ -139,49 +121,13 @@ describe('angle/operations', () => {
     expect(result.sin * result.sin + result.cos * result.cos).toBeCloseTo(1, 5);
    }
   });
- });
 
- describe('sinCosInto', () => {
-  test('writes sin and cos into provided object', () => {
-   const out: SinCos = { sin: 999, cos: 999 };
-   const result = sinCosInto(0, out);
-
-   expect(result).toBe(out); // Same reference
-   expect(out.sin).toBeCloseTo(0, 5);
-   expect(out.cos).toBeCloseTo(1, 5);
-  });
-
-  test('returns same object reference', () => {
-   const out: SinCos = { sin: 0, cos: 0 };
-   const result = sinCosInto(Math.PI / 2, out);
-
+  test('accepts out parameter for zero-allocation', () => {
+   const out = { sin: 0, cos: 0 };
+   const result = sinCos(Math.PI / 6, out);
    expect(result).toBe(out);
-   expect(result.sin).toBeCloseTo(1, 5);
-   expect(result.cos).toBeCloseTo(0, 5);
-  });
-
-  test('can be reused in loops without allocation', () => {
-   const out: SinCos = { sin: 0, cos: 0 };
-   const angles = [0, Math.PI / 4, Math.PI / 2, Math.PI];
-
-   for (const angle of angles) {
-    sinCosInto(angle, out);
-    // Verify identity holds for each
-    expect(out.sin * out.sin + out.cos * out.cos).toBeCloseTo(1, 5);
-   }
-  });
-
-  test('produces same results as sinCos', () => {
-   const out: SinCos = { sin: 0, cos: 0 };
-   const angles = [0, 0.5, 1, Math.PI / 4, Math.PI];
-
-   for (const angle of angles) {
-    const fromSinCos = sinCos(angle);
-    sinCosInto(angle, out);
-
-    expect(out.sin).toBe(fromSinCos.sin);
-    expect(out.cos).toBe(fromSinCos.cos);
-   }
+   expect(out.sin).toBeCloseTo(0.5, 5);
+   expect(out.cos).toBeCloseTo(Math.sqrt(3) / 2, 5);
   });
  });
 
@@ -191,78 +137,19 @@ describe('angle/operations', () => {
    const lengthSq = result.sin * result.sin + result.cos * result.cos;
    expect(lengthSq).toBeCloseTo(1, 10);
   });
- });
 
- describe('angleAverage', () => {
-  test('averages angles correctly', () => {
-   const avg = angleAverage([0, Math.PI / 2]);
-   expect(avg).toBeCloseTo(Math.PI / 4, 5);
+  test('accepts out parameter for zero-allocation', () => {
+   const out = { sin: 0, cos: 0 };
+   const result = sinCosNormalized(Math.PI / 2, out);
+   expect(result).toBe(out);
+   expect(out.sin).toBeCloseTo(1, 5);
+   expect(out.cos).toBeCloseTo(0, 5);
   });
 
-  test('handles angles across 0/2π boundary', () => {
-   const avg = angleAverage([-Math.PI / 4, Math.PI / 4]);
-   expect(avg).toBeCloseTo(0, 5);
-  });
-
-  test('returns 0 for empty array', () => {
-   expect(angleAverage([])).toBe(0);
-  });
-
-  test('handles single angle', () => {
-   expect(angleAverage([Math.PI / 3])).toBeCloseTo(Math.PI / 3, 5);
-  });
-
-  test('handles opposite angles (undefined mean, returns 0)', () => {
-   const avg = angleAverage([0, Math.PI]);
-   // Opposite angles cancel: cos(0)+cos(π)=0, sin(0)+sin(π)=0
-   // Circular mean is undefined for balanced/opposite angles, returns 0
-   expect(avg).toBeCloseTo(0, 5);
-  });
-
-  test('handles multiple angles correctly', () => {
-   const avg = angleAverage([0, Math.PI / 2, Math.PI]);
-   // Using unit vectors: (1,0) + (0,1) + (-1,0) = (0, 1) → π/2
-   expect(avg).toBeCloseTo(Math.PI / 2, 5);
-  });
-
-  test('handles angles near wrap boundary', () => {
-   const avg = angleAverage([-Math.PI * 0.9, Math.PI * 0.9]);
-   // Both angles near ±π, average should be near π
-   expect(Math.abs(avg)).toBeCloseTo(Math.PI, 2);
-  });
- });
-
- describe('angleWeightedAverage', () => {
-  test('opposite angles with equal weights (undefined mean, returns 0)', () => {
-   const result = angleWeightedAverage([0, Math.PI], [1, 1]);
-   // Opposite angles cancel with equal weights, circular mean undefined
-   expect(result).toBeCloseTo(0, 5);
-  });
-
-  test('higher weight biases toward that angle', () => {
-   const result = angleWeightedAverage([0, Math.PI], [3, 1]);
-   expect(result).toBeLessThan(Math.PI / 2);
-  });
-
-  test('returns 0 for empty array', () => {
-   expect(angleWeightedAverage([], [])).toBe(0);
-  });
-
-  test('returns 0 for mismatched array lengths', () => {
-   expect(angleWeightedAverage([0, Math.PI], [1])).toBe(0);
-   expect(angleWeightedAverage([0], [1, 2])).toBe(0);
-  });
-
-  test('zero weight ignores angle', () => {
-   const result = angleWeightedAverage([0, Math.PI], [1, 0]);
-   expect(result).toBeCloseTo(0, 5);
-  });
-
-  test('handles multiple angles', () => {
-   const result = angleWeightedAverage([0, Math.PI / 2, Math.PI], [1, 2, 1]);
-   // Should be biased toward π/2
-   expect(result).toBeGreaterThan(Math.PI / 4);
-   expect(result).toBeLessThan((3 * Math.PI) / 4);
+  test('creates new object when out is not provided', () => {
+   const result = sinCosNormalized(0);
+   expect(result.sin).toBeCloseTo(0, 5);
+   expect(result.cos).toBeCloseTo(1, 5);
   });
  });
 
@@ -283,52 +170,25 @@ describe('angle/operations', () => {
   });
  });
 
- describe('isQuadrantAngle', () => {
-  test('detects quadrant angles', () => {
-   expect(isQuadrantAngle(0)).toBe(true);
-   expect(isQuadrantAngle(Math.PI / 2)).toBe(true);
-   expect(isQuadrantAngle(Math.PI)).toBe(true);
-   expect(isQuadrantAngle((3 * Math.PI) / 2)).toBe(true);
+ describe('NaN/Infinity handling', () => {
+  test('sinCos returns NaN for NaN input', () => {
+   const result = sinCos(NaN);
+   expect(result.sin).toBeNaN();
+   expect(result.cos).toBeNaN();
   });
 
-  test('rejects non-quadrant angles', () => {
-   expect(isQuadrantAngle(Math.PI / 4)).toBe(false);
-   expect(isQuadrantAngle(0.1)).toBe(false);
-  });
- });
-
- describe('principalAngle', () => {
-  test('returns 0 for empty array', () => {
-   expect(principalAngle([])).toBe(0);
+  test('angleDifference returns NaN for NaN input', () => {
+   expect(angleDifference(NaN, 0)).toBeNaN();
+   expect(angleDifference(0, NaN)).toBeNaN();
   });
 
-  test('returns the single angle for single-element array', () => {
-   expect(principalAngle([Math.PI / 4])).toBeCloseTo(Math.PI / 4, 5);
+  test('angleDistance returns NaN for NaN input', () => {
+   expect(angleDistance(NaN, 0)).toBeNaN();
+   expect(angleDistance(0, NaN)).toBeNaN();
   });
 
-  test('finds middle angle for symmetric distribution', () => {
-   const result = principalAngle([0, Math.PI / 4, Math.PI / 2]);
-   expect(result).toBeCloseTo(Math.PI / 4, 3);
-  });
-
-  test('handles opposite angles', () => {
-   // -π and π are the same angle, so principal should be near π or -π
-   const result = principalAngle([-Math.PI, Math.PI]);
-   expect(Math.abs(result)).toBeCloseTo(Math.PI, 5);
-  });
-
-  test('handles wrap-around cases', () => {
-   const result = principalAngle([-Math.PI * 0.9, Math.PI * 0.9]);
-   // Both angles are near ±π, so principal should be near π
-   expect(Math.abs(result)).toBeCloseTo(Math.PI, 2);
-  });
-
-  test('converges for multiple angles', () => {
-   const angles = [0, Math.PI / 6, Math.PI / 3, Math.PI / 2];
-   const result = principalAngle(angles);
-   // Should be somewhere in the middle
-   expect(result).toBeGreaterThan(0);
-   expect(result).toBeLessThan(Math.PI / 2);
+  test('anglesNearEqual(NaN, 0) returns false', () => {
+   expect(anglesNearEqual(NaN, 0)).toBe(false);
   });
  });
 });

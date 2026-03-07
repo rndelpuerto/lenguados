@@ -21,15 +21,15 @@ Distribution guarantees:
 - Points in/on circles use polar coordinates with sqrt(r) for uniform area distribution
 - Rotations use uniform angle distribution
 
-**Determinism Guarantee**: All mathematical operations use [DeterministicMath](../deterministic/classes/DeterministicMath.md)
+**Determinism Guarantee**: All mathematical operations use deterministic kernels
 for cross-platform reproducibility. When using a SeededRandomSource,
 results are guaranteed to be identical across different JavaScript engines.
 
 Functions use:
 
-- `DeterministicMath.sin/cos` for trigonometry
-- `DeterministicMath.sqrtSafe` for square roots
-- IEEE 754 compliant `Math.log` (deterministic by specification)
+- `sin/cos` for trigonometry
+- `sqrtSafe` for square roots
+- `log` for natural logarithm
 
 ## Example
 

@@ -19,27 +19,9 @@ This module provides fundamental scalar operations including:
 
 ## References
 
-### abs
-
-Re-exports [abs](functions/abs.md)
-
----
-
 ### ANGLE_EPSILON
 
 Re-exports [ANGLE_EPSILON](variables/ANGLE_EPSILON.md)
-
----
-
-### bezierInterp
-
-Re-exports [bezierInterp](functions/bezierInterp.md)
-
----
-
-### catmullRomInterp
-
-Re-exports [catmullRomInterp](functions/catmullRomInterp.md)
 
 ---
 
@@ -97,9 +79,9 @@ Re-exports [GOLDEN_RATIO](variables/GOLDEN_RATIO.md)
 
 ---
 
-### GRAD_TO_RAD
+### GOLDEN_RATIO_CONJUGATE
 
-Re-exports [GRAD_TO_RAD](variables/GRAD_TO_RAD.md)
+Re-exports [GOLDEN_RATIO_CONJUGATE](variables/GOLDEN_RATIO_CONJUGATE.md)
 
 ---
 
@@ -175,12 +157,6 @@ Re-exports [lessThan](functions/lessThan.md)
 
 ---
 
-### LN_10
-
-Re-exports [LN_10](variables/LN_10.md)
-
----
-
 ### LN_2
 
 Re-exports [LN_2](variables/LN_2.md)
@@ -205,21 +181,9 @@ Re-exports [loopUnchecked](functions/loopUnchecked.md)
 
 ---
 
-### max
-
-Re-exports [max](functions/max.md)
-
----
-
 ### MAX_SAFE_INTEGER_F64
 
 Re-exports [MAX_SAFE_INTEGER_F64](variables/MAX_SAFE_INTEGER_F64.md)
-
----
-
-### min
-
-Re-exports [min](functions/min.md)
 
 ---
 
@@ -283,12 +247,6 @@ Re-exports [RAD_TO_DEG](variables/RAD_TO_DEG.md)
 
 ---
 
-### RAD_TO_GRAD
-
-Re-exports [RAD_TO_GRAD](variables/RAD_TO_GRAD.md)
-
----
-
 ### RAD_TO_TURN
 
 Re-exports [RAD_TO_TURN](variables/RAD_TO_TURN.md)
@@ -313,12 +271,6 @@ Re-exports [remapSafe](functions/remapSafe.md)
 
 ---
 
-### roundAwayFromZero
-
-Re-exports [roundAwayFromZero](functions/roundAwayFromZero.md)
-
----
-
 ### saturate
 
 Re-exports [saturate](functions/saturate.md)
@@ -334,6 +286,12 @@ Re-exports [saturateSigned](functions/saturateSigned.md)
 ### sign
 
 Re-exports [sign](functions/sign.md)
+
+---
+
+### SMALLEST_NORMAL
+
+Re-exports [SMALLEST_NORMAL](variables/SMALLEST_NORMAL.md)
 
 ---
 

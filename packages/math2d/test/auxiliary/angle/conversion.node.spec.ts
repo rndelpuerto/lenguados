@@ -11,8 +11,6 @@ import {
  radiansToDegrees,
  turnsToRadians,
  radiansToTurns,
- gradiansToRadians,
- radiansToGradians,
 } from '../../../src/auxiliary/angle/conversion';
 
 describe('angle/conversion', () => {
@@ -96,39 +94,39 @@ describe('angle/conversion', () => {
   });
  });
 
- describe('gradiansToRadians', () => {
-  test('converts 0 gradians', () => {
-   expect(gradiansToRadians(0)).toBe(0);
+ describe('NaN/Infinity handling', () => {
+  test('degreesToRadians propagates NaN', () => {
+   expect(degreesToRadians(NaN)).toBeNaN();
   });
 
-  test('converts 100 gradians (right angle)', () => {
-   expect(gradiansToRadians(100)).toBeCloseTo(Math.PI / 2);
+  test('degreesToRadians propagates Infinity', () => {
+   expect(degreesToRadians(Infinity)).toBe(Infinity);
+   expect(degreesToRadians(-Infinity)).toBe(-Infinity);
   });
 
-  test('converts 200 gradians (straight angle)', () => {
-   expect(gradiansToRadians(200)).toBeCloseTo(Math.PI);
+  test('radiansToDegrees propagates NaN', () => {
+   expect(radiansToDegrees(NaN)).toBeNaN();
   });
 
-  test('converts 400 gradians (full turn)', () => {
-   expect(gradiansToRadians(400)).toBeCloseTo(Math.PI * 2);
-  });
- });
-
- describe('radiansToGradians', () => {
-  test('converts 0 radians', () => {
-   expect(radiansToGradians(0)).toBe(0);
+  test('radiansToDegrees propagates Infinity', () => {
+   expect(radiansToDegrees(Infinity)).toBe(Infinity);
+   expect(radiansToDegrees(-Infinity)).toBe(-Infinity);
   });
 
-  test('converts π/2 radians', () => {
-   expect(radiansToGradians(Math.PI / 2)).toBeCloseTo(100);
+  test('turnsToRadians propagates NaN', () => {
+   expect(turnsToRadians(NaN)).toBeNaN();
   });
 
-  test('converts π radians', () => {
-   expect(radiansToGradians(Math.PI)).toBeCloseTo(200);
+  test('turnsToRadians propagates Infinity', () => {
+   expect(turnsToRadians(Infinity)).toBe(Infinity);
   });
 
-  test('converts 2π radians', () => {
-   expect(radiansToGradians(Math.PI * 2)).toBeCloseTo(400);
+  test('radiansToTurns propagates NaN', () => {
+   expect(radiansToTurns(NaN)).toBeNaN();
+  });
+
+  test('radiansToTurns propagates Infinity', () => {
+   expect(radiansToTurns(Infinity)).toBe(Infinity);
   });
  });
 });

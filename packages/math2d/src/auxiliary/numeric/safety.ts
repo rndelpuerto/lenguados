@@ -12,24 +12,30 @@
  * JavaScript engines are delegated to deterministic-kernels.
  */
 
-import { acosSafe, asinSafe, log, pow, sqrtSafe } from '../../deterministic/deterministic-kernels';
-import { PrecisionMath } from '../../deterministic/precision-math';
+import { acosSafe, asinSafe, log, pow } from '../../deterministic/deterministic-kernels';
 import { clamp } from '../scalar/arithmetic';
-import { EPSILON } from '../scalar/constants';
-
 /**
  * Minimum safe value for division operations.
- * Below this value, division results may be unreliable.
+ * Below this value, division results may produce numerically degenerate outputs
+ * in geometric contexts (normalization, inverse, projection).
  *
  * @remarks
- * Uses the same EPSILON (1e-10) as {@link isNearZero} for consistency.
- * This ensures that `safeDivide` and `isNearZero` have coherent behavior.
+ * Independently defined at `1e-10`. This value matches {@link EPSILON} by design
+ * because both represent the application-level threshold below which quantities
+ * are geometrically insignificant for a 2D physics engine. However, they are
+ * separate constants serving different purposes:
+ * - `EPSILON`: geometric comparison tolerance ("are these values approximately equal?")
+ * - `MIN_SAFE_DIVISOR`: division safety threshold ("will dividing by this produce garbage?")
+ *
+ * For reference, Unreal Engine uses `SMALL_NUMBER = 1e-8` for a similar role,
+ * Ogre3D uses `1e-8`, and Box2D uses `FLT_EPSILON` (~1.19e-7, float32).
+ * Our value of `1e-10` is more conservative, appropriate for double precision.
  *
  * @constant {number}
  * @category Safety
  * @since 0.7.0
  */
-export const MIN_SAFE_DIVISOR = EPSILON;
+export const MIN_SAFE_DIVISOR = 1e-10;
 
 /**
  * Safe division with fallback to 0.
@@ -38,18 +44,24 @@ export const MIN_SAFE_DIVISOR = EPSILON;
  * @param epsilon - Minimum safe divisor (default: MIN_SAFE_DIVISOR).
  * @returns Result or 0 if denominator is too small.
  *
+ * @remarks
+ * Default threshold is {@link MIN_SAFE_DIVISOR} (1e-10).
+ * Returns 0 when |denominator| < epsilon, preventing Infinity/NaN from
+ * near-zero division. Used internally by core types for `inverseSafe` and
+ * `normalizeSafe` operations.
+ *
  * @example
  * ```typescript
- * safeDivide(10, 2);              // 5
- * safeDivide(10, 0);              // 0 (safe fallback)
- * safeDivide(10, 0.0000000001);   // 0 (below epsilon)
- * safeDivide(10, 0, 0.1);         // 0 (custom epsilon)
+ * divideSafe(10, 2);              // 5
+ * divideSafe(10, 0);              // 0 (safe fallback)
+ * divideSafe(10, 1e-11);          // 0 (below epsilon)
+ * divideSafe(10, 0, 0.1);         // 0 (custom epsilon)
  * ```
  *
  * @category Safety
  * @since 0.7.0
  */
-export function safeDivide(
+export function divideSafe(
  numerator: number,
  denominator: number,
  epsilon: number = MIN_SAFE_DIVISOR,
@@ -63,17 +75,22 @@ export function safeDivide(
  * @param epsilon - Minimum safe value (default: MIN_SAFE_DIVISOR).
  * @returns Reciprocal or 0 if value is too small.
  *
+ * @remarks
+ * Default threshold is {@link MIN_SAFE_DIVISOR} (1e-10).
+ * Returns 0 when |value| < epsilon, preventing Infinity from near-zero
+ * reciprocal. Equivalent to `divideSafe(1, value, epsilon)`.
+ *
  * @example
  * ```typescript
- * safeReciprocal(2);           // 0.5
- * safeReciprocal(0);           // 0 (safe fallback)
- * safeReciprocal(0.00001);     // 0 (below epsilon)
+ * reciprocalSafe(2);           // 0.5
+ * reciprocalSafe(0);           // 0 (safe fallback)
+ * reciprocalSafe(1e-11);       // 0 (below epsilon)
  * ```
  *
  * @category Safety
  * @since 0.7.0
  */
-export function safeReciprocal(value: number, epsilon: number = MIN_SAFE_DIVISOR): number {
+export function reciprocalSafe(value: number, epsilon: number = MIN_SAFE_DIVISOR): number {
  return Math.abs(value) < epsilon ? 0 : 1 / value;
 }
 
@@ -82,47 +99,73 @@ export function safeReciprocal(value: number, epsilon: number = MIN_SAFE_DIVISOR
 /* ========================================================================== */
 
 /**
- * Safe deterministic square root (clamps negatives to 0).
- * Re-exported from deterministic-kernels for convenience.
- * @see {@link sqrtSafe}
+ * Safe square root (clamps negative values to 0).
+ *
+ * @param x - Value to compute square root of
+ * @returns Square root of x, or 0 for negative values
+ *
+ * @remarks
+ * Uses `Math.sqrt` which is IEEE 754 required — correctly rounded and
+ * deterministic across all platforms.
+ *
+ * @category Safety
+ * @since 0.7.0
  */
-export { sqrtSafe as safeSqrt };
+export function sqrtSafe(x: number): number {
+ return x <= 0 ? 0 : Math.sqrt(x);
+}
 
 /**
  * Safe deterministic arc cosine (clamps input to [-1, 1]).
  * Re-exported from deterministic-kernels for convenience.
- * @see {@link acosSafe}
+ *
+ * @remarks Uses deterministic math for cross-platform reproducibility.
+ *
+ * @category Safety
+ * @since 0.7.0
  */
-export { acosSafe as safeAcos };
+export { acosSafe };
 
 /**
  * Safe deterministic arc sine (clamps input to [-1, 1]).
  * Re-exported from deterministic-kernels for convenience.
- * @see {@link asinSafe}
+ *
+ * @remarks Uses deterministic math for cross-platform reproducibility.
+ *
+ * @category Safety
+ * @since 0.7.0
  */
-export { asinSafe as safeAsin };
+export { asinSafe };
 
 /**
- * Safe logarithm (returns -Infinity for <= 0).
+ * Safe logarithm (returns 0 for non-positive values).
  * @param value - Value to take logarithm of.
  * @param base - Logarithm base (default: Math.E for natural log).
- * @returns Logarithm or -Infinity for non-positive values.
+ * @returns Logarithm or 0 for non-positive values.
+ *
+ * @remarks
+ * Uses deterministic math for cross-platform reproducibility.
+ * Returns 0 (not -Infinity) for non-positive inputs, consistent
+ * with the Safe convention: fallbacks are always finite and usable.
  *
  * @example
  * ```typescript
- * safeLog(Math.E);         // 1
- * safeLog(10, 10);         // 1
- * safeLog(100, 10);        // 2
- * safeLog(0);              // -Infinity
- * safeLog(-1);             // -Infinity
+ * logSafe(Math.E);         // 1
+ * logSafe(10, 10);         // 1
+ * logSafe(100, 10);        // 2
+ * logSafe(0);              // 0 (safe fallback)
+ * logSafe(-1);             // 0 (safe fallback)
  * ```
  *
  * @category Safety
  * @since 0.7.0
  */
-export function safeLog(value: number, base: number = Math.E): number {
+export function logSafe(value: number, base: number = Math.E): number {
  if (value <= 0) {
-  return -Infinity;
+  return 0;
+ }
+ if (base <= 0 || base === 1 || !Number.isFinite(base)) {
+  return 0;
  }
  return base === Math.E ? log(value) : log(value) / log(base);
 }
@@ -134,23 +177,33 @@ export function safeLog(value: number, base: number = Math.E): number {
  * @returns Result with special case handling.
  *
  * @remarks
+ * Uses deterministic math for cross-platform reproducibility.
  * Handles edge cases like:
  * - 0^0 returns 1 (following JavaScript convention)
  * - Negative base with fractional exponent returns NaN
  * - Prevents overflow/underflow where possible
  *
+ * **Note on Safe convention exception**: Unlike other `*Safe` functions
+ * that always return finite values, `powSafe(-x, frac)` returns NaN because
+ * this case is mathematically undefined in ℝ (the result is complex).
+ * This matches IEEE 754 §9.2, C99 `pow()`, and every industrial math library
+ * (Unity, GLM, Eigen, Three.js). Returning a finite fallback like 0 would be
+ * mathematically misleading and inconsistent with universal external convention.
+ *
  * @example
  * ```typescript
- * safePow(2, 3);           // 8
- * safePow(0, 0);           // 1 (by convention)
- * safePow(-2, 0.5);        // NaN (complex result)
- * safePow(10, 1000);       // Infinity (overflow)
+ * powSafe(2, 3);           // 8
+ * powSafe(0, 0);           // 1 (by convention)
+ * powSafe(-2, 0.5);        // NaN (complex result)
+ * powSafe(10, 1000);       // Infinity (overflow)
  * ```
  *
  * @category Safety
  * @since 0.7.0
  */
-export function safePow(base: number, exponent: number): number {
+export function powSafe(base: number, exponent: number): number {
+ // NaN propagation
+ if (base !== base) return NaN;
  // Handle special cases
  if (exponent === 0) return 1; // Including 0^0 = 1
  if (base === 0) return 0;
@@ -162,41 +215,6 @@ export function safePow(base: number, exponent: number): number {
  }
 
  return pow(base, exponent);
-}
-
-/**
- * Safe modulo that handles negative divisor.
- * @param dividend - Value to divide.
- * @param divisor - Divisor.
- * @returns Modulo result or 0 if divisor is 0.
- *
- * @remarks
- * Unlike the % operator, this ensures the result has the same
- * sign as the divisor (Euclidean modulo).
- *
- * @example
- * ```typescript
- * safeMod(7, 3);       // 1
- * safeMod(-7, 3);      // 2 (not -1)
- * safeMod(7, -3);      // -2 (not 1)
- * safeMod(-7, -3);     // -1
- * safeMod(5, 0);       // 0 (safe fallback)
- * ```
- *
- * @category Safety
- * @since 0.7.0
- */
-export function safeMod(dividend: number, divisor: number): number {
- if (divisor === 0) return 0;
-
- const result = dividend % divisor;
-
- // Ensure result has same sign as divisor
- if ((result < 0 && divisor > 0) || (result > 0 && divisor < 0)) {
-  return result + divisor;
- }
-
- return result;
 }
 
 /**
@@ -215,8 +233,20 @@ export function safeMod(dividend: number, divisor: number): number {
  * @category Safety
  * @since 0.7.0
  */
-export function robustSum(values: number[]): number {
- return PrecisionMath.kahanSum(values);
+export function robustSum(values: readonly number[]): number {
+ let sum = 0;
+ let compensation = 0;
+
+ for (const value of values) {
+  // Sanitize: non-finite values become 0
+  const sanitized = Number.isFinite(value) ? value : 0;
+  const y = sanitized - compensation;
+  const t = sum + y;
+  compensation = t - sum - y;
+  sum = t;
+ }
+
+ return sum;
 }
 
 /**
@@ -234,8 +264,27 @@ export function robustSum(values: number[]): number {
  * @category Safety
  * @since 0.7.0
  */
-export function neumaierSum(values: number[]): number {
- return PrecisionMath.neumaierSum(values);
+export function neumaierSum(values: readonly number[]): number {
+ let sum = 0;
+ let compensation = 0;
+
+ for (const value of values) {
+  // Sanitize: non-finite values become 0
+  const sanitized = Number.isFinite(value) ? value : 0;
+  const t = sum + sanitized;
+
+  if (Math.abs(sum) >= Math.abs(sanitized)) {
+   // sum is bigger, low-order digits of value are lost
+   compensation += sum - t + sanitized;
+  } else {
+   // value is bigger, low-order digits of sum are lost
+   compensation += sanitized - t + sum;
+  }
+
+  sum = t;
+ }
+
+ return sum + compensation;
 }
 
 /**
@@ -243,6 +292,11 @@ export function neumaierSum(values: number[]): number {
  * @param a - First factor.
  * @param b - Second factor.
  * @returns Object with product and error term.
+ *
+ * @remarks
+ * Veltkamp splitting multiplies inputs by `2^27 + 1` (~1.34e8).
+ * This overflows for `|a|` or `|b|` > ~1.34e291 (`MAX_VALUE / 134217729`).
+ * For such inputs, the error term will be unreliable (Infinity/NaN).
  *
  * @example
  * ```typescript
@@ -256,7 +310,31 @@ export function neumaierSum(values: number[]): number {
  * @since 0.7.0
  */
 export function compensatedProduct(a: number, b: number): { product: number; error: number } {
- return PrecisionMath.twoProduct(a, b);
+ // Sanitize: non-finite values become 0
+ const sanitizedA = Number.isFinite(a) ? a : 0;
+ const sanitizedB = Number.isFinite(b) ? b : 0;
+ const product = sanitizedA * sanitizedB;
+
+ // Veltkamp splitting for error-free multiplication
+ const split = 134217729; // 2^27 + 1
+
+ // Split a
+ const c = split * sanitizedA;
+ const aHigh = c - (c - sanitizedA);
+ const aLow = sanitizedA - aHigh;
+
+ // Split b
+ const d = split * sanitizedB;
+ const bHigh = d - (d - sanitizedB);
+ const bLow = sanitizedB - bHigh;
+
+ // Compute error term
+ const error1 = product - aHigh * bHigh;
+ const error2 = error1 - aLow * bHigh;
+ const error3 = error2 - aHigh * bLow;
+ const error = aLow * bLow - error3;
+
+ return { product, error };
 }
 
 /**
@@ -269,24 +347,20 @@ export function compensatedProduct(a: number, b: number): { product: number; err
  * @example
  * ```typescript
  * // Avoids overflow for large values
- * safeLerp(1e308, 2e308, 0.5); // 1.5e308
+ * lerpSafe(1e308, 2e308, 0.5); // 1.5e308
  * // Normal lerp might overflow
  * ```
  *
  * @category Safety
  * @since 0.7.0
  */
-export function safeLerp(a: number, b: number, t: number): number {
+export function lerpSafe(a: number, b: number, t: number): number {
  // Avoid catastrophic cancellation and overflow
  if (t <= 0) return a;
  if (t >= 1) return b;
 
- // Use different formulas based on t value
- if (t < 0.5) {
-  return a + (b - a) * t;
- } else {
-  return b - (b - a) * (1 - t);
- }
+ // Distributive form prevents overflow when a and b have opposite signs
+ return a * (1 - t) + b * t;
 }
 
 /* ========================================================================== */
@@ -325,7 +399,7 @@ export function sanitizeNumber(
  max: number = Number.MAX_VALUE,
 ): number {
  if (!Number.isFinite(value)) {
-  return fallback;
+  return clamp(fallback, min, max);
  }
  return clamp(value, min, max);
 }
@@ -353,5 +427,6 @@ export function sanitizeNumber(
  * @since 0.7.0
  */
 export function ensureFinite(value: number, fallback: number = 0): number {
+ if (!Number.isFinite(fallback)) fallback = 0;
  return Number.isFinite(value) ? value : fallback;
 }

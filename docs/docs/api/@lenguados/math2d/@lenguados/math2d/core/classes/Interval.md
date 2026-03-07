@@ -1,6 +1,6 @@
 # Class: Interval
 
-Defined in: [src/core/interval.ts:72](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L72)
+Defined in: [src/core/interval.ts:72](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L72)
 
 Mutable closed interval with deterministic arithmetic and comparisons.
 
@@ -10,7 +10,7 @@ Interval bounds satisfy `min <= max` after construction and validation.
 
 ## Since
 
-0.1.0
+0.7.0
 
 ## Implements
 
@@ -22,7 +22,7 @@ Interval bounds satisfy `min <= max` after construction and validation.
 
 > **new Interval**(`min`, `max`): `Interval`
 
-Defined in: [src/core/interval.ts:188](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L188)
+Defined in: [src/core/interval.ts:195](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L195)
 
 #### Parameters
 
@@ -44,7 +44,7 @@ Defined in: [src/core/interval.ts:188](https://github.com/rndelpuerto/lenguados/
 
 > **add**(`other`): `this`
 
-Defined in: [src/core/interval.ts:1180](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L1180)
+Defined in: [src/core/interval.ts:1254](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L1254)
 
 Adds another interval to this one in place.
 
@@ -64,7 +64,7 @@ This for chaining
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -72,7 +72,7 @@ This for chaining
 
 > **divide**(`other`): `this`
 
-Defined in: [src/core/interval.ts:1231](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L1231)
+Defined in: [src/core/interval.ts:1305](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L1305)
 
 Divides this interval by another in place.
 
@@ -96,7 +96,7 @@ If divisor interval contains zero
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -104,7 +104,7 @@ If divisor interval contains zero
 
 > **multiply**(`other`): `this`
 
-Defined in: [src/core/interval.ts:1210](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L1210)
+Defined in: [src/core/interval.ts:1284](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L1284)
 
 Multiplies with another interval in place.
 
@@ -124,7 +124,7 @@ This for chaining
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -132,7 +132,7 @@ This for chaining
 
 > **negate**(): `this`
 
-Defined in: [src/core/interval.ts:1275](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L1275)
+Defined in: [src/core/interval.ts:1349](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L1349)
 
 Negates this interval in place.
 
@@ -144,7 +144,7 @@ This for chaining
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -152,7 +152,7 @@ This for chaining
 
 > **reciprocal**(): `this`
 
-Defined in: [src/core/interval.ts:1331](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L1331)
+Defined in: [src/core/interval.ts:1405](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L1405)
 
 Computes the reciprocal of this interval in place.
 
@@ -168,7 +168,7 @@ If interval contains zero
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -176,7 +176,7 @@ If interval contains zero
 
 > **reciprocalSafe**(): `this`
 
-Defined in: [src/core/interval.ts:1352](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L1352)
+Defined in: [src/core/interval.ts:1426](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L1426)
 
 Computes the reciprocal of this interval in place (safe version).
 
@@ -193,7 +193,7 @@ This for chaining, set to ZERO if interval contains zero
 
 #### Since
 
-0.14.0
+0.7.0
 
 ---
 
@@ -201,7 +201,7 @@ This for chaining, set to ZERO if interval contains zero
 
 > **reciprocalUnchecked**(): `this`
 
-Defined in: [src/core/interval.ts:1379](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L1379)
+Defined in: [src/core/interval.ts:1453](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L1453)
 
 Computes the reciprocal of this interval in place without validation (for hot paths).
 
@@ -223,7 +223,7 @@ If interval contains zero, result will contain Infinity/-Infinity or NaN.
 
 #### Since
 
-0.14.0
+0.7.0
 
 ---
 
@@ -231,7 +231,7 @@ If interval contains zero, result will contain Infinity/-Infinity or NaN.
 
 > **scale**(`scalar`): `this`
 
-Defined in: [src/core/interval.ts:1254](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L1254)
+Defined in: [src/core/interval.ts:1328](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L1328)
 
 Scales this interval by a scalar in place.
 
@@ -251,7 +251,7 @@ This for chaining
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -259,7 +259,7 @@ This for chaining
 
 > **sqrt**(): `this`
 
-Defined in: [src/core/interval.ts:1314](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L1314)
+Defined in: [src/core/interval.ts:1388](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L1388)
 
 Computes the square root of this interval in place.
 
@@ -275,7 +275,7 @@ If interval contains negative values
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -283,7 +283,7 @@ If interval contains negative values
 
 > **square**(): `this`
 
-Defined in: [src/core/interval.ts:1290](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L1290)
+Defined in: [src/core/interval.ts:1364](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L1364)
 
 Squares this interval in place.
 
@@ -295,7 +295,7 @@ This for chaining
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -303,7 +303,7 @@ This for chaining
 
 > **subtract**(`other`): `this`
 
-Defined in: [src/core/interval.ts:1194](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L1194)
+Defined in: [src/core/interval.ts:1268](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L1268)
 
 Subtracts another interval from this one in place.
 
@@ -323,7 +323,7 @@ This for chaining
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -331,7 +331,7 @@ This for chaining
 
 > `static` **add**(`a`, `b`, `out?`): `Interval`
 
-Defined in: [src/core/interval.ts:345](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L345)
+Defined in: [src/core/interval.ts:354](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L354)
 
 Adds two intervals.
 
@@ -363,7 +363,7 @@ Sum interval
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -371,7 +371,7 @@ Sum interval
 
 > `static` **divide**(`interval`, `scalar`, `out?`): `Interval`
 
-Defined in: [src/core/interval.ts:418](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L418)
+Defined in: [src/core/interval.ts:427](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L427)
 
 Divides an interval by a scalar.
 
@@ -407,7 +407,7 @@ If scalar is zero
 
 #### Since
 
-0.9.0
+0.7.0
 
 ---
 
@@ -415,7 +415,7 @@ If scalar is zero
 
 > `static` **divideSafe**(`interval`, `scalar`, `out?`): `Interval`
 
-Defined in: [src/core/interval.ts:437](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L437)
+Defined in: [src/core/interval.ts:446](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L446)
 
 Divides an interval by a scalar (safe version).
 
@@ -451,7 +451,7 @@ Divided interval, or ZERO if scalar is near zero
 
 #### Since
 
-0.13.0
+0.7.0
 
 ---
 
@@ -459,7 +459,7 @@ Divided interval, or ZERO if scalar is near zero
 
 > `static` **divideUnchecked**(`interval`, `scalar`, `out?`): `Interval`
 
-Defined in: [src/core/interval.ts:466](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L466)
+Defined in: [src/core/interval.ts:475](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L475)
 
 Divides an interval by a scalar without validation (for hot paths).
 
@@ -503,7 +503,7 @@ Divided interval
 
 #### Since
 
-0.14.0
+0.7.0
 
 ---
 
@@ -511,7 +511,7 @@ Divided interval
 
 > `static` **multiply**(`a`, `b`, `out?`): `Interval`
 
-Defined in: [src/core/interval.ts:377](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L377)
+Defined in: [src/core/interval.ts:386](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L386)
 
 Multiplies two intervals.
 
@@ -543,7 +543,7 @@ Product interval
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -551,7 +551,7 @@ Product interval
 
 > `static` **negate**(`interval`, `out?`): `Interval`
 
-Defined in: [src/core/interval.ts:483](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L483)
+Defined in: [src/core/interval.ts:492](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L492)
 
 Negates an interval.
 
@@ -577,7 +577,7 @@ Negated interval
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -585,7 +585,7 @@ Negated interval
 
 > `static` **reciprocal**(`interval`, `out?`): `Interval`
 
-Defined in: [src/core/interval.ts:534](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L534)
+Defined in: [src/core/interval.ts:543](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L543)
 
 Returns the reciprocal of an interval.
 
@@ -615,7 +615,7 @@ If interval contains zero
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -623,7 +623,7 @@ If interval contains zero
 
 > `static` **reciprocalSafe**(`interval`, `out?`): `Interval`
 
-Defined in: [src/core/interval.ts:554](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L554)
+Defined in: [src/core/interval.ts:563](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L563)
 
 Returns the reciprocal of an interval (safe version).
 
@@ -653,7 +653,7 @@ Reciprocal interval, or ZERO if interval contains zero
 
 #### Since
 
-0.13.0
+0.7.0
 
 ---
 
@@ -661,7 +661,7 @@ Reciprocal interval, or ZERO if interval contains zero
 
 > `static` **reciprocalUnchecked**(`interval`, `out?`): `Interval`
 
-Defined in: [src/core/interval.ts:581](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L581)
+Defined in: [src/core/interval.ts:590](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L590)
 
 Returns the reciprocal of an interval without validation (for hot paths).
 
@@ -699,7 +699,7 @@ Use in performance-critical code where interval validity is guaranteed.
 
 #### Since
 
-0.14.0
+0.7.0
 
 ---
 
@@ -707,7 +707,7 @@ Use in performance-critical code where interval validity is guaranteed.
 
 > `static` **scale**(`interval`, `scalar`, `out?`): `Interval`
 
-Defined in: [src/core/interval.ts:399](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L399)
+Defined in: [src/core/interval.ts:408](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L408)
 
 Scales an interval.
 
@@ -739,7 +739,7 @@ Scaled interval
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -747,7 +747,7 @@ Scaled interval
 
 > `static` **sqrt**(`interval`, `out?`): `Interval`
 
-Defined in: [src/core/interval.ts:517](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L517)
+Defined in: [src/core/interval.ts:526](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L526)
 
 Returns the square root of an interval.
 
@@ -777,7 +777,7 @@ If interval contains negative values
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -785,7 +785,7 @@ If interval contains negative values
 
 > `static` **square**(`interval`, `out?`): `Interval`
 
-Defined in: [src/core/interval.ts:496](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L496)
+Defined in: [src/core/interval.ts:505](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L505)
 
 Returns the square of an interval.
 
@@ -811,7 +811,7 @@ Squared interval
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -819,7 +819,7 @@ Squared interval
 
 > `static` **subtract**(`a`, `b`, `out?`): `Interval`
 
-Defined in: [src/core/interval.ts:359](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L359)
+Defined in: [src/core/interval.ts:368](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L368)
 
 Subtracts two intervals.
 
@@ -851,7 +851,7 @@ Difference interval
 
 #### Since
 
-0.1.0
+0.7.0
 
 ## Comparison
 
@@ -859,7 +859,7 @@ Difference interval
 
 > **contains**(`value`): `boolean`
 
-Defined in: [src/core/interval.ts:1128](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L1128)
+Defined in: [src/core/interval.ts:1202](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L1202)
 
 Tests if this interval contains a value.
 
@@ -879,7 +879,7 @@ True if value is within interval
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -887,7 +887,7 @@ True if value is within interval
 
 > **exactEquals**(`other`): `boolean`
 
-Defined in: [src/core/interval.ts:1441](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L1441)
+Defined in: [src/core/interval.ts:1515](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L1515)
 
 Exact equality (bit-identical).
 
@@ -911,7 +911,7 @@ Use [nearEquals](#nearequals-2) for comparing results of floating-point operatio
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -919,7 +919,7 @@ Use [nearEquals](#nearequals-2) for comparing results of floating-point operatio
 
 > **isDegenerate**(`epsilon`): `boolean`
 
-Defined in: [src/core/interval.ts:1116](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L1116)
+Defined in: [src/core/interval.ts:1190](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L1190)
 
 Tests if this interval is degenerate (zero width).
 
@@ -943,7 +943,7 @@ Uses relative tolerance for comparing min and max bounds.
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -951,7 +951,7 @@ Uses relative tolerance for comparing min and max bounds.
 
 > **isSubsetOf**(`other`): `boolean`
 
-Defined in: [src/core/interval.ts:1164](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L1164)
+Defined in: [src/core/interval.ts:1238](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L1238)
 
 Tests if this interval is a subset of another.
 
@@ -971,7 +971,7 @@ True if this is contained in other
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -979,7 +979,7 @@ True if this is contained in other
 
 > **nearEquals**(`other`, `epsilon`): `boolean`
 
-Defined in: [src/core/interval.ts:1457](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L1457)
+Defined in: [src/core/interval.ts:1531](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L1531)
 
 Approximate equality using relative tolerance.
 
@@ -1013,7 +1013,7 @@ Uses relative tolerance: `|a - b| <= epsilon * max(1, |a|, |b|)` per bound.
 
 #### Since
 
-0.9.0
+0.7.0
 
 ---
 
@@ -1021,7 +1021,7 @@ Uses relative tolerance: `|a - b| <= epsilon * max(1, |a|, |b|)` per bound.
 
 > **overlaps**(`other`): `boolean`
 
-Defined in: [src/core/interval.ts:1152](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L1152)
+Defined in: [src/core/interval.ts:1226](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L1226)
 
 Tests if this interval overlaps another.
 
@@ -1041,7 +1041,7 @@ True if intervals overlap
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -1049,7 +1049,7 @@ True if intervals overlap
 
 > **strictlyContains**(`value`): `boolean`
 
-Defined in: [src/core/interval.ts:1140](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L1140)
+Defined in: [src/core/interval.ts:1214](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L1214)
 
 Tests if this interval strictly contains a value (exclusive bounds).
 
@@ -1069,7 +1069,7 @@ True if value is strictly within interval
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -1077,7 +1077,7 @@ True if value is strictly within interval
 
 > `static` **contains**(`interval`, `value`): `boolean`
 
-Defined in: [src/core/interval.ts:793](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L793)
+Defined in: [src/core/interval.ts:809](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L809)
 
 Tests if an interval contains a value.
 
@@ -1103,7 +1103,7 @@ True if value is within interval
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -1111,7 +1111,7 @@ True if value is within interval
 
 > `static` **exactEquals**(`a`, `b`): `boolean`
 
-Defined in: [src/core/interval.ts:730](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L730)
+Defined in: [src/core/interval.ts:739](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L739)
 
 Exact equality (bit-identical).
 
@@ -1141,7 +1141,39 @@ Use [nearEquals](#nearequals-2) for comparing results of floating-point operatio
 
 #### Since
 
-0.1.0
+0.7.0
+
+---
+
+### hasInfinity()
+
+> `static` **hasInfinity**(`interval`): `boolean`
+
+Defined in: [src/core/interval.ts:918](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L918)
+
+Tests if any bound is infinite (±Infinity).
+
+#### Parameters
+
+##### interval
+
+[`ReadonlyIntervalLike`](../../types/interfaces/ReadonlyIntervalLike.md)
+
+Interval to test
+
+#### Returns
+
+`boolean`
+
+True if any bound is ±Infinity
+
+#### Remarks
+
+Distinguishes infinity from NaN. Use [isFinite](#isfinite-2) to check for both.
+
+#### Since
+
+0.7.0
 
 ---
 
@@ -1149,7 +1181,7 @@ Use [nearEquals](#nearequals-2) for comparing results of floating-point operatio
 
 > `static` **hasNaN**(`interval`): `boolean`
 
-Defined in: [src/core/interval.ts:862](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L862)
+Defined in: [src/core/interval.ts:903](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L903)
 
 Tests if any bound is NaN.
 
@@ -1169,7 +1201,7 @@ True if any bound is NaN
 
 #### Since
 
-0.9.0
+0.7.0
 
 ---
 
@@ -1177,7 +1209,7 @@ True if any bound is NaN
 
 > `static` **isDegenerate**(`interval`, `epsilon`): `boolean`
 
-Defined in: [src/core/interval.ts:767](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L767)
+Defined in: [src/core/interval.ts:776](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L776)
 
 Tests if an interval is degenerate (zero width).
 
@@ -1207,7 +1239,7 @@ Uses relative tolerance for comparing min and max bounds.
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -1215,7 +1247,7 @@ Uses relative tolerance for comparing min and max bounds.
 
 > `static` **isFinite**(`interval`): `boolean`
 
-Defined in: [src/core/interval.ts:850](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L850)
+Defined in: [src/core/interval.ts:866](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L866)
 
 Tests if both bounds are finite numbers.
 
@@ -1235,7 +1267,45 @@ True if both bounds are finite
 
 #### Since
 
-0.9.0
+0.7.0
+
+---
+
+### isNearZero()
+
+> `static` **isNearZero**(`interval`, `epsilon`): `boolean`
+
+Defined in: [src/core/interval.ts:891](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L891)
+
+Tests if both bounds are near zero.
+
+#### Parameters
+
+##### interval
+
+[`ReadonlyIntervalLike`](../../types/interfaces/ReadonlyIntervalLike.md)
+
+Interval to test
+
+##### epsilon
+
+`number` = `EPSILON`
+
+Tolerance.
+
+#### Returns
+
+`boolean`
+
+True if both bounds are within epsilon of zero
+
+#### Default Value
+
+`EPSILON`
+
+#### Since
+
+0.7.0
 
 ---
 
@@ -1243,7 +1313,7 @@ True if both bounds are finite
 
 > `static` **isSubsetOf**(`subset`, `superset`): `boolean`
 
-Defined in: [src/core/interval.ts:838](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L838)
+Defined in: [src/core/interval.ts:854](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L854)
 
 Tests if one interval is a subset of another.
 
@@ -1280,7 +1350,35 @@ Interval.isSubsetOf({ min: 0, max: 10 }, { min: 2, max: 8 }); // false
 
 #### Since
 
-0.11.0
+0.7.0
+
+---
+
+### isZero()
+
+> `static` **isZero**(`interval`): `boolean`
+
+Defined in: [src/core/interval.ts:878](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L878)
+
+Tests if both bounds are exactly zero.
+
+#### Parameters
+
+##### interval
+
+[`ReadonlyIntervalLike`](../../types/interfaces/ReadonlyIntervalLike.md)
+
+Interval to test
+
+#### Returns
+
+`boolean`
+
+True if min = 0 and max = 0
+
+#### Since
+
+0.7.0
 
 ---
 
@@ -1288,7 +1386,7 @@ Interval.isSubsetOf({ min: 0, max: 10 }, { min: 2, max: 8 }); // false
 
 > `static` **nearEquals**(`a`, `b`, `epsilon`): `boolean`
 
-Defined in: [src/core/interval.ts:747](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L747)
+Defined in: [src/core/interval.ts:756](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L756)
 
 Approximate equality using relative tolerance.
 
@@ -1328,7 +1426,7 @@ Uses relative tolerance: `|a - b| <= epsilon * max(1, |a|, |b|)` per bound.
 
 #### Since
 
-0.9.0
+0.7.0
 
 ---
 
@@ -1336,7 +1434,7 @@ Uses relative tolerance: `|a - b| <= epsilon * max(1, |a|, |b|)` per bound.
 
 > `static` **overlaps**(`a`, `b`): `boolean`
 
-Defined in: [src/core/interval.ts:780](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L780)
+Defined in: [src/core/interval.ts:796](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L796)
 
 Tests if two intervals overlap.
 
@@ -1360,9 +1458,17 @@ Second interval
 
 True if intervals overlap
 
+#### Example
+
+```typescript
+const a = new Interval(0, 5);
+const b = new Interval(3, 8);
+Interval.overlaps(a, b); // true - they share [3, 5]
+```
+
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -1370,7 +1476,7 @@ True if intervals overlap
 
 > `static` **strictlyContains**(`interval`, `value`): `boolean`
 
-Defined in: [src/core/interval.ts:816](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L816)
+Defined in: [src/core/interval.ts:832](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L832)
 
 Strict containment check (exclusive bounds).
 
@@ -1408,7 +1514,7 @@ Interval.strictlyContains({ min: 0, max: 10 }, 10); // false (boundary)
 
 #### Since
 
-0.11.0
+0.7.0
 
 ## Computed
 
@@ -1418,13 +1524,13 @@ Interval.strictlyContains({ min: 0, max: 10 }, 10); // false (boundary)
 
 > **get** **expanded**(): `Interval`
 
-Defined in: [src/core/interval.ts:1633](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L1633)
+Defined in: [src/core/interval.ts:1741](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L1741)
 
 Returns an expanded interval (by EPSILON) without modifying this one.
 
 ##### Since
 
-0.1.0
+0.7.0
 
 ##### Returns
 
@@ -1440,13 +1546,13 @@ New expanded interval
 
 > **get** **negated**(): `Interval`
 
-Defined in: [src/core/interval.ts:1622](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L1622)
+Defined in: [src/core/interval.ts:1730](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L1730)
 
 Returns the negated interval without modifying this one.
 
 ##### Since
 
-0.1.0
+0.7.0
 
 ##### Returns
 
@@ -1462,19 +1568,23 @@ New negated interval
 
 > **get** **reciprocated**(): `Interval`
 
-Defined in: [src/core/interval.ts:1644](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L1644)
+Defined in: [src/core/interval.ts:1753](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L1753)
 
 Returns the reciprocal interval without modifying this one.
 
+##### Throws
+
+If interval contains zero
+
 ##### Since
 
-0.1.0
+0.7.0
 
 ##### Returns
 
 `Interval`
 
-New reciprocal interval (or throws if contains zero)
+New reciprocal interval
 
 ---
 
@@ -1484,13 +1594,13 @@ New reciprocal interval (or throws if contains zero)
 
 > **get** **squared**(): `Interval`
 
-Defined in: [src/core/interval.ts:1660](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L1660)
+Defined in: [src/core/interval.ts:1769](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L1769)
 
 Returns the squared interval without modifying this one.
 
 ##### Since
 
-0.1.0
+0.7.0
 
 ##### Returns
 
@@ -1504,7 +1614,7 @@ New squared interval
 
 > **center**(): `number`
 
-Defined in: [src/core/interval.ts:1086](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L1086)
+Defined in: [src/core/interval.ts:1160](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L1160)
 
 Returns the center of this interval.
 
@@ -1516,7 +1626,7 @@ Center ((min + max) / 2)
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -1524,7 +1634,7 @@ Center ((min + max) / 2)
 
 > **radius**(): `number`
 
-Defined in: [src/core/interval.ts:1097](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L1097)
+Defined in: [src/core/interval.ts:1171](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L1171)
 
 Returns the radius (half-width) of this interval.
 
@@ -1536,7 +1646,7 @@ Radius ((max - min) / 2)
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -1544,7 +1654,7 @@ Radius ((max - min) / 2)
 
 > **width**(): `number`
 
-Defined in: [src/core/interval.ts:1075](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L1075)
+Defined in: [src/core/interval.ts:1149](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L1149)
 
 Returns the width of this interval.
 
@@ -1556,7 +1666,7 @@ Width (max - min)
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -1564,7 +1674,7 @@ Width (max - min)
 
 > `static` **center**(`interval`): `number`
 
-Defined in: [src/core/interval.ts:890](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L890)
+Defined in: [src/core/interval.ts:949](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L949)
 
 Returns the center of an interval.
 
@@ -1584,7 +1694,7 @@ Center ((min + max) / 2)
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -1592,7 +1702,7 @@ Center ((min + max) / 2)
 
 > `static` **radius**(`interval`): `number`
 
-Defined in: [src/core/interval.ts:902](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L902)
+Defined in: [src/core/interval.ts:961](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L961)
 
 Returns the radius (half-width) of an interval.
 
@@ -1612,7 +1722,7 @@ Radius ((max - min) / 2)
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -1620,7 +1730,7 @@ Radius ((max - min) / 2)
 
 > `static` **width**(`interval`): `number`
 
-Defined in: [src/core/interval.ts:878](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L878)
+Defined in: [src/core/interval.ts:937](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L937)
 
 Returns the width of an interval.
 
@@ -1640,7 +1750,21 @@ Width (max - min)
 
 #### Since
 
-0.1.0
+0.7.0
+
+## Constant
+
+### ELEMENT_COUNT
+
+> `readonly` `static` **ELEMENT_COUNT**: `2` = `2`
+
+Defined in: [src/core/interval.ts:121](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L121)
+
+Number of elements when serialized to an array.
+
+#### Since
+
+0.7.0
 
 ## Conversion
 
@@ -1648,7 +1772,7 @@ Width (max - min)
 
 > **\[iterator\]**(): `IterableIterator`\<`number`\>
 
-Defined in: [src/core/interval.ts:1779](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L1779)
+Defined in: [src/core/interval.ts:1903](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L1903)
 
 Iterator for array destructuring.
 
@@ -1666,7 +1790,7 @@ const [min, max] = new Interval(0, 10);
 
 #### Since
 
-0.9.0
+0.7.0
 
 ## Core
 
@@ -1674,7 +1798,7 @@ const [min, max] = new Interval(0, 10);
 
 > `readonly` `static` **DEGREES**: `Readonly`\<`Interval`\>
 
-Defined in: [src/core/interval.ts:170](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L170)
+Defined in: [src/core/interval.ts:177](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L177)
 
 Degrees interval [0, 360].
 
@@ -1684,7 +1808,7 @@ Degrees interval [0, 360].
 
 > `readonly` `static` **EPSILON_INTERVAL**: `Readonly`\<`Interval`\>
 
-Defined in: [src/core/interval.ts:156](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L156)
+Defined in: [src/core/interval.ts:163](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L163)
 
 Epsilon interval [-ε, ε].
 
@@ -1694,7 +1818,7 @@ Epsilon interval [-ε, ε].
 
 > `readonly` `static` **FULL**: `Readonly`\<`Interval`\>
 
-Defined in: [src/core/interval.ts:148](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L148)
+Defined in: [src/core/interval.ts:155](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L155)
 
 Full real line (-∞, +∞).
 
@@ -1704,7 +1828,7 @@ Full real line (-∞, +∞).
 
 > `readonly` `static` **NEGATIVE**: `Readonly`\<`Interval`\>
 
-Defined in: [src/core/interval.ts:140](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L140)
+Defined in: [src/core/interval.ts:147](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L147)
 
 Negative half-line (-∞, 0].
 
@@ -1714,7 +1838,7 @@ Negative half-line (-∞, 0].
 
 > `readonly` `static` **NORMALIZED**: `Readonly`\<`Interval`\>
 
-Defined in: [src/core/interval.ts:182](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L182)
+Defined in: [src/core/interval.ts:189](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L189)
 
 Normalized interval [0, 1] (same as UNIT).
 
@@ -1724,7 +1848,7 @@ Normalized interval [0, 1] (same as UNIT).
 
 > `readonly` `static` **PERCENT**: `Readonly`\<`Interval`\>
 
-Defined in: [src/core/interval.ts:164](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L164)
+Defined in: [src/core/interval.ts:171](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L171)
 
 Percentage interval [0, 100].
 
@@ -1734,7 +1858,7 @@ Percentage interval [0, 100].
 
 > `readonly` `static` **POSITIVE**: `Readonly`\<`Interval`\>
 
-Defined in: [src/core/interval.ts:132](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L132)
+Defined in: [src/core/interval.ts:139](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L139)
 
 Positive half-line [0, +∞).
 
@@ -1744,7 +1868,7 @@ Positive half-line [0, +∞).
 
 > `readonly` `static` **RADIANS**: `Readonly`\<`Interval`\>
 
-Defined in: [src/core/interval.ts:176](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L176)
+Defined in: [src/core/interval.ts:183](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L183)
 
 Radians interval [0, 2π].
 
@@ -1754,7 +1878,7 @@ Radians interval [0, 2π].
 
 > `readonly` `static` **SYMMETRIC_UNIT**: `Readonly`\<`Interval`\>
 
-Defined in: [src/core/interval.ts:126](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L126)
+Defined in: [src/core/interval.ts:133](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L133)
 
 Symmetric unit interval [-1, 1].
 
@@ -1764,7 +1888,7 @@ Symmetric unit interval [-1, 1].
 
 > `readonly` `static` **UNIT**: `Readonly`\<`Interval`\>
 
-Defined in: [src/core/interval.ts:120](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L120)
+Defined in: [src/core/interval.ts:127](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L127)
 
 Unit interval [0, 1].
 
@@ -1774,7 +1898,7 @@ Unit interval [0, 1].
 
 > `readonly` `static` **ZERO**: `Readonly`\<`Interval`\>
 
-Defined in: [src/core/interval.ts:114](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L114)
+Defined in: [src/core/interval.ts:114](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L114)
 
 Zero interval [0, 0].
 
@@ -1784,7 +1908,7 @@ Zero interval [0, 0].
 
 > `static` **clone**(`source`, `out?`): `Interval`
 
-Defined in: [src/core/interval.ts:314](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L314)
+Defined in: [src/core/interval.ts:323](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L323)
 
 Creates a deep copy of an interval.
 
@@ -1810,7 +1934,7 @@ A new Interval with identical values
 
 #### Since
 
-0.9.0
+0.7.0
 
 ---
 
@@ -1818,7 +1942,7 @@ A new Interval with identical values
 
 > `static` **copy**(`source`, `destination`): `Interval`
 
-Defined in: [src/core/interval.ts:327](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L327)
+Defined in: [src/core/interval.ts:336](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L336)
 
 Copies values from source into destination (alloc-free).
 
@@ -1844,7 +1968,7 @@ The destination interval
 
 #### Since
 
-0.9.0
+0.7.0
 
 ---
 
@@ -1852,7 +1976,7 @@ The destination interval
 
 > `static` **fromArray**(`array`, `offset`, `out?`): `Interval`
 
-Defined in: [src/core/interval.ts:250](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L250)
+Defined in: [src/core/interval.ts:259](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L259)
 
 Creates an interval from an array [min, max].
 
@@ -1882,9 +2006,13 @@ Optional output interval
 
 Interval from array
 
+#### Throws
+
+If offset is out of bounds
+
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -1892,7 +2020,7 @@ Interval from array
 
 > `static` **fromCenterRadius**(`center`, `radius`, `out?`): `Interval`
 
-Defined in: [src/core/interval.ts:225](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L225)
+Defined in: [src/core/interval.ts:233](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L233)
 
 Creates an interval from center and radius [center - radius, center + radius].
 
@@ -1922,9 +2050,13 @@ Optional output interval
 
 Symmetric interval around center
 
+#### Throws
+
+If radius is negative
+
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -1932,7 +2064,7 @@ Symmetric interval around center
 
 > `static` **fromObject**(`object`, `out?`): `Interval`
 
-Defined in: [src/core/interval.ts:274](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L274)
+Defined in: [src/core/interval.ts:283](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L283)
 
 Creates an interval from a plain object.
 
@@ -1958,7 +2090,7 @@ Interval from object
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -1966,7 +2098,7 @@ Interval from object
 
 > `static` **fromValue**(`value`, `out?`): `Interval`
 
-Defined in: [src/core/interval.ts:210](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L210)
+Defined in: [src/core/interval.ts:217](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L217)
 
 Creates an interval from a single value [v, v].
 
@@ -1992,7 +2124,7 @@ Degenerate interval
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -2000,7 +2132,7 @@ Degenerate interval
 
 > `static` **fromValues**(`min`, `max`, `out?`): `Interval`
 
-Defined in: [src/core/interval.ts:298](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L298)
+Defined in: [src/core/interval.ts:307](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L307)
 
 Creates an interval from individual min and max values.
 
@@ -2044,7 +2176,7 @@ Interval.fromValues(10, 10); // Degenerate interval [10, 10]
 
 #### Since
 
-0.14.0
+0.7.0
 
 ## Interpolation
 
@@ -2052,7 +2184,7 @@ Interval.fromValues(10, 10); // Degenerate interval [10, 10]
 
 > **clampValue**(`value`): `number`
 
-Defined in: [src/core/interval.ts:1589](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L1589)
+Defined in: [src/core/interval.ts:1697](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L1697)
 
 Clamps a value to this interval.
 
@@ -2072,7 +2204,7 @@ Clamped value
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -2080,7 +2212,7 @@ Clamped value
 
 > **inverseLerp**(`value`): `number`
 
-Defined in: [src/core/interval.ts:1573](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L1573)
+Defined in: [src/core/interval.ts:1681](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L1681)
 
 Returns the inverse lerp (normalized position of value in interval).
 
@@ -2100,7 +2232,7 @@ Normalized position [0, 1] (or 0 if degenerate)
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -2108,7 +2240,7 @@ Normalized position [0, 1] (or 0 if degenerate)
 
 > **lerp**(`other`, `t`): `this`
 
-Defined in: [src/core/interval.ts:1532](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L1532)
+Defined in: [src/core/interval.ts:1640](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L1640)
 
 Linear interpolation towards another interval in place.
 
@@ -2147,7 +2279,7 @@ a.lerp(b, 0.5); // a is now [50, 105]
 
 #### Since
 
-0.11.0
+0.7.0
 
 ---
 
@@ -2155,7 +2287,7 @@ a.lerp(b, 0.5); // a is now [50, 105]
 
 > **lerpClamped**(`other`, `t`): `this`
 
-Defined in: [src/core/interval.ts:1547](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L1547)
+Defined in: [src/core/interval.ts:1655](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L1655)
 
 Linear interpolation with t clamped to [0, 1].
 
@@ -2181,7 +2313,7 @@ This for chaining
 
 #### Since
 
-0.11.0
+0.7.0
 
 ---
 
@@ -2189,7 +2321,7 @@ This for chaining
 
 > **lerpInterval**(`other`, `t`, `out?`): `Interval`
 
-Defined in: [src/core/interval.ts:1607](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L1607)
+Defined in: [src/core/interval.ts:1715](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L1715)
 
 Interpolates between two intervals, returning a new interval.
 
@@ -2226,7 +2358,7 @@ returns a new interval (or uses the `out` parameter).
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -2234,7 +2366,7 @@ returns a new interval (or uses the `out` parameter).
 
 > **sample**(`t`): `number`
 
-Defined in: [src/core/interval.ts:1507](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L1507)
+Defined in: [src/core/interval.ts:1615](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L1615)
 
 Samples a value within this interval using linear interpolation.
 
@@ -2268,7 +2400,7 @@ interval.sample(1); // 100
 
 #### Since
 
-0.11.0
+0.7.0
 
 ---
 
@@ -2276,7 +2408,7 @@ interval.sample(1); // 100
 
 > **smoothStep**(`other`, `t`): `this`
 
-Defined in: [src/core/interval.ts:1560](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L1560)
+Defined in: [src/core/interval.ts:1668](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L1668)
 
 Smooth interpolation towards another interval using smoothStep easing.
 
@@ -2302,7 +2434,7 @@ This for chaining
 
 #### Since
 
-0.12.0
+0.7.0
 
 ---
 
@@ -2310,7 +2442,7 @@ This for chaining
 
 > `static` **clampValue**(`interval`, `value`): `number`
 
-Defined in: [src/core/interval.ts:710](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L710)
+Defined in: [src/core/interval.ts:719](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L719)
 
 Clamps a value to the interval bounds.
 
@@ -2345,7 +2477,7 @@ Interval.clampValue(interval, 150); // 100
 
 #### Since
 
-0.11.0
+0.7.0
 
 ---
 
@@ -2353,7 +2485,7 @@ Interval.clampValue(interval, 150); // 100
 
 > `static` **inverseLerp**(`interval`, `value`): `number`
 
-Defined in: [src/core/interval.ts:684](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L684)
+Defined in: [src/core/interval.ts:693](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L693)
 
 Finds where a value falls within an interval, returning normalized position.
 
@@ -2392,7 +2524,7 @@ Interval.inverseLerp(interval, 150); // 1.5 (extrapolated)
 
 #### Since
 
-0.11.0
+0.7.0
 
 ---
 
@@ -2400,7 +2532,7 @@ Interval.inverseLerp(interval, 150); // 1.5 (extrapolated)
 
 > `static` **lerp**(`a`, `b`, `t`, `out?`): `Interval`
 
-Defined in: [src/core/interval.ts:602](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L602)
+Defined in: [src/core/interval.ts:611](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L611)
 
 Linear interpolation between two intervals.
 
@@ -2438,7 +2570,7 @@ Interpolated interval
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -2446,7 +2578,7 @@ Interpolated interval
 
 > `static` **lerpClamped**(`a`, `b`, `t`, `out?`): `Interval`
 
-Defined in: [src/core/interval.ts:622](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L622)
+Defined in: [src/core/interval.ts:631](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L631)
 
 Linear interpolation with t clamped to [0, 1].
 
@@ -2484,7 +2616,7 @@ Interpolated interval
 
 #### Since
 
-0.9.0
+0.7.0
 
 ---
 
@@ -2492,7 +2624,7 @@ Interpolated interval
 
 > `static` **smoothStep**(`a`, `b`, `t`, `out?`): `Interval`
 
-Defined in: [src/core/interval.ts:653](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L653)
+Defined in: [src/core/interval.ts:662](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L662)
 
 Smooth interpolation between two intervals using smoothStep easing.
 
@@ -2543,7 +2675,7 @@ const smooth = Interval.smoothStep(a, b, 0.5); // Smooth transition
 
 #### Since
 
-0.12.0
+0.7.0
 
 ## Mutator
 
@@ -2551,7 +2683,7 @@ const smooth = Interval.smoothStep(a, b, 0.5); // Smooth transition
 
 > **copy**(`other`): `this`
 
-Defined in: [src/core/interval.ts:1032](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L1032)
+Defined in: [src/core/interval.ts:1106](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L1106)
 
 Copies values from another interval.
 
@@ -2571,7 +2703,7 @@ This for chaining
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -2579,7 +2711,7 @@ This for chaining
 
 > **set**(`minValue`, `maxValue`): `this`
 
-Defined in: [src/core/interval.ts:1015](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L1015)
+Defined in: [src/core/interval.ts:1089](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L1089)
 
 Sets the min and max bounds.
 
@@ -2609,7 +2741,7 @@ If min > max
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -2617,7 +2749,7 @@ If min > max
 
 > **setFromArray**(`array`, `offset`): `this`
 
-Defined in: [src/core/interval.ts:1047](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L1047)
+Defined in: [src/core/interval.ts:1121](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L1121)
 
 Sets this interval from array values.
 
@@ -2643,7 +2775,7 @@ This for chaining.
 
 #### Since
 
-0.14.0
+0.7.0
 
 ---
 
@@ -2651,7 +2783,7 @@ This for chaining.
 
 > **zero**(): `this`
 
-Defined in: [src/core/interval.ts:1058](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L1058)
+Defined in: [src/core/interval.ts:1132](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L1132)
 
 Resets this interval to zero [0, 0].
 
@@ -2663,7 +2795,7 @@ This for chaining
 
 #### Since
 
-0.9.0
+0.7.0
 
 ## Other
 
@@ -2671,7 +2803,7 @@ This for chaining
 
 > **max**: `number`
 
-Defined in: [src/core/interval.ts:78](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L78)
+Defined in: [src/core/interval.ts:78](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L78)
 
 #### Implementation of
 
@@ -2683,7 +2815,7 @@ Defined in: [src/core/interval.ts:78](https://github.com/rndelpuerto/lenguados/b
 
 > **min**: `number`
 
-Defined in: [src/core/interval.ts:77](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L77)
+Defined in: [src/core/interval.ts:77](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L77)
 
 #### Implementation of
 
@@ -2695,7 +2827,7 @@ Defined in: [src/core/interval.ts:77](https://github.com/rndelpuerto/lenguados/b
 
 > **clone**(): `Interval`
 
-Defined in: [src/core/interval.ts:1763](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L1763)
+Defined in: [src/core/interval.ts:1887](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L1887)
 
 Creates a deep copy of this interval.
 
@@ -2715,34 +2847,62 @@ copy.set(5, 15); // Original unchanged
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
 ### toArray()
 
-> **toArray**(): \[`number`, `number`\]
+> **toArray**\<`T`\>(`out?`, `offset?`): \[`number`, `number`\] \| `T`
 
-Defined in: [src/core/interval.ts:1688](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L1688)
+Defined in: [src/core/interval.ts:1804](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L1804)
 
-Converts the interval to a tuple [min, max].
+Writes to array or typed array.
+
+#### Type Parameters
+
+##### T
+
+`T` _extends_ `ArrayLike`\<`number`\> & `object`
+
+#### Parameters
+
+##### out?
+
+`T`
+
+Optional destination array. If not provided, returns a new tuple.
+
+##### offset?
+
+`number` = `0`
+
+Write offset.
 
 #### Returns
 
-\[`number`, `number`\]
+\[`number`, `number`\] \| `T`
 
-Tuple with min and max values
+The output array, or a new tuple if no output was provided.
+
+#### Default Value
+
+`0`
 
 #### Example
 
 ```typescript
 const i = new Interval(0, 10);
 const [min, max] = i.toArray();
+
+// Write to existing array
+const arr = new Float32Array(10);
+i.toArray(arr, 4); // writes at indices 4, 5
 ```
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -2750,7 +2910,7 @@ const [min, max] = i.toArray();
 
 > **toJSON**(): [`IntervalLike`](../../types/interfaces/IntervalLike.md)
 
-Defined in: [src/core/interval.ts:1725](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L1725)
+Defined in: [src/core/interval.ts:1849](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L1849)
 
 Converts the interval to a JSON-serializable object.
 Called automatically by JSON.stringify().
@@ -2771,7 +2931,7 @@ const json = JSON.stringify(i);
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -2779,7 +2939,7 @@ const json = JSON.stringify(i);
 
 > **toObject**(): [`IntervalLike`](../../types/interfaces/IntervalLike.md)
 
-Defined in: [src/core/interval.ts:1706](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L1706)
+Defined in: [src/core/interval.ts:1830](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L1830)
 
 Converts the interval to a plain object.
 
@@ -2799,7 +2959,7 @@ const obj = i.toObject();
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -2807,7 +2967,7 @@ const obj = i.toObject();
 
 > **toString**(`precision`): `string`
 
-Defined in: [src/core/interval.ts:1745](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L1745)
+Defined in: [src/core/interval.ts:1869](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L1869)
 
 Creates a human-readable string representation.
 Uses mathematical interval notation [min, max].
@@ -2836,7 +2996,7 @@ console.log(i.toString());
 
 #### Since
 
-0.1.0
+0.7.0
 
 ## Set Operations
 
@@ -2844,7 +3004,7 @@ console.log(i.toString());
 
 > **intersect**(`other`): `Interval` \| `undefined`
 
-Defined in: [src/core/interval.ts:1405](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L1405)
+Defined in: [src/core/interval.ts:1479](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L1479)
 
 Intersects with another interval in place.
 
@@ -2871,7 +3031,7 @@ intersection represents the empty set (∅).
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -2879,7 +3039,7 @@ intersection represents the empty set (∅).
 
 > **union**(`other`): `this`
 
-Defined in: [src/core/interval.ts:1424](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L1424)
+Defined in: [src/core/interval.ts:1498](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L1498)
 
 Unions with another interval in place.
 
@@ -2899,7 +3059,7 @@ This for chaining
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -2907,7 +3067,7 @@ This for chaining
 
 > `static` **hull**(`first`, `second?`, ...`rest?`): `Interval`
 
-Defined in: [src/core/interval.ts:920](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L920)
+Defined in: [src/core/interval.ts:979](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L979)
 
 Computes the convex hull (smallest enclosing interval) of multiple values/intervals.
 
@@ -2939,7 +3099,7 @@ Interval enclosing all inputs
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -2947,7 +3107,7 @@ Interval enclosing all inputs
 
 > `static` **intersect**(`a`, `b`, `out?`): `Interval` \| `undefined`
 
-Defined in: [src/core/interval.ts:988](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L988)
+Defined in: [src/core/interval.ts:1062](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L1062)
 
 Returns the intersection of two intervals.
 
@@ -2982,9 +3142,18 @@ Intersection interval or undefined if no overlap
 If the intervals do not overlap, returns `undefined` to represent the
 empty set (∅). The `out` parameter is not modified in this case.
 
+#### Example
+
+```typescript
+const a = new Interval(0, 5);
+const b = new Interval(3, 8);
+Interval.intersect(a, b); // [3, 5] - common region
+Interval.intersect(new Interval(0, 2), new Interval(5, 8)); // undefined
+```
+
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -2992,7 +3161,7 @@ empty set (∅). The `out` parameter is not modified in this case.
 
 > `static` **union**(`a`, `b`, `out?`): `Interval`
 
-Defined in: [src/core/interval.ts:970](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L970)
+Defined in: [src/core/interval.ts:1036](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L1036)
 
 Returns the union of two intervals.
 
@@ -3022,17 +3191,45 @@ Optional output interval
 
 Union interval (smallest interval containing both)
 
+#### Example
+
+```typescript
+const a = new Interval(0, 3);
+const b = new Interval(5, 8);
+Interval.union(a, b); // [0, 8] - spans both intervals
+```
+
 #### Since
 
-0.1.0
+0.7.0
 
 ## Validation
+
+### hasInfinity()
+
+> **hasInfinity**(): `boolean`
+
+Defined in: [src/core/interval.ts:1587](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L1587)
+
+Returns true if any bound is infinite (±Infinity).
+
+#### Returns
+
+`boolean`
+
+True if any ±Infinity value exists
+
+#### Since
+
+0.7.0
+
+---
 
 ### hasNaN()
 
 > **hasNaN**(): `boolean`
 
-Defined in: [src/core/interval.ts:1479](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L1479)
+Defined in: [src/core/interval.ts:1576](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L1576)
 
 Returns true if any bound is NaN.
 
@@ -3044,7 +3241,7 @@ True if any NaN value exists
 
 #### Since
 
-0.9.0
+0.7.0
 
 ---
 
@@ -3052,7 +3249,7 @@ True if any NaN value exists
 
 > **isFinite**(): `boolean`
 
-Defined in: [src/core/interval.ts:1468](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/interval.ts#L1468)
+Defined in: [src/core/interval.ts:1542](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L1542)
 
 Returns true if all bounds are finite.
 
@@ -3064,4 +3261,52 @@ True if no NaN or Infinity values
 
 #### Since
 
-0.9.0
+0.7.0
+
+---
+
+### isNearZero()
+
+> **isNearZero**(`epsilon`): `boolean`
+
+Defined in: [src/core/interval.ts:1565](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L1565)
+
+Tests if this interval is near zero.
+
+#### Parameters
+
+##### epsilon
+
+`number` = `EPSILON`
+
+Tolerance (default: EPSILON)
+
+#### Returns
+
+`boolean`
+
+True if both bounds are within epsilon of zero
+
+#### Since
+
+0.7.0
+
+---
+
+### isZero()
+
+> **isZero**(): `boolean`
+
+Defined in: [src/core/interval.ts:1553](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/interval.ts#L1553)
+
+Tests if this interval is exactly [0, 0].
+
+#### Returns
+
+`boolean`
+
+True if both bounds are exactly zero
+
+#### Since
+
+0.7.0

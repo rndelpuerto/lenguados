@@ -2,7 +2,7 @@
 
 > **formatVector2**(`v`, `format`, `precision?`): `string`
 
-Defined in: [src/utils/parse.ts:131](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/utils/parse.ts#L131)
+Defined in: [src/utils/parse.ts:134](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/utils/parse.ts#L134)
 
 Formats a 2D vector as a string.
 
@@ -44,4 +44,4 @@ const text = formatVector2(new Vector2(1, 2), 'brackets');
 
 ## Since
 
-0.1.0
+0.7.0

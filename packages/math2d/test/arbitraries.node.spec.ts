@@ -118,7 +118,7 @@ describe('Arbitraries', () => {
   it('arbNonZeroVector2 generates non-zero vectors', () => {
    fc.assert(
     fc.property(arbNonZeroVector2, (v) => {
-     return v.magnitudeSquared() > 0;
+     return v.magnitudeSq() > 0;
     }),
     { numRuns: 10 },
    );

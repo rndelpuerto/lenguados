@@ -2,7 +2,7 @@
 
 > **formatRotation2**(`r`, `format`, `precision?`): `string`
 
-Defined in: [src/utils/parse.ts:246](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/utils/parse.ts#L246)
+Defined in: [src/utils/parse.ts:251](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/utils/parse.ts#L251)
 
 Formats a 2D rotation as a string.
 
@@ -10,7 +10,7 @@ Formats a 2D rotation as a string.
 
 ### r
 
-[`ReadonlyRotation2`](../../core/type-aliases/ReadonlyRotation2.md)
+[`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
 
 Rotation to format.
 
@@ -44,4 +44,4 @@ const text = formatRotation2(Rotation2.fromAngle(Math.PI / 2), 'degrees');
 
 ## Since
 
-0.1.0
+0.7.0

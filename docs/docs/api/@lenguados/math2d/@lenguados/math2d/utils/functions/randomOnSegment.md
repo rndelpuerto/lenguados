@@ -2,7 +2,7 @@
 
 > **randomOnSegment**(`start`, `end`, `out`, `source`): [`Vector2`](../../core/classes/Vector2.md)
 
-Defined in: [src/utils/random.ts:478](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/utils/random.ts#L478)
+Defined in: [src/utils/random.ts:475](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/utils/random.ts#L475)
 
 Generates a random point on a line segment.
 
@@ -50,4 +50,4 @@ const p = randomOnSegment(a, b);
 
 ## Since
 
-0.1.0
+0.7.0

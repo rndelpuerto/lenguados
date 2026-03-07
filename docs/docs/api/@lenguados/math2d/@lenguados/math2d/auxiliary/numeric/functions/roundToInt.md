@@ -2,7 +2,7 @@
 
 > **roundToInt**(`value`): `number`
 
-Defined in: [src/auxiliary/numeric/rounding.ts:32](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/auxiliary/numeric/rounding.ts#L32)
+Defined in: [src/auxiliary/numeric/rounding.ts:32](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/auxiliary/numeric/rounding.ts#L32)
 
 Rounds to nearest integer.
 Uses banker's rounding (round half to even).
@@ -38,4 +38,4 @@ roundToInt(-2.5); // -2 (rounds to even)
 
 ## Since
 
-1.0.0
+0.7.0

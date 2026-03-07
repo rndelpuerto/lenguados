@@ -7,6 +7,7 @@
 import { describe, expect, test } from '@jest/globals';
 
 import {
+ compare,
  greaterThan,
  inRange,
  isNearOne,
@@ -188,6 +189,78 @@ describe('scalar/comparison', () => {
    expect(inRange(NaN, 0, 10)).toBe(false);
    expect(inRange(5, NaN, 10)).toBe(false);
    expect(inRange(5, 0, NaN)).toBe(false);
+  });
+ });
+
+ /* ===== Section 8: NaN comparison tests ===== */
+
+ describe('NaN behavior for comparison functions', () => {
+  test('lessThan(NaN, 5) returns false', () => {
+   expect(lessThan(NaN, 5)).toBe(false);
+  });
+
+  test('greaterThan(NaN, 5) returns false', () => {
+   expect(greaterThan(NaN, 5)).toBe(false);
+  });
+
+  test('inRange(NaN, 0, 1) returns false', () => {
+   expect(inRange(NaN, 0, 1)).toBe(false);
+  });
+
+  test('nearEquals(NaN, 0) returns false', () => {
+   expect(nearEquals(NaN, 0)).toBe(false);
+  });
+
+  test('nearEquals(NaN, NaN) returns false', () => {
+   expect(nearEquals(NaN, NaN)).toBe(false);
+  });
+ });
+
+ /* ===== Section 11: Epsilon validation & compare NaN ===== */
+
+ describe('epsilon non-negative validation', () => {
+  test('nearEquals throws for negative epsilon', () => {
+   expect(() => nearEquals(1, 2, -0.1)).toThrow(RangeError);
+  });
+
+  test('isNearZero throws for negative epsilon', () => {
+   expect(() => isNearZero(0, -0.1)).toThrow(RangeError);
+  });
+
+  test('isNearOne throws for negative epsilon', () => {
+   expect(() => isNearOne(1, -0.1)).toThrow(RangeError);
+  });
+
+  test('lessThan throws for negative epsilon', () => {
+   expect(() => lessThan(1, 2, -0.1)).toThrow(RangeError);
+  });
+
+  test('greaterThan throws for negative epsilon', () => {
+   expect(() => greaterThan(2, 1, -0.1)).toThrow(RangeError);
+  });
+
+  test('inRange throws for negative epsilon', () => {
+   expect(() => inRange(5, 0, 10, -0.1)).toThrow(RangeError);
+  });
+
+  test('compare throws for negative epsilon', () => {
+   expect(() => compare(1, 2, -0.1)).toThrow(RangeError);
+  });
+ });
+
+ describe('compare NaN sorting', () => {
+  test('NaN sorts after finite values', () => {
+   expect(compare(NaN, 5)).toBe(1);
+   expect(compare(5, NaN)).toBe(-1);
+  });
+
+  test('NaN equals NaN for sorting stability', () => {
+   expect(compare(NaN, NaN)).toBe(0);
+  });
+
+  test('NaN sorts after Infinity', () => {
+   expect(compare(NaN, Infinity)).toBe(1);
+   expect(compare(Infinity, NaN)).toBe(-1);
   });
  });
 });

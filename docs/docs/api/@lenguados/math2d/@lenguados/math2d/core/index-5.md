@@ -65,7 +65,3 @@ const combined = rot.multiply(rot90); // 135°
 ## Helpers
 
 - [freezeRotation2](functions/freezeRotation2.md)
-
-## Types
-
-- [ReadonlyRotation2](type-aliases/ReadonlyRotation2.md)

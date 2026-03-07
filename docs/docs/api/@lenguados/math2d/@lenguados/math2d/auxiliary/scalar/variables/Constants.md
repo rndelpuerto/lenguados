@@ -2,7 +2,7 @@
 
 > `const` **Constants**: `object`
 
-Defined in: [src/auxiliary/scalar/constants.ts:302](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/auxiliary/scalar/constants.ts#L302)
+Defined in: [src/auxiliary/scalar/constants.ts:292](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/auxiliary/scalar/constants.ts#L292)
 
 Unified constants object for convenient access.
 
@@ -18,14 +18,14 @@ Angle epsilon for near-zero angle comparisons.
 
 ##### Remarks
 
-Used in DeterministicMath for detecting angles near zero
+Used in deterministic kernels for detecting angles near zero
 where special handling may be needed.
 
 ##### Constant
 
 ##### Since
 
-0.13.0
+0.7.0
 
 #### HALF_PI
 
@@ -37,7 +37,7 @@ Half of π ≈ 1.5707963267949 (90 degrees).
 
 ##### Since
 
-1.0.0
+0.7.0
 
 #### PI
 
@@ -49,7 +49,7 @@ Mathematical constant π (pi) ≈ 3.14159265358979.
 
 ##### Since
 
-1.0.0
+0.7.0
 
 #### QUARTER_PI
 
@@ -61,7 +61,7 @@ Quarter of π ≈ 0.785398163397448 (45 degrees).
 
 ##### Since
 
-1.0.0
+0.7.0
 
 #### TAU
 
@@ -78,7 +78,7 @@ more intuitive than π for angular calculations.
 
 ##### Since
 
-1.0.0
+0.7.0
 
 ## Conversion
 
@@ -98,24 +98,7 @@ const radians = degrees * DEG_TO_RAD;
 
 ##### Since
 
-1.0.0
-
-#### GRAD_TO_RAD
-
-> **GRAD_TO_RAD**: `number`
-
-Conversion factor from gradians to radians.
-
-##### Remarks
-
-Gradians (also called gon or grade) divide a right angle into 100 units.
-400 gradians = 2π radians = 360 degrees.
-
-##### Constant
-
-##### Since
-
-1.0.0
+0.7.0
 
 #### RAD_TO_DEG
 
@@ -133,19 +116,7 @@ const degrees = radians * RAD_TO_DEG;
 
 ##### Since
 
-1.0.0
-
-#### RAD_TO_GRAD
-
-> **RAD_TO_GRAD**: `number`
-
-Conversion factor from radians to gradians.
-
-##### Constant
-
-##### Since
-
-1.0.0
+0.7.0
 
 #### RAD_TO_TURN
 
@@ -164,7 +135,7 @@ const turns = radians * RAD_TO_TURN;
 
 ##### Since
 
-1.0.0
+0.7.0
 
 #### TURN_TO_RAD
 
@@ -183,7 +154,7 @@ const radians = turns * TURN_TO_RAD;
 
 ##### Since
 
-1.0.0
+0.7.0
 
 ## Mathematical
 
@@ -201,36 +172,39 @@ Base of natural logarithms. Fundamental in calculus and exponential growth.
 
 ##### Since
 
-1.0.0
+0.7.0
 
 #### GOLDEN_RATIO
 
 > **GOLDEN_RATIO**: `number`
 
-Golden ratio φ (phi) ≈ 1.6180339887.
+Golden Ratio φ ≈ 1.618033988749895.
 
 ##### Remarks
 
-φ = (1 + √5) / 2. Appears in art, architecture, and nature.
-Has the property that φ² = φ + 1.
+Used in aesthetic proportions, Fibonacci sequences, and optimal spacing algorithms.
 
 ##### Constant
 
 ##### Since
 
-1.0.0
+0.7.0
 
-#### LN_10
+#### GOLDEN_RATIO_CONJUGATE
 
-> **LN_10**: `number`
+> **GOLDEN_RATIO_CONJUGATE**: `number`
 
-Natural logarithm of 10 ≈ 2.302585092994.
+Golden Ratio Conjugate Φ ≈ 0.618033988749895.
+
+##### Remarks
+
+Equals 1 / φ or φ - 1.
 
 ##### Constant
 
 ##### Since
 
-1.0.0
+0.7.0
 
 #### LN_2
 
@@ -242,7 +216,7 @@ Natural logarithm of 2 ≈ 0.693147180559945.
 
 ##### Since
 
-1.0.0
+0.7.0
 
 #### SQRT_2
 
@@ -258,7 +232,7 @@ The diagonal of a unit square. Commonly used in 2D geometry.
 
 ##### Since
 
-1.0.0
+0.7.0
 
 #### SQRT_HALF
 
@@ -274,7 +248,7 @@ Equals 1/√2 = √2/2. Common in rotation calculations (45° sin/cos).
 
 ##### Since
 
-1.0.0
+0.7.0
 
 ## Numeric Limits
 
@@ -293,7 +267,20 @@ IEEE 754 double precision limitations.
 
 ##### Since
 
-1.0.0
+0.7.0
+
+#### SMALLEST_NORMAL
+
+> **SMALLEST_NORMAL**: `2.2250738585072014e-308`
+
+Smallest positive normal number in IEEE 754 double precision.
+Numbers smaller than this (but not zero) are denormal/subnormal.
+
+##### Constant
+
+##### Since
+
+0.7.0
 
 ## Tolerance
 
@@ -318,7 +305,7 @@ widely varying magnitudes.
 
 ##### Since
 
-1.0.0
+0.7.0
 
 #### EPSILON_SQUARED
 
@@ -335,7 +322,7 @@ to maintain consistent tolerance behavior.
 
 ##### Since
 
-1.0.0
+0.7.0
 
 #### ITERATIVE_TOLERANCE
 
@@ -353,7 +340,7 @@ Value of 1e-6 provides good balance between precision and performance.
 
 ##### Since
 
-0.14.0
+0.7.0
 
 ## Example
 
@@ -366,4 +353,4 @@ const angle = degrees * Constants.DEG_TO_RAD;
 
 ## Since
 
-1.0.0
+0.7.0

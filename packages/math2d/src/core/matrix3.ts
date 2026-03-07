@@ -24,7 +24,7 @@
  */
 
 import { sinCos } from '../auxiliary/angle/operations';
-import { safeDivide, safeSqrt } from '../auxiliary/numeric/safety';
+import { divideSafe, sqrtSafe } from '../auxiliary/numeric/safety';
 import {
  clamp,
  mod as scalarModule,
@@ -102,6 +102,12 @@ export { isMatrix3Like } from '../types';
  * Column-major 3×3 matrix for 2D affine transformations in homogeneous coordinates.
  *
  * @remarks
+ * **Data Layout**: Stores elements in **Column-Major Memory Layout** (standard for WebGL and Three.js).
+ * Example memory sequence:
+ * - Column 0: `m00`, `m01`, `m02`
+ * - Column 1: `m10`, `m11`, `m12`
+ * - Column 2: `m20`, `m21`, `m22`
+ *
  * **API Design**
  * - Instance methods mutate `this` for fluent chaining
  * - Static helpers are pure and provide optional `out` parameters for allocation control
@@ -508,6 +514,42 @@ export class Matrix3 implements Matrix3Like {
  ): Matrix3 {
   const width = right - left;
   const height = top - bottom;
+  if (isNearZero(width) || isNearZero(height)) {
+   throw new RangeError('Matrix3.ortho: degenerate bounds (zero width or height)');
+  }
+  const tx = -(right + left) / width;
+  const ty = -(top + bottom) / height;
+  return Matrix3.ensureOut(out).set(2 / width, 0, 0, 0, 2 / height, 0, tx, ty, 1);
+ }
+
+ /**
+  * Creates an orthographic projection matrix (safe version).
+  * Returns identity for degenerate bounds.
+  *
+  * @param left - Left boundary.
+  * @param right - Right boundary.
+  * @param bottom - Bottom boundary.
+  * @param top - Top boundary.
+  * @param out - Optional output matrix.
+  * @returns A Matrix3 representing the orthographic projection, or identity for degenerate bounds.
+  *
+  * @see {@link ortho} - Throws for degenerate bounds
+  *
+  * @category Factory
+  * @since 0.7.0
+  */
+ public static orthoSafe(
+  left: number,
+  right: number,
+  bottom: number,
+  top: number,
+  out?: Matrix3,
+ ): Matrix3 {
+  const width = right - left;
+  const height = top - bottom;
+  if (isNearZero(width) || isNearZero(height)) {
+   return Matrix3.ensureOut(out).set(1, 0, 0, 0, 1, 0, 0, 0, 1);
+  }
   const tx = -(right + left) / width;
   const ty = -(top + bottom) / height;
   return Matrix3.ensureOut(out).set(2 / width, 0, 0, 0, 2 / height, 0, tx, ty, 1);
@@ -538,36 +580,21 @@ export class Matrix3 implements Matrix3Like {
    );
   }
 
-  const values = new Array<number>(Matrix3.ELEMENT_COUNT);
-  for (let index = 0; index < Matrix3.ELEMENT_COUNT; index++) {
-   values[index] = array[offset + index]!;
-  }
+  const a0 = array[offset]!;
+  const a1 = array[offset + 1]!;
+  const a2 = array[offset + 2]!;
+  const a3 = array[offset + 3]!;
+  const a4 = array[offset + 4]!;
+  const a5 = array[offset + 5]!;
+  const a6 = array[offset + 6]!;
+  const a7 = array[offset + 7]!;
+  const a8 = array[offset + 8]!;
 
   if (columnMajor) {
-   return Matrix3.ensureOut(out).set(
-    values[0]!,
-    values[1]!,
-    values[2]!,
-    values[3]!,
-    values[4]!,
-    values[5]!,
-    values[6]!,
-    values[7]!,
-    values[8]!,
-   );
+   return Matrix3.ensureOut(out).set(a0, a1, a2, a3, a4, a5, a6, a7, a8);
   }
 
-  return Matrix3.ensureOut(out).set(
-   values[0]!,
-   values[3]!,
-   values[6]!,
-   values[1]!,
-   values[4]!,
-   values[7]!,
-   values[2]!,
-   values[5]!,
-   values[8]!,
-  );
+  return Matrix3.ensureOut(out).set(a0, a3, a6, a1, a4, a7, a2, a5, a8);
  }
 
  /* ======================================================================== */
@@ -720,7 +747,7 @@ export class Matrix3 implements Matrix3Like {
   * ```typescript
   * const translate = Matrix3.fromTranslation(10, 20);
   * const rotate = Matrix3.fromRotation(Math.PI / 4);
-  * const combined = Matrix3.multiply(translate, rotate); // translate then rotate
+  * const combined = Matrix3.multiply(translate, rotate); // rotate then translate
   * ```
   *
   * @category Arithmetic
@@ -740,6 +767,30 @@ export class Matrix3 implements Matrix3Like {
   const r22 = a.m02 * b.m20 + a.m12 * b.m21 + a.m22 * b.m22;
 
   return Matrix3.ensureOut(out).set(r00, r01, r02, r10, r11, r12, r20, r21, r22);
+ }
+
+ /**
+  * Multiplies two matrices in reverse order: `left * right`.
+  *
+  * @param left - Left matrix (applied second).
+  * @param right - Right matrix (applied first).
+  * @param out - Optional output matrix.
+  * @returns `left * right`.
+  *
+  * @remarks
+  * Semantically identical to {@link multiply}(left, right). The value
+  * of `premultiply` is in the instance method where it reverses the
+  * multiplication order: `this.premultiply(other)` computes `other * this`.
+  *
+  * @category Arithmetic
+  * @since 0.7.0
+  */
+ public static premultiply(
+  left: ReadonlyMatrix3Like,
+  right: ReadonlyMatrix3Like,
+  out?: Matrix3,
+ ): Matrix3 {
+  return Matrix3.multiply(left, right, out);
  }
 
  /**
@@ -853,6 +904,56 @@ export class Matrix3 implements Matrix3Like {
  }
 
  /**
+  * Computes element-wise modulo of two matrices.
+  *
+  * @param a - Dividend matrix.
+  * @param b - Divisor matrix.
+  * @param out - Optional output matrix.
+  * @returns Result matrix with element-wise modulo.
+  *
+  * @category Arithmetic
+  * @since 0.7.0
+  */
+ public static mod(a: ReadonlyMatrix3Like, b: ReadonlyMatrix3Like, out?: Matrix3): Matrix3 {
+  return Matrix3.ensureOut(out).set(
+   scalarModule(a.m00, b.m00),
+   scalarModule(a.m01, b.m01),
+   scalarModule(a.m02, b.m02),
+   scalarModule(a.m10, b.m10),
+   scalarModule(a.m11, b.m11),
+   scalarModule(a.m12, b.m12),
+   scalarModule(a.m20, b.m20),
+   scalarModule(a.m21, b.m21),
+   scalarModule(a.m22, b.m22),
+  );
+ }
+
+ /**
+  * Computes scalar modulo on all matrix components.
+  *
+  * @param matrix - Dividend matrix.
+  * @param scalar - Scalar divisor.
+  * @param out - Optional output matrix.
+  * @returns Result matrix with each element modulo scalar.
+  *
+  * @category Arithmetic
+  * @since 0.7.0
+  */
+ public static modScalar(matrix: ReadonlyMatrix3Like, scalar: number, out?: Matrix3): Matrix3 {
+  return Matrix3.ensureOut(out).set(
+   scalarModule(matrix.m00, scalar),
+   scalarModule(matrix.m01, scalar),
+   scalarModule(matrix.m02, scalar),
+   scalarModule(matrix.m10, scalar),
+   scalarModule(matrix.m11, scalar),
+   scalarModule(matrix.m12, scalar),
+   scalarModule(matrix.m20, scalar),
+   scalarModule(matrix.m21, scalar),
+   scalarModule(matrix.m22, scalar),
+  );
+ }
+
+ /**
   * Negates all elements.
   *
   * @param matrix - Source matrix.
@@ -887,7 +988,7 @@ export class Matrix3 implements Matrix3Like {
   * @param out - Optional output matrix.
   * @returns Floored matrix.
   *
-  * @category Numeric Transform
+  * @category Arithmetic
   * @since 0.7.0
   */
  public static floor(matrix: ReadonlyMatrix3Like, out?: Matrix3): Matrix3 {
@@ -911,7 +1012,7 @@ export class Matrix3 implements Matrix3Like {
   * @param out - Optional output matrix.
   * @returns Ceiled matrix.
   *
-  * @category Numeric Transform
+  * @category Arithmetic
   * @since 0.7.0
   */
  public static ceil(matrix: ReadonlyMatrix3Like, out?: Matrix3): Matrix3 {
@@ -935,7 +1036,7 @@ export class Matrix3 implements Matrix3Like {
   * @param out - Optional output matrix.
   * @returns Rounded matrix.
   *
-  * @category Numeric Transform
+  * @category Arithmetic
   * @since 0.7.0
   */
  public static round(matrix: ReadonlyMatrix3Like, out?: Matrix3): Matrix3 {
@@ -959,7 +1060,7 @@ export class Matrix3 implements Matrix3Like {
   * @param out - Optional output matrix.
   * @returns Truncated matrix.
   *
-  * @category Numeric Transform
+  * @category Arithmetic
   * @since 0.7.0
   */
  public static trunc(matrix: ReadonlyMatrix3Like, out?: Matrix3): Matrix3 {
@@ -983,7 +1084,7 @@ export class Matrix3 implements Matrix3Like {
   * @param out - Optional output matrix.
   * @returns Absolute-valued matrix.
   *
-  * @category Numeric Transform
+  * @category Arithmetic
   * @since 0.7.0
   */
  public static abs(matrix: ReadonlyMatrix3Like, out?: Matrix3): Matrix3 {
@@ -1007,7 +1108,7 @@ export class Matrix3 implements Matrix3Like {
   * @param out - Optional output matrix.
   * @returns Matrix with signs (-1, 0, or 1).
   *
-  * @category Numeric Transform
+  * @category Arithmetic
   * @since 0.7.0
   */
  public static sign(matrix: ReadonlyMatrix3Like, out?: Matrix3): Matrix3 {
@@ -1032,7 +1133,7 @@ export class Matrix3 implements Matrix3Like {
   * @param out - Optional output matrix.
   * @returns Matrix with component-wise minima.
   *
-  * @category Numeric Transform
+  * @category Arithmetic
   * @since 0.7.0
   */
  public static min(a: ReadonlyMatrix3Like, b: ReadonlyMatrix3Like, out?: Matrix3): Matrix3 {
@@ -1057,7 +1158,7 @@ export class Matrix3 implements Matrix3Like {
   * @param out - Optional output matrix.
   * @returns Matrix with component-wise maxima.
   *
-  * @category Numeric Transform
+  * @category Arithmetic
   * @since 0.7.0
   */
  public static max(a: ReadonlyMatrix3Like, b: ReadonlyMatrix3Like, out?: Matrix3): Matrix3 {
@@ -1083,7 +1184,7 @@ export class Matrix3 implements Matrix3Like {
   * @param out - Optional output matrix.
   * @returns Clamped matrix.
   *
-  * @category Numeric Transform
+  * @category Arithmetic
   * @since 0.7.0
   */
  public static clamp(
@@ -1114,7 +1215,7 @@ export class Matrix3 implements Matrix3Like {
   * @param out - Optional output matrix.
   * @returns Clamped matrix.
   *
-  * @category Numeric Transform
+  * @category Arithmetic
   * @since 0.7.0
   */
  public static clampScalar(
@@ -1148,6 +1249,11 @@ export class Matrix3 implements Matrix3Like {
   * @param t - Interpolation factor (clamped).
   * @param out - Optional output matrix.
   * @returns Interpolated matrix.
+  *
+  * @remarks
+  * Component-wise lerp between rotation matrices does not produce a valid
+  * rotation matrix. For affine transforms, consider decomposing into
+  * translation/rotation/scale and interpolating each independently.
   *
   * @category Interpolation
   * @since 0.7.0
@@ -1280,17 +1386,6 @@ export class Matrix3 implements Matrix3Like {
   );
  }
 
- /**
-  * Tests approximate equality between matrices.
-  *
-  * @param a - First matrix.
-  * @param b - Second matrix.
-  * @param epsilon - Tolerance. @defaultValue `EPSILON`
-  * @returns True if all component differences are within epsilon.
-  *
-  * @category Comparison
-  * @since 0.7.0
-  */
  /**
   * Exact component-wise equality (bit-identical).
   *
@@ -1539,6 +1634,15 @@ export class Matrix3 implements Matrix3Like {
   * @param epsilon - Tolerance. @defaultValue `EPSILON`
   * @returns True if matrix is orthogonal.
   *
+  * @remarks
+  * Checks full 3×3 orthogonality: all three columns must be unit length and
+  * mutually perpendicular (dot products near zero). Affine matrices with
+  * non-zero translation in the third column will fail this check. For affine
+  * use cases, check the upper-left 2×2 linear part directly via
+  * {@link Matrix2.isOrthogonal}.
+  *
+  * Uses {@link EPSILON} (1e-10) as default tolerance.
+  *
   * @category Comparison
   * @since 0.7.0
   */
@@ -1573,7 +1677,7 @@ export class Matrix3 implements Matrix3Like {
   * @param out - Optional output matrix.
   * @returns Transposed matrix.
   *
-  * @category Matrix Operations
+  * @category Arithmetic
   * @since 0.7.0
   */
  public static transpose(matrix: ReadonlyMatrix3Like, out?: Matrix3): Matrix3 {
@@ -1596,7 +1700,7 @@ export class Matrix3 implements Matrix3Like {
   * @param matrix - Matrix to calculate determinant of.
   * @returns Determinant value.
   *
-  * @category Matrix Operations
+  * @category Arithmetic
   * @since 0.7.0
   */
  public static determinant(matrix: ReadonlyMatrix3Like): number {
@@ -1613,7 +1717,7 @@ export class Matrix3 implements Matrix3Like {
   * @param matrix - Matrix to calculate trace of.
   * @returns Trace value.
   *
-  * @category Matrix Operations
+  * @category Arithmetic
   * @since 0.7.0
   */
  public static trace(matrix: ReadonlyMatrix3Like): number {
@@ -1626,11 +1730,11 @@ export class Matrix3 implements Matrix3Like {
   * @param matrix - Matrix to calculate norm of.
   * @returns Frobenius norm √(Σ|mᵢⱼ|²).
   *
-  * @category Matrix Operations
+  * @category Arithmetic
   * @since 0.7.0
   */
  public static frobeniusNorm(matrix: ReadonlyMatrix3Like): number {
-  return safeSqrt(
+  return sqrtSafe(
    matrix.m00 * matrix.m00 +
     matrix.m01 * matrix.m01 +
     matrix.m02 * matrix.m02 +
@@ -1650,7 +1754,7 @@ export class Matrix3 implements Matrix3Like {
   * @param out - Optional output matrix.
   * @returns Adjugate matrix (transpose of cofactor matrix).
   *
-  * @category Matrix Operations
+  * @category Arithmetic
   * @since 0.7.0
   */
  public static adjugate(matrix: ReadonlyMatrix3Like, out?: Matrix3): Matrix3 {
@@ -1677,7 +1781,7 @@ export class Matrix3 implements Matrix3Like {
   * @returns Inverted matrix.
   * @throws {Error} If matrix is singular.
   *
-  * @category Matrix Operations
+  * @category Arithmetic
   * @since 0.7.0
   */
  public static inverse(matrix: ReadonlyMatrix3Like, out?: Matrix3): Matrix3 {
@@ -1719,15 +1823,40 @@ export class Matrix3 implements Matrix3Like {
   * @param out - Optional output matrix.
   * @returns Inverted matrix or identity if singular.
   *
-  * @category Matrix Operations
+  * @category Arithmetic
   * @since 0.7.0
   */
  public static inverseSafe(matrix: ReadonlyMatrix3Like, out?: Matrix3): Matrix3 {
-  const det = Matrix3.determinant(matrix);
+  const c00 = matrix.m11 * matrix.m22 - matrix.m12 * matrix.m21;
+  const c01 = -(matrix.m01 * matrix.m22 - matrix.m02 * matrix.m21);
+  const c02 = matrix.m01 * matrix.m12 - matrix.m02 * matrix.m11;
+
+  const det = matrix.m00 * c00 + matrix.m10 * c01 + matrix.m20 * c02;
   if (isNearZero(det)) {
    return Matrix3.ensureOut(out).identity();
   }
-  return Matrix3.inverseUnchecked(matrix, out);
+
+  const c10 = -(matrix.m10 * matrix.m22 - matrix.m12 * matrix.m20);
+  const c11 = matrix.m00 * matrix.m22 - matrix.m02 * matrix.m20;
+  const c12 = -(matrix.m00 * matrix.m12 - matrix.m02 * matrix.m10);
+
+  const c20 = matrix.m10 * matrix.m21 - matrix.m11 * matrix.m20;
+  const c21 = -(matrix.m00 * matrix.m21 - matrix.m01 * matrix.m20);
+  const c22 = matrix.m00 * matrix.m11 - matrix.m01 * matrix.m10;
+
+  const invDet = 1 / det;
+
+  return Matrix3.ensureOut(out).set(
+   c00 * invDet,
+   c01 * invDet,
+   c02 * invDet,
+   c10 * invDet,
+   c11 * invDet,
+   c12 * invDet,
+   c20 * invDet,
+   c21 * invDet,
+   c22 * invDet,
+  );
  }
 
  /**
@@ -1741,7 +1870,7 @@ export class Matrix3 implements Matrix3Like {
   * @param out - Optional output matrix.
   * @returns Inverted matrix.
   *
-  * @category Matrix Operations
+  * @category Arithmetic
   * @since 0.7.0
   */
  public static inverseUnchecked(matrix: ReadonlyMatrix3Like, out?: Matrix3): Matrix3 {
@@ -1781,7 +1910,7 @@ export class Matrix3 implements Matrix3Like {
   * @param out - Optional output vector.
   * @returns Transformed point.
   *
-  * @category Matrix Operations
+  * @category Transform
   * @since 0.7.0
   */
  public static transformPoint(
@@ -1791,14 +1920,14 @@ export class Matrix3 implements Matrix3Like {
  ): Vector2 {
   const { x, y } = point;
   const w = matrix.m02 * x + matrix.m12 * y + matrix.m22;
-  if (isNearZero(w - 1)) {
+  if (scalarNearEquals(w, 1)) {
    return Vector2.fromValues(
     matrix.m00 * x + matrix.m10 * y + matrix.m20,
     matrix.m01 * x + matrix.m11 * y + matrix.m21,
     out,
    );
   }
-  const invW = safeDivide(1, w);
+  const invW = divideSafe(1, w);
   return Vector2.fromValues(
    (matrix.m00 * x + matrix.m10 * y + matrix.m20) * invW,
    (matrix.m01 * x + matrix.m11 * y + matrix.m21) * invW,
@@ -1814,7 +1943,7 @@ export class Matrix3 implements Matrix3Like {
   * @param out - Optional output vector.
   * @returns Transformed vector.
   *
-  * @category Matrix Operations
+  * @category Transform
   * @since 0.7.0
   */
  public static transformVector(
@@ -1842,7 +1971,7 @@ export class Matrix3 implements Matrix3Like {
   * components smaller than ~1e-154, underflow may occur in intermediate
   * calculations due to IEEE 754 double precision limits.
   *
-  * @category Matrix Operations
+  * @category Arithmetic
   * @since 0.7.0
   */
  public static decompose(matrix: ReadonlyMatrix3Like): {
@@ -1858,13 +1987,78 @@ export class Matrix3 implements Matrix3Like {
   const det = matrix.m00 * matrix.m11 - matrix.m01 * matrix.m10;
   const signY = det < 0 ? -1 : 1;
 
-  const rotation = isNearZero(sx) ? 0 : atan2(matrix.m01 / sx, matrix.m00 / sx);
+  const rotation = isNearZero(sx) ? 0 : atan2(matrix.m01, matrix.m00);
 
   return {
    translation,
    rotation,
    scale: new Vector2(sx, sy * signY),
   };
+ }
+
+ /**
+  * Transforms multiple points by a matrix (batch operation).
+  *
+  * @param matrix - Transformation matrix.
+  * @param points - Array of points to transform.
+  * @param out - Optional output array (will be filled/extended as needed).
+  * @returns Array of transformed points.
+  *
+  * @category Batch Operations
+  * @since 0.7.0
+  */
+ public static transformPoints(
+  matrix: ReadonlyMatrix3Like,
+  points: readonly ReadonlyVector2Like[],
+  out: Vector2[] = [],
+ ): Vector2[] {
+  for (let index = 0; index < points.length; index++) {
+   out[index] = Matrix3.transformPoint(matrix, points[index]!, out[index]);
+  }
+  return out;
+ }
+
+ /**
+  * Transforms multiple vectors by a matrix (batch operation).
+  *
+  * @param matrix - Transformation matrix.
+  * @param vectors - Array of vectors to transform.
+  * @param out - Optional output array (will be filled/extended as needed).
+  * @returns Array of transformed vectors.
+  *
+  * @remarks
+  * Unlike points, vectors are not affected by translation.
+  *
+  * @category Batch Operations
+  * @since 0.7.0
+  */
+ public static transformVectors(
+  matrix: ReadonlyMatrix3Like,
+  vectors: readonly ReadonlyVector2Like[],
+  out: Vector2[] = [],
+ ): Vector2[] {
+  for (let index = 0; index < vectors.length; index++) {
+   out[index] = Matrix3.transformVector(matrix, vectors[index]!, out[index]);
+  }
+  return out;
+ }
+
+ /**
+  * Tests if a matrix is affine (bottom row is [0, 0, 1]).
+  *
+  * @param matrix - Matrix to test.
+  * @param epsilon - Tolerance. @defaultValue `EPSILON`
+  * @returns True if matrix is affine.
+  *
+  * @category Comparison
+  * @since 0.7.0
+  */
+ public static isAffine(matrix: ReadonlyMatrix3Like, epsilon: number = EPSILON): boolean {
+  return (
+   isNearZero(matrix.m02, epsilon) &&
+   isNearZero(matrix.m12, epsilon) &&
+   scalarNearEquals(matrix.m22, 1, epsilon)
+  );
  }
 
  /**
@@ -1885,7 +2079,7 @@ export class Matrix3 implements Matrix3Like {
   * const translated = Matrix3.translate(m, { x: 100, y: 50 });
   * ```
   *
-  * @category Matrix Operations
+  * @category Transform
   * @since 0.7.0
   */
  public static translate(
@@ -1927,7 +2121,7 @@ export class Matrix3 implements Matrix3Like {
   * const rotated = Matrix3.rotate(m, Math.PI / 4);
   * ```
   *
-  * @category Matrix Operations
+  * @category Transform
   * @since 0.7.0
   */
  public static rotate(matrix: ReadonlyMatrix3Like, angle: number, out?: Matrix3): Matrix3 {
@@ -1958,7 +2152,7 @@ export class Matrix3 implements Matrix3Like {
   * const r2 = Matrix3.rotateCS(m2, rotation.cos, rotation.sin);
   * ```
   *
-  * @category Matrix Operations
+  * @category Transform
   * @since 0.7.0
   */
  public static rotateCS(
@@ -2005,7 +2199,7 @@ export class Matrix3 implements Matrix3Like {
   * const scaled = Matrix3.scaleBy(m, { x: 2, y: 0.5 });
   * ```
   *
-  * @category Matrix Operations
+  * @category Transform
   * @since 0.7.0
   */
  public static scaleBy(
@@ -2258,6 +2452,11 @@ export class Matrix3 implements Matrix3Like {
   * @since 0.7.0
   */
  public setFromArray(array: ArrayLike<number>, offset = 0): this {
+  if (offset < 0 || offset + 9 > array.length) {
+   throw new RangeError(
+    `Matrix3.setFromArray: offset ${offset} out of bounds for array length ${array.length}`,
+   );
+  }
   return this.set(
    array[offset]!,
    array[offset + 1]!,
@@ -2313,12 +2512,16 @@ export class Matrix3 implements Matrix3Like {
  }
 
  /**
-  * Extracts scale factors from the matrix.
+  * Extracts scale factors from the matrix (always positive).
   *
   * @param out - Optional output vector.
-  * @returns Scale factors for each axis.
+  * @returns Scale factors for each axis (always ≥ 0).
   *
-  * @remarks Uses deterministic sqrt for cross-platform reproducibility.
+  * @remarks
+  * Returns the length of each column vector. Values are always non-negative
+  * since `hypot` computes magnitudes. This does NOT account for determinant
+  * sign (reflection). Use {@link Matrix3.decompose} for signed scale that
+  * matches the rotation convention.
   *
   * @category Computed
   * @since 0.7.0
@@ -2382,7 +2585,7 @@ export class Matrix3 implements Matrix3Like {
   * @since 0.7.0
   */
  public frobeniusNorm(): number {
-  return safeSqrt(
+  return sqrtSafe(
    this.m00 * this.m00 +
     this.m01 * this.m01 +
     this.m02 * this.m02 +
@@ -2820,7 +3023,7 @@ export class Matrix3 implements Matrix3Like {
   *
   * @returns This for chaining.
   *
-  * @category Matrix Operations
+  * @category Arithmetic
   * @since 0.7.0
   */
  public transpose(): this {
@@ -2843,7 +3046,7 @@ export class Matrix3 implements Matrix3Like {
   * @returns This for chaining.
   * @throws Error if singular.
   *
-  * @category Matrix Operations
+  * @category Arithmetic
   * @since 0.7.0
   */
  public inverse(): this {
@@ -2881,15 +3084,40 @@ export class Matrix3 implements Matrix3Like {
   *
   * @returns This for chaining (returns identity if singular).
   *
-  * @category Matrix Operations
+  * @category Arithmetic
   * @since 0.7.0
   */
  public inverseSafe(): this {
-  const det = this.determinant();
+  const c00 = this.m11 * this.m22 - this.m12 * this.m21;
+  const c01 = -(this.m01 * this.m22 - this.m02 * this.m21);
+  const c02 = this.m01 * this.m12 - this.m02 * this.m11;
+
+  const det = this.m00 * c00 + this.m10 * c01 + this.m20 * c02;
   if (isNearZero(det)) {
    return this.identity();
   }
-  return this.inverseUnchecked();
+
+  const c10 = -(this.m10 * this.m22 - this.m12 * this.m20);
+  const c11 = this.m00 * this.m22 - this.m02 * this.m20;
+  const c12 = -(this.m00 * this.m12 - this.m02 * this.m10);
+
+  const c20 = this.m10 * this.m21 - this.m11 * this.m20;
+  const c21 = -(this.m00 * this.m21 - this.m01 * this.m20);
+  const c22 = this.m00 * this.m11 - this.m01 * this.m10;
+
+  const invDet = 1 / det;
+
+  return this.set(
+   c00 * invDet,
+   c01 * invDet,
+   c02 * invDet,
+   c10 * invDet,
+   c11 * invDet,
+   c12 * invDet,
+   c20 * invDet,
+   c21 * invDet,
+   c22 * invDet,
+  );
  }
 
  /**
@@ -2900,7 +3128,7 @@ export class Matrix3 implements Matrix3Like {
   * @remarks
   * Assumes matrix is invertible. Use for hot paths when you've already validated.
   *
-  * @category Matrix Operations
+  * @category Arithmetic
   * @since 0.7.0
   */
  public inverseUnchecked(): this {
@@ -2935,7 +3163,7 @@ export class Matrix3 implements Matrix3Like {
   *
   * @returns This for chaining.
   *
-  * @category Matrix Operations
+  * @category Arithmetic
   * @since 0.7.0
   */
  public negate(): this {
@@ -2961,7 +3189,7 @@ export class Matrix3 implements Matrix3Like {
   * For a 3×3 matrix, each element is the determinant of the 2×2
   * minor matrix, with alternating signs.
   *
-  * @category Matrix Operations
+  * @category Arithmetic
   * @since 0.7.0
   */
  public adjugate(): this {
@@ -2995,7 +3223,7 @@ export class Matrix3 implements Matrix3Like {
   * @param other - Matrix to multiply by.
   * @returns This for chaining.
   *
-  * @category Matrix Operations
+  * @category Arithmetic
   * @since 0.7.0
   */
  public premultiply(other: ReadonlyMatrix3Like): this {
@@ -3022,6 +3250,17 @@ export class Matrix3 implements Matrix3Like {
   );
  }
 
+ /**
+  * Decomposes this matrix into translation, rotation, and scale components.
+  * @returns Object with translation (Vector2), rotation (radians), and scale (Vector2)
+  *
+  * @category Composition
+  * @since 0.7.0
+  */
+ public decompose(): { translation: Vector2; rotation: number; scale: Vector2 } {
+  return Matrix3.decompose(this);
+ }
+
  /* ======================================================================== */
  /* Instance Numeric Transforms                                              */
  /* ======================================================================== */
@@ -3031,7 +3270,7 @@ export class Matrix3 implements Matrix3Like {
   *
   * @returns This for chaining.
   *
-  * @category Numeric Transform
+  * @category Arithmetic
   * @since 0.7.0
   */
  public floor(): this {
@@ -3052,7 +3291,7 @@ export class Matrix3 implements Matrix3Like {
   *
   * @returns This for chaining.
   *
-  * @category Numeric Transform
+  * @category Arithmetic
   * @since 0.7.0
   */
  public ceil(): this {
@@ -3073,7 +3312,7 @@ export class Matrix3 implements Matrix3Like {
   *
   * @returns This for chaining.
   *
-  * @category Numeric Transform
+  * @category Arithmetic
   * @since 0.7.0
   */
  public round(): this {
@@ -3094,7 +3333,7 @@ export class Matrix3 implements Matrix3Like {
   *
   * @returns This for chaining.
   *
-  * @category Numeric Transform
+  * @category Arithmetic
   * @since 0.7.0
   */
  public trunc(): this {
@@ -3115,7 +3354,7 @@ export class Matrix3 implements Matrix3Like {
   *
   * @returns This for chaining.
   *
-  * @category Numeric Transform
+  * @category Arithmetic
   * @since 0.7.0
   */
  public abs(): this {
@@ -3136,7 +3375,7 @@ export class Matrix3 implements Matrix3Like {
   *
   * @returns This for chaining.
   *
-  * @category Numeric Transform
+  * @category Arithmetic
   * @since 0.7.0
   */
  public sign(): this {
@@ -3159,7 +3398,7 @@ export class Matrix3 implements Matrix3Like {
   * @param maxMatrix - Maximum values per element.
   * @returns This for chaining.
   *
-  * @category Numeric Transform
+  * @category Arithmetic
   * @since 0.7.0
   */
  public clamp(minMatrix: ReadonlyMatrix3Like, maxMatrix: ReadonlyMatrix3Like): this {
@@ -3182,7 +3421,7 @@ export class Matrix3 implements Matrix3Like {
   * @param maxValue - Maximum value.
   * @returns This for chaining.
   *
-  * @category Numeric Transform
+  * @category Arithmetic
   * @since 0.7.0
   */
  public clampScalar(minValue: number, maxValue: number): this {
@@ -3204,7 +3443,7 @@ export class Matrix3 implements Matrix3Like {
   * @param other - Matrix to compare.
   * @returns This for chaining.
   *
-  * @category Numeric Transform
+  * @category Arithmetic
   * @since 0.7.0
   */
  public min(other: ReadonlyMatrix3Like): this {
@@ -3226,7 +3465,7 @@ export class Matrix3 implements Matrix3Like {
   * @param other - Matrix to compare.
   * @returns This for chaining.
   *
-  * @category Numeric Transform
+  * @category Arithmetic
   * @since 0.7.0
   */
  public max(other: ReadonlyMatrix3Like): this {
@@ -3248,7 +3487,7 @@ export class Matrix3 implements Matrix3Like {
   * @param other - Divisor matrix.
   * @returns This for chaining.
   *
-  * @category Numeric Transform
+  * @category Arithmetic
   * @since 0.7.0
   */
  public mod(other: ReadonlyMatrix3Like): this {
@@ -3270,7 +3509,7 @@ export class Matrix3 implements Matrix3Like {
   * @param scalar - Divisor.
   * @returns This for chaining.
   *
-  * @category Numeric Transform
+  * @category Arithmetic
   * @since 0.7.0
   */
  public modScalar(scalar: number): this {
@@ -3404,7 +3643,7 @@ export class Matrix3 implements Matrix3Like {
   * @param translation - Translation vector.
   * @returns This for chaining.
   *
-  * @category Numeric Transform
+  * @category Arithmetic
   * @since 0.7.0
   */
  public translate(translation: ReadonlyVector2Like): this {
@@ -3422,7 +3661,7 @@ export class Matrix3 implements Matrix3Like {
   * @param angle - Rotation angle in radians.
   * @returns This for chaining.
   *
-  * @category Numeric Transform
+  * @category Arithmetic
   * @since 0.7.0
   */
  public rotate(angle: number): this {
@@ -3448,7 +3687,7 @@ export class Matrix3 implements Matrix3Like {
   * m.rotateCS(rotation.cos, rotation.sin);
   * ```
   *
-  * @category Numeric Transform
+  * @category Transform
   * @since 0.7.0
   */
  public rotateCS(cos: number, sin: number): this {
@@ -3474,7 +3713,7 @@ export class Matrix3 implements Matrix3Like {
   * @param scaleValue - Scale factor (scalar or per-axis vector).
   * @returns This for chaining.
   *
-  * @category Numeric Transform
+  * @category Arithmetic
   * @since 0.7.0
   */
  public scaleBy(scaleValue: ReadonlyVector2Like | number): this {
@@ -3584,16 +3823,6 @@ export class Matrix3 implements Matrix3Like {
  /* Instance Comparison                                                      */
  /* ======================================================================== */
 
- /**
-  * Tests approximate equality with another matrix.
-  *
-  * @param other - Matrix to compare.
-  * @param epsilon - Tolerance. @defaultValue `EPSILON`
-  * @returns True if all component differences are within epsilon.
-  *
-  * @category Comparison
-  * @since 0.7.0
-  */
  /**
   * Exact equality with other matrix (bit-identical).
   * @param other - Matrix to compare.

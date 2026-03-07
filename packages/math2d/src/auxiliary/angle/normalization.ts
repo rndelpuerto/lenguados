@@ -22,6 +22,11 @@ import { PI, TAU } from '../scalar/constants';
  * normalizeRadians(2 * Math.PI);    // 0
  * ```
  *
+ * @remarks
+ * For very large angles (>1e6 radians), floating-point precision loss in
+ * the modulo operation may produce results that deviate from the
+ * mathematically correct normalized value.
+ *
  * @category Normalization
  * @since 0.7.0
  */
@@ -49,27 +54,6 @@ export function normalizeRadians(radians: number): number {
  */
 export function normalizeRadiansPositive(radians: number): number {
  return loop(radians, 0, TAU);
-}
-
-/**
- * Normalizes to arbitrary center ± π.
- * Useful for continuous rotation.
- * @param radians - Angle in radians.
- * @param center - Center angle.
- * @returns Angle equivalent to radians and closest to center.
- *
- * @example
- * ```typescript
- * normalizeRadiansAround(3 * Math.PI, 0);        // -Math.PI
- * normalizeRadiansAround(Math.PI / 2, Math.PI);  // Math.PI / 2
- * normalizeRadiansAround(0, Math.PI);            // 2 * Math.PI
- * ```
- *
- * @category Normalization
- * @since 0.7.0
- */
-export function normalizeRadiansAround(radians: number, center: number): number {
- return loop(radians, center - PI, center + PI);
 }
 
 /**
@@ -112,27 +96,4 @@ export function normalizeDegrees(degrees: number): number {
  */
 export function normalizeDegreesPositive(degrees: number): number {
  return loop(degrees, 0, 360);
-}
-
-/**
- * Wraps angle to specific period.
- * @param angle - Angle to wrap.
- * @param period - Period (default: 2π).
- * @returns Wrapped angle in [0, period).
- *
- * @example
- * ```typescript
- * wrapAngle(Math.PI, Math.PI);          // 0
- * wrapAngle(3 * Math.PI, 2 * Math.PI);  // Math.PI
- * wrapAngle(370, 360);                  // 10 (degrees example)
- * ```
- *
- * @category Normalization
- * @since 0.7.0
- */
-export function wrapAngle(angle: number, period: number = TAU): number {
- if (period <= 0) {
-  return 0;
- }
- return loop(angle, 0, period);
 }

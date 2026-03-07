@@ -11,7 +11,8 @@ import { Rotation2 } from '../../src/core/rotation2';
 import { Transform2 } from '../../src/core/transform2';
 import { Vector2 } from '../../src/core/vector2';
 
-const DIGITS = 8; // toBeCloseTo decimal digits (8 for float tolerance)
+// DIGITS = 10 matches EPSILON = 1e-10 — the library's documented tolerance
+const DIGITS = 10;
 
 function expectVecClose(vector: Vector2, x: number, y: number, digits = DIGITS): void {
  expect(vector.x).toBeCloseTo(x, digits);
@@ -120,6 +121,15 @@ describe('Transform2', () => {
    const transformed = transform.transformPoint(testPoint);
    const restored = inverse.transformPoint(transformed);
    expectVecClose(restored, testPoint.x, testPoint.y, 4);
+  });
+
+  it('inverse() position is correct for non-uniform scale', () => {
+   // pos=(2,0), rot=90°, scale=(2,1)
+   // Corrected formula: -(S⁻¹ · R⁻¹ · t)
+   // R⁻¹ · (2,0) = (0, -2), then S⁻¹ · (0,-2) = (0,-2), negated = (0, 2)
+   const transform = Transform2.fromValues(2, 0, Math.PI / 2, 2, 1);
+   const inv = Transform2.inverse(transform);
+   expectVecClose(inv.position, 0, 2, 4);
   });
  });
 
@@ -764,6 +774,47 @@ describe('Transform2', () => {
   });
  });
 
+ describe('Deep freeze on static constants', () => {
+  it('IDENTITY nested position is immutable', () => {
+   expect(Object.isFrozen(Transform2.IDENTITY.position)).toBe(true);
+   expect(() => {
+    (Transform2.IDENTITY.position as { x: number }).x = 99;
+   }).toThrow(TypeError);
+  });
+
+  it('IDENTITY nested rotation is immutable', () => {
+   expect(Object.isFrozen(Transform2.IDENTITY.rotation)).toBe(true);
+   expect(() => {
+    (Transform2.IDENTITY.rotation as { cos: number }).cos = 0;
+   }).toThrow(TypeError);
+  });
+
+  it('IDENTITY nested scale is immutable', () => {
+   expect(Object.isFrozen(Transform2.IDENTITY.scale)).toBe(true);
+   expect(() => {
+    (Transform2.IDENTITY.scale as { x: number }).x = 99;
+   }).toThrow(TypeError);
+  });
+
+  it('FLIP_X nested objects are deeply frozen', () => {
+   expect(Object.isFrozen(Transform2.FLIP_X.position)).toBe(true);
+   expect(Object.isFrozen(Transform2.FLIP_X.rotation)).toBe(true);
+   expect(Object.isFrozen(Transform2.FLIP_X.scale)).toBe(true);
+   expect(() => {
+    (Transform2.FLIP_X.scale as { x: number }).x = 5;
+   }).toThrow(TypeError);
+  });
+
+  it('FLIP_Y nested objects are deeply frozen', () => {
+   expect(Object.isFrozen(Transform2.FLIP_Y.position)).toBe(true);
+   expect(Object.isFrozen(Transform2.FLIP_Y.rotation)).toBe(true);
+   expect(Object.isFrozen(Transform2.FLIP_Y.scale)).toBe(true);
+   expect(() => {
+    (Transform2.FLIP_Y.scale as { y: number }).y = 5;
+   }).toThrow(TypeError);
+  });
+ });
+
  describe('Coverage - Instance lerp and lerpClamped', () => {
   it('instance lerp interpolates', () => {
    const a = Transform2.fromValues(0, 0, 0, 1, 1);
@@ -1405,6 +1456,81 @@ describe('Transform2', () => {
    const t = new Transform2({ x: 100, y: 100 }, 0, { x: 2, y: 3 });
    const result = t.transformVector({ x: 1, y: 1 });
    expectVecClose(result, 2, 3);
+  });
+ });
+
+ describe('fromPose', () => {
+  it('creates transform from position and angle', () => {
+   const t = Transform2.fromPose(100, 50, Math.PI / 4);
+   expect(t.position.x).toBe(100);
+   expect(t.position.y).toBe(50);
+   expect(t.rotation.angle).toBeCloseTo(Math.PI / 4, DIGITS);
+   expect(t.scale.x).toBe(1);
+   expect(t.scale.y).toBe(1);
+  });
+
+  it('accepts out parameter', () => {
+   const out = new Transform2();
+   const result = Transform2.fromPose(10, 20, 0, out);
+   expect(result).toBe(out);
+   expect(out.position.x).toBe(10);
+   expect(out.position.y).toBe(20);
+  });
+
+  it('resets scale to (1,1) even if out had different scale', () => {
+   const out = new Transform2({ x: 0, y: 0 }, 0, { x: 5, y: 5 });
+   Transform2.fromPose(0, 0, 0, out);
+   expect(out.scale.x).toBe(1);
+   expect(out.scale.y).toBe(1);
+  });
+ });
+
+ describe('Near-singular boundary', () => {
+  const EPS = 1e-10;
+
+  it('inverse throws when scale.x equals EPSILON', () => {
+   const t = new Transform2({ x: 0, y: 0 }, 0, { x: EPS, y: 1 });
+   expect(() => Transform2.inverse(t)).toThrow(RangeError);
+  });
+
+  it('inverse throws when scale.y equals EPSILON', () => {
+   const t = new Transform2({ x: 0, y: 0 }, 0, { x: 1, y: EPS });
+   expect(() => Transform2.inverse(t)).toThrow(RangeError);
+  });
+
+  it('inverse throws when both scales are zero', () => {
+   const t = new Transform2({ x: 5, y: 5 }, 1, { x: 0, y: 0 });
+   expect(() => Transform2.inverse(t)).toThrow(RangeError);
+  });
+
+  it('inverse succeeds when scale is above EPSILON', () => {
+   const t = new Transform2({ x: 1, y: 2 }, 0.5, { x: 2e-10, y: 2e-10 });
+   const inv = Transform2.inverse(t);
+   expect(Number.isFinite(inv.scale.x)).toBe(true);
+   expect(Number.isFinite(inv.scale.y)).toBe(true);
+  });
+
+  it('inverseSafe returns identity when scale.x is near zero', () => {
+   const t = new Transform2({ x: 5, y: 5 }, 1, { x: EPS, y: 1 });
+   const inv = Transform2.inverseSafe(t);
+   expectVecClose(inv.position, 0, 0);
+   expect(inv.scale.x).toBe(1);
+   expect(inv.scale.y).toBe(1);
+  });
+
+  it('inverseSafe returns identity when scale.y is near zero', () => {
+   const t = new Transform2({ x: 5, y: 5 }, 1, { x: 1, y: EPS });
+   const inv = Transform2.inverseSafe(t);
+   expectVecClose(inv.position, 0, 0);
+   expect(inv.scale.x).toBe(1);
+   expect(inv.scale.y).toBe(1);
+  });
+
+  it('inverseSafe inverts when scale is above EPSILON', () => {
+   const t = new Transform2({ x: 1, y: 2 }, 0, { x: 2e-10, y: 2e-10 });
+   const inv = Transform2.inverseSafe(t);
+   expect(Number.isFinite(inv.scale.x)).toBe(true);
+   expect(Number.isFinite(inv.position.x)).toBe(true);
   });
  });
 });

@@ -2,7 +2,7 @@
 
 > **assert**(`condition`, `message?`): `void`
 
-Defined in: [src/validation/assert.ts:317](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/validation/assert.ts#L317)
+Defined in: [src/validation/assert.ts:349](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/validation/assert.ts#L349)
 
 Asserts a generic boolean condition.
 
@@ -42,4 +42,4 @@ assert(index >= 0 && index < array.length, `Index ${index} out of bounds`);
 
 ## Since
 
-0.1.0
+0.7.0

@@ -1,12 +1,12 @@
 # Interface: ReadonlyMatrix3Like
 
-Defined in: [src/types/index.ts:77](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/types/index.ts#L77)
+Defined in: [src/types/index.ts:77](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/types/index.ts#L77)
 
 Readonly interface for 3x3 matrix components.
 
 ## Since
 
-0.1.0
+0.7.0
 
 ## Properties
 
@@ -14,7 +14,7 @@ Readonly interface for 3x3 matrix components.
 
 > `readonly` **m00**: `number`
 
-Defined in: [src/types/index.ts:78](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/types/index.ts#L78)
+Defined in: [src/types/index.ts:78](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/types/index.ts#L78)
 
 ---
 
@@ -22,7 +22,7 @@ Defined in: [src/types/index.ts:78](https://github.com/rndelpuerto/lenguados/blo
 
 > `readonly` **m01**: `number`
 
-Defined in: [src/types/index.ts:79](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/types/index.ts#L79)
+Defined in: [src/types/index.ts:79](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/types/index.ts#L79)
 
 ---
 
@@ -30,7 +30,7 @@ Defined in: [src/types/index.ts:79](https://github.com/rndelpuerto/lenguados/blo
 
 > `readonly` **m02**: `number`
 
-Defined in: [src/types/index.ts:80](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/types/index.ts#L80)
+Defined in: [src/types/index.ts:80](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/types/index.ts#L80)
 
 ---
 
@@ -38,7 +38,7 @@ Defined in: [src/types/index.ts:80](https://github.com/rndelpuerto/lenguados/blo
 
 > `readonly` **m10**: `number`
 
-Defined in: [src/types/index.ts:81](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/types/index.ts#L81)
+Defined in: [src/types/index.ts:81](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/types/index.ts#L81)
 
 ---
 
@@ -46,7 +46,7 @@ Defined in: [src/types/index.ts:81](https://github.com/rndelpuerto/lenguados/blo
 
 > `readonly` **m11**: `number`
 
-Defined in: [src/types/index.ts:82](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/types/index.ts#L82)
+Defined in: [src/types/index.ts:82](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/types/index.ts#L82)
 
 ---
 
@@ -54,7 +54,7 @@ Defined in: [src/types/index.ts:82](https://github.com/rndelpuerto/lenguados/blo
 
 > `readonly` **m12**: `number`
 
-Defined in: [src/types/index.ts:83](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/types/index.ts#L83)
+Defined in: [src/types/index.ts:83](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/types/index.ts#L83)
 
 ---
 
@@ -62,7 +62,7 @@ Defined in: [src/types/index.ts:83](https://github.com/rndelpuerto/lenguados/blo
 
 > `readonly` **m20**: `number`
 
-Defined in: [src/types/index.ts:84](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/types/index.ts#L84)
+Defined in: [src/types/index.ts:84](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/types/index.ts#L84)
 
 ---
 
@@ -70,7 +70,7 @@ Defined in: [src/types/index.ts:84](https://github.com/rndelpuerto/lenguados/blo
 
 > `readonly` **m21**: `number`
 
-Defined in: [src/types/index.ts:85](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/types/index.ts#L85)
+Defined in: [src/types/index.ts:85](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/types/index.ts#L85)
 
 ---
 
@@ -78,4 +78,4 @@ Defined in: [src/types/index.ts:85](https://github.com/rndelpuerto/lenguados/blo
 
 > `readonly` **m22**: `number`
 
-Defined in: [src/types/index.ts:86](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/types/index.ts#L86)
+Defined in: [src/types/index.ts:86](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/types/index.ts#L86)

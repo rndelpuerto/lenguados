@@ -13,6 +13,14 @@ import { EPSILON } from './constants';
  * @param epsilon - Tolerance (default: EPSILON).
  * @returns True if |a - b| <= epsilon.
  *
+ * @remarks
+ * Default tolerance is {@link EPSILON} (1e-10). This is an absolute comparison —
+ * for large magnitudes where relative error matters, use {@link relativeEquals}.
+ *
+ * Note: `Math.abs(a - b)` overflows to `Infinity` when `a` and `b` have
+ * opposite signs and large magnitudes (e.g., `1e308` and `-1e308`), but
+ * this correctly returns `false` since `Infinity > epsilon`.
+ *
  * @example
  * ```typescript
  * nearEquals(1.0, 1.0000000001);          // true (within default epsilon)
@@ -24,6 +32,9 @@ import { EPSILON } from './constants';
  * @since 0.7.0
  */
 export function nearEquals(a: number, b: number, epsilon: number = EPSILON): boolean {
+ if (epsilon < 0) {
+  throw new RangeError('nearEquals: epsilon must be non-negative');
+ }
  // Fast path: identical values (handles ±Infinity correctly)
  if (a === b) return true;
  // NaN is never equal to anything (including itself)
@@ -37,6 +48,10 @@ export function nearEquals(a: number, b: number, epsilon: number = EPSILON): boo
  * @param epsilon - Tolerance (default: EPSILON).
  * @returns True if |value| <= epsilon.
  *
+ * @remarks
+ * Default tolerance is {@link EPSILON} (1e-10). Used by core type operations
+ * (normalization, inverse, projection) to detect geometrically degenerate inputs.
+ *
  * @example
  * ```typescript
  * isNearZero(0.0000000001);   // true (within default epsilon)
@@ -48,6 +63,9 @@ export function nearEquals(a: number, b: number, epsilon: number = EPSILON): boo
  * @since 0.7.0
  */
 export function isNearZero(value: number, epsilon: number = EPSILON): boolean {
+ if (epsilon < 0) {
+  throw new RangeError('isNearZero: epsilon must be non-negative');
+ }
  return Math.abs(value) <= epsilon;
 }
 
@@ -56,6 +74,10 @@ export function isNearZero(value: number, epsilon: number = EPSILON): boolean {
  * @param value - Value to test.
  * @param epsilon - Tolerance (default: EPSILON).
  * @returns True if |value - 1| <= epsilon.
+ *
+ * @remarks
+ * Default tolerance is {@link EPSILON} (1e-10). Commonly used to verify
+ * normalization constraints (e.g., unit vectors, rotation magnitudes).
  *
  * @example
  * ```typescript
@@ -68,6 +90,9 @@ export function isNearZero(value: number, epsilon: number = EPSILON): boolean {
  * @since 0.7.0
  */
 export function isNearOne(value: number, epsilon: number = EPSILON): boolean {
+ if (epsilon < 0) {
+  throw new RangeError('isNearOne: epsilon must be non-negative');
+ }
  return Math.abs(value - 1) <= epsilon;
 }
 
@@ -78,6 +103,11 @@ export function isNearOne(value: number, epsilon: number = EPSILON): boolean {
  * @param b - Second value.
  * @param relativeEpsilon - Relative tolerance fraction.
  * @returns True if within the scaled tolerance.
+ *
+ * @remarks
+ * Default tolerance is {@link EPSILON} (1e-10), scaled by max(|a|, |b|, 1).
+ * Unlike {@link nearEquals} which uses absolute tolerance, this scales with
+ * magnitude — better for comparing values across different orders of magnitude.
  *
  * @example
  * ```typescript
@@ -129,6 +159,9 @@ export function relativeEquals(a: number, b: number, relativeEpsilon: number = E
  * @since 0.7.0
  */
 export function lessThan(a: number, b: number, epsilon: number = EPSILON): boolean {
+ if (epsilon < 0) {
+  throw new RangeError('lessThan: epsilon must be non-negative');
+ }
  return a < b - epsilon;
 }
 
@@ -151,6 +184,9 @@ export function lessThan(a: number, b: number, epsilon: number = EPSILON): boole
  * @since 0.7.0
  */
 export function greaterThan(a: number, b: number, epsilon: number = EPSILON): boolean {
+ if (epsilon < 0) {
+  throw new RangeError('greaterThan: epsilon must be non-negative');
+ }
  return a > b + epsilon;
 }
 
@@ -186,6 +222,9 @@ export function inRange(
  max: number,
  epsilon: number = EPSILON,
 ): boolean {
+ if (epsilon < 0) {
+  throw new RangeError('inRange: epsilon must be non-negative');
+ }
  return value >= min - epsilon && value <= max + epsilon;
 }
 
@@ -214,6 +253,15 @@ export function inRange(
  * @since 0.7.0
  */
 export function compare(a: number, b: number, epsilon: number = EPSILON): -1 | 0 | 1 {
+ if (epsilon < 0) {
+  throw new RangeError('compare: epsilon must be non-negative');
+ }
+ // NaN sorts after everything: NaN > any finite/Infinity
+ const aNaN = a !== a;
+ const bNaN = b !== b;
+ if (aNaN && bNaN) return 0;
+ if (aNaN) return 1;
+ if (bNaN) return -1;
  if (a < b - epsilon) return -1;
  if (a > b + epsilon) return 1;
  return 0;

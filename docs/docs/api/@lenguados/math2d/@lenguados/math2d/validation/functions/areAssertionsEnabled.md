@@ -2,7 +2,7 @@
 
 > **areAssertionsEnabled**(): `boolean`
 
-Defined in: [src/validation/assert.ts:108](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/validation/assert.ts#L108)
+Defined in: [src/validation/assert.ts:128](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/validation/assert.ts#L128)
 
 Returns the current assertions state.
 
@@ -14,7 +14,8 @@ Returns the current assertions state.
 
 ## Remarks
 
-Reflects the global state set by [setAssertionsEnabled](setAssertionsEnabled.md).
+In development: Returns the runtime state set by [setAssertionsEnabled](setAssertionsEnabled.md).
+In production: Always returns `false` (assertions are compile-time eliminated).
 
 ## Example
 
@@ -26,4 +27,4 @@ if (areAssertionsEnabled()) {
 
 ## Since
 
-0.1.0
+0.7.0

@@ -2,7 +2,7 @@
 
 > **remap**(`value`, `inMin`, `inMax`, `outMin`, `outMax`): `number`
 
-Defined in: [src/auxiliary/scalar/arithmetic.ts:163](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/auxiliary/scalar/arithmetic.ts#L163)
+Defined in: [src/auxiliary/scalar/arithmetic.ts:109](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/auxiliary/scalar/arithmetic.ts#L109)
 
 Linear mapping from [inMin, inMax] to [outMin, outMax].
 
@@ -57,4 +57,4 @@ remap(75, 0, 100, -1, 1); // 0.5
 
 ## Since
 
-1.0.0
+0.7.0

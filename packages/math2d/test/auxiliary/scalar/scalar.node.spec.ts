@@ -11,10 +11,13 @@ import {
  nearEquals as epsilonEquals,
  relativeEquals,
  compare,
+ inRange,
 } from '../../../src/auxiliary/scalar/comparison';
 import {
  DEG_TO_RAD as DEG2RAD,
  EPSILON,
+ GOLDEN_RATIO,
+ GOLDEN_RATIO_CONJUGATE,
  PI,
  RAD_TO_DEG as RAD2DEG,
  TAU,
@@ -27,8 +30,6 @@ import {
  lerpClamped,
  smoothStep,
  smootherStep,
- bezierInterp,
- catmullRomInterp,
 } from '../../../src/auxiliary/scalar/interpolation';
 
 const HALF_PI = PI / 2;
@@ -57,6 +58,18 @@ describe('Scalar constants', () => {
  it('EPSILON is a small positive number', () => {
   expect(EPSILON).toBeGreaterThan(0);
   expect(EPSILON).toBeLessThan(1e-3);
+ });
+
+ it('GOLDEN_RATIO equals (1 + sqrt(5)) / 2', () => {
+  expect(GOLDEN_RATIO).toBeCloseTo(1.618033988749895, 14);
+ });
+
+ it('GOLDEN_RATIO * GOLDEN_RATIO_CONJUGATE equals 1', () => {
+  expect(GOLDEN_RATIO * GOLDEN_RATIO_CONJUGATE).toBeCloseTo(1, 14);
+ });
+
+ it('GOLDEN_RATIO - 1 equals GOLDEN_RATIO_CONJUGATE', () => {
+  expect(GOLDEN_RATIO - 1).toBeCloseTo(GOLDEN_RATIO_CONJUGATE, 14);
  });
 });
 
@@ -214,45 +227,6 @@ describe('Scalar functions', () => {
   });
  });
 
- describe('bezierInterp', () => {
-  it('at t=0 returns p0', () => {
-   expect(bezierInterp(0, 0, 0.25, 0.75, 1)).toBe(0);
-  });
-
-  it('at t=1 returns p3', () => {
-   expect(bezierInterp(1, 0, 0.25, 0.75, 1)).toBe(1);
-  });
-
-  it('linear case when control points are on the line', () => {
-   expect(bezierInterp(0.5, 0, 0.333, 0.666, 1)).toBeCloseTo(0.5, 1);
-  });
-
-  it('ease-out curve returns higher value at midpoint', () => {
-   // Ease-out: fast at start, slow at end
-   const easeOut = bezierInterp(0.5, 0, 0.5, 1, 1);
-   expect(easeOut).toBeGreaterThan(0.5);
-  });
- });
-
- describe('catmullRomInterp', () => {
-  it('at t=0 returns p1', () => {
-   expect(catmullRomInterp(0, 0, 1, 2, 3)).toBe(1);
-  });
-
-  it('at t=1 returns p2', () => {
-   expect(catmullRomInterp(1, 0, 1, 2, 3)).toBe(2);
-  });
-
-  it('at t=0.5 for linear sequence returns midpoint', () => {
-   expect(catmullRomInterp(0.5, 0, 1, 2, 3)).toBeCloseTo(1.5);
-  });
-
-  it('passes through control points', () => {
-   expect(catmullRomInterp(0, 5, 10, 20, 25)).toBe(10);
-   expect(catmullRomInterp(1, 5, 10, 20, 25)).toBe(20);
-  });
- });
-
  describe('epsilonEquals', () => {
   it('returns true for numbers within eps', () => {
    expect(epsilonEquals(1.000001, 1.000002, 1e-5)).toBe(true);
@@ -309,6 +283,12 @@ describe('Scalar functions', () => {
    expect(compare(1.0, 1.15, 0.1)).toBe(-1); // outside custom epsilon
    expect(compare(1.0, 0.85, 0.1)).toBe(1); // outside custom epsilon
   });
+
+  it('sorts NaN after everything', () => {
+   expect(compare(NaN, 5)).toBe(1); // NaN > finite
+   expect(compare(5, NaN)).toBe(-1); // finite < NaN
+   expect(compare(NaN, NaN)).toBe(0); // NaN == NaN for sorting stability
+  });
  });
 
  describe('saturate', () => {
@@ -353,6 +333,69 @@ describe('Scalar functions', () => {
   it('extrapolates outside the range', () => {
    expect(inverseLerpUnchecked(0, 10, -5)).toBe(-0.5);
    expect(inverseLerpUnchecked(0, 10, 15)).toBe(1.5);
+  });
+ });
+
+ describe('NaN/Infinity edge cases', () => {
+  it('sign(NaN) returns 0 (NaN is neither > 0 nor < 0)', () => {
+   expect(sign(NaN)).toBe(0);
+  });
+
+  it('compare(1e308, 1e308) returns 0', () => {
+   expect(compare(1e308, 1e308)).toBe(0);
+  });
+
+  it('compare(Infinity, Infinity) returns 0', () => {
+   expect(compare(Infinity, Infinity)).toBe(0);
+  });
+
+  it('inRange(NaN, 0, 1) returns false', () => {
+   expect(inRange(NaN, 0, 1)).toBe(false);
+  });
+
+  it('inRange(0.5, NaN, 1) returns false', () => {
+   expect(inRange(0.5, NaN, 1)).toBe(false);
+  });
+ });
+
+ describe('Section 7 regression tests', () => {
+  it('inverseLerp(0, 1e-10, 5e-11) returns 0.5 (not throw)', () => {
+   expect(inverseLerp(0, 1e-10, 5e-11)).toBeCloseTo(0.5);
+  });
+
+  it('inverseLerpSafe computes valid result for small non-zero range', () => {
+   expect(inverseLerpSafe(0, 1e-20, 5e-21)).toBeCloseTo(0.5);
+  });
+
+  it('inverseLerpSafe returns 0 for exact zero range', () => {
+   expect(inverseLerpSafe(5, 5, 5)).toBe(0);
+  });
+
+  it('lerp(0.1, 0.3, 1.0) returns exactly 0.3', () => {
+   expect(lerp(0.1, 0.3, 1.0)).toBe(0.3);
+  });
+
+  it('lerp(0, 10, 2.0) returns 20 (extrapolation preserved)', () => {
+   expect(lerp(0, 10, 2.0)).toBe(20);
+  });
+
+  it('lerp(a, b, 0) returns exactly a (naturally exact, no guard)', () => {
+   expect(lerp(0.1, 0.3, 0)).toBe(0.1);
+  });
+
+  it('lerpClamped returns exact endpoints', () => {
+   expect(lerpClamped(0.1, 0.3, 0)).toBe(0.1);
+   expect(lerpClamped(0.1, 0.3, 1)).toBe(0.3);
+   expect(lerpClamped(0.1, 0.3, -1)).toBe(0.1);
+   expect(lerpClamped(0.1, 0.3, 2)).toBe(0.3);
+  });
+ });
+
+ describe('degenerate range tests', () => {
+  it('smoothStep with edge0 === edge1 uses step function', () => {
+   expect(smoothStep(5, 5, 3)).toBe(0);
+   expect(smoothStep(5, 5, 7)).toBe(1);
+   expect(smoothStep(5, 5, 5)).toBe(1);
   });
  });
 });

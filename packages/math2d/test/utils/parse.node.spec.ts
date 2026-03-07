@@ -305,29 +305,230 @@ describe('utils/parse', () => {
   });
  });
 
- describe('roundtrip', () => {
-  it('Vector2 roundtrip works', () => {
-   const original = new Vector2(3.14159, 2.71828);
-   const formatted = formatVector2(original, 'json');
-   const parsed = parseVector2(formatted);
+ describe('Vector2 round-trip (all formats)', () => {
+  const original = new Vector2(3.14159, -2.71828);
+
+  it('csv round-trip', () => {
+   const parsed = parseVector2(formatVector2(original, 'csv'));
    expect(parsed.x).toBeCloseTo(original.x, 5);
    expect(parsed.y).toBeCloseTo(original.y, 5);
   });
 
-  it('Rotation2 roundtrip works', () => {
-   const original = Rotation2.fromAngle(Math.PI / 3);
-   const formatted = formatRotation2(original, 'json');
-   const parsed = parseRotation2(formatted);
+  it('space round-trip', () => {
+   const parsed = parseVector2(formatVector2(original, 'space'));
+   expect(parsed.x).toBeCloseTo(original.x, 5);
+   expect(parsed.y).toBeCloseTo(original.y, 5);
+  });
+
+  it('json round-trip', () => {
+   const parsed = parseVector2(formatVector2(original, 'json'));
+   expect(parsed.x).toBeCloseTo(original.x, 5);
+   expect(parsed.y).toBeCloseTo(original.y, 5);
+  });
+
+  it('brackets round-trip', () => {
+   const parsed = parseVector2(formatVector2(original, 'brackets'));
+   expect(parsed.x).toBeCloseTo(original.x, 5);
+   expect(parsed.y).toBeCloseTo(original.y, 5);
+  });
+ });
+
+ describe('Rotation2 round-trip (all formats)', () => {
+  const original = Rotation2.fromAngle(Math.PI / 3);
+
+  it('radians round-trip', () => {
+   const parsed = parseRotation2(formatRotation2(original, 'radians'));
    expect(parsed.cos).toBeCloseTo(original.cos, 5);
    expect(parsed.sin).toBeCloseTo(original.sin, 5);
   });
 
-  it('Matrix2 roundtrip works', () => {
-   const original = Matrix2.fromRotation(Math.PI / 4);
-   const formatted = formatMatrix2(original, 'json');
-   const parsed = parseMatrix2(formatted);
+  it('degrees round-trip', () => {
+   const parsed = parseRotation2(formatRotation2(original, 'degrees'));
+   expect(parsed.cos).toBeCloseTo(original.cos, 4);
+   expect(parsed.sin).toBeCloseTo(original.sin, 4);
+  });
+
+  it('components round-trip', () => {
+   const parsed = parseRotation2(formatRotation2(original, 'components'));
+   expect(parsed.cos).toBeCloseTo(original.cos, 5);
+   expect(parsed.sin).toBeCloseTo(original.sin, 5);
+  });
+
+  it('json round-trip', () => {
+   const parsed = parseRotation2(formatRotation2(original, 'json'));
+   expect(parsed.cos).toBeCloseTo(original.cos, 5);
+   expect(parsed.sin).toBeCloseTo(original.sin, 5);
+  });
+ });
+
+ describe('Matrix2 round-trip (all formats)', () => {
+  const original = Matrix2.fromRotation(Math.PI / 4);
+
+  it('flat round-trip', () => {
+   const parsed = parseMatrix2(formatMatrix2(original, 'flat'));
+   expect(parsed.m00).toBeCloseTo(original.m00, 5);
+   expect(parsed.m01).toBeCloseTo(original.m01, 5);
+   expect(parsed.m10).toBeCloseTo(original.m10, 5);
+   expect(parsed.m11).toBeCloseTo(original.m11, 5);
+  });
+
+  it('nested round-trip', () => {
+   const parsed = parseMatrix2(formatMatrix2(original, 'nested'));
+   expect(parsed.m00).toBeCloseTo(original.m00, 5);
+   expect(parsed.m01).toBeCloseTo(original.m01, 5);
+   expect(parsed.m10).toBeCloseTo(original.m10, 5);
+   expect(parsed.m11).toBeCloseTo(original.m11, 5);
+  });
+
+  it('json round-trip', () => {
+   const parsed = parseMatrix2(formatMatrix2(original, 'json'));
+   expect(parsed.m00).toBeCloseTo(original.m00, 5);
+   expect(parsed.m01).toBeCloseTo(original.m01, 5);
+   expect(parsed.m10).toBeCloseTo(original.m10, 5);
+   expect(parsed.m11).toBeCloseTo(original.m11, 5);
+  });
+ });
+
+ describe('Matrix3 round-trip (all formats)', () => {
+  const original = new Matrix3(1.5, 2.3, 0.1, 4.2, 5.7, 0.9, 7.1, 8.4, 1.0);
+
+  it('flat round-trip', () => {
+   const parsed = parseMatrix3(formatMatrix3(original, 'flat'));
    expect(parsed.m00).toBeCloseTo(original.m00, 5);
    expect(parsed.m11).toBeCloseTo(original.m11, 5);
+   expect(parsed.m22).toBeCloseTo(original.m22, 5);
+  });
+
+  it('nested round-trip', () => {
+   const parsed = parseMatrix3(formatMatrix3(original, 'nested'));
+   expect(parsed.m00).toBeCloseTo(original.m00, 5);
+   expect(parsed.m11).toBeCloseTo(original.m11, 5);
+   expect(parsed.m22).toBeCloseTo(original.m22, 5);
+  });
+
+  it('json round-trip', () => {
+   const parsed = parseMatrix3(formatMatrix3(original, 'json'));
+   expect(parsed.m00).toBeCloseTo(original.m00, 5);
+   expect(parsed.m11).toBeCloseTo(original.m11, 5);
+   expect(parsed.m22).toBeCloseTo(original.m22, 5);
+  });
+ });
+
+ describe('Transform2 round-trip (all formats)', () => {
+  const original = Transform2.fromValues(3.5, -1.2, Math.PI / 6, 2.0, 0.5);
+
+  it('flat round-trip preserves scale', () => {
+   const parsed = parseTransform2(formatTransform2(original, 'flat'));
+   expect(parsed.position.x).toBeCloseTo(original.position.x, 5);
+   expect(parsed.position.y).toBeCloseTo(original.position.y, 5);
+   expect(parsed.rotation.cos).toBeCloseTo(original.rotation.cos, 5);
+   expect(parsed.rotation.sin).toBeCloseTo(original.rotation.sin, 5);
+   expect(parsed.scale.x).toBeCloseTo(original.scale.x, 5);
+   expect(parsed.scale.y).toBeCloseTo(original.scale.y, 5);
+  });
+
+  it('json round-trip preserves scale', () => {
+   const parsed = parseTransform2(formatTransform2(original, 'json'));
+   expect(parsed.position.x).toBeCloseTo(original.position.x, 5);
+   expect(parsed.position.y).toBeCloseTo(original.position.y, 5);
+   expect(parsed.rotation.cos).toBeCloseTo(original.rotation.cos, 5);
+   expect(parsed.rotation.sin).toBeCloseTo(original.rotation.sin, 5);
+   expect(parsed.scale.x).toBeCloseTo(original.scale.x, 5);
+   expect(parsed.scale.y).toBeCloseTo(original.scale.y, 5);
+  });
+
+  it('json without scale defaults to (1,1)', () => {
+   const parsed = parseTransform2('{"p":{"x":1,"y":2},"r":{"cos":1,"sin":0}}');
+   expect(parsed.scale.x).toBe(1);
+   expect(parsed.scale.y).toBe(1);
+  });
+
+  it('flat 4-component legacy defaults scale to (1,1)', () => {
+   const parsed = parseTransform2('1,2,1,0');
+   expect(parsed.scale.x).toBe(1);
+   expect(parsed.scale.y).toBe(1);
+  });
+ });
+
+ describe('Complex round-trip (all formats)', () => {
+  const original = new Complex(3.14, -2.72);
+
+  it('math round-trip', () => {
+   const parsed = parseComplex(formatComplex(original, 'math'));
+   expect(parsed.real).toBeCloseTo(original.real, 5);
+   expect(parsed.imag).toBeCloseTo(original.imag, 5);
+  });
+
+  it('csv round-trip', () => {
+   const parsed = parseComplex(formatComplex(original, 'csv'));
+   expect(parsed.real).toBeCloseTo(original.real, 5);
+   expect(parsed.imag).toBeCloseTo(original.imag, 5);
+  });
+
+  it('json round-trip', () => {
+   const parsed = parseComplex(formatComplex(original, 'json'));
+   expect(parsed.real).toBeCloseTo(original.real, 5);
+   expect(parsed.imag).toBeCloseTo(original.imag, 5);
+  });
+ });
+
+ describe('Interval round-trip (all formats)', () => {
+  const original = new Interval(-3.5, 7.2);
+
+  it('brackets round-trip', () => {
+   const parsed = parseInterval(formatInterval(original, 'brackets'));
+   expect(parsed.min).toBeCloseTo(original.min, 5);
+   expect(parsed.max).toBeCloseTo(original.max, 5);
+  });
+
+  it('csv round-trip', () => {
+   const parsed = parseInterval(formatInterval(original, 'csv'));
+   expect(parsed.min).toBeCloseTo(original.min, 5);
+   expect(parsed.max).toBeCloseTo(original.max, 5);
+  });
+
+  it('json round-trip', () => {
+   const parsed = parseInterval(formatInterval(original, 'json'));
+   expect(parsed.min).toBeCloseTo(original.min, 5);
+   expect(parsed.max).toBeCloseTo(original.max, 5);
+  });
+ });
+
+ describe('parse error cases', () => {
+  it('parseVector2 throws on empty string', () => {
+   expect(() => parseVector2('')).toThrow();
+  });
+
+  it('parseVector2 throws on non-numeric values', () => {
+   expect(() => parseVector2('abc,def')).toThrow();
+  });
+
+  it('parseRotation2 throws on non-numeric string', () => {
+   expect(() => parseRotation2('not-a-number')).toThrow();
+  });
+
+  it('parseMatrix2 throws on too few values', () => {
+   expect(() => parseMatrix2('1,2')).toThrow();
+  });
+
+  it('parseMatrix3 throws on NaN-producing input', () => {
+   expect(() => parseMatrix3('a,b,c,d,e,f,g,h,i')).toThrow();
+  });
+
+  it('parseTransform2 throws on too few values', () => {
+   expect(() => parseTransform2('1,2')).toThrow();
+  });
+
+  it('parseComplex throws on empty string', () => {
+   expect(() => parseComplex('')).toThrow();
+  });
+
+  it('parseInterval throws on min > max in JSON', () => {
+   expect(() => parseInterval('{"min":10,"max":5}')).toThrow();
+  });
+
+  it('parseInterval throws on NaN values', () => {
+   expect(() => parseInterval('NaN,5')).toThrow();
   });
  });
 
@@ -500,6 +701,70 @@ describe('utils/parse', () => {
 
   it('formats as json', () => {
    expect(formatInterval(new Interval(1, 5), 'json')).toBe('{"min":1,"max":5}');
+  });
+ });
+
+ /* ===== Section 9: Serialization robustness tests ===== */
+
+ describe('scientific notation parsing', () => {
+  it('parseComplex("1e5+2e3i") returns Complex(100000, 2000)', () => {
+   const c = parseComplex('1e5+2e3i');
+   expect(c.real).toBe(1e5);
+   expect(c.imag).toBe(2e3);
+  });
+
+  it('parseComplex("1e-5i") returns Complex(0, 1e-5)', () => {
+   const c = parseComplex('1e-5i');
+   expect(c.real).toBe(0);
+   expect(c.imag).toBeCloseTo(1e-5);
+  });
+
+  it('parseComplex("1.5e2+3.7e-1i") handles decimal + scientific', () => {
+   const c = parseComplex('1.5e2+3.7e-1i');
+   expect(c.real).toBe(150);
+   expect(c.imag).toBeCloseTo(0.37);
+  });
+ });
+
+ describe('JSON validity for non-finite values', () => {
+  it('formatVector2 with NaN produces valid JSON (null)', () => {
+   const string_ = formatVector2(new Vector2(NaN, 0), 'json');
+   expect(() => JSON.parse(string_)).not.toThrow();
+   const parsed = JSON.parse(string_);
+   expect(parsed.x).toBeNull();
+   expect(parsed.y).toBe(0);
+  });
+
+  it('formatComplex with Infinity produces valid JSON', () => {
+   const string_ = formatComplex(new Complex(Infinity, 0), 'json');
+   expect(() => JSON.parse(string_)).not.toThrow();
+  });
+
+  it('formatInterval with valid values produces valid JSON', () => {
+   const string_ = formatInterval(new Interval(1, 5), 'json');
+   expect(() => JSON.parse(string_)).not.toThrow();
+  });
+ });
+
+ describe('parseInterval validation error re-throw', () => {
+  it('re-throws min > max validation error from JSON input', () => {
+   expect(() => parseInterval('{"min": 10, "max": 5}')).toThrow(/min.*must not exceed.*max/);
+  });
+ });
+
+ describe('round-trip tests', () => {
+  it('parseComplex(formatComplex(c, "json")) round-trips', () => {
+   const original = new Complex(3.14, -2.71);
+   const string_ = formatComplex(original, 'json');
+   const parsed = parseComplex(string_);
+   expect(parsed.real).toBeCloseTo(3.14);
+   expect(parsed.imag).toBeCloseTo(-2.71);
+  });
+
+  it('formatComplex negative-zero shows minus sign', () => {
+   const c = new Complex(1, -0);
+   const string_ = formatComplex(c, 'math');
+   expect(string_).toContain('-');
   });
  });
 });

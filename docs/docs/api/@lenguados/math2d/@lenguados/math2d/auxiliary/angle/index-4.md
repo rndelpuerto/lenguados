@@ -8,22 +8,16 @@ auxiliary/angle/operations.ts
 
 Angular operations and comparisons.
 
-## Operations
+## Arithmetic
 
-- [angleAverage](functions/angleAverage.md)
 - [angleBisector](functions/angleBisector.md)
 - [angleDifference](functions/angleDifference.md)
 - [angleDistance](functions/angleDistance.md)
 - [angleFromVectors](functions/angleFromVectors.md)
 - [anglesNearEqual](functions/anglesNearEqual.md)
-- [angleWeightedAverage](functions/angleWeightedAverage.md)
 - [clampAngle](functions/clampAngle.md)
 - [isAngleBetween](functions/isAngleBetween.md)
-- [isQuadrantAngle](functions/isQuadrantAngle.md)
-- [principalAngle](functions/principalAngle.md)
-- [reflectAngle](functions/reflectAngle.md)
 - [sinCos](functions/sinCos.md)
-- [sinCosInto](functions/sinCosInto.md)
 - [sinCosNormalized](functions/sinCosNormalized.md)
 
 ## Types

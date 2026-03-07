@@ -249,4 +249,20 @@ describe('Type Guards', () => {
    ).toBe(false);
   });
  });
+
+ /* ===== Section 8: Type guard NaN tests ===== */
+
+ describe('type guards with NaN values', () => {
+  test('isVector2Like({x: NaN, y: NaN}) returns true (structural check only)', () => {
+   expect(isVector2Like({ x: NaN, y: NaN })).toBe(true);
+  });
+
+  test('isComplexLike({real: NaN, imag: NaN}) returns true', () => {
+   expect(isComplexLike({ real: NaN, imag: NaN })).toBe(true);
+  });
+
+  test('isRotation2Like({cos: NaN, sin: NaN}) returns true', () => {
+   expect(isRotation2Like({ cos: NaN, sin: NaN })).toBe(true);
+  });
+ });
 });

@@ -1,16 +1,17 @@
 # Class: Rotation2
 
-Defined in: [src/core/rotation2.ts:123](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L123)
+Defined in: [src/core/rotation2.ts:120](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L120)
 
 Deterministic 2D rotation stored as cosine and sine components.
 
 ## Remarks
 
 Instances are normalized to unit magnitude, making them efficient for rotations.
+Following standard mathematical conventions, all rotations in this library are **Counter-Clockwise (CCW) Positive**.
 
 ## Since
 
-0.1.0
+0.7.0
 
 ## Implements
 
@@ -22,7 +23,7 @@ Instances are normalized to unit magnitude, making them efficient for rotations.
 
 > **new Rotation2**(`cos`, `sin`): `Rotation2`
 
-Defined in: [src/core/rotation2.ts:135](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L135)
+Defined in: [src/core/rotation2.ts:132](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L132)
 
 #### Parameters
 
@@ -38,13 +39,190 @@ Defined in: [src/core/rotation2.ts:135](https://github.com/rndelpuerto/lenguados
 
 `Rotation2`
 
+## Accessor
+
+### angle
+
+#### Get Signature
+
+> **get** **angle**(): `number`
+
+Defined in: [src/core/rotation2.ts:1035](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L1035)
+
+Gets the angle in radians.
+
+##### Example
+
+```typescript
+const rot = Rotation2.fromAngle(Math.PI / 4);
+console.log(rot.angle); // 0.785...
+```
+
+##### Since
+
+0.8.0
+
+##### Returns
+
+`number`
+
+Angle in radians
+
+#### Set Signature
+
+> **set** **angle**(`value`): `void`
+
+Defined in: [src/core/rotation2.ts:1052](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L1052)
+
+Sets the angle in radians.
+Zero-allocation: mutates in place.
+
+##### Example
+
+```typescript
+const rot = new Rotation2();
+rot.angle = Math.PI / 4;
+```
+
+##### Since
+
+0.8.0
+
+##### Parameters
+
+###### value
+
+`number`
+
+##### Returns
+
+`void`
+
+---
+
+### angleDegrees
+
+#### Get Signature
+
+> **get** **angleDegrees**(): `number`
+
+Defined in: [src/core/rotation2.ts:1070](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L1070)
+
+Gets the angle in degrees.
+Uses auxiliary/angle/conversion for DRY compliance.
+
+##### Example
+
+```typescript
+const rot = Rotation2.fromAngle(Math.PI / 2);
+console.log(rot.angleDegrees); // 90
+```
+
+##### Since
+
+0.8.0
+
+##### Returns
+
+`number`
+
+Angle in degrees
+
+#### Set Signature
+
+> **set** **angleDegrees**(`value`): `void`
+
+Defined in: [src/core/rotation2.ts:1086](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L1086)
+
+Sets the angle in degrees.
+Uses auxiliary/angle/conversion for DRY compliance.
+
+##### Example
+
+```typescript
+rot.angleDegrees = 45;
+```
+
+##### Since
+
+0.8.0
+
+##### Parameters
+
+###### value
+
+`number`
+
+##### Returns
+
+`void`
+
+---
+
+### angleTurns
+
+#### Get Signature
+
+> **get** **angleTurns**(): `number`
+
+Defined in: [src/core/rotation2.ts:1104](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L1104)
+
+Gets the angle in turns (0-1 = one full rotation).
+Uses auxiliary/angle/conversion for DRY compliance.
+
+##### Example
+
+```typescript
+const rot = Rotation2.fromAngle(Math.PI); // 180°
+console.log(rot.angleTurns); // 0.5
+```
+
+##### Since
+
+0.8.0
+
+##### Returns
+
+`number`
+
+Angle in turns (0-1 range)
+
+#### Set Signature
+
+> **set** **angleTurns**(`value`): `void`
+
+Defined in: [src/core/rotation2.ts:1120](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L1120)
+
+Sets the angle in turns (0-1 = one full rotation).
+Uses auxiliary/angle/conversion for DRY compliance.
+
+##### Example
+
+```typescript
+rot.angleTurns = 0.25; // 90°
+```
+
+##### Since
+
+0.8.0
+
+##### Parameters
+
+###### value
+
+`number`
+
+##### Returns
+
+`void`
+
 ## Arithmetic
 
 ### inverse()
 
 > **inverse**(): `this`
 
-Defined in: [src/core/rotation2.ts:1026](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L1026)
+Defined in: [src/core/rotation2.ts:1151](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L1151)
 
 Inverts this rotation in place.
 
@@ -56,7 +234,7 @@ This for chaining
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -64,7 +242,7 @@ This for chaining
 
 > **multiply**(`other`): `this`
 
-Defined in: [src/core/rotation2.ts:1011](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L1011)
+Defined in: [src/core/rotation2.ts:1136](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L1136)
 
 Multiplies with another rotation (composition) in place.
 
@@ -72,7 +250,7 @@ Multiplies with another rotation (composition) in place.
 
 ##### other
 
-[`ReadonlyRotation2`](../type-aliases/ReadonlyRotation2.md)
+[`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
 
 Rotation to multiply by
 
@@ -84,7 +262,7 @@ This for chaining
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -92,7 +270,7 @@ This for chaining
 
 > **negate**(): `this`
 
-Defined in: [src/core/rotation2.ts:1038](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L1038)
+Defined in: [src/core/rotation2.ts:1163](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L1163)
 
 Negates this rotation in place (same as inverse for unit rotations).
 
@@ -104,7 +282,7 @@ This for chaining
 
 #### Since
 
-0.9.0
+0.7.0
 
 ---
 
@@ -112,7 +290,7 @@ This for chaining
 
 > **relativeTo**(`other`): `this`
 
-Defined in: [src/core/rotation2.ts:1051](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L1051)
+Defined in: [src/core/rotation2.ts:1176](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L1176)
 
 Computes rotation relative to another in place.
 
@@ -120,7 +298,7 @@ Computes rotation relative to another in place.
 
 ##### other
 
-[`ReadonlyRotation2`](../type-aliases/ReadonlyRotation2.md)
+[`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
 
 Reference rotation
 
@@ -132,7 +310,7 @@ This for chaining
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -140,7 +318,7 @@ This for chaining
 
 > `static` **inverse**(`rotation`, `out?`): `Rotation2`
 
-Defined in: [src/core/rotation2.ts:521](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L521)
+Defined in: [src/core/rotation2.ts:533](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L533)
 
 Returns the inverse of a rotation.
 
@@ -148,7 +326,7 @@ Returns the inverse of a rotation.
 
 ##### rotation
 
-[`ReadonlyRotation2`](../type-aliases/ReadonlyRotation2.md)
+[`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
 
 Rotation to invert
 
@@ -166,7 +344,7 @@ Inverted rotation
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -174,7 +352,7 @@ Inverted rotation
 
 > `static` **multiply**(`a`, `b`, `out?`): `Rotation2`
 
-Defined in: [src/core/rotation2.ts:506](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L506)
+Defined in: [src/core/rotation2.ts:514](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L514)
 
 Multiplies two rotations (composition).
 
@@ -182,13 +360,13 @@ Multiplies two rotations (composition).
 
 ##### a
 
-[`ReadonlyRotation2`](../type-aliases/ReadonlyRotation2.md)
+[`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
 
 First rotation
 
 ##### b
 
-[`ReadonlyRotation2`](../type-aliases/ReadonlyRotation2.md)
+[`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
 
 Second rotation
 
@@ -206,7 +384,7 @@ Combined rotation (a then b)
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -214,7 +392,7 @@ Combined rotation (a then b)
 
 > `static` **negate**(`rotation`, `out?`): `Rotation2`
 
-Defined in: [src/core/rotation2.ts:550](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L550)
+Defined in: [src/core/rotation2.ts:566](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L566)
 
 Negates a rotation (same as rotating by -angle).
 
@@ -222,7 +400,7 @@ Negates a rotation (same as rotating by -angle).
 
 ##### rotation
 
-[`ReadonlyRotation2`](../type-aliases/ReadonlyRotation2.md)
+[`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
 
 Rotation to negate
 
@@ -240,7 +418,7 @@ Negated rotation
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -248,7 +426,7 @@ Negated rotation
 
 > `static` **relative**(`a`, `b`, `out?`): `Rotation2`
 
-Defined in: [src/core/rotation2.ts:535](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L535)
+Defined in: [src/core/rotation2.ts:547](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L547)
 
 Computes the relative rotation from a to b.
 
@@ -256,13 +434,13 @@ Computes the relative rotation from a to b.
 
 ##### a
 
-[`ReadonlyRotation2`](../type-aliases/ReadonlyRotation2.md)
+[`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
 
 First rotation
 
 ##### b
 
-[`ReadonlyRotation2`](../type-aliases/ReadonlyRotation2.md)
+[`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
 
 Second rotation
 
@@ -280,7 +458,7 @@ Relative rotation (b relative to a)
 
 #### Since
 
-0.1.0
+0.7.0
 
 ## Comparison
 
@@ -288,7 +466,7 @@ Relative rotation (b relative to a)
 
 > **exactEquals**(`other`): `boolean`
 
-Defined in: [src/core/rotation2.ts:1108](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L1108)
+Defined in: [src/core/rotation2.ts:1233](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L1233)
 
 Exact equality (bit-identical).
 
@@ -296,7 +474,7 @@ Exact equality (bit-identical).
 
 ##### other
 
-[`ReadonlyRotation2`](../type-aliases/ReadonlyRotation2.md)
+[`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
 
 Rotation to compare
 
@@ -312,7 +490,7 @@ Use [nearEquals](#nearequals-2) for comparing results of floating-point operatio
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -320,7 +498,7 @@ Use [nearEquals](#nearequals-2) for comparing results of floating-point operatio
 
 > **isIdentity**(`epsilon`): `boolean`
 
-Defined in: [src/core/rotation2.ts:1137](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L1137)
+Defined in: [src/core/rotation2.ts:1262](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L1262)
 
 Tests if this rotation is identity (0°).
 
@@ -344,7 +522,7 @@ True if identity
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -352,7 +530,7 @@ True if identity
 
 > **isNormalized**(`epsilon`): `boolean`
 
-Defined in: [src/core/rotation2.ts:1149](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L1149)
+Defined in: [src/core/rotation2.ts:1274](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L1274)
 
 Tests if this rotation is normalized (unit magnitude).
 
@@ -372,7 +550,7 @@ True if cos² + sin² ≈ 1
 
 #### Since
 
-0.14.0
+0.7.0
 
 ---
 
@@ -380,7 +558,7 @@ True if cos² + sin² ≈ 1
 
 > **nearEquals**(`other`, `epsilon`): `boolean`
 
-Defined in: [src/core/rotation2.ts:1125](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L1125)
+Defined in: [src/core/rotation2.ts:1250](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L1250)
 
 Approximate equality with wrap-around handling using relative tolerance.
 
@@ -388,7 +566,7 @@ Approximate equality with wrap-around handling using relative tolerance.
 
 ##### other
 
-[`ReadonlyRotation2`](../type-aliases/ReadonlyRotation2.md)
+[`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
 
 Rotation to compare
 
@@ -415,7 +593,7 @@ back to angle comparison for edge cases near ±180°.
 
 #### Since
 
-0.9.0
+0.7.0
 
 ---
 
@@ -423,7 +601,7 @@ back to angle comparison for edge cases near ±180°.
 
 > `static` **exactEquals**(`a`, `b`): `boolean`
 
-Defined in: [src/core/rotation2.ts:754](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L754)
+Defined in: [src/core/rotation2.ts:771](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L771)
 
 Exact component-wise equality (bit-identical).
 
@@ -431,13 +609,13 @@ Exact component-wise equality (bit-identical).
 
 ##### a
 
-[`ReadonlyRotation2`](../type-aliases/ReadonlyRotation2.md)
+[`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
 
 First rotation
 
 ##### b
 
-[`ReadonlyRotation2`](../type-aliases/ReadonlyRotation2.md)
+[`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
 
 Second rotation
 
@@ -453,7 +631,39 @@ Use [nearEquals](#nearequals-2) for comparing results of floating-point operatio
 
 #### Since
 
-0.1.0
+0.7.0
+
+---
+
+### hasInfinity()
+
+> `static` **hasInfinity**(`rotation`): `boolean`
+
+Defined in: [src/core/rotation2.ts:865](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L865)
+
+Tests if any component is infinite (±Infinity).
+
+#### Parameters
+
+##### rotation
+
+[`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
+
+Rotation to test
+
+#### Returns
+
+`boolean`
+
+True if cos or sin is ±Infinity
+
+#### Remarks
+
+Distinguishes infinity from NaN. Use [isFinite](#isfinite-2) to check for both.
+
+#### Since
+
+0.7.0
 
 ---
 
@@ -461,7 +671,7 @@ Use [nearEquals](#nearequals-2) for comparing results of floating-point operatio
 
 > `static` **hasNaN**(`rotation`): `boolean`
 
-Defined in: [src/core/rotation2.ts:833](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L833)
+Defined in: [src/core/rotation2.ts:850](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L850)
 
 Tests if any component is NaN.
 
@@ -469,7 +679,7 @@ Tests if any component is NaN.
 
 ##### rotation
 
-[`ReadonlyRotation2`](../type-aliases/ReadonlyRotation2.md)
+[`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
 
 Rotation to test
 
@@ -481,7 +691,7 @@ True if cos or sin is NaN
 
 #### Since
 
-0.9.0
+0.7.0
 
 ---
 
@@ -489,7 +699,7 @@ True if cos or sin is NaN
 
 > `static` **isFinite**(`rotation`): `boolean`
 
-Defined in: [src/core/rotation2.ts:821](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L821)
+Defined in: [src/core/rotation2.ts:838](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L838)
 
 Tests if both components are finite numbers.
 
@@ -497,7 +707,7 @@ Tests if both components are finite numbers.
 
 ##### rotation
 
-[`ReadonlyRotation2`](../type-aliases/ReadonlyRotation2.md)
+[`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
 
 Rotation to test
 
@@ -509,7 +719,7 @@ True if both cos and sin are finite
 
 #### Since
 
-0.9.0
+0.7.0
 
 ---
 
@@ -517,7 +727,7 @@ True if both cos and sin are finite
 
 > `static` **isIdentity**(`rotation`, `epsilon`): `boolean`
 
-Defined in: [src/core/rotation2.ts:795](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L795)
+Defined in: [src/core/rotation2.ts:812](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L812)
 
 Tests if a rotation is the identity.
 
@@ -525,7 +735,7 @@ Tests if a rotation is the identity.
 
 ##### rotation
 
-[`ReadonlyRotation2`](../type-aliases/ReadonlyRotation2.md)
+[`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
 
 Rotation to test
 
@@ -543,7 +753,7 @@ True if rotation is identity
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -551,7 +761,7 @@ True if rotation is identity
 
 > `static` **isNormalized**(`rotation`, `epsilon`): `boolean`
 
-Defined in: [src/core/rotation2.ts:808](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L808)
+Defined in: [src/core/rotation2.ts:825](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L825)
 
 Tests if a rotation is normalized (unit magnitude).
 
@@ -559,7 +769,7 @@ Tests if a rotation is normalized (unit magnitude).
 
 ##### rotation
 
-[`ReadonlyRotation2`](../type-aliases/ReadonlyRotation2.md)
+[`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
 
 Rotation to test
 
@@ -577,7 +787,7 @@ True if |cos² + sin² - 1| < epsilon
 
 #### Since
 
-0.14.0
+0.7.0
 
 ---
 
@@ -585,7 +795,7 @@ True if |cos² + sin² - 1| < epsilon
 
 > `static` **nearEquals**(`a`, `b`, `epsilon`): `boolean`
 
-Defined in: [src/core/rotation2.ts:772](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L772)
+Defined in: [src/core/rotation2.ts:789](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L789)
 
 Approximate equality between two rotations using relative tolerance.
 
@@ -593,13 +803,13 @@ Approximate equality between two rotations using relative tolerance.
 
 ##### a
 
-[`ReadonlyRotation2`](../type-aliases/ReadonlyRotation2.md)
+[`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
 
 First rotation
 
 ##### b
 
-[`ReadonlyRotation2`](../type-aliases/ReadonlyRotation2.md)
+[`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
 
 Second rotation
 
@@ -626,7 +836,7 @@ back to angle comparison using [angleDifference](../../auxiliary/angle/functions
 
 #### Since
 
-0.9.0
+0.7.0
 
 ## Computed
 
@@ -636,13 +846,13 @@ back to angle comparison using [angleDifference](../../auxiliary/angle/functions
 
 > **get** **angleValue**(): `number`
 
-Defined in: [src/core/rotation2.ts:1266](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L1266)
+Defined in: [src/core/rotation2.ts:1407](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L1407)
 
 Returns the angle in radians without method call.
 
 ##### Since
 
-0.1.0
+0.7.0
 
 ##### Returns
 
@@ -658,13 +868,13 @@ Angle in radians
 
 > **get** **doubled**(): `Rotation2`
 
-Defined in: [src/core/rotation2.ts:1197](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L1197)
+Defined in: [src/core/rotation2.ts:1333](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L1333)
 
 Returns the double of this rotation without modifying it.
 
 ##### Since
 
-0.1.0
+0.7.0
 
 ##### Returns
 
@@ -680,13 +890,13 @@ New rotation with double the angle
 
 > **get** **inversed**(): `Rotation2`
 
-Defined in: [src/core/rotation2.ts:1186](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L1186)
+Defined in: [src/core/rotation2.ts:1322](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L1322)
 
 Returns the inverse rotation without modifying this one.
 
 ##### Since
 
-0.1.0
+0.7.0
 
 ##### Returns
 
@@ -702,14 +912,14 @@ New inverted rotation
 
 > **get** **negated**(): `Rotation2`
 
-Defined in: [src/core/rotation2.ts:1243](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L1243)
+Defined in: [src/core/rotation2.ts:1379](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L1379)
 
 Returns the negated rotation without modifying this one.
 Equivalent to rotating by the negative angle.
 
 ##### Since
 
-0.1.0
+0.7.0
 
 ##### Returns
 
@@ -725,20 +935,24 @@ New negated rotation
 
 > **get** **normalized**(): `Rotation2`
 
-Defined in: [src/core/rotation2.ts:1255](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L1255)
+Defined in: [src/core/rotation2.ts:1395](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L1395)
 
-Returns the normalized rotation without modifying this one.
-Since Rotation2 is always kept normalized, this returns a clone.
+Returns a normalized version of this rotation (unit length cos² + sin² = 1).
+
+##### Remarks
+
+Since the constructor no longer auto-normalizes (Planck.js aligned),
+use this getter to obtain a properly normalized rotation when needed.
 
 ##### Since
 
-0.1.0
+0.7.0
 
 ##### Returns
 
 `Rotation2`
 
-New normalized rotation (clone)
+New normalized rotation
 
 ---
 
@@ -748,13 +962,13 @@ New normalized rotation (clone)
 
 > **get** **perpendicular**(): `Rotation2`
 
-Defined in: [src/core/rotation2.ts:1209](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L1209)
+Defined in: [src/core/rotation2.ts:1345](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L1345)
 
 Returns the perpendicular rotation (+90°) without modifying this one.
 
 ##### Since
 
-0.1.0
+0.7.0
 
 ##### Returns
 
@@ -770,13 +984,13 @@ New rotation rotated 90° counter-clockwise
 
 > **get** **xAxis**(): [`Vector2`](Vector2.md)
 
-Defined in: [src/core/rotation2.ts:1220](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L1220)
+Defined in: [src/core/rotation2.ts:1356](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L1356)
 
 Returns the X-axis direction vector of this rotation.
 
 ##### Since
 
-0.1.0
+0.7.0
 
 ##### Returns
 
@@ -792,13 +1006,13 @@ Unit vector pointing in rotation direction
 
 > **get** **yAxis**(): [`Vector2`](Vector2.md)
 
-Defined in: [src/core/rotation2.ts:1231](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L1231)
+Defined in: [src/core/rotation2.ts:1367](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L1367)
 
 Returns the Y-axis direction vector of this rotation.
 
 ##### Since
 
-0.1.0
+0.7.0
 
 ##### Returns
 
@@ -810,29 +1024,9 @@ Unit vector perpendicular to rotation direction
 
 ### angle()
 
-> **angle**(): `number`
-
-Defined in: [src/core/rotation2.ts:995](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L995)
-
-Returns the angle in radians.
-
-#### Returns
-
-`number`
-
-Angle in radians
-
-#### Since
-
-0.1.0
-
----
-
-### angle()
-
 > `static` **angle**(`rotation`): `number`
 
-Defined in: [src/core/rotation2.ts:849](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L849)
+Defined in: [src/core/rotation2.ts:884](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L884)
 
 Returns the angle in radians.
 
@@ -840,7 +1034,7 @@ Returns the angle in radians.
 
 ##### rotation
 
-[`ReadonlyRotation2`](../type-aliases/ReadonlyRotation2.md)
+[`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
 
 Rotation to get angle from
 
@@ -852,7 +1046,21 @@ Angle in radians
 
 #### Since
 
-0.1.0
+0.7.0
+
+## Constant
+
+### ELEMENT_COUNT
+
+> `readonly` `static` **ELEMENT_COUNT**: `2` = `2`
+
+Defined in: [src/core/rotation2.ts:170](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L170)
+
+Number of elements when serialized to an array.
+
+#### Since
+
+0.7.0
 
 ## Conversion
 
@@ -860,7 +1068,7 @@ Angle in radians
 
 > **\[iterator\]**(): `IterableIterator`\<`number`\>
 
-Defined in: [src/core/rotation2.ts:1500](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L1500)
+Defined in: [src/core/rotation2.ts:1656](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L1656)
 
 Iterator for array destructuring.
 
@@ -878,7 +1086,7 @@ const [cos, sin] = Rotation2.fromAngle(Math.PI / 4);
 
 #### Since
 
-0.9.0
+0.7.0
 
 ---
 
@@ -886,7 +1094,7 @@ const [cos, sin] = Rotation2.fromAngle(Math.PI / 4);
 
 > **toComplex**(`out?`): [`Complex`](Complex.md)
 
-Defined in: [src/core/rotation2.ts:1367](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L1367)
+Defined in: [src/core/rotation2.ts:1508](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L1508)
 
 Converts the rotation to a complex number.
 
@@ -914,7 +1122,7 @@ const c = r.toComplex();
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -922,7 +1130,7 @@ const c = r.toComplex();
 
 > **toVector2**(`out?`): [`Vector2`](Vector2.md)
 
-Defined in: [src/core/rotation2.ts:1387](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L1387)
+Defined in: [src/core/rotation2.ts:1528](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L1528)
 
 Converts the rotation to a unit vector.
 
@@ -950,15 +1158,15 @@ const v = r.toVector2();
 
 #### Since
 
-0.1.0
+0.7.0
 
 ## Core
 
 ### EIGHTH_TURN
 
-> `readonly` `static` **EIGHTH_TURN**: `Readonly`\<`Rotation2`\>
+> `readonly` `static` **EIGHTH_TURN**: [`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
 
-Defined in: [src/core/rotation2.ts:192](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L192)
+Defined in: [src/core/rotation2.ts:196](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L196)
 
 45° rotation (π/4).
 
@@ -966,9 +1174,9 @@ Defined in: [src/core/rotation2.ts:192](https://github.com/rndelpuerto/lenguados
 
 ### HALF_TURN
 
-> `readonly` `static` **HALF_TURN**: `Readonly`\<`Rotation2`\>
+> `readonly` `static` **HALF_TURN**: [`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
 
-Defined in: [src/core/rotation2.ts:178](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L178)
+Defined in: [src/core/rotation2.ts:182](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L182)
 
 180° rotation.
 
@@ -976,9 +1184,9 @@ Defined in: [src/core/rotation2.ts:178](https://github.com/rndelpuerto/lenguados
 
 ### IDENTITY
 
-> `readonly` `static` **IDENTITY**: `Readonly`\<`Rotation2`\>
+> `readonly` `static` **IDENTITY**: [`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
 
-Defined in: [src/core/rotation2.ts:166](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L166)
+Defined in: [src/core/rotation2.ts:163](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L163)
 
 Identity rotation (0°).
 
@@ -986,9 +1194,9 @@ Identity rotation (0°).
 
 ### NEGATIVE_QUARTER
 
-> `readonly` `static` **NEGATIVE_QUARTER**: `Readonly`\<`Rotation2`\>
+> `readonly` `static` **NEGATIVE_QUARTER**: [`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
 
-Defined in: [src/core/rotation2.ts:216](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L216)
+Defined in: [src/core/rotation2.ts:220](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L220)
 
 -90° rotation (clockwise quarter turn).
 
@@ -996,9 +1204,9 @@ Defined in: [src/core/rotation2.ts:216](https://github.com/rndelpuerto/lenguados
 
 ### QUARTER_TURN
 
-> `readonly` `static` **QUARTER_TURN**: `Readonly`\<`Rotation2`\>
+> `readonly` `static` **QUARTER_TURN**: [`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
 
-Defined in: [src/core/rotation2.ts:172](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L172)
+Defined in: [src/core/rotation2.ts:176](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L176)
 
 90° counter-clockwise rotation.
 
@@ -1006,9 +1214,9 @@ Defined in: [src/core/rotation2.ts:172](https://github.com/rndelpuerto/lenguados
 
 ### SIXTEENTH_TURN
 
-> `readonly` `static` **SIXTEENTH_TURN**: `Readonly`\<`Rotation2`\>
+> `readonly` `static` **SIXTEENTH_TURN**: [`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
 
-Defined in: [src/core/rotation2.ts:208](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L208)
+Defined in: [src/core/rotation2.ts:212](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L212)
 
 22.5° rotation (π/8).
 
@@ -1016,9 +1224,9 @@ Defined in: [src/core/rotation2.ts:208](https://github.com/rndelpuerto/lenguados
 
 ### SIXTH_TURN
 
-> `readonly` `static` **SIXTH_TURN**: `Readonly`\<`Rotation2`\>
+> `readonly` `static` **SIXTH_TURN**: [`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
 
-Defined in: [src/core/rotation2.ts:222](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L222)
+Defined in: [src/core/rotation2.ts:228](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L228)
 
 60° rotation (π/3).
 
@@ -1026,9 +1234,9 @@ Defined in: [src/core/rotation2.ts:222](https://github.com/rndelpuerto/lenguados
 
 ### THREE_QUARTER_TURN
 
-> `readonly` `static` **THREE_QUARTER_TURN**: `Readonly`\<`Rotation2`\>
+> `readonly` `static` **THREE_QUARTER_TURN**: [`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
 
-Defined in: [src/core/rotation2.ts:184](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L184)
+Defined in: [src/core/rotation2.ts:188](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L188)
 
 270° counter-clockwise rotation (90° clockwise).
 
@@ -1036,9 +1244,9 @@ Defined in: [src/core/rotation2.ts:184](https://github.com/rndelpuerto/lenguados
 
 ### TWELFTH_TURN
 
-> `readonly` `static` **TWELFTH_TURN**: `Readonly`\<`Rotation2`\>
+> `readonly` `static` **TWELFTH_TURN**: [`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
 
-Defined in: [src/core/rotation2.ts:200](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L200)
+Defined in: [src/core/rotation2.ts:204](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L204)
 
 30° rotation (π/6).
 
@@ -1048,7 +1256,7 @@ Defined in: [src/core/rotation2.ts:200](https://github.com/rndelpuerto/lenguados
 
 > `static` **clone**(`source`, `out?`): `Rotation2`
 
-Defined in: [src/core/rotation2.ts:395](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L395)
+Defined in: [src/core/rotation2.ts:403](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L403)
 
 Creates a deep copy of a rotation.
 
@@ -1056,7 +1264,7 @@ Creates a deep copy of a rotation.
 
 ##### source
 
-[`ReadonlyRotation2`](../type-aliases/ReadonlyRotation2.md)
+[`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
 
 Rotation to clone
 
@@ -1074,7 +1282,7 @@ A Rotation2 with identical values
 
 #### Since
 
-0.9.0
+0.7.0
 
 ---
 
@@ -1082,7 +1290,7 @@ A Rotation2 with identical values
 
 > `static` **copy**(`source`, `destination`): `Rotation2`
 
-Defined in: [src/core/rotation2.ts:408](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L408)
+Defined in: [src/core/rotation2.ts:416](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L416)
 
 Copies values from source into destination (alloc-free).
 
@@ -1090,7 +1298,7 @@ Copies values from source into destination (alloc-free).
 
 ##### source
 
-[`ReadonlyRotation2`](../type-aliases/ReadonlyRotation2.md)
+[`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
 
 Source rotation
 
@@ -1108,7 +1316,7 @@ The destination rotation
 
 #### Since
 
-0.9.0
+0.7.0
 
 ---
 
@@ -1116,7 +1324,7 @@ The destination rotation
 
 > `static` **fromAngle**(`angle`, `out?`): `Rotation2`
 
-Defined in: [src/core/rotation2.ts:239](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L239)
+Defined in: [src/core/rotation2.ts:251](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L251)
 
 Creates a rotation from an angle in radians.
 
@@ -1140,9 +1348,16 @@ Optional output rotation
 
 Rotation representing the given angle
 
+#### Example
+
+```typescript
+const rot90 = Rotation2.fromAngle(Math.PI / 2); // 90° CCW
+const rot180 = Rotation2.fromAngle(Math.PI); // 180°
+```
+
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -1150,7 +1365,7 @@ Rotation representing the given angle
 
 > `static` **fromArray**(`array`, `offset`, `out?`): `Rotation2`
 
-Defined in: [src/core/rotation2.ts:375](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L375)
+Defined in: [src/core/rotation2.ts:384](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L384)
 
 Creates a rotation from a flat array [cos, sin].
 
@@ -1197,7 +1412,7 @@ Rotation2.fromArray([0, 1, 0, -1], 2); // -90° rotation from offset 2
 
 #### Since
 
-0.9.0
+0.7.0
 
 ---
 
@@ -1205,7 +1420,7 @@ Rotation2.fromArray([0, 1, 0, -1], 2); // -90° rotation from offset 2
 
 > `static` **fromComplex**(`complex`, `out?`): `Rotation2`
 
-Defined in: [src/core/rotation2.ts:297](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L297)
+Defined in: [src/core/rotation2.ts:308](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L308)
 
 Creates a rotation from a complex number.
 
@@ -1231,7 +1446,7 @@ Rotation from the complex number
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -1239,7 +1454,7 @@ Rotation from the complex number
 
 > `static` **fromComplexSafe**(`complex`, `out?`): `Rotation2`
 
-Defined in: [src/core/rotation2.ts:312](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L312)
+Defined in: [src/core/rotation2.ts:323](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L323)
 
 Creates a rotation from a complex number (safe).
 
@@ -1269,7 +1484,7 @@ Rotation from the complex, or identity if magnitude is near zero
 
 #### Since
 
-0.13.0
+0.7.0
 
 ---
 
@@ -1277,7 +1492,7 @@ Rotation from the complex, or identity if magnitude is near zero
 
 > `static` **fromObject**(`object`, `out?`): `Rotation2`
 
-Defined in: [src/core/rotation2.ts:325](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L325)
+Defined in: [src/core/rotation2.ts:336](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L336)
 
 Creates a rotation from a plain object.
 
@@ -1303,7 +1518,7 @@ Rotation from the object
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -1311,7 +1526,7 @@ Rotation from the object
 
 > `static` **fromValues**(`cos`, `sin`, `out?`): `Rotation2`
 
-Defined in: [src/core/rotation2.ts:352](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L352)
+Defined in: [src/core/rotation2.ts:362](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L362)
 
 Creates a rotation from individual cos and sin values.
 
@@ -1356,7 +1571,7 @@ Rotation2.fromValues(0.707, 0.707); // ~45° rotation
 
 #### Since
 
-0.14.0
+0.7.0
 
 ---
 
@@ -1364,7 +1579,7 @@ Rotation2.fromValues(0.707, 0.707); // ~45° rotation
 
 > `static` **fromVector2**(`direction`, `out?`): `Rotation2`
 
-Defined in: [src/core/rotation2.ts:255](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L255)
+Defined in: [src/core/rotation2.ts:267](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L267)
 
 Creates a rotation from a direction vector.
 
@@ -1390,7 +1605,7 @@ Rotation pointing in the direction of the vector
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -1398,7 +1613,7 @@ Rotation pointing in the direction of the vector
 
 > `static` **fromVectors2**(`from`, `to`, `out?`): `Rotation2`
 
-Defined in: [src/core/rotation2.ts:278](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L278)
+Defined in: [src/core/rotation2.ts:289](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L289)
 
 Creates a rotation that transforms one direction to another.
 
@@ -1430,7 +1645,7 @@ Rotation that transforms 'from' to 'to'
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -1438,7 +1653,7 @@ Rotation that transforms 'from' to 'to'
 
 > `static` **normalize**(`rotation`, `out?`): `Rotation2`
 
-Defined in: [src/core/rotation2.ts:423](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L423)
+Defined in: [src/core/rotation2.ts:431](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L431)
 
 Normalizes a rotation to ensure cos² + sin² = 1.
 
@@ -1446,7 +1661,7 @@ Normalizes a rotation to ensure cos² + sin² = 1.
 
 ##### rotation
 
-[`ReadonlyRotation2`](../type-aliases/ReadonlyRotation2.md)
+[`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
 
 Rotation to normalize
 
@@ -1464,7 +1679,7 @@ Normalized rotation
 
 #### Since
 
-0.9.0
+0.7.0
 
 ---
 
@@ -1472,7 +1687,7 @@ Normalized rotation
 
 > `static` **normalizeSafe**(`rotation`, `out?`): `Rotation2`
 
-Defined in: [src/core/rotation2.ts:451](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L451)
+Defined in: [src/core/rotation2.ts:459](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L459)
 
 Safe normalization that handles zero-magnitude rotations.
 
@@ -1480,7 +1695,7 @@ Safe normalization that handles zero-magnitude rotations.
 
 ##### rotation
 
-[`ReadonlyRotation2`](../type-aliases/ReadonlyRotation2.md)
+[`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
 
 Rotation to normalize
 
@@ -1511,7 +1726,7 @@ const safe = Rotation2.normalizeSafe(drifted); // Returns IDENTITY
 
 #### Since
 
-0.10.0
+0.7.0
 
 ---
 
@@ -1519,7 +1734,7 @@ const safe = Rotation2.normalizeSafe(drifted); // Returns IDENTITY
 
 > `static` **normalizeUnchecked**(`rotation`, `out?`): `Rotation2`
 
-Defined in: [src/core/rotation2.ts:483](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L483)
+Defined in: [src/core/rotation2.ts:491](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L491)
 
 Unchecked normalization for hot paths.
 
@@ -1527,7 +1742,7 @@ Unchecked normalization for hot paths.
 
 ##### rotation
 
-[`ReadonlyRotation2`](../type-aliases/ReadonlyRotation2.md)
+[`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
 
 Rotation to normalize (must have non-zero magnitude)
 
@@ -1557,7 +1772,7 @@ Use in performance-critical code where rotation validity is guaranteed.
 
 #### Since
 
-0.13.0
+0.7.0
 
 ## Interpolation
 
@@ -1565,7 +1780,7 @@ Use in performance-critical code where rotation validity is guaranteed.
 
 > **lerp**(`other`, `t`): `this`
 
-Defined in: [src/core/rotation2.ts:1283](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L1283)
+Defined in: [src/core/rotation2.ts:1424](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L1424)
 
 Linear interpolation towards another rotation in place.
 
@@ -1573,7 +1788,7 @@ Linear interpolation towards another rotation in place.
 
 ##### other
 
-[`ReadonlyRotation2`](../type-aliases/ReadonlyRotation2.md)
+[`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
 
 Target rotation
 
@@ -1591,7 +1806,7 @@ This for chaining
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -1599,7 +1814,7 @@ This for chaining
 
 > **lerpClamped**(`other`, `t`): `this`
 
-Defined in: [src/core/rotation2.ts:1300](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L1300)
+Defined in: [src/core/rotation2.ts:1441](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L1441)
 
 Linear interpolation with t clamped to [0, 1].
 
@@ -1607,7 +1822,7 @@ Linear interpolation with t clamped to [0, 1].
 
 ##### other
 
-[`ReadonlyRotation2`](../type-aliases/ReadonlyRotation2.md)
+[`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
 
 Target rotation
 
@@ -1625,7 +1840,7 @@ This for chaining
 
 #### Since
 
-0.9.0
+0.7.0
 
 ---
 
@@ -1633,7 +1848,7 @@ This for chaining
 
 > **slerp**(`other`, `t`): `this`
 
-Defined in: [src/core/rotation2.ts:1327](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L1327)
+Defined in: [src/core/rotation2.ts:1468](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L1468)
 
 Spherical linear interpolation with another rotation in place.
 
@@ -1641,7 +1856,7 @@ Spherical linear interpolation with another rotation in place.
 
 ##### other
 
-[`ReadonlyRotation2`](../type-aliases/ReadonlyRotation2.md)
+[`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
 
 Target rotation
 
@@ -1659,7 +1874,7 @@ This for chaining
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -1667,7 +1882,7 @@ This for chaining
 
 > **slerpClamped**(`other`, `t`): `this`
 
-Defined in: [src/core/rotation2.ts:1344](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L1344)
+Defined in: [src/core/rotation2.ts:1485](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L1485)
 
 Spherical linear interpolation with t clamped to [0, 1].
 
@@ -1675,7 +1890,7 @@ Spherical linear interpolation with t clamped to [0, 1].
 
 ##### other
 
-[`ReadonlyRotation2`](../type-aliases/ReadonlyRotation2.md)
+[`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
 
 Target rotation
 
@@ -1693,7 +1908,7 @@ This for chaining
 
 #### Since
 
-0.9.0
+0.7.0
 
 ---
 
@@ -1701,7 +1916,7 @@ This for chaining
 
 > **smoothStep**(`other`, `t`): `this`
 
-Defined in: [src/core/rotation2.ts:1313](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L1313)
+Defined in: [src/core/rotation2.ts:1454](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L1454)
 
 Smooth step interpolation towards another rotation in place.
 
@@ -1709,7 +1924,7 @@ Smooth step interpolation towards another rotation in place.
 
 ##### other
 
-[`ReadonlyRotation2`](../type-aliases/ReadonlyRotation2.md)
+[`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
 
 Target rotation
 
@@ -1727,7 +1942,7 @@ This for chaining
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -1735,7 +1950,7 @@ This for chaining
 
 > `static` **lerp**(`a`, `b`, `t`, `out?`): `Rotation2`
 
-Defined in: [src/core/rotation2.ts:635](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L635)
+Defined in: [src/core/rotation2.ts:652](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L652)
 
 Linear interpolation between two rotations.
 
@@ -1743,13 +1958,13 @@ Linear interpolation between two rotations.
 
 ##### a
 
-[`ReadonlyRotation2`](../type-aliases/ReadonlyRotation2.md)
+[`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
 
 Start rotation
 
 ##### b
 
-[`ReadonlyRotation2`](../type-aliases/ReadonlyRotation2.md)
+[`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
 
 End rotation
 
@@ -1773,7 +1988,7 @@ Interpolated rotation
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -1781,7 +1996,7 @@ Interpolated rotation
 
 > `static` **lerpClamped**(`a`, `b`, `t`, `out?`): `Rotation2`
 
-Defined in: [src/core/rotation2.ts:656](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L656)
+Defined in: [src/core/rotation2.ts:673](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L673)
 
 Linear interpolation with t clamped to [0, 1].
 
@@ -1789,13 +2004,13 @@ Linear interpolation with t clamped to [0, 1].
 
 ##### a
 
-[`ReadonlyRotation2`](../type-aliases/ReadonlyRotation2.md)
+[`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
 
 Start rotation
 
 ##### b
 
-[`ReadonlyRotation2`](../type-aliases/ReadonlyRotation2.md)
+[`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
 
 End rotation
 
@@ -1819,7 +2034,7 @@ Interpolated rotation
 
 #### Since
 
-0.9.0
+0.7.0
 
 ---
 
@@ -1827,7 +2042,7 @@ Interpolated rotation
 
 > `static` **slerp**(`from`, `to`, `t`, `out?`): `Rotation2`
 
-Defined in: [src/core/rotation2.ts:676](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L676)
+Defined in: [src/core/rotation2.ts:693](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L693)
 
 Spherical linear interpolation between two rotations.
 
@@ -1835,13 +2050,13 @@ Spherical linear interpolation between two rotations.
 
 ##### from
 
-[`ReadonlyRotation2`](../type-aliases/ReadonlyRotation2.md)
+[`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
 
 Start rotation
 
 ##### to
 
-[`ReadonlyRotation2`](../type-aliases/ReadonlyRotation2.md)
+[`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
 
 End rotation
 
@@ -1865,7 +2080,7 @@ Interpolated rotation
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -1873,7 +2088,7 @@ Interpolated rotation
 
 > `static` **slerpClamped**(`from`, `to`, `t`, `out?`): `Rotation2`
 
-Defined in: [src/core/rotation2.ts:697](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L697)
+Defined in: [src/core/rotation2.ts:714](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L714)
 
 Spherical linear interpolation with t clamped to [0, 1].
 
@@ -1881,13 +2096,13 @@ Spherical linear interpolation with t clamped to [0, 1].
 
 ##### from
 
-[`ReadonlyRotation2`](../type-aliases/ReadonlyRotation2.md)
+[`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
 
 Start rotation
 
 ##### to
 
-[`ReadonlyRotation2`](../type-aliases/ReadonlyRotation2.md)
+[`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
 
 End rotation
 
@@ -1911,7 +2126,7 @@ Interpolated rotation
 
 #### Since
 
-0.9.0
+0.7.0
 
 ---
 
@@ -1919,7 +2134,7 @@ Interpolated rotation
 
 > `static` **smoothStep**(`from`, `to`, `t`, `out?`): `Rotation2`
 
-Defined in: [src/core/rotation2.ts:728](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L728)
+Defined in: [src/core/rotation2.ts:745](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L745)
 
 Smooth interpolation between two rotations using smoothStep easing.
 
@@ -1927,13 +2142,13 @@ Smooth interpolation between two rotations using smoothStep easing.
 
 ##### from
 
-[`ReadonlyRotation2`](../type-aliases/ReadonlyRotation2.md)
+[`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
 
 Source rotation
 
 ##### to
 
-[`ReadonlyRotation2`](../type-aliases/ReadonlyRotation2.md)
+[`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
 
 Target rotation
 
@@ -1970,7 +2185,7 @@ const smooth = Rotation2.smoothStep(r1, r2, 0.5); // Smooth interpolation
 
 #### Since
 
-0.11.0
+0.7.0
 
 ## Mutator
 
@@ -1978,7 +2193,7 @@ const smooth = Rotation2.smoothStep(r1, r2, 0.5); // Smooth interpolation
 
 > **copy**(`other`): `this`
 
-Defined in: [src/core/rotation2.ts:899](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L899)
+Defined in: [src/core/rotation2.ts:933](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L933)
 
 Copies values from another rotation.
 
@@ -1986,7 +2201,7 @@ Copies values from another rotation.
 
 ##### other
 
-[`ReadonlyRotation2`](../type-aliases/ReadonlyRotation2.md)
+[`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
 
 Source rotation
 
@@ -1998,7 +2213,7 @@ This for chaining
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -2006,7 +2221,7 @@ This for chaining
 
 > **identity**(): `this`
 
-Defined in: [src/core/rotation2.ts:912](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L912)
+Defined in: [src/core/rotation2.ts:946](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L946)
 
 Resets to identity rotation (0°).
 
@@ -2018,7 +2233,7 @@ This for chaining
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -2026,7 +2241,7 @@ This for chaining
 
 > **normalize**(): `this`
 
-Defined in: [src/core/rotation2.ts:925](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L925)
+Defined in: [src/core/rotation2.ts:959](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L959)
 
 Normalizes this rotation to unit length.
 
@@ -2038,7 +2253,7 @@ This for chaining
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -2046,7 +2261,7 @@ This for chaining
 
 > **normalizeSafe**(): `this`
 
-Defined in: [src/core/rotation2.ts:950](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L950)
+Defined in: [src/core/rotation2.ts:984](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L984)
 
 Safe normalization that handles zero-magnitude rotations.
 
@@ -2071,7 +2286,7 @@ rot.normalizeSafe(); // Safely normalizes
 
 #### Since
 
-0.10.0
+0.7.0
 
 ---
 
@@ -2079,7 +2294,7 @@ rot.normalizeSafe(); // Safely normalizes
 
 > **normalizeUnchecked**(): `this`
 
-Defined in: [src/core/rotation2.ts:976](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L976)
+Defined in: [src/core/rotation2.ts:1010](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L1010)
 
 Unchecked normalization for hot paths.
 
@@ -2100,7 +2315,7 @@ This for chaining
 
 #### Since
 
-0.13.0
+0.7.0
 
 ---
 
@@ -2108,7 +2323,7 @@ This for chaining
 
 > **set**(`cos`, `sin`): `this`
 
-Defined in: [src/core/rotation2.ts:866](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L866)
+Defined in: [src/core/rotation2.ts:901](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L901)
 
 Sets the cos and sin components (will be normalized).
 
@@ -2134,7 +2349,7 @@ This for chaining
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -2142,7 +2357,7 @@ This for chaining
 
 > **setAngle**(`angle`): `this`
 
-Defined in: [src/core/rotation2.ts:883](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L883)
+Defined in: [src/core/rotation2.ts:917](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L917)
 
 Sets the rotation from an angle.
 
@@ -2162,7 +2377,7 @@ This for chaining
 
 #### Since
 
-0.1.0
+0.7.0
 
 ## Other
 
@@ -2170,7 +2385,7 @@ This for chaining
 
 > **cos**: `number`
 
-Defined in: [src/core/rotation2.ts:128](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L128)
+Defined in: [src/core/rotation2.ts:125](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L125)
 
 Cosine component of the rotation.
 For a rotation of angle θ, this equals cos(θ).
@@ -2185,7 +2400,7 @@ For a rotation of angle θ, this equals cos(θ).
 
 > **sin**: `number`
 
-Defined in: [src/core/rotation2.ts:129](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L129)
+Defined in: [src/core/rotation2.ts:126](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L126)
 
 Sine component of the rotation.
 For a rotation of angle θ, this equals sin(θ).
@@ -2200,7 +2415,7 @@ For a rotation of angle θ, this equals sin(θ).
 
 > **clone**(): `Rotation2`
 
-Defined in: [src/core/rotation2.ts:1484](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L1484)
+Defined in: [src/core/rotation2.ts:1640](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L1640)
 
 Creates a deep copy of this rotation.
 
@@ -2220,34 +2435,62 @@ copy.identity(); // Original unchanged
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
 ### toArray()
 
-> **toArray**(): \[`number`, `number`\]
+> **toArray**\<`T`\>(`out?`, `offset?`): \[`number`, `number`\] \| `T`
 
-Defined in: [src/core/rotation2.ts:1408](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L1408)
+Defined in: [src/core/rotation2.ts:1556](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L1556)
 
-Converts the rotation to a tuple [cos, sin].
+Writes to array or typed array.
+
+#### Type Parameters
+
+##### T
+
+`T` _extends_ `ArrayLike`\<`number`\> & `object`
+
+#### Parameters
+
+##### out?
+
+`T`
+
+Optional destination array. If not provided, returns a new tuple.
+
+##### offset?
+
+`number` = `0`
+
+Write offset.
 
 #### Returns
 
-\[`number`, `number`\]
+\[`number`, `number`\] \| `T`
 
-Tuple with cosine and sine components
+The output array, or a new tuple if no output was provided.
+
+#### Default Value
+
+`0`
 
 #### Example
 
 ```typescript
 const r = Rotation2.fromAngle(Math.PI / 4);
 const [cos, sin] = r.toArray();
+
+// Write to existing array
+const arr = new Float32Array(10);
+r.toArray(arr, 4); // writes at indices 4, 5
 ```
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -2255,7 +2498,7 @@ const [cos, sin] = r.toArray();
 
 > **toJSON**(): [`Rotation2Like`](../../types/interfaces/Rotation2Like.md)
 
-Defined in: [src/core/rotation2.ts:1445](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L1445)
+Defined in: [src/core/rotation2.ts:1601](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L1601)
 
 Converts the rotation to a JSON-serializable object.
 Called automatically by JSON.stringify().
@@ -2276,7 +2519,7 @@ const json = JSON.stringify(r);
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -2284,7 +2527,7 @@ const json = JSON.stringify(r);
 
 > **toObject**(): [`Rotation2Like`](../../types/interfaces/Rotation2Like.md)
 
-Defined in: [src/core/rotation2.ts:1426](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L1426)
+Defined in: [src/core/rotation2.ts:1582](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L1582)
 
 Converts the rotation to a plain object.
 
@@ -2304,7 +2547,7 @@ const obj = r.toObject();
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -2312,7 +2555,7 @@ const obj = r.toObject();
 
 > **toString**(`precision`): `string`
 
-Defined in: [src/core/rotation2.ts:1465](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L1465)
+Defined in: [src/core/rotation2.ts:1621](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L1621)
 
 Creates a human-readable string representation.
 Shows the angle in degrees for clarity.
@@ -2341,7 +2584,7 @@ console.log(r.toString());
 
 #### Since
 
-0.1.0
+0.7.0
 
 ## Transform
 
@@ -2349,7 +2592,7 @@ console.log(r.toString());
 
 > **apply**(`vector`, `out?`): [`Vector2`](Vector2.md)
 
-Defined in: [src/core/rotation2.ts:1072](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L1072)
+Defined in: [src/core/rotation2.ts:1197](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L1197)
 
 Applies this rotation to a vector.
 
@@ -2375,7 +2618,7 @@ Rotated vector
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -2383,7 +2626,7 @@ Rotated vector
 
 > **applyInverse**(`vector`, `out?`): [`Vector2`](Vector2.md)
 
-Defined in: [src/core/rotation2.ts:1089](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L1089)
+Defined in: [src/core/rotation2.ts:1214](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L1214)
 
 Applies the inverse rotation to a vector.
 
@@ -2414,7 +2657,7 @@ Implemented inline for performance in hot paths.
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -2422,7 +2665,7 @@ Implemented inline for performance in hot paths.
 
 > `static` **apply**(`rotation`, `vector`, `out?`): [`Vector2`](Vector2.md)
 
-Defined in: [src/core/rotation2.ts:579](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L579)
+Defined in: [src/core/rotation2.ts:596](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L596)
 
 Applies a rotation to a vector.
 
@@ -2430,7 +2673,7 @@ Applies a rotation to a vector.
 
 ##### rotation
 
-[`ReadonlyRotation2`](../type-aliases/ReadonlyRotation2.md)
+[`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
 
 Rotation to apply
 
@@ -2454,8 +2697,9 @@ Rotated vector
 
 #### Remarks
 
-Mathematically equivalent to `Vector2.rotateCS(vector, rotation.cos, rotation.sin, out)`.
-Implemented inline for performance in hot paths.
+- Use `Rotation2.apply` for pure rotation (operator semantics).
+- Use `Matrix2.transformVector` for general linear transformations (spatial semantics).
+- Mathematically equivalent to `Vector2.rotateCS(vector, rotation.cos, rotation.sin, out)`.
 
 #### Example
 
@@ -2467,7 +2711,7 @@ const rotated = Rotation2.apply(rot, v); // (0.707, 0.707)
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -2475,7 +2719,7 @@ const rotated = Rotation2.apply(rot, v); // (0.707, 0.707)
 
 > `static` **applyInverse**(`rotation`, `vector`, `out?`): [`Vector2`](Vector2.md)
 
-Defined in: [src/core/rotation2.ts:610](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L610)
+Defined in: [src/core/rotation2.ts:627](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L627)
 
 Applies the inverse rotation to a vector.
 
@@ -2483,7 +2727,7 @@ Applies the inverse rotation to a vector.
 
 ##### rotation
 
-[`ReadonlyRotation2`](../type-aliases/ReadonlyRotation2.md)
+[`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
 
 Rotation whose inverse to apply
 
@@ -2507,9 +2751,9 @@ Inversely rotated vector
 
 #### Remarks
 
-Mathematically equivalent to rotating by the negated angle.
-Uses the conjugate: `(cos, -sin)` instead of `(cos, sin)`.
-Implemented inline for performance in hot paths.
+- Use `Rotation2.applyInverse` for pure rotation (operator semantics).
+- Use `Matrix2.transformVector` for general linear transformations (spatial semantics).
+- Mathematically equivalent to rotating by the negated angle.
 
 #### Example
 
@@ -2521,15 +2765,35 @@ const original = Rotation2.applyInverse(rot, v); // ≈ (1, 0)
 
 #### Since
 
-0.10.0
+0.7.0
 
 ## Validation
+
+### hasInfinity()
+
+> **hasInfinity**(): `boolean`
+
+Defined in: [src/core/rotation2.ts:1307](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L1307)
+
+Returns true if any component is infinite (±Infinity).
+
+#### Returns
+
+`boolean`
+
+True if any ±Infinity value exists
+
+#### Since
+
+0.7.0
+
+---
 
 ### hasNaN()
 
 > **hasNaN**(): `boolean`
 
-Defined in: [src/core/rotation2.ts:1171](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L1171)
+Defined in: [src/core/rotation2.ts:1296](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L1296)
 
 Returns true if any component is NaN.
 
@@ -2541,7 +2805,7 @@ True if any NaN value exists
 
 #### Since
 
-0.9.0
+0.7.0
 
 ---
 
@@ -2549,7 +2813,7 @@ True if any NaN value exists
 
 > **isFinite**(): `boolean`
 
-Defined in: [src/core/rotation2.ts:1160](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L1160)
+Defined in: [src/core/rotation2.ts:1285](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L1285)
 
 Returns true if all components are finite.
 
@@ -2561,4 +2825,4 @@ True if no NaN or Infinity values
 
 #### Since
 
-0.9.0
+0.7.0

@@ -2,7 +2,7 @@
 
 > **ensureFinite**(`value`, `fallback`): `number`
 
-Defined in: [src/auxiliary/numeric/safety.ts:425](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/auxiliary/numeric/safety.ts#L425)
+Defined in: [src/auxiliary/numeric/safety.ts:374](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/auxiliary/numeric/safety.ts#L374)
 
 Ensures finite value, replaces NaN/Infinity.
 
@@ -43,4 +43,4 @@ ensureFinite(NaN, 1); // 1 (custom fallback)
 
 ## Since
 
-1.0.0
+0.7.0

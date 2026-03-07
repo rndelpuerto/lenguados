@@ -1,8 +1,8 @@
 # Function: freezeRotation2()
 
-> **freezeRotation2**(`rotation`): [`ReadonlyRotation2`](../type-aliases/ReadonlyRotation2.md)
+> **freezeRotation2**(`rotation`): [`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
 
-Defined in: [src/core/rotation2.ts:106](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/rotation2.ts#L106)
+Defined in: [src/core/rotation2.ts:102](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L102)
 
 Permanently freezes a [Rotation2](../classes/Rotation2.md) instance so it can no longer be mutated.
 
@@ -16,9 +16,9 @@ The Rotation2 object to freeze.
 
 ## Returns
 
-[`ReadonlyRotation2`](../type-aliases/ReadonlyRotation2.md)
+[`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
 
-The same instance, now typed as ReadonlyRotation2.
+The same instance, now typed as ReadonlyRotation2Like.
 
 ## Remarks
 
@@ -34,4 +34,4 @@ QUARTER.cos = 1; // Throws in strict mode
 
 ## Since
 
-0.9.0
+0.7.0

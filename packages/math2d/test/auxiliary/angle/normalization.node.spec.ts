@@ -9,10 +9,8 @@ import { describe, expect, test } from '@jest/globals';
 import {
  normalizeRadians,
  normalizeRadiansPositive,
- normalizeRadiansAround,
  normalizeDegrees,
  normalizeDegreesPositive,
- wrapAngle,
 } from '../../../src/auxiliary/angle/normalization';
 
 const TAU = Math.PI * 2;
@@ -46,14 +44,6 @@ describe('angle/normalization', () => {
   });
  });
 
- describe('normalizeRadiansAround', () => {
-  test('normalizes around a center', () => {
-   expect(normalizeRadiansAround(0, 0)).toBeCloseTo(0);
-   expect(normalizeRadiansAround(TAU, 0)).toBeCloseTo(0);
-   expect(normalizeRadiansAround(Math.PI, Math.PI)).toBeCloseTo(Math.PI);
-  });
- });
-
  describe('normalizeDegrees', () => {
   test('normalizes to [-180, 180)', () => {
    expect(normalizeDegrees(0)).toBeCloseTo(0);
@@ -78,21 +68,34 @@ describe('angle/normalization', () => {
   });
  });
 
- describe('wrapAngle', () => {
-  test('wraps to [0, period)', () => {
-   expect(wrapAngle(0)).toBeCloseTo(0);
-   expect(wrapAngle(TAU)).toBeCloseTo(0);
-   expect(wrapAngle(-Math.PI / 2)).toBeCloseTo((3 * Math.PI) / 2);
+ describe('normalize around center (composition pattern)', () => {
+  test('normalizeRadians(x - center) + center normalizes around an arbitrary center', () => {
+   expect(normalizeRadians(0 - 0) + 0).toBeCloseTo(0);
+   expect(normalizeRadians(TAU - 0) + 0).toBeCloseTo(0);
+   expect(normalizeRadians(Math.PI - Math.PI) + Math.PI).toBeCloseTo(Math.PI);
+  });
+ });
+
+ describe('NaN/Infinity handling', () => {
+  test('normalizeRadians returns NaN for NaN', () => {
+   expect(normalizeRadians(NaN)).toBeNaN();
   });
 
-  test('custom period', () => {
-   expect(wrapAngle(5, 3)).toBeCloseTo(2);
-   expect(wrapAngle(-1, 3)).toBeCloseTo(2);
+  test('normalizeRadians returns NaN for Infinity', () => {
+   expect(normalizeRadians(Infinity)).toBeNaN();
+   expect(normalizeRadians(-Infinity)).toBeNaN();
   });
 
-  test('returns 0 for invalid period', () => {
-   expect(wrapAngle(5, 0)).toBe(0);
-   expect(wrapAngle(5, -1)).toBe(0);
+  test('normalizeRadiansPositive returns NaN for NaN', () => {
+   expect(normalizeRadiansPositive(NaN)).toBeNaN();
+  });
+
+  test('normalizeDegrees returns NaN for NaN', () => {
+   expect(normalizeDegrees(NaN)).toBeNaN();
+  });
+
+  test('normalizeDegreesPositive returns NaN for NaN', () => {
+   expect(normalizeDegreesPositive(NaN)).toBeNaN();
   });
  });
 });

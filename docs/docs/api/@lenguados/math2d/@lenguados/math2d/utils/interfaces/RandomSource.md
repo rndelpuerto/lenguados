@@ -1,6 +1,6 @@
 # Interface: RandomSource
 
-Defined in: [src/utils/random-source.ts:33](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/utils/random-source.ts#L33)
+Defined in: [src/utils/random-source.ts:31](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/utils/random-source.ts#L31)
 
 Defines a uniform random number source with optional seeding.
 
@@ -10,7 +10,7 @@ Implementations must provide uniform distribution in [0, 1).
 
 ## Since
 
-0.1.0
+0.7.0
 
 ## Utility
 
@@ -18,7 +18,7 @@ Implementations must provide uniform distribution in [0, 1).
 
 > **next**(): `number`
 
-Defined in: [src/utils/random-source.ts:42](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/utils/random-source.ts#L42)
+Defined in: [src/utils/random-source.ts:40](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/utils/random-source.ts#L40)
 
 Generates a random number in the range [0, 1).
 
@@ -30,7 +30,7 @@ A random number in [0, 1).
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -38,7 +38,7 @@ A random number in [0, 1).
 
 > **nextInt**(`max`): `number`
 
-Defined in: [src/utils/random-source.ts:53](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/utils/random-source.ts#L53)
+Defined in: [src/utils/random-source.ts:51](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/utils/random-source.ts#L51)
 
 Generates a random integer in the range [0, max).
 
@@ -58,7 +58,7 @@ A random integer in [0, max).
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -66,7 +66,7 @@ A random integer in [0, max).
 
 > `optional` **seed**(`seed`): `void`
 
-Defined in: [src/utils/random-source.ts:66](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/utils/random-source.ts#L66)
+Defined in: [src/utils/random-source.ts:64](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/utils/random-source.ts#L64)
 
 Seeds the random number generator when supported.
 
@@ -88,4 +88,4 @@ Not all sources support seeding (for example, Math.random()).
 
 #### Since
 
-0.1.0
+0.7.0

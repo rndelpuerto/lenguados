@@ -7,12 +7,14 @@
 import { describe, expect, it } from '@jest/globals';
 
 import { Complex } from '../../src/core/complex';
+import { Matrix2 } from '../../src/core/matrix2';
 import { Rotation2 } from '../../src/core/rotation2';
 import { Vector2 } from '../../src/core/vector2';
 
 const DEG45 = Math.PI / 4;
 const DEG90 = Math.PI / 2;
-const DIGITS = 8; // toBeCloseTo decimal digits (8 for float tolerance)
+// DIGITS = 10 matches EPSILON = 1e-10 — the library's documented tolerance
+const DIGITS = 10;
 
 describe('Rotation2', () => {
  describe('Factories & constants', () => {
@@ -121,16 +123,6 @@ describe('Rotation2', () => {
  });
 
  describe('Interpolation', () => {
-  it('slerp static matches instance lerp', () => {
-   const start = Rotation2.fromAngle(0);
-   const end = Rotation2.fromAngle(Math.PI);
-   // Clone start because instance lerp mutates this
-   const instanceCopy = start.clone();
-   instanceCopy.lerp(end, 0.25);
-   const staticResult = Rotation2.slerp(start, end, 0.25);
-   expect(staticResult.angle).toBeCloseTo(instanceCopy.angle, DIGITS);
-  });
-
   it('lerp allows extrapolation (does NOT clamp t)', () => {
    const start = Rotation2.fromAngle(0);
    const end = Rotation2.fromAngle(Math.PI / 2);
@@ -336,27 +328,29 @@ describe('Rotation2', () => {
   });
  });
 
- describe('SLERP Operations', () => {
-  it('slerp interpolates on shortest arc', () => {
-   const a = Rotation2.fromAngle(0);
-   const b = Rotation2.fromAngle(Math.PI / 2);
-   const mid = Rotation2.slerp(a, b, 0.5);
-   expect(mid.angle).toBeCloseTo(Math.PI / 4, DIGITS);
-  });
-
-  it('slerp handles t=0 and t=1', () => {
-   const a = Rotation2.fromAngle(0);
-   const b = Rotation2.fromAngle(Math.PI / 2);
-   expect(Rotation2.slerp(a, b, 0).angle).toBeCloseTo(0, DIGITS);
-   expect(Rotation2.slerp(a, b, 1).angle).toBeCloseTo(Math.PI / 2, DIGITS);
-  });
- });
-
  describe('Conversion Methods Extended', () => {
   it('toComplex returns equivalent complex number', () => {
    const rot = Rotation2.fromAngle(Math.PI / 4);
    const complex = rot.toComplex();
    expect(complex.argument()).toBeCloseTo(Math.PI / 4, DIGITS);
+  });
+
+  it('toMatrix2 returns equivalent rotation matrix', () => {
+   const rot = Rotation2.fromAngle(Math.PI / 4);
+   const mat = rot.toMatrix2();
+   expect(mat.m00).toBeCloseTo(rot.cos, DIGITS);
+   expect(mat.m01).toBeCloseTo(rot.sin, DIGITS);
+   expect(mat.m10).toBeCloseTo(-rot.sin, DIGITS);
+   expect(mat.m11).toBeCloseTo(rot.cos, DIGITS);
+  });
+
+  it('toMatrix2 accepts out parameter', () => {
+   const rot = Rotation2.fromAngle(Math.PI / 2);
+   const out = new Matrix2();
+   const result = rot.toMatrix2(out);
+   expect(result).toBe(out);
+   expect(out.m00).toBeCloseTo(0, DIGITS);
+   expect(out.m01).toBeCloseTo(1, DIGITS);
   });
 
   it('xAxis getter returns rotated X axis', () => {
@@ -466,15 +460,6 @@ describe('Rotation2', () => {
   });
  });
 
- describe('Coverage - Static Additional Methods', () => {
-  it('slerp interpolates with t=0.5', () => {
-   const a = Rotation2.fromAngle(0);
-   const b = Rotation2.fromAngle(DEG90);
-   const mid = Rotation2.slerp(a, b, 0.5);
-   expect(mid.angle).toBeCloseTo(DEG45, 3);
-  });
- });
-
  describe('Coverage - Additional Branches', () => {
   it('relativeTo mutates this and returns this', () => {
    const a = Rotation2.fromAngle(DEG90);
@@ -551,24 +536,11 @@ describe('Rotation2', () => {
    expect(normalized.cos).toBeCloseTo(1, DIGITS);
   });
 
-  it('angleValue getter returns angle', () => {
-   const rot = Rotation2.fromAngle(DEG90);
-   expect(rot.angleValue).toBeCloseTo(DEG90, DIGITS);
-  });
-
   it('negated getter returns negated rotation', () => {
    const rot = Rotation2.fromAngle(DEG90);
    const neg = rot.negated;
    expect(neg.cos).toBeCloseTo(rot.cos, DIGITS);
    expect(neg.sin).toBeCloseTo(-rot.sin, DIGITS);
-  });
-
-  it('slerp with out parameter', () => {
-   const a = Rotation2.fromAngle(0);
-   const b = Rotation2.fromAngle(DEG90);
-   const out = new Rotation2();
-   const result = Rotation2.slerp(a, b, 0.5, out);
-   expect(result).toBe(out);
   });
 
   it('static apply with out parameter', () => {
@@ -920,22 +892,6 @@ describe('Rotation2', () => {
   });
  });
 
- describe('Coverage - slerpClamped', () => {
-  it('static slerpClamped clamps t', () => {
-   const a = Rotation2.fromAngle(0);
-   const b = Rotation2.fromAngle(DEG90);
-   const result = Rotation2.slerpClamped(a, b, 2);
-   expect(result.angle).toBeCloseTo(DEG90, DIGITS);
-  });
-
-  it('instance slerpClamped clamps t', () => {
-   const a = Rotation2.fromAngle(0);
-   const b = Rotation2.fromAngle(DEG90);
-   a.slerpClamped(b, 2);
-   expect(a.angle).toBeCloseTo(DEG90, DIGITS);
-  });
- });
-
  describe('Coverage - Instance smoothStep', () => {
   it('instance smoothStep interpolates smoothly', () => {
    const a = Rotation2.fromAngle(0);
@@ -963,12 +919,12 @@ describe('Rotation2', () => {
   });
  });
 
- describe('Coverage - Static negate', () => {
-  it('negates rotation', () => {
+ describe('Coverage - Static conjugate', () => {
+  it('conjugates rotation', () => {
    const rot = Rotation2.fromAngle(DEG45);
-   const negated = Rotation2.negate(rot);
-   expect(negated.cos).toBeCloseTo(rot.cos, DIGITS);
-   expect(negated.sin).toBeCloseTo(-rot.sin, DIGITS);
+   const conjugated = Rotation2.conjugate(rot);
+   expect(conjugated.cos).toBeCloseTo(rot.cos, DIGITS);
+   expect(conjugated.sin).toBeCloseTo(-rot.sin, DIGITS);
   });
  });
 
@@ -980,10 +936,10 @@ describe('Rotation2', () => {
   });
  });
 
- describe('Coverage - Instance negate', () => {
-  it('negates in place', () => {
+ describe('Coverage - Instance conjugate', () => {
+  it('conjugates in place', () => {
    const rot = Rotation2.fromAngle(DEG45);
-   rot.negate();
+   rot.conjugate();
    expect(rot.sin).toBeCloseTo(-Math.sin(DEG45), DIGITS);
   });
  });
@@ -1076,15 +1032,6 @@ describe('Rotation2', () => {
   });
  });
 
- describe('Coverage - Static slerp', () => {
-  it('slerp interpolates rotations spherically', () => {
-   const a = Rotation2.IDENTITY;
-   const b = Rotation2.fromAngle(Math.PI / 2);
-   const result = Rotation2.slerp(a, b, 0.5);
-   expect(result.angle).toBeCloseTo(Math.PI / 4, DIGITS);
-  });
- });
-
  describe('Coverage - Static lerpClamped', () => {
   it('lerpClamped clamps t to [0, 1]', () => {
    const a = Rotation2.IDENTITY;
@@ -1114,14 +1061,6 @@ describe('Rotation2', () => {
   it('lerp interpolates in place', () => {
    const rot = Rotation2.fromAngle(0);
    rot.lerp(Rotation2.fromAngle(Math.PI / 2), 0.5);
-   expect(rot.angle).toBeCloseTo(Math.PI / 4, DIGITS);
-  });
- });
-
- describe('Coverage - Instance slerp', () => {
-  it('slerp interpolates in place', () => {
-   const rot = Rotation2.fromAngle(0);
-   rot.slerp(Rotation2.fromAngle(Math.PI / 2), 0.5);
    expect(rot.angle).toBeCloseTo(Math.PI / 4, DIGITS);
   });
  });
@@ -1375,30 +1314,65 @@ describe('Rotation2', () => {
   });
  });
 
- describe('Coverage - Static slerp interpolation', () => {
-  it('slerp interpolates rotations', () => {
-   const from = Rotation2.fromAngle(0);
-   const to = Rotation2.fromAngle(Math.PI / 2);
-   const result = Rotation2.slerp(from, to, 0.5);
-   expect(result.angle).toBeCloseTo(Math.PI / 4, DIGITS);
-  });
- });
-
- describe('Coverage - Static slerpClamped', () => {
-  it('slerpClamped clamps t to [0,1]', () => {
-   const from = Rotation2.fromAngle(0);
-   const to = Rotation2.fromAngle(Math.PI / 2);
-   const result = Rotation2.slerpClamped(from, to, 1.5);
-   expect(result.angle).toBeCloseTo(Math.PI / 2, DIGITS);
-  });
- });
-
  describe('Coverage - Static lerp rotation', () => {
   it('lerp interpolates rotations linearly', () => {
    const from = Rotation2.fromAngle(0);
    const to = Rotation2.fromAngle(Math.PI);
    const result = Rotation2.lerp(from, to, 0.5);
    expect(result).toBeDefined();
+  });
+ });
+
+ describe('NaN/Infinity handling', () => {
+  it('fromAngle(NaN) throws (assertFinite)', () => {
+   expect(() => Rotation2.fromAngle(NaN)).toThrow();
+  });
+
+  it('fromAngle(Infinity) throws (assertFinite)', () => {
+   expect(() => Rotation2.fromAngle(Infinity)).toThrow();
+  });
+
+  it('angle getter returns NaN for NaN rotation', () => {
+   const rot = new Rotation2(NaN, NaN);
+   expect(rot.angle).toBeNaN();
+  });
+
+  it('apply with NaN rotation produces NaN vector', () => {
+   const rot = new Rotation2(NaN, NaN);
+   const v = new Vector2(1, 0);
+   const result = Rotation2.apply(rot, v);
+   expect(result.x).toBeNaN();
+   expect(result.y).toBeNaN();
+  });
+ });
+
+ describe('fromCS', () => {
+  it('creates identity rotation from (1, 0)', () => {
+   const r = Rotation2.fromCS(1, 0);
+   expect(r.cos).toBe(1);
+   expect(r.sin).toBe(0);
+  });
+
+  it('creates 90-degree rotation from (0, 1)', () => {
+   const r = Rotation2.fromCS(0, 1);
+   expect(r.cos).toBe(0);
+   expect(r.sin).toBe(1);
+  });
+
+  it('uses out parameter', () => {
+   const out = new Rotation2();
+   const result = Rotation2.fromCS(0, 1, out);
+   expect(result).toBe(out);
+   expect(out.cos).toBe(0);
+   expect(out.sin).toBe(1);
+  });
+
+  it('matches fromAngle for same angle', () => {
+   const angle = 1.23;
+   const cs = Rotation2.fromCS(Math.cos(angle), Math.sin(angle));
+   const fromAngle = Rotation2.fromAngle(angle);
+   expect(cs.cos).toBeCloseTo(fromAngle.cos, 8);
+   expect(cs.sin).toBeCloseTo(fromAngle.sin, 8);
   });
  });
 });

@@ -1,16 +1,23 @@
 # Class: Matrix3
 
-Defined in: [src/core/matrix3.ts:126](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L126)
+Defined in: [src/core/matrix3.ts:130](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L130)
 
 Column-major 3×3 matrix for 2D affine transformations in homogeneous coordinates.
 
 ## Remarks
 
+**Data Layout**: Stores elements in **Column-Major Memory Layout** (standard for WebGL and Three.js).
+Example memory sequence:
+
+- Column 0: `m00`, `m10`, `m20`
+- Column 1: `m01`, `m11`, `m21`
+- Column 2: `m02`, `m12`, `m22`
+
 **API Design**
 
 - Instance methods mutate `this` for fluent chaining
 - Static helpers are pure and provide optional `out` parameters for allocation control
-- Trigonometric operations use [DeterministicMath](../../deterministic/classes/DeterministicMath.md) for cross-platform reproducibility
+- Trigonometric operations use deterministic kernels for cross-platform reproducibility
 
 ## Example
 
@@ -26,7 +33,7 @@ const worldPoint = transform.transformPoint({ x: 0, y: 0 });
 
 ## Since
 
-0.1.0
+0.7.0
 
 ## Implements
 
@@ -38,7 +45,7 @@ const worldPoint = transform.transformPoint({ x: 0, y: 0 });
 
 > **new Matrix3**(): `Matrix3`
 
-Defined in: [src/core/matrix3.ts:2031](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L2031)
+Defined in: [src/core/matrix3.ts:2072](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L2072)
 
 Creates identity matrix.
 
@@ -50,7 +57,7 @@ Creates identity matrix.
 
 > **new Matrix3**(`m00`, `m01`, `m02`, `m10`, `m11`, `m12`, `m20`, `m21`, `m22`): `Matrix3`
 
-Defined in: [src/core/matrix3.ts:2033](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L2033)
+Defined in: [src/core/matrix3.ts:2074](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L2074)
 
 Creates from 9 components (column-major).
 
@@ -100,7 +107,7 @@ Creates from 9 components (column-major).
 
 > **new Matrix3**(`array`): `Matrix3`
 
-Defined in: [src/core/matrix3.ts:2045](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L2045)
+Defined in: [src/core/matrix3.ts:2086](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L2086)
 
 Creates from 9-element array.
 
@@ -118,7 +125,7 @@ readonly \[`number`, `number`, `number`, `number`, `number`, `number`, `number`,
 
 > **new Matrix3**(`object`): `Matrix3`
 
-Defined in: [src/core/matrix3.ts:2049](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L2049)
+Defined in: [src/core/matrix3.ts:2090](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L2090)
 
 Creates from plain object.
 
@@ -134,11 +141,31 @@ Creates from plain object.
 
 ## Arithmetic
 
+### abs()
+
+> **abs**(): `this`
+
+Defined in: [src/core/matrix3.ts:3127](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L3127)
+
+Takes the absolute value of all elements in place.
+
+#### Returns
+
+`this`
+
+This for chaining.
+
+#### Since
+
+0.7.0
+
+---
+
 ### add()
 
 > **add**(`other`): `this`
 
-Defined in: [src/core/matrix3.ts:2583](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L2583)
+Defined in: [src/core/matrix3.ts:2627](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L2627)
 
 Adds another matrix to this one element-wise.
 
@@ -158,7 +185,7 @@ This for chaining.
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -166,7 +193,7 @@ This for chaining.
 
 > **addScalar**(`scalar`): `this`
 
-Defined in: [src/core/matrix3.ts:2662](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L2662)
+Defined in: [src/core/matrix3.ts:2706](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L2706)
 
 Adds a scalar to all elements.
 
@@ -186,7 +213,121 @@ This for chaining.
 
 #### Since
 
-0.9.0
+0.7.0
+
+---
+
+### adjugate()
+
+> **adjugate**(): `this`
+
+Defined in: [src/core/matrix3.ts:2973](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L2973)
+
+Calculates the adjugate (adjoint) matrix in place.
+
+#### Returns
+
+`this`
+
+This for chaining.
+
+#### Remarks
+
+The adjugate is the transpose of the cofactor matrix.
+For a 3×3 matrix, each element is the determinant of the 2×2
+minor matrix, with alternating signs.
+
+#### Since
+
+0.7.0
+
+---
+
+### ceil()
+
+> **ceil**(): `this`
+
+Defined in: [src/core/matrix3.ts:3064](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L3064)
+
+Ceils all elements in place.
+
+#### Returns
+
+`this`
+
+This for chaining.
+
+#### Since
+
+0.7.0
+
+---
+
+### clamp()
+
+> **clamp**(`minMatrix`, `maxMatrix`): `this`
+
+Defined in: [src/core/matrix3.ts:3171](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L3171)
+
+Clamps all elements to a range in place.
+
+#### Parameters
+
+##### minMatrix
+
+[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
+
+Minimum values per element.
+
+##### maxMatrix
+
+[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
+
+Maximum values per element.
+
+#### Returns
+
+`this`
+
+This for chaining.
+
+#### Since
+
+0.7.0
+
+---
+
+### clampScalar()
+
+> **clampScalar**(`minValue`, `maxValue`): `this`
+
+Defined in: [src/core/matrix3.ts:3194](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L3194)
+
+Clamps all elements to a scalar range in place.
+
+#### Parameters
+
+##### minValue
+
+`number`
+
+Minimum value.
+
+##### maxValue
+
+`number`
+
+Maximum value.
+
+#### Returns
+
+`this`
+
+This for chaining.
+
+#### Since
+
+0.7.0
 
 ---
 
@@ -194,7 +335,7 @@ This for chaining.
 
 > **divideScalar**(`scalar`): `this`
 
-Defined in: [src/core/matrix3.ts:2734](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L2734)
+Defined in: [src/core/matrix3.ts:2778](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L2778)
 
 Divides all elements by a scalar (strict).
 
@@ -223,7 +364,7 @@ For hot paths, use [divideScalarUnchecked](#dividescalarunchecked-2).
 
 #### Since
 
-0.9.0
+0.7.0
 
 ---
 
@@ -231,7 +372,7 @@ For hot paths, use [divideScalarUnchecked](#dividescalarunchecked-2).
 
 > **divideScalarSafe**(`scalar`): `this`
 
-Defined in: [src/core/matrix3.ts:2751](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L2751)
+Defined in: [src/core/matrix3.ts:2795](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L2795)
 
 Divides all elements by a scalar (safe).
 
@@ -251,7 +392,7 @@ This for chaining (sets to zero matrix if scalar is near zero).
 
 #### Since
 
-0.9.0
+0.7.0
 
 ---
 
@@ -259,7 +400,7 @@ This for chaining (sets to zero matrix if scalar is near zero).
 
 > **divideScalarUnchecked**(`scalar`): `this`
 
-Defined in: [src/core/matrix3.ts:2771](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L2771)
+Defined in: [src/core/matrix3.ts:2815](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L2815)
 
 Unchecked scalar division for hot paths.
 
@@ -283,7 +424,27 @@ This for chaining.
 
 #### Since
 
-0.11.0
+0.7.0
+
+---
+
+### floor()
+
+> **floor**(): `this`
+
+Defined in: [src/core/matrix3.ts:3043](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L3043)
+
+Floors all elements in place.
+
+#### Returns
+
+`this`
+
+This for chaining.
+
+#### Since
+
+0.7.0
 
 ---
 
@@ -291,7 +452,7 @@ This for chaining.
 
 > **fma**(`scale`, `m`): `this`
 
-Defined in: [src/core/matrix3.ts:2707](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L2707)
+Defined in: [src/core/matrix3.ts:2751](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L2751)
 
 Fused multiply-add: `this = this * scale + m`.
 
@@ -317,7 +478,187 @@ This for chaining.
 
 #### Since
 
-0.9.0
+0.7.0
+
+---
+
+### inverse()
+
+> **inverse**(): `this`
+
+Defined in: [src/core/matrix3.ts:2855](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L2855)
+
+Inverts this matrix in place.
+
+#### Returns
+
+`this`
+
+This for chaining.
+
+#### Throws
+
+Error if singular.
+
+#### Since
+
+0.7.0
+
+---
+
+### inverseSafe()
+
+> **inverseSafe**(): `this`
+
+Defined in: [src/core/matrix3.ts:2893](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L2893)
+
+Inverts this matrix in place (safe version).
+
+#### Returns
+
+`this`
+
+This for chaining (returns identity if singular).
+
+#### Since
+
+0.7.0
+
+---
+
+### inverseUnchecked()
+
+> **inverseUnchecked**(): `this`
+
+Defined in: [src/core/matrix3.ts:2912](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L2912)
+
+Inverts this matrix in place (unchecked version).
+
+#### Returns
+
+`this`
+
+This for chaining.
+
+#### Remarks
+
+Assumes matrix is invertible. Use for hot paths when you've already validated.
+
+#### Since
+
+0.7.0
+
+---
+
+### max()
+
+> **max**(`other`): `this`
+
+Defined in: [src/core/matrix3.ts:3238](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L3238)
+
+Takes element-wise maximum with another matrix in place.
+
+#### Parameters
+
+##### other
+
+[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
+
+Matrix to compare.
+
+#### Returns
+
+`this`
+
+This for chaining.
+
+#### Since
+
+0.7.0
+
+---
+
+### min()
+
+> **min**(`other`): `this`
+
+Defined in: [src/core/matrix3.ts:3216](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L3216)
+
+Takes element-wise minimum with another matrix in place.
+
+#### Parameters
+
+##### other
+
+[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
+
+Matrix to compare.
+
+#### Returns
+
+`this`
+
+This for chaining.
+
+#### Since
+
+0.7.0
+
+---
+
+### mod()
+
+> **mod**(`other`): `this`
+
+Defined in: [src/core/matrix3.ts:3260](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L3260)
+
+Computes element-wise modulo in place.
+
+#### Parameters
+
+##### other
+
+[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
+
+Divisor matrix.
+
+#### Returns
+
+`this`
+
+This for chaining.
+
+#### Since
+
+0.7.0
+
+---
+
+### modScalar()
+
+> **modScalar**(`scalar`): `this`
+
+Defined in: [src/core/matrix3.ts:3282](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L3282)
+
+Computes scalar modulo in place.
+
+#### Parameters
+
+##### scalar
+
+`number`
+
+Divisor.
+
+#### Returns
+
+`this`
+
+This for chaining.
+
+#### Since
+
+0.7.0
 
 ---
 
@@ -325,7 +666,7 @@ This for chaining.
 
 > **multiply**(`other`): `this`
 
-Defined in: [src/core/matrix3.ts:2550](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L2550)
+Defined in: [src/core/matrix3.ts:2594](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L2594)
 
 Multiplies this matrix by another (this × other).
 
@@ -345,7 +686,7 @@ This for chaining.
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -353,7 +694,7 @@ This for chaining.
 
 > **multiplyScalar**(`scalar`): `this`
 
-Defined in: [src/core/matrix3.ts:2649](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L2649)
+Defined in: [src/core/matrix3.ts:2693](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L2693)
 
 Alias for scale.
 
@@ -373,7 +714,103 @@ This for chaining.
 
 #### Since
 
-0.9.0
+0.7.0
+
+---
+
+### negate()
+
+> **negate**(): `this`
+
+Defined in: [src/core/matrix3.ts:2947](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L2947)
+
+Negates all elements in place.
+
+#### Returns
+
+`this`
+
+This for chaining.
+
+#### Since
+
+0.7.0
+
+---
+
+### premultiply()
+
+> **premultiply**(`other`): `this`
+
+Defined in: [src/core/matrix3.ts:3007](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L3007)
+
+Pre-multiplies this matrix by another (other × this).
+
+#### Parameters
+
+##### other
+
+[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
+
+Matrix to multiply by.
+
+#### Returns
+
+`this`
+
+This for chaining.
+
+#### Since
+
+0.7.0
+
+---
+
+### rotate()
+
+> **rotate**(`angle`): `this`
+
+Defined in: [src/core/matrix3.ts:3434](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L3434)
+
+Applies a rotation to this matrix in place.
+
+#### Parameters
+
+##### angle
+
+`number`
+
+Rotation angle in radians.
+
+#### Returns
+
+`this`
+
+This for chaining.
+
+#### Since
+
+0.7.0
+
+---
+
+### round()
+
+> **round**(): `this`
+
+Defined in: [src/core/matrix3.ts:3085](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L3085)
+
+Rounds all elements in place.
+
+#### Returns
+
+`this`
+
+This for chaining.
+
+#### Since
+
+0.7.0
 
 ---
 
@@ -381,7 +818,7 @@ This for chaining.
 
 > **scale**(`scalar`): `this`
 
-Defined in: [src/core/matrix3.ts:2627](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L2627)
+Defined in: [src/core/matrix3.ts:2671](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L2671)
 
 Scales all elements by a scalar.
 
@@ -401,7 +838,55 @@ This for chaining.
 
 #### Since
 
-0.1.0
+0.7.0
+
+---
+
+### scaleBy()
+
+> **scaleBy**(`scaleValue`): `this`
+
+Defined in: [src/core/matrix3.ts:3486](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L3486)
+
+Applies a scale transformation to this matrix in place.
+
+#### Parameters
+
+##### scaleValue
+
+Scale factor (scalar or per-axis vector).
+
+`number` | [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
+
+#### Returns
+
+`this`
+
+This for chaining.
+
+#### Since
+
+0.7.0
+
+---
+
+### sign()
+
+> **sign**(): `this`
+
+Defined in: [src/core/matrix3.ts:3148](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L3148)
+
+Takes the sign of all elements in place.
+
+#### Returns
+
+`this`
+
+This for chaining.
+
+#### Since
+
+0.7.0
 
 ---
 
@@ -409,7 +894,7 @@ This for chaining.
 
 > **subtract**(`other`): `this`
 
-Defined in: [src/core/matrix3.ts:2605](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L2605)
+Defined in: [src/core/matrix3.ts:2649](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L2649)
 
 Subtracts another matrix from this one element-wise.
 
@@ -429,7 +914,7 @@ This for chaining.
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -437,7 +922,7 @@ This for chaining.
 
 > **subtractScalar**(`scalar`): `this`
 
-Defined in: [src/core/matrix3.ts:2684](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L2684)
+Defined in: [src/core/matrix3.ts:2728](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L2728)
 
 Subtracts a scalar from all elements.
 
@@ -457,7 +942,109 @@ This for chaining.
 
 #### Since
 
-0.9.0
+0.7.0
+
+---
+
+### translate()
+
+> **translate**(`translation`): `this`
+
+Defined in: [src/core/matrix3.ts:3416](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L3416)
+
+Applies a translation to this matrix in place.
+
+#### Parameters
+
+##### translation
+
+[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
+
+Translation vector.
+
+#### Returns
+
+`this`
+
+This for chaining.
+
+#### Since
+
+0.7.0
+
+---
+
+### transpose()
+
+> **transpose**(): `this`
+
+Defined in: [src/core/matrix3.ts:2832](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L2832)
+
+Transposes this matrix in place.
+
+#### Returns
+
+`this`
+
+This for chaining.
+
+#### Since
+
+0.7.0
+
+---
+
+### trunc()
+
+> **trunc**(): `this`
+
+Defined in: [src/core/matrix3.ts:3106](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L3106)
+
+Applies Math.trunc to all elements in place (rounds towards zero).
+
+#### Returns
+
+`this`
+
+This for chaining.
+
+#### Since
+
+0.7.0
+
+---
+
+### abs()
+
+> `static` **abs**(`matrix`, `out?`): `Matrix3`
+
+Defined in: [src/core/matrix3.ts:995](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L995)
+
+Applies absolute value to all elements.
+
+#### Parameters
+
+##### matrix
+
+[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
+
+Source matrix.
+
+##### out?
+
+`Matrix3`
+
+Optional output matrix.
+
+#### Returns
+
+`Matrix3`
+
+Absolute-valued matrix.
+
+#### Since
+
+0.7.0
 
 ---
 
@@ -465,7 +1052,7 @@ This for chaining.
 
 > `static` **add**(`a`, `b`, `out?`): `Matrix3`
 
-Defined in: [src/core/matrix3.ts:591](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L591)
+Defined in: [src/core/matrix3.ts:594](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L594)
 
 Component-wise addition `a + b`.
 
@@ -497,7 +1084,7 @@ Matrix with component-wise sums.
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -505,7 +1092,7 @@ Matrix with component-wise sums.
 
 > `static` **addScalar**(`m`, `s`, `out?`): `Matrix3`
 
-Defined in: [src/core/matrix3.ts:616](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L616)
+Defined in: [src/core/matrix3.ts:619](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L619)
 
 Adds a scalar to all elements.
 
@@ -537,7 +1124,243 @@ Matrix with scalar added to each element.
 
 #### Since
 
-0.9.0
+0.7.0
+
+---
+
+### adjugate()
+
+> `static` **adjugate**(`matrix`, `out?`): `Matrix3`
+
+Defined in: [src/core/matrix3.ts:1662](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L1662)
+
+Calculates the adjugate (adjoint) matrix.
+
+#### Parameters
+
+##### matrix
+
+[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
+
+Source matrix.
+
+##### out?
+
+`Matrix3`
+
+Optional output matrix.
+
+#### Returns
+
+`Matrix3`
+
+Adjugate matrix (transpose of cofactor matrix).
+
+#### Since
+
+0.7.0
+
+---
+
+### ceil()
+
+> `static` **ceil**(`matrix`, `out?`): `Matrix3`
+
+Defined in: [src/core/matrix3.ts:923](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L923)
+
+Applies Math.ceil to all elements.
+
+#### Parameters
+
+##### matrix
+
+[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
+
+Source matrix.
+
+##### out?
+
+`Matrix3`
+
+Optional output matrix.
+
+#### Returns
+
+`Matrix3`
+
+Ceiled matrix.
+
+#### Since
+
+0.7.0
+
+---
+
+### clamp()
+
+> `static` **clamp**(`m`, `minM`, `maxM`, `out?`): `Matrix3`
+
+Defined in: [src/core/matrix3.ts:1095](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L1095)
+
+Component-wise clamp between two matrices.
+
+#### Parameters
+
+##### m
+
+[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
+
+Matrix to clamp.
+
+##### minM
+
+[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
+
+Per-component minima.
+
+##### maxM
+
+[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
+
+Per-component maxima.
+
+##### out?
+
+`Matrix3`
+
+Optional output matrix.
+
+#### Returns
+
+`Matrix3`
+
+Clamped matrix.
+
+#### Since
+
+0.7.0
+
+---
+
+### clampScalar()
+
+> `static` **clampScalar**(`m`, `min`, `max`, `out?`): `Matrix3`
+
+Defined in: [src/core/matrix3.ts:1126](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L1126)
+
+Clamps all elements between scalar bounds.
+
+#### Parameters
+
+##### m
+
+[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
+
+Matrix to clamp.
+
+##### min
+
+`number`
+
+Minimum scalar.
+
+##### max
+
+`number`
+
+Maximum scalar.
+
+##### out?
+
+`Matrix3`
+
+Optional output matrix.
+
+#### Returns
+
+`Matrix3`
+
+Clamped matrix.
+
+#### Since
+
+0.7.0
+
+---
+
+### decompose()
+
+> `static` **decompose**(`matrix`): `object`
+
+Defined in: [src/core/matrix3.ts:1854](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L1854)
+
+Decomposes an affine matrix into translation, rotation, and scale.
+
+#### Parameters
+
+##### matrix
+
+[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
+
+Matrix to decompose.
+
+#### Returns
+
+`object`
+
+Object with translation, rotation (radians), and scale.
+
+##### rotation
+
+> **rotation**: `number`
+
+##### scale
+
+> **scale**: [`Vector2`](Vector2.md)
+
+##### translation
+
+> **translation**: [`Vector2`](Vector2.md)
+
+#### Remarks
+
+**Numerical Stability:** For matrices with extremely small scale components
+(magnitude < 1e-10), the rotation extraction may be imprecise. If scale
+approaches zero, rotation defaults to 0 radians. For matrices with scale
+components smaller than ~1e-154, underflow may occur in intermediate
+calculations due to IEEE 754 double precision limits.
+
+#### Since
+
+0.7.0
+
+---
+
+### determinant()
+
+> `static` **determinant**(`matrix`): `number`
+
+Defined in: [src/core/matrix3.ts:1608](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L1608)
+
+Calculates the determinant.
+
+#### Parameters
+
+##### matrix
+
+[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
+
+Matrix to calculate determinant of.
+
+#### Returns
+
+`number`
+
+Determinant value.
+
+#### Since
+
+0.7.0
 
 ---
 
@@ -545,7 +1368,7 @@ Matrix with scalar added to each element.
 
 > `static` **divideScalar**(`matrix`, `scalar`, `out?`): `Matrix3`
 
-Defined in: [src/core/matrix3.ts:797](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L797)
+Defined in: [src/core/matrix3.ts:807](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L807)
 
 Divides all elements by a scalar (strict).
 
@@ -586,7 +1409,7 @@ For hot paths, use [divideScalarUnchecked](#dividescalarunchecked-2).
 
 #### Since
 
-0.9.0
+0.7.0
 
 ---
 
@@ -594,7 +1417,7 @@ For hot paths, use [divideScalarUnchecked](#dividescalarunchecked-2).
 
 > `static` **divideScalarSafe**(`matrix`, `scalar`, `out?`): `Matrix3`
 
-Defined in: [src/core/matrix3.ts:816](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L816)
+Defined in: [src/core/matrix3.ts:826](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L826)
 
 Divides all elements by a scalar (safe).
 
@@ -626,7 +1449,7 @@ Matrix with each element divided by scalar, or zero matrix if scalar is near zer
 
 #### Since
 
-0.11.0
+0.7.0
 
 ---
 
@@ -634,7 +1457,7 @@ Matrix with each element divided by scalar, or zero matrix if scalar is near zer
 
 > `static` **divideScalarUnchecked**(`matrix`, `scalar`, `out?`): `Matrix3`
 
-Defined in: [src/core/matrix3.ts:842](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L842)
+Defined in: [src/core/matrix3.ts:852](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L852)
 
 Divides all elements by a scalar (unchecked for hot paths).
 
@@ -670,7 +1493,41 @@ Matrix with each element divided by scalar.
 
 #### Since
 
-0.11.0
+0.7.0
+
+---
+
+### floor()
+
+> `static` **floor**(`matrix`, `out?`): `Matrix3`
+
+Defined in: [src/core/matrix3.ts:899](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L899)
+
+Applies Math.floor to all elements.
+
+#### Parameters
+
+##### matrix
+
+[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
+
+Source matrix.
+
+##### out?
+
+`Matrix3`
+
+Optional output matrix.
+
+#### Returns
+
+`Matrix3`
+
+Floored matrix.
+
+#### Since
+
+0.7.0
 
 ---
 
@@ -678,7 +1535,7 @@ Matrix with each element divided by scalar.
 
 > `static` **fma**(`a`, `scale`, `b`, `out?`): `Matrix3`
 
-Defined in: [src/core/matrix3.ts:695](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L695)
+Defined in: [src/core/matrix3.ts:698](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L698)
 
 Fused multiply-add: `a * scale + b`.
 
@@ -720,7 +1577,226 @@ More efficient than separate scale and add operations.
 
 #### Since
 
-0.9.0
+0.7.0
+
+---
+
+### frobeniusNorm()
+
+> `static` **frobeniusNorm**(`matrix`): `number`
+
+Defined in: [src/core/matrix3.ts:1638](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L1638)
+
+Calculates the Frobenius norm.
+
+#### Parameters
+
+##### matrix
+
+[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
+
+Matrix to calculate norm of.
+
+#### Returns
+
+`number`
+
+Frobenius norm √(Σ|mᵢⱼ|²).
+
+#### Since
+
+0.7.0
+
+---
+
+### inverse()
+
+> `static` **inverse**(`matrix`, `out?`): `Matrix3`
+
+Defined in: [src/core/matrix3.ts:1689](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L1689)
+
+Inverts a matrix. Throws if singular.
+
+#### Parameters
+
+##### matrix
+
+[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
+
+Matrix to invert.
+
+##### out?
+
+`Matrix3`
+
+Optional output matrix.
+
+#### Returns
+
+`Matrix3`
+
+Inverted matrix.
+
+#### Throws
+
+If matrix is singular.
+
+#### Since
+
+0.7.0
+
+---
+
+### inverseSafe()
+
+> `static` **inverseSafe**(`matrix`, `out?`): `Matrix3`
+
+Defined in: [src/core/matrix3.ts:1731](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L1731)
+
+Safe inverse. Returns identity if singular.
+
+#### Parameters
+
+##### matrix
+
+[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
+
+Matrix to invert.
+
+##### out?
+
+`Matrix3`
+
+Optional output matrix.
+
+#### Returns
+
+`Matrix3`
+
+Inverted matrix or identity if singular.
+
+#### Since
+
+0.7.0
+
+---
+
+### inverseUnchecked()
+
+> `static` **inverseUnchecked**(`matrix`, `out?`): `Matrix3`
+
+Defined in: [src/core/matrix3.ts:1753](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L1753)
+
+Unchecked inverse for hot paths. Assumes matrix is invertible.
+
+#### Parameters
+
+##### matrix
+
+[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
+
+Matrix to invert.
+
+##### out?
+
+`Matrix3`
+
+Optional output matrix.
+
+#### Returns
+
+`Matrix3`
+
+Inverted matrix.
+
+#### Remarks
+
+⚠️ **Precondition:** Matrix must be invertible (non-singular).
+Calling with singular matrix produces Infinity/NaN elements.
+
+#### Since
+
+0.7.0
+
+---
+
+### max()
+
+> `static` **max**(`a`, `b`, `out?`): `Matrix3`
+
+Defined in: [src/core/matrix3.ts:1069](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L1069)
+
+Component-wise maximum of two matrices.
+
+#### Parameters
+
+##### a
+
+[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
+
+First matrix.
+
+##### b
+
+[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
+
+Second matrix.
+
+##### out?
+
+`Matrix3`
+
+Optional output matrix.
+
+#### Returns
+
+`Matrix3`
+
+Matrix with component-wise maxima.
+
+#### Since
+
+0.7.0
+
+---
+
+### min()
+
+> `static` **min**(`a`, `b`, `out?`): `Matrix3`
+
+Defined in: [src/core/matrix3.ts:1044](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L1044)
+
+Component-wise minimum of two matrices.
+
+#### Parameters
+
+##### a
+
+[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
+
+First matrix.
+
+##### b
+
+[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
+
+Second matrix.
+
+##### out?
+
+`Matrix3`
+
+Optional output matrix.
+
+#### Returns
+
+`Matrix3`
+
+Matrix with component-wise minima.
+
+#### Since
+
+0.7.0
 
 ---
 
@@ -728,7 +1804,7 @@ More efficient than separate scale and add operations.
 
 > `static` **multiply**(`a`, `b`, `out?`): `Matrix3`
 
-Defined in: [src/core/matrix3.ts:725](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L725)
+Defined in: [src/core/matrix3.ts:735](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L735)
 
 Matrix multiplication `a × b`.
 
@@ -758,9 +1834,17 @@ Optional output matrix.
 
 Matrix product.
 
+#### Example
+
+```typescript
+const translate = Matrix3.fromTranslation(10, 20);
+const rotate = Matrix3.fromRotation(Math.PI / 4);
+const combined = Matrix3.multiply(translate, rotate); // translate then rotate
+```
+
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -768,7 +1852,7 @@ Matrix product.
 
 > `static` **multiplyScalar**(`matrix`, `scalar`, `out?`): `Matrix3`
 
-Defined in: [src/core/matrix3.ts:777](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L777)
+Defined in: [src/core/matrix3.ts:787](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L787)
 
 Alias for scale - multiplies all elements by a scalar.
 
@@ -800,7 +1884,7 @@ Scaled matrix.
 
 #### Since
 
-0.9.0
+0.7.0
 
 ---
 
@@ -808,7 +1892,7 @@ Scaled matrix.
 
 > `static` **negate**(`matrix`, `out?`): `Matrix3`
 
-Defined in: [src/core/matrix3.ts:861](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L861)
+Defined in: [src/core/matrix3.ts:871](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L871)
 
 Negates all elements.
 
@@ -834,7 +1918,41 @@ Negated matrix.
 
 #### Since
 
-0.1.0
+0.7.0
+
+---
+
+### round()
+
+> `static` **round**(`matrix`, `out?`): `Matrix3`
+
+Defined in: [src/core/matrix3.ts:947](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L947)
+
+Applies Math.round to all elements.
+
+#### Parameters
+
+##### matrix
+
+[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
+
+Source matrix.
+
+##### out?
+
+`Matrix3`
+
+Optional output matrix.
+
+#### Returns
+
+`Matrix3`
+
+Rounded matrix.
+
+#### Since
+
+0.7.0
 
 ---
 
@@ -842,7 +1960,7 @@ Negated matrix.
 
 > `static` **scale**(`matrix`, `scalar`, `out?`): `Matrix3`
 
-Defined in: [src/core/matrix3.ts:752](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L752)
+Defined in: [src/core/matrix3.ts:762](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L762)
 
 Scales all elements by a scalar.
 
@@ -874,7 +1992,41 @@ Scaled matrix.
 
 #### Since
 
-0.1.0
+0.7.0
+
+---
+
+### sign()
+
+> `static` **sign**(`matrix`, `out?`): `Matrix3`
+
+Defined in: [src/core/matrix3.ts:1019](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L1019)
+
+Applies sign function to all elements.
+
+#### Parameters
+
+##### matrix
+
+[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
+
+Source matrix.
+
+##### out?
+
+`Matrix3`
+
+Optional output matrix.
+
+#### Returns
+
+`Matrix3`
+
+Matrix with signs (-1, 0, or 1).
+
+#### Since
+
+0.7.0
 
 ---
 
@@ -882,7 +2034,7 @@ Scaled matrix.
 
 > `static` **subtract**(`a`, `b`, `out?`): `Matrix3`
 
-Defined in: [src/core/matrix3.ts:641](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L641)
+Defined in: [src/core/matrix3.ts:644](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L644)
 
 Component-wise subtraction `a - b`.
 
@@ -914,7 +2066,7 @@ Matrix with component-wise differences.
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -922,7 +2074,7 @@ Matrix with component-wise differences.
 
 > `static` **subtractScalar**(`m`, `s`, `out?`): `Matrix3`
 
-Defined in: [src/core/matrix3.ts:666](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L666)
+Defined in: [src/core/matrix3.ts:669](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L669)
 
 Subtracts a scalar from all elements.
 
@@ -954,7 +2106,103 @@ Matrix with scalar subtracted from each element.
 
 #### Since
 
-0.9.0
+0.7.0
+
+---
+
+### trace()
+
+> `static` **trace**(`matrix`): `number`
+
+Defined in: [src/core/matrix3.ts:1625](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L1625)
+
+Calculates the trace (sum of diagonal).
+
+#### Parameters
+
+##### matrix
+
+[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
+
+Matrix to calculate trace of.
+
+#### Returns
+
+`number`
+
+Trace value.
+
+#### Since
+
+0.7.0
+
+---
+
+### transpose()
+
+> `static` **transpose**(`matrix`, `out?`): `Matrix3`
+
+Defined in: [src/core/matrix3.ts:1585](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L1585)
+
+Transposes a matrix.
+
+#### Parameters
+
+##### matrix
+
+[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
+
+Source matrix.
+
+##### out?
+
+`Matrix3`
+
+Optional output matrix.
+
+#### Returns
+
+`Matrix3`
+
+Transposed matrix.
+
+#### Since
+
+0.7.0
+
+---
+
+### trunc()
+
+> `static` **trunc**(`matrix`, `out?`): `Matrix3`
+
+Defined in: [src/core/matrix3.ts:971](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L971)
+
+Applies Math.trunc to all elements (rounds towards zero).
+
+#### Parameters
+
+##### matrix
+
+[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
+
+Source matrix.
+
+##### out?
+
+`Matrix3`
+
+Optional output matrix.
+
+#### Returns
+
+`Matrix3`
+
+Truncated matrix.
+
+#### Since
+
+0.7.0
 
 ## Batch Operations
 
@@ -962,7 +2210,7 @@ Matrix with scalar subtracted from each element.
 
 > **transformPoints**(`points`, `out`): [`Vector2`](Vector2.md)[]
 
-Defined in: [src/core/matrix3.ts:3518](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L3518)
+Defined in: [src/core/matrix3.ts:3562](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L3562)
 
 Transforms multiple points efficiently (batch operation).
 
@@ -1000,7 +2248,7 @@ const worldVertices = matrix.transformPoints(vertices);
 
 #### Since
 
-0.9.0
+0.7.0
 
 ---
 
@@ -1008,7 +2256,7 @@ const worldVertices = matrix.transformPoints(vertices);
 
 > **transformVectors**(`vectors`, `out`): [`Vector2`](Vector2.md)[]
 
-Defined in: [src/core/matrix3.ts:3538](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L3538)
+Defined in: [src/core/matrix3.ts:3582](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L3582)
 
 Transforms multiple vectors efficiently (batch operation).
 
@@ -1038,7 +2286,7 @@ Unlike points, vectors are not affected by translation.
 
 #### Since
 
-0.9.0
+0.7.0
 
 ## Column/Row
 
@@ -1046,7 +2294,7 @@ Unlike points, vectors are not affected by translation.
 
 > **getColumn**(`index`): \[`number`, `number`, `number`\]
 
-Defined in: [src/core/matrix3.ts:3265](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L3265)
+Defined in: [src/core/matrix3.ts:3309](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L3309)
 
 Gets a column of the matrix as a 3-element array.
 
@@ -1070,7 +2318,7 @@ RangeError if index is out of bounds.
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -1078,7 +2326,7 @@ RangeError if index is out of bounds.
 
 > **getRow**(`index`): \[`number`, `number`, `number`\]
 
-Defined in: [src/core/matrix3.ts:3317](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L3317)
+Defined in: [src/core/matrix3.ts:3361](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L3361)
 
 Gets a row of the matrix as a 3-element array.
 
@@ -1102,7 +2350,7 @@ RangeError if index is out of bounds.
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -1110,7 +2358,7 @@ RangeError if index is out of bounds.
 
 > **setColumn**(`index`, `values`): `this`
 
-Defined in: [src/core/matrix3.ts:3284](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L3284)
+Defined in: [src/core/matrix3.ts:3328](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L3328)
 
 Sets a column of the matrix.
 
@@ -1140,7 +2388,7 @@ RangeError if index is out of bounds.
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -1148,7 +2396,7 @@ RangeError if index is out of bounds.
 
 > **setRow**(`index`, `values`): `this`
 
-Defined in: [src/core/matrix3.ts:3336](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L3336)
+Defined in: [src/core/matrix3.ts:3380](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L3380)
 
 Sets a row of the matrix.
 
@@ -1178,7 +2426,7 @@ RangeError if index is out of bounds.
 
 #### Since
 
-0.1.0
+0.7.0
 
 ## Comparison
 
@@ -1186,7 +2434,7 @@ RangeError if index is out of bounds.
 
 > **exactEquals**(`other`): `boolean`
 
-Defined in: [src/core/matrix3.ts:3570](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L3570)
+Defined in: [src/core/matrix3.ts:3614](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L3614)
 
 Exact equality with other matrix (bit-identical).
 
@@ -1210,7 +2458,27 @@ Use [nearEquals](#nearequals-2) for comparing results of floating-point operatio
 
 #### Since
 
-0.1.0
+0.7.0
+
+---
+
+### hasInfinity()
+
+> **hasInfinity**(): `boolean`
+
+Defined in: [src/core/matrix3.ts:3755](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L3755)
+
+Tests if any element is infinite (±Infinity).
+
+#### Returns
+
+`boolean`
+
+True if any element is ±Infinity.
+
+#### Since
+
+0.7.0
 
 ---
 
@@ -1218,7 +2486,7 @@ Use [nearEquals](#nearequals-2) for comparing results of floating-point operatio
 
 > **hasNaN**(): `boolean`
 
-Defined in: [src/core/matrix3.ts:3689](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L3689)
+Defined in: [src/core/matrix3.ts:3733](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L3733)
 
 Tests if any element is NaN.
 
@@ -1230,7 +2498,7 @@ True if any element is NaN.
 
 #### Since
 
-0.9.0
+0.7.0
 
 ---
 
@@ -1238,7 +2506,7 @@ True if any element is NaN.
 
 > **isDiagonal**(`epsilon`): `boolean`
 
-Defined in: [src/core/matrix3.ts:3755](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L3755)
+Defined in: [src/core/matrix3.ts:3811](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L3811)
 
 Tests if this matrix is diagonal (off-diagonal elements ≈ 0).
 
@@ -1262,7 +2530,7 @@ True if matrix is diagonal.
 
 #### Since
 
-0.9.0
+0.7.0
 
 ---
 
@@ -1270,7 +2538,7 @@ True if matrix is diagonal.
 
 > **isFinite**(): `boolean`
 
-Defined in: [src/core/matrix3.ts:3667](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L3667)
+Defined in: [src/core/matrix3.ts:3711](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L3711)
 
 Tests if all elements are finite.
 
@@ -1282,7 +2550,7 @@ True if all elements are finite.
 
 #### Since
 
-0.9.0
+0.7.0
 
 ---
 
@@ -1290,7 +2558,7 @@ True if all elements are finite.
 
 > **isIdentity**(`epsilon`): `boolean`
 
-Defined in: [src/core/matrix3.ts:3600](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L3600)
+Defined in: [src/core/matrix3.ts:3644](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L3644)
 
 Tests if this matrix is an identity matrix.
 
@@ -1314,7 +2582,7 @@ True if this is an identity matrix.
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -1322,7 +2590,7 @@ True if this is an identity matrix.
 
 > **isNearZero**(`epsilon`): `boolean`
 
-Defined in: [src/core/matrix3.ts:3645](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L3645)
+Defined in: [src/core/matrix3.ts:3689](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L3689)
 
 Tests if all elements are near zero.
 
@@ -1346,7 +2614,7 @@ True if all elements are within epsilon of zero.
 
 #### Since
 
-0.9.0
+0.7.0
 
 ---
 
@@ -1354,7 +2622,7 @@ True if all elements are within epsilon of zero.
 
 > **isOrthogonal**(`epsilon`): `boolean`
 
-Defined in: [src/core/matrix3.ts:3788](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L3788)
+Defined in: [src/core/matrix3.ts:3831](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L3831)
 
 Tests if this matrix is orthogonal (M \* M^T = I).
 
@@ -1378,39 +2646,7 @@ True if matrix is orthogonal.
 
 #### Since
 
-0.9.0
-
----
-
-### isSingular()
-
-> **isSingular**(`epsilon`): `boolean`
-
-Defined in: [src/core/matrix3.ts:3775](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L3775)
-
-Tests if this matrix is singular (determinant ≈ 0).
-
-#### Parameters
-
-##### epsilon
-
-`number` = `EPSILON`
-
-Tolerance.
-
-#### Returns
-
-`boolean`
-
-True if matrix is singular (non-invertible).
-
-#### Default Value
-
-`EPSILON`
-
-#### Since
-
-0.9.0
+0.7.0
 
 ---
 
@@ -1418,7 +2654,7 @@ True if matrix is singular (non-invertible).
 
 > **isSkewSymmetric**(`epsilon`): `boolean`
 
-Defined in: [src/core/matrix3.ts:3735](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L3735)
+Defined in: [src/core/matrix3.ts:3791](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L3791)
 
 Tests if this matrix is skew-symmetric (M = -M^T).
 
@@ -1446,7 +2682,7 @@ Uses relative tolerance for comparing off-diagonal elements.
 
 #### Since
 
-0.9.0
+0.7.0
 
 ---
 
@@ -1454,7 +2690,7 @@ Uses relative tolerance for comparing off-diagonal elements.
 
 > **isSymmetric**(`epsilon`): `boolean`
 
-Defined in: [src/core/matrix3.ts:3715](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L3715)
+Defined in: [src/core/matrix3.ts:3771](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L3771)
 
 Tests if this matrix is symmetric (M = M^T).
 
@@ -1482,7 +2718,7 @@ Uses relative tolerance for comparing off-diagonal elements.
 
 #### Since
 
-0.9.0
+0.7.0
 
 ---
 
@@ -1490,7 +2726,7 @@ Uses relative tolerance for comparing off-diagonal elements.
 
 > **isZero**(): `boolean`
 
-Defined in: [src/core/matrix3.ts:3622](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L3622)
+Defined in: [src/core/matrix3.ts:3666](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L3666)
 
 Tests if all elements are exactly zero.
 
@@ -1502,7 +2738,7 @@ True if all elements are zero.
 
 #### Since
 
-0.9.0
+0.7.0
 
 ---
 
@@ -1510,7 +2746,7 @@ True if all elements are zero.
 
 > **nearEquals**(`other`, `epsilon`): `boolean`
 
-Defined in: [src/core/matrix3.ts:3587](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L3587)
+Defined in: [src/core/matrix3.ts:3631](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L3631)
 
 Approximate equality with other matrix using relative tolerance.
 
@@ -1544,7 +2780,7 @@ Uses relative tolerance: `|a - b| <= epsilon * max(1, |a|, |b|)` per component.
 
 #### Since
 
-0.9.0
+0.7.0
 
 ---
 
@@ -1552,7 +2788,7 @@ Uses relative tolerance: `|a - b| <= epsilon * max(1, |a|, |b|)` per component.
 
 > `static` **exactEquals**(`a`, `b`): `boolean`
 
-Defined in: [src/core/matrix3.ts:1303](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L1303)
+Defined in: [src/core/matrix3.ts:1313](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L1313)
 
 Exact component-wise equality (bit-identical).
 
@@ -1582,7 +2818,39 @@ Use [nearEquals](#nearequals-2) for comparing results of floating-point operatio
 
 #### Since
 
-0.1.0
+0.7.0
+
+---
+
+### hasInfinity()
+
+> `static` **hasInfinity**(`matrix`): `boolean`
+
+Defined in: [src/core/matrix3.ts:1418](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L1418)
+
+Tests if any element is infinite (±Infinity).
+
+#### Parameters
+
+##### matrix
+
+[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
+
+Matrix to test.
+
+#### Returns
+
+`boolean`
+
+True if any element is ±Infinity.
+
+#### Remarks
+
+Distinguishes infinity from NaN. Use [isFinite](#isfinite-2) to check for both.
+
+#### Since
+
+0.7.0
 
 ---
 
@@ -1590,7 +2858,7 @@ Use [nearEquals](#nearequals-2) for comparing results of floating-point operatio
 
 > `static` **hasNaN**(`matrix`): `boolean`
 
-Defined in: [src/core/matrix3.ts:1382](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L1382)
+Defined in: [src/core/matrix3.ts:1392](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L1392)
 
 Tests if any element is NaN.
 
@@ -1610,7 +2878,7 @@ True if any element is NaN.
 
 #### Since
 
-0.9.0
+0.7.0
 
 ---
 
@@ -1618,7 +2886,7 @@ True if any element is NaN.
 
 > `static` **isDiagonal**(`matrix`, `epsilon`): `boolean`
 
-Defined in: [src/core/matrix3.ts:1489](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L1489)
+Defined in: [src/core/matrix3.ts:1530](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L1530)
 
 Tests if matrix is diagonal.
 
@@ -1648,7 +2916,7 @@ True if off-diagonal elements are near zero.
 
 #### Since
 
-0.9.0
+0.7.0
 
 ---
 
@@ -1656,7 +2924,7 @@ True if off-diagonal elements are near zero.
 
 > `static` **isFinite**(`matrix`): `boolean`
 
-Defined in: [src/core/matrix3.ts:1359](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L1359)
+Defined in: [src/core/matrix3.ts:1369](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L1369)
 
 Tests if all elements are finite numbers.
 
@@ -1676,7 +2944,7 @@ True if all elements are finite.
 
 #### Since
 
-0.9.0
+0.7.0
 
 ---
 
@@ -1684,7 +2952,7 @@ True if all elements are finite.
 
 > `static` **isIdentity**(`matrix`, `epsilon`): `boolean`
 
-Defined in: [src/core/matrix3.ts:1406](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L1406)
+Defined in: [src/core/matrix3.ts:1443](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L1443)
 
 Tests if matrix is identity.
 
@@ -1714,7 +2982,50 @@ True if matrix is identity.
 
 #### Since
 
-0.1.0
+0.7.0
+
+---
+
+### isInvertible()
+
+> `static` **isInvertible**(`matrix`, `epsilon`): `boolean`
+
+Defined in: [src/core/matrix3.ts:1471](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L1471)
+
+Tests if matrix is invertible (determinant ≠ 0).
+
+#### Parameters
+
+##### matrix
+
+[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
+
+Matrix to test.
+
+##### epsilon
+
+`number` = `EPSILON`
+
+Tolerance.
+
+#### Returns
+
+`boolean`
+
+True if matrix is invertible (non-singular).
+
+#### Default Value
+
+`EPSILON`
+
+#### Remarks
+
+A matrix is invertible when its determinant is non-zero.
+This follows the Eigen C++ convention.
+
+#### Since
+
+0.7.0
 
 ---
 
@@ -1722,7 +3033,7 @@ True if matrix is identity.
 
 > `static` **isNearZero**(`matrix`, `epsilon`): `boolean`
 
-Defined in: [src/core/matrix3.ts:1265](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L1265)
+Defined in: [src/core/matrix3.ts:1275](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L1275)
 
 Tests if all elements are near zero.
 
@@ -1752,7 +3063,7 @@ True if all elements are within epsilon of zero.
 
 #### Since
 
-0.9.0
+0.7.0
 
 ---
 
@@ -1760,7 +3071,7 @@ True if all elements are within epsilon of zero.
 
 > `static` **isOrthogonal**(`matrix`, `epsilon`): `boolean`
 
-Defined in: [src/core/matrix3.ts:1510](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L1510)
+Defined in: [src/core/matrix3.ts:1551](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L1551)
 
 Tests if a matrix is orthogonal (M \* M^T = I).
 
@@ -1790,45 +3101,7 @@ True if matrix is orthogonal.
 
 #### Since
 
-0.9.0
-
----
-
-### isSingular()
-
-> `static` **isSingular**(`matrix`, `epsilon`): `boolean`
-
-Defined in: [src/core/matrix3.ts:1430](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L1430)
-
-Tests if matrix is singular (non-invertible).
-
-#### Parameters
-
-##### matrix
-
-[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
-
-Matrix to test.
-
-##### epsilon
-
-`number` = `EPSILON`
-
-Tolerance.
-
-#### Returns
-
-`boolean`
-
-True if determinant is near zero.
-
-#### Default Value
-
-`EPSILON`
-
-#### Since
-
-0.9.0
+0.7.0
 
 ---
 
@@ -1836,7 +3109,7 @@ True if determinant is near zero.
 
 > `static` **isSkewSymmetric**(`matrix`, `epsilon`): `boolean`
 
-Defined in: [src/core/matrix3.ts:1468](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L1468)
+Defined in: [src/core/matrix3.ts:1509](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L1509)
 
 Tests if matrix is skew-symmetric (M = -M^T).
 
@@ -1870,7 +3143,7 @@ Uses relative tolerance for comparing off-diagonal elements.
 
 #### Since
 
-0.9.0
+0.7.0
 
 ---
 
@@ -1878,7 +3151,7 @@ Uses relative tolerance for comparing off-diagonal elements.
 
 > `static` **isSymmetric**(`matrix`, `epsilon`): `boolean`
 
-Defined in: [src/core/matrix3.ts:1447](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L1447)
+Defined in: [src/core/matrix3.ts:1488](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L1488)
 
 Tests if matrix is symmetric (M = M^T).
 
@@ -1912,7 +3185,7 @@ Uses relative tolerance for comparing off-diagonal elements.
 
 #### Since
 
-0.9.0
+0.7.0
 
 ---
 
@@ -1920,7 +3193,7 @@ Uses relative tolerance for comparing off-diagonal elements.
 
 > `static` **isZero**(`matrix`): `boolean`
 
-Defined in: [src/core/matrix3.ts:1241](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L1241)
+Defined in: [src/core/matrix3.ts:1251](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L1251)
 
 Tests for exact equality with the zero matrix.
 
@@ -1940,7 +3213,7 @@ True if all elements are exactly zero.
 
 #### Since
 
-0.9.0
+0.7.0
 
 ---
 
@@ -1948,7 +3221,7 @@ True if all elements are exactly zero.
 
 > `static` **nearEquals**(`a`, `b`, `epsilon`): `boolean`
 
-Defined in: [src/core/matrix3.ts:1332](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L1332)
+Defined in: [src/core/matrix3.ts:1342](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L1342)
 
 Approximate component-wise equality using relative tolerance.
 
@@ -1989,7 +3262,7 @@ This scales with value magnitude, making it robust for both small and large valu
 
 #### Since
 
-0.9.0
+0.7.0
 
 ## Computed
 
@@ -1997,7 +3270,7 @@ This scales with value magnitude, making it robust for both small and large valu
 
 > **determinant**(): `number`
 
-Defined in: [src/core/matrix3.ts:2318](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L2318)
+Defined in: [src/core/matrix3.ts:2362](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L2362)
 
 Calculates the determinant.
 
@@ -2009,7 +3282,7 @@ Determinant value.
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -2017,7 +3290,7 @@ Determinant value.
 
 > **frobeniusNorm**(): `number`
 
-Defined in: [src/core/matrix3.ts:2346](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L2346)
+Defined in: [src/core/matrix3.ts:2390](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L2390)
 
 Calculates the Frobenius norm.
 
@@ -2029,7 +3302,7 @@ Frobenius norm √(Σ|mᵢⱼ|²).
 
 #### Since
 
-0.9.0
+0.7.0
 
 ---
 
@@ -2037,7 +3310,7 @@ Frobenius norm √(Σ|mᵢⱼ|²).
 
 > **getRotation**(): `number`
 
-Defined in: [src/core/matrix3.ts:2302](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L2302)
+Defined in: [src/core/matrix3.ts:2346](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L2346)
 
 Extracts rotation angle from the matrix.
 
@@ -2049,7 +3322,7 @@ Rotation angle in radians.
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -2057,7 +3330,7 @@ Rotation angle in radians.
 
 > **getScale**(`out?`): [`Vector2`](Vector2.md)
 
-Defined in: [src/core/matrix3.ts:2288](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L2288)
+Defined in: [src/core/matrix3.ts:2332](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L2332)
 
 Extracts scale factors from the matrix.
 
@@ -2081,7 +3354,7 @@ Uses deterministic sqrt for cross-platform reproducibility.
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -2089,7 +3362,7 @@ Uses deterministic sqrt for cross-platform reproducibility.
 
 > **getTranslation**(`out?`): [`Vector2`](Vector2.md)
 
-Defined in: [src/core/matrix3.ts:2273](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L2273)
+Defined in: [src/core/matrix3.ts:2317](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L2317)
 
 Extracts translation vector from the matrix.
 
@@ -2109,7 +3382,7 @@ Translation as Vector2.
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -2117,7 +3390,7 @@ Translation as Vector2.
 
 > **isAffine**(`epsilon`): `boolean`
 
-Defined in: [src/core/matrix3.ts:2382](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L2382)
+Defined in: [src/core/matrix3.ts:2426](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L2426)
 
 Tests if matrix is affine (bottom row is [0, 0, 1]).
 
@@ -2141,7 +3414,7 @@ True if matrix is affine.
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -2149,7 +3422,7 @@ True if matrix is affine.
 
 > **isInvertible**(`epsilon`): `boolean`
 
-Defined in: [src/core/matrix3.ts:2369](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L2369)
+Defined in: [src/core/matrix3.ts:2413](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L2413)
 
 Tests if matrix is invertible.
 
@@ -2173,7 +3446,7 @@ True if determinant is not near zero.
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -2181,7 +3454,7 @@ True if determinant is not near zero.
 
 > **trace**(): `number`
 
-Defined in: [src/core/matrix3.ts:2334](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L2334)
+Defined in: [src/core/matrix3.ts:2378](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L2378)
 
 Calculates the trace (sum of diagonal).
 
@@ -2193,7 +3466,21 @@ Trace value.
 
 #### Since
 
-0.9.0
+0.7.0
+
+## Constant
+
+### ELEMENT_COUNT
+
+> `readonly` `static` **ELEMENT_COUNT**: `9` = `9`
+
+Defined in: [src/core/matrix3.ts:151](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L151)
+
+Number of elements when serialized to an array.
+
+#### Since
+
+0.7.0
 
 ## Conversion
 
@@ -2201,7 +3488,7 @@ Trace value.
 
 > **\[iterator\]**(): `IterableIterator`\<`number`\>
 
-Defined in: [src/core/matrix3.ts:4078](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L4078)
+Defined in: [src/core/matrix3.ts:4104](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L4104)
 
 Iterator for array destructuring (column-major order).
 
@@ -2219,7 +3506,7 @@ const [m00, m01, m02, m10, m11, m12, m20, m21, m22] = matrix;
 
 #### Since
 
-0.9.0
+0.7.0
 
 ---
 
@@ -2227,7 +3514,7 @@ const [m00, m01, m02, m10, m11, m12, m20, m21, m22] = matrix;
 
 > **clone**(): `Matrix3`
 
-Defined in: [src/core/matrix3.ts:4062](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L4062)
+Defined in: [src/core/matrix3.ts:4088](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L4088)
 
 Creates a deep copy of this matrix.
 
@@ -2247,7 +3534,7 @@ copy.identity(); // Original unchanged
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -2255,7 +3542,7 @@ copy.identity(); // Original unchanged
 
 > **toArray**\<`T`\>(`out?`, `offset?`, `columnMajor?`): `T` \| \[`number`, `number`, `number`, `number`, `number`, `number`, `number`, `number`, `number`\]
 
-Defined in: [src/core/matrix3.ts:3896](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L3896)
+Defined in: [src/core/matrix3.ts:3939](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L3939)
 
 Writes the matrix to an array or typed array.
 
@@ -2308,55 +3595,7 @@ Accepts any array-like type that supports indexed assignment.
 
 #### Since
 
-0.1.0
-
----
-
-### toFloat32Array()
-
-> **toFloat32Array**(`out?`, `offset?`, `columnMajor?`): `Float32Array`
-
-Defined in: [src/core/matrix3.ts:3962](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L3962)
-
-Converts the matrix to a Float32Array.
-
-#### Parameters
-
-##### out?
-
-`Float32Array`\<`ArrayBufferLike`\>
-
-Optional output array.
-
-##### offset?
-
-`number` = `0`
-
-Array offset.
-
-##### columnMajor?
-
-`boolean` = `true`
-
-Use column-major order.
-
-#### Returns
-
-`Float32Array`
-
-Float32Array with matrix elements.
-
-#### Default Value
-
-`0`
-
-#### Default Value
-
-`true`
-
-#### Since
-
-0.1.0
+0.7.0
 
 ---
 
@@ -2364,7 +3603,7 @@ Float32Array with matrix elements.
 
 > **toJSON**(): [`Matrix3Like`](../../types/interfaces/Matrix3Like.md)
 
-Defined in: [src/core/matrix3.ts:4018](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L4018)
+Defined in: [src/core/matrix3.ts:4044](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L4044)
 
 Converts the matrix to a JSON-serializable object.
 Called automatically by JSON.stringify().
@@ -2377,7 +3616,7 @@ Object suitable for JSON serialization.
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -2385,7 +3624,7 @@ Object suitable for JSON serialization.
 
 > **toMatrix2**(`out?`): [`Matrix2`](Matrix2.md)
 
-Defined in: [src/core/matrix3.ts:3977](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L3977)
+Defined in: [src/core/matrix3.ts:4003](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L4003)
 
 Extracts the upper-left 2×2 portion as a Matrix2.
 
@@ -2405,7 +3644,7 @@ Matrix2 containing upper-left 2×2 portion.
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -2413,7 +3652,7 @@ Matrix2 containing upper-left 2×2 portion.
 
 > **toObject**(): [`Matrix3Like`](../../types/interfaces/Matrix3Like.md)
 
-Defined in: [src/core/matrix3.ts:3995](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L3995)
+Defined in: [src/core/matrix3.ts:4021](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L4021)
 
 Converts the matrix to a plain object.
 
@@ -2432,7 +3671,7 @@ const obj = m.toObject();
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -2440,7 +3679,7 @@ const obj = m.toObject();
 
 > **toString**(`precision`): `string`
 
-Defined in: [src/core/matrix3.ts:4042](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L4042)
+Defined in: [src/core/matrix3.ts:4068](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L4068)
 
 Creates a human-readable string representation.
 
@@ -2476,7 +3715,7 @@ console.log(m.toString());
 
 #### Since
 
-0.1.0
+0.7.0
 
 ## Factory
 
@@ -2484,7 +3723,7 @@ console.log(m.toString());
 
 > `static` **clone**(`source`, `out?`): `Matrix3`
 
-Defined in: [src/core/matrix3.ts:229](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L229)
+Defined in: [src/core/matrix3.ts:235](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L235)
 
 Creates a deep copy of a matrix.
 
@@ -2510,7 +3749,7 @@ A Matrix3 with identical components.
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -2518,7 +3757,7 @@ A Matrix3 with identical components.
 
 > `static` **copy**(`source`, `destination`): `Matrix3`
 
-Defined in: [src/core/matrix3.ts:253](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L253)
+Defined in: [src/core/matrix3.ts:259](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L259)
 
 Copies component values from source into destination (alloc-free).
 
@@ -2544,7 +3783,7 @@ The destination matrix.
 
 #### Since
 
-0.9.0
+0.7.0
 
 ---
 
@@ -2552,7 +3791,7 @@ The destination matrix.
 
 > `static` **fromArray**(`array`, `offset`, `columnMajor`, `out?`): `Matrix3`
 
-Defined in: [src/core/matrix3.ts:528](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L528)
+Defined in: [src/core/matrix3.ts:535](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L535)
 
 Creates a matrix from a flat numeric array.
 
@@ -2602,7 +3841,7 @@ If offset is out of bounds.
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -2610,7 +3849,7 @@ If offset is out of bounds.
 
 > `static` **fromColumns**(`col0`, `col1`, `col2`, `out?`): `Matrix3`
 
-Defined in: [src/core/matrix3.ts:438](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L438)
+Defined in: [src/core/matrix3.ts:445](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L445)
 
 Creates a matrix from column vectors.
 
@@ -2648,7 +3887,7 @@ A Matrix3 with the specified columns.
 
 #### Since
 
-0.9.0
+0.7.0
 
 ---
 
@@ -2656,7 +3895,7 @@ A Matrix3 with the specified columns.
 
 > `static` **fromMatrix2**(`matrix`, `out?`): `Matrix3`
 
-Defined in: [src/core/matrix3.ts:382](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L382)
+Defined in: [src/core/matrix3.ts:389](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L389)
 
 Creates a Matrix3 from a Matrix2 (embeds 2×2 in homogeneous coordinates).
 
@@ -2682,7 +3921,7 @@ A Matrix3 with the 2×2 matrix in the upper-left.
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -2690,7 +3929,7 @@ A Matrix3 with the 2×2 matrix in the upper-left.
 
 > `static` **fromObject**(`object`, `out?`): `Matrix3`
 
-Defined in: [src/core/matrix3.ts:278](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L278)
+Defined in: [src/core/matrix3.ts:284](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L284)
 
 Creates a matrix from a plain object.
 
@@ -2720,7 +3959,7 @@ If any component is not finite.
 
 #### Since
 
-0.9.0
+0.7.0
 
 ---
 
@@ -2728,7 +3967,7 @@ If any component is not finite.
 
 > `static` **fromRotation**(`rotation`, `out?`): `Matrix3`
 
-Defined in: [src/core/matrix3.ts:315](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L315)
+Defined in: [src/core/matrix3.ts:322](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L322)
 
 Creates a rotation matrix from an angle or Rotation2.
 
@@ -2754,7 +3993,7 @@ A Matrix3 representing the rotation.
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -2762,7 +4001,7 @@ A Matrix3 representing the rotation.
 
 > `static` **fromRows**(`row0`, `row1`, `row2`, `out?`): `Matrix3`
 
-Defined in: [src/core/matrix3.ts:469](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L469)
+Defined in: [src/core/matrix3.ts:476](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L476)
 
 Creates a matrix from row vectors.
 
@@ -2800,7 +4039,7 @@ A Matrix3 with the specified rows.
 
 #### Since
 
-0.9.0
+0.7.0
 
 ---
 
@@ -2808,7 +4047,7 @@ A Matrix3 with the specified rows.
 
 > `static` **fromScale**(`scale`, `out?`): `Matrix3`
 
-Defined in: [src/core/matrix3.ts:339](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L339)
+Defined in: [src/core/matrix3.ts:346](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L346)
 
 Creates a scale matrix.
 
@@ -2834,7 +4073,7 @@ A Matrix3 representing the scale.
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -2842,7 +4081,7 @@ A Matrix3 representing the scale.
 
 > `static` **fromShear**(`shear`, `out?`): `Matrix3`
 
-Defined in: [src/core/matrix3.ts:368](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L368)
+Defined in: [src/core/matrix3.ts:375](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L375)
 
 Creates a shear transformation matrix.
 
@@ -2882,7 +4121,7 @@ const point = Matrix3.apply(shear, { x: 0, y: 1 }); // (0.5, 1)
 
 #### Since
 
-0.14.0
+0.7.0
 
 ---
 
@@ -2890,7 +4129,7 @@ const point = Matrix3.apply(shear, { x: 0, y: 1 }); // (0.5, 1)
 
 > `static` **fromTransform2**(`translation`, `rotation`, `scale`, `out?`): `Matrix3`
 
-Defined in: [src/core/matrix3.ts:398](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L398)
+Defined in: [src/core/matrix3.ts:405](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L405)
 
 Creates a transform matrix from translation, rotation, and scale.
 
@@ -2928,7 +4167,7 @@ A Matrix3 representing the combined transform (T × R × S).
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -2936,7 +4175,7 @@ A Matrix3 representing the combined transform (T × R × S).
 
 > `static` **fromTranslation**(`translation`, `out?`): `Matrix3`
 
-Defined in: [src/core/matrix3.ts:301](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L301)
+Defined in: [src/core/matrix3.ts:308](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L308)
 
 Creates a translation matrix.
 
@@ -2962,7 +4201,7 @@ A Matrix3 representing the translation.
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -2970,7 +4209,7 @@ A Matrix3 representing the translation.
 
 > `static` **fromValues**(`m00`, `m01`, `m02`, `m10`, `m11`, `m12`, `m20`, `m21`, `m22`, `out?`): `Matrix3`
 
-Defined in: [src/core/matrix3.ts:204](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L204)
+Defined in: [src/core/matrix3.ts:210](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L210)
 
 Creates a matrix from explicit components.
 
@@ -3044,7 +4283,7 @@ A Matrix3 with the specified components.
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -3052,7 +4291,7 @@ A Matrix3 with the specified components.
 
 > `static` **ortho**(`left`, `right`, `bottom`, `top`, `out?`): `Matrix3`
 
-Defined in: [src/core/matrix3.ts:501](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L501)
+Defined in: [src/core/matrix3.ts:508](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L508)
 
 Creates an orthographic projection matrix for 2D.
 
@@ -3096,7 +4335,7 @@ A Matrix3 representing the orthographic projection.
 
 #### Since
 
-0.1.0
+0.7.0
 
 ## Interpolation
 
@@ -3104,7 +4343,7 @@ A Matrix3 representing the orthographic projection.
 
 > **lerp**(`other`, `t`): `this`
 
-Defined in: [src/core/matrix3.ts:3822](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L3822)
+Defined in: [src/core/matrix3.ts:3865](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L3865)
 
 Linear interpolation with another matrix in place.
 
@@ -3130,7 +4369,7 @@ This for chaining.
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -3138,7 +4377,7 @@ This for chaining.
 
 > **lerpClamped**(`other`, `t`): `this`
 
-Defined in: [src/core/matrix3.ts:3846](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L3846)
+Defined in: [src/core/matrix3.ts:3889](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L3889)
 
 Clamped linear interpolation (alias for lerp).
 
@@ -3164,7 +4403,7 @@ This for chaining.
 
 #### Since
 
-0.9.0
+0.7.0
 
 ---
 
@@ -3172,7 +4411,7 @@ This for chaining.
 
 > **smoothStep**(`other`, `t`): `this`
 
-Defined in: [src/core/matrix3.ts:3860](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L3860)
+Defined in: [src/core/matrix3.ts:3903](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L3903)
 
 Smooth step interpolation in place.
 
@@ -3198,7 +4437,7 @@ This for chaining.
 
 #### Since
 
-0.9.0
+0.7.0
 
 ---
 
@@ -3206,7 +4445,7 @@ This for chaining.
 
 > `static` **lerp**(`a`, `b`, `t`, `out?`): `Matrix3`
 
-Defined in: [src/core/matrix3.ts:1151](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L1151)
+Defined in: [src/core/matrix3.ts:1161](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L1161)
 
 Linear interpolation with t clamped to [0, 1].
 
@@ -3244,7 +4483,7 @@ Interpolated matrix.
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -3252,7 +4491,7 @@ Interpolated matrix.
 
 > `static` **lerpClamped**(`a`, `b`, `t`, `out?`): `Matrix3`
 
-Defined in: [src/core/matrix3.ts:1186](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L1186)
+Defined in: [src/core/matrix3.ts:1196](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L1196)
 
 Clamped linear interpolation (alias for lerp).
 
@@ -3295,7 +4534,7 @@ Provided for API symmetry with Vector2.
 
 #### Since
 
-0.9.0
+0.7.0
 
 ---
 
@@ -3303,7 +4542,7 @@ Provided for API symmetry with Vector2.
 
 > `static` **smoothStep**(`a`, `b`, `t`, `out?`): `Matrix3`
 
-Defined in: [src/core/matrix3.ts:1207](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L1207)
+Defined in: [src/core/matrix3.ts:1217](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L1217)
 
 Smooth step interpolation between matrices.
 
@@ -3341,778 +4580,7 @@ Smoothly interpolated matrix.
 
 #### Since
 
-0.9.0
-
-## Matrix Operations
-
-### adjugate()
-
-> **adjugate**(): `this`
-
-Defined in: [src/core/matrix3.ts:2929](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L2929)
-
-Calculates the adjugate (adjoint) matrix in place.
-
-#### Returns
-
-`this`
-
-This for chaining.
-
-#### Remarks
-
-The adjugate is the transpose of the cofactor matrix.
-For a 3×3 matrix, each element is the determinant of the 2×2
-minor matrix, with alternating signs.
-
-#### Since
-
-0.9.0
-
----
-
-### inverse()
-
-> **inverse**(): `this`
-
-Defined in: [src/core/matrix3.ts:2811](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L2811)
-
-Inverts this matrix in place.
-
-#### Returns
-
-`this`
-
-This for chaining.
-
-#### Throws
-
-Error if singular.
-
-#### Since
-
-0.1.0
-
----
-
-### inverseSafe()
-
-> **inverseSafe**(): `this`
-
-Defined in: [src/core/matrix3.ts:2849](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L2849)
-
-Inverts this matrix in place (safe version).
-
-#### Returns
-
-`this`
-
-This for chaining (returns identity if singular).
-
-#### Since
-
-0.9.0
-
----
-
-### inverseUnchecked()
-
-> **inverseUnchecked**(): `this`
-
-Defined in: [src/core/matrix3.ts:2868](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L2868)
-
-Inverts this matrix in place (unchecked version).
-
-#### Returns
-
-`this`
-
-This for chaining.
-
-#### Remarks
-
-Assumes matrix is invertible. Use for hot paths when you've already validated.
-
-#### Since
-
-0.9.0
-
----
-
-### negate()
-
-> **negate**(): `this`
-
-Defined in: [src/core/matrix3.ts:2903](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L2903)
-
-Negates all elements in place.
-
-#### Returns
-
-`this`
-
-This for chaining.
-
-#### Since
-
-0.1.0
-
----
-
-### premultiply()
-
-> **premultiply**(`other`): `this`
-
-Defined in: [src/core/matrix3.ts:2963](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L2963)
-
-Pre-multiplies this matrix by another (other × this).
-
-#### Parameters
-
-##### other
-
-[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
-
-Matrix to multiply by.
-
-#### Returns
-
-`this`
-
-This for chaining.
-
-#### Since
-
-0.1.0
-
----
-
-### transpose()
-
-> **transpose**(): `this`
-
-Defined in: [src/core/matrix3.ts:2788](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L2788)
-
-Transposes this matrix in place.
-
-#### Returns
-
-`this`
-
-This for chaining.
-
-#### Since
-
-0.1.0
-
----
-
-### adjugate()
-
-> `static` **adjugate**(`matrix`, `out?`): `Matrix3`
-
-Defined in: [src/core/matrix3.ts:1621](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L1621)
-
-Calculates the adjugate (adjoint) matrix.
-
-#### Parameters
-
-##### matrix
-
-[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
-
-Source matrix.
-
-##### out?
-
-`Matrix3`
-
-Optional output matrix.
-
-#### Returns
-
-`Matrix3`
-
-Adjugate matrix (transpose of cofactor matrix).
-
-#### Since
-
-0.9.0
-
----
-
-### decompose()
-
-> `static` **decompose**(`matrix`): `object`
-
-Defined in: [src/core/matrix3.ts:1813](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L1813)
-
-Decomposes an affine matrix into translation, rotation, and scale.
-
-#### Parameters
-
-##### matrix
-
-[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
-
-Matrix to decompose.
-
-#### Returns
-
-`object`
-
-Object with translation, rotation (radians), and scale.
-
-##### rotation
-
-> **rotation**: `number`
-
-##### scale
-
-> **scale**: [`Vector2`](Vector2.md)
-
-##### translation
-
-> **translation**: [`Vector2`](Vector2.md)
-
-#### Remarks
-
-**Numerical Stability:** For matrices with extremely small scale components
-(magnitude < 1e-10), the rotation extraction may be imprecise. If scale
-approaches zero, rotation defaults to 0 radians. For matrices with scale
-components smaller than ~1e-154, underflow may occur in intermediate
-calculations due to IEEE 754 double precision limits.
-
-#### Since
-
-0.1.0
-
----
-
-### determinant()
-
-> `static` **determinant**(`matrix`): `number`
-
-Defined in: [src/core/matrix3.ts:1567](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L1567)
-
-Calculates the determinant.
-
-#### Parameters
-
-##### matrix
-
-[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
-
-Matrix to calculate determinant of.
-
-#### Returns
-
-`number`
-
-Determinant value.
-
-#### Since
-
-0.1.0
-
----
-
-### frobeniusNorm()
-
-> `static` **frobeniusNorm**(`matrix`): `number`
-
-Defined in: [src/core/matrix3.ts:1597](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L1597)
-
-Calculates the Frobenius norm.
-
-#### Parameters
-
-##### matrix
-
-[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
-
-Matrix to calculate norm of.
-
-#### Returns
-
-`number`
-
-Frobenius norm √(Σ|mᵢⱼ|²).
-
-#### Since
-
-0.9.0
-
----
-
-### inverse()
-
-> `static` **inverse**(`matrix`, `out?`): `Matrix3`
-
-Defined in: [src/core/matrix3.ts:1648](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L1648)
-
-Inverts a matrix. Throws if singular.
-
-#### Parameters
-
-##### matrix
-
-[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
-
-Matrix to invert.
-
-##### out?
-
-`Matrix3`
-
-Optional output matrix.
-
-#### Returns
-
-`Matrix3`
-
-Inverted matrix.
-
-#### Throws
-
-If matrix is singular.
-
-#### Since
-
-0.1.0
-
----
-
-### inverseSafe()
-
-> `static` **inverseSafe**(`matrix`, `out?`): `Matrix3`
-
-Defined in: [src/core/matrix3.ts:1690](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L1690)
-
-Safe inverse. Returns identity if singular.
-
-#### Parameters
-
-##### matrix
-
-[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
-
-Matrix to invert.
-
-##### out?
-
-`Matrix3`
-
-Optional output matrix.
-
-#### Returns
-
-`Matrix3`
-
-Inverted matrix or identity if singular.
-
-#### Since
-
-0.9.0
-
----
-
-### inverseUnchecked()
-
-> `static` **inverseUnchecked**(`matrix`, `out?`): `Matrix3`
-
-Defined in: [src/core/matrix3.ts:1712](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L1712)
-
-Unchecked inverse for hot paths. Assumes matrix is invertible.
-
-#### Parameters
-
-##### matrix
-
-[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
-
-Matrix to invert.
-
-##### out?
-
-`Matrix3`
-
-Optional output matrix.
-
-#### Returns
-
-`Matrix3`
-
-Inverted matrix.
-
-#### Remarks
-
-⚠️ **Precondition:** Matrix must be invertible (non-singular).
-Calling with singular matrix produces Infinity/NaN elements.
-
-#### Since
-
-0.9.0
-
----
-
-### rotate()
-
-> `static` **rotate**(`matrix`, `angle`, `out?`): `Matrix3`
-
-Defined in: [src/core/matrix3.ts:1898](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L1898)
-
-Applies a rotation to a matrix.
-
-#### Parameters
-
-##### matrix
-
-[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
-
-Matrix to rotate.
-
-##### angle
-
-`number`
-
-Rotation angle in radians.
-
-##### out?
-
-`Matrix3`
-
-Optional output matrix.
-
-#### Returns
-
-`Matrix3`
-
-Rotated matrix.
-
-#### Remarks
-
-Equivalent to `Matrix3.multiply(matrix, Matrix3.fromRotation(angle), out)`
-but more efficient as it avoids creating an intermediate matrix.
-
-#### Example
-
-```typescript
-const m = Matrix3.fromTranslation(100, 50);
-const rotated = Matrix3.rotate(m, Math.PI / 4);
-```
-
-#### Since
-
-0.11.0
-
----
-
-### rotateCS()
-
-> `static` **rotateCS**(`matrix`, `cos`, `sin`, `out?`): `Matrix3`
-
-Defined in: [src/core/matrix3.ts:1929](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L1929)
-
-Rotates a matrix using precomputed cosine and sine values.
-
-#### Parameters
-
-##### matrix
-
-[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
-
-Matrix to rotate.
-
-##### cos
-
-`number`
-
-Cosine of the rotation angle.
-
-##### sin
-
-`number`
-
-Sine of the rotation angle.
-
-##### out?
-
-`Matrix3`
-
-Optional output matrix.
-
-#### Returns
-
-`Matrix3`
-
-Rotated matrix.
-
-#### Remarks
-
-Use this method in hot paths where the same rotation is applied to multiple
-matrices. Precompute `cos` and `sin` once and reuse them.
-
-#### Example
-
-```typescript
-const rotation = Rotation2.fromAngle(Math.PI / 4);
-const m1 = Matrix3.fromTranslation(100, 50);
-const m2 = Matrix3.fromTranslation(200, 100);
-// Apply same rotation to both matrices efficiently
-const r1 = Matrix3.rotateCS(m1, rotation.cos, rotation.sin);
-const r2 = Matrix3.rotateCS(m2, rotation.cos, rotation.sin);
-```
-
-#### Since
-
-0.12.0
-
----
-
-### scaleBy()
-
-> `static` **scaleBy**(`matrix`, `scaleValue`, `out?`): `Matrix3`
-
-Defined in: [src/core/matrix3.ts:1976](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L1976)
-
-Applies a scale transformation to a matrix.
-
-#### Parameters
-
-##### matrix
-
-[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
-
-Matrix to scale.
-
-##### scaleValue
-
-Scale factor (scalar or per-axis vector).
-
-`number` | [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
-
-##### out?
-
-`Matrix3`
-
-Optional output matrix.
-
-#### Returns
-
-`Matrix3`
-
-Scaled matrix.
-
-#### Remarks
-
-Equivalent to `Matrix3.multiply(matrix, Matrix3.fromScale(scaleValue), out)`
-but more efficient as it avoids creating an intermediate matrix.
-
-#### Example
-
-```typescript
-const m = Matrix3.fromTranslation(100, 50);
-const scaled = Matrix3.scaleBy(m, { x: 2, y: 0.5 });
-```
-
-#### Since
-
-0.11.0
-
----
-
-### trace()
-
-> `static` **trace**(`matrix`): `number`
-
-Defined in: [src/core/matrix3.ts:1584](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L1584)
-
-Calculates the trace (sum of diagonal).
-
-#### Parameters
-
-##### matrix
-
-[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
-
-Matrix to calculate trace of.
-
-#### Returns
-
-`number`
-
-Trace value.
-
-#### Since
-
-0.9.0
-
----
-
-### transformPoint()
-
-> `static` **transformPoint**(`matrix`, `point`, `out?`): [`Vector2`](Vector2.md)
-
-Defined in: [src/core/matrix3.ts:1752](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L1752)
-
-Transforms a point by the matrix (applies translation).
-
-#### Parameters
-
-##### matrix
-
-[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
-
-Transform matrix.
-
-##### point
-
-[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
-
-Point to transform.
-
-##### out?
-
-[`Vector2`](Vector2.md)
-
-Optional output vector.
-
-#### Returns
-
-[`Vector2`](Vector2.md)
-
-Transformed point.
-
-#### Since
-
-0.1.0
-
----
-
-### transformVector()
-
-> `static` **transformVector**(`matrix`, `vector`, `out?`): [`Vector2`](Vector2.md)
-
-Defined in: [src/core/matrix3.ts:1785](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L1785)
-
-Transforms a vector by the matrix (ignores translation).
-
-#### Parameters
-
-##### matrix
-
-[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
-
-Transform matrix.
-
-##### vector
-
-[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
-
-Vector to transform.
-
-##### out?
-
-[`Vector2`](Vector2.md)
-
-Optional output vector.
-
-#### Returns
-
-[`Vector2`](Vector2.md)
-
-Transformed vector.
-
-#### Since
-
-0.1.0
-
----
-
-### translate()
-
-> `static` **translate**(`matrix`, `translation`, `out?`): `Matrix3`
-
-Defined in: [src/core/matrix3.ts:1856](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L1856)
-
-Applies a translation to a matrix.
-
-#### Parameters
-
-##### matrix
-
-[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
-
-Matrix to translate.
-
-##### translation
-
-[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
-
-Translation vector.
-
-##### out?
-
-`Matrix3`
-
-Optional output matrix.
-
-#### Returns
-
-`Matrix3`
-
-Translated matrix.
-
-#### Remarks
-
-Equivalent to `Matrix3.multiply(matrix, Matrix3.fromTranslation(translation), out)`
-but more efficient as it avoids creating an intermediate matrix.
-
-#### Example
-
-```typescript
-const m = Matrix3.fromRotation(Math.PI / 4);
-const translated = Matrix3.translate(m, { x: 100, y: 50 });
-```
-
-#### Since
-
-0.11.0
-
----
-
-### transpose()
-
-> `static` **transpose**(`matrix`, `out?`): `Matrix3`
-
-Defined in: [src/core/matrix3.ts:1544](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L1544)
-
-Transposes a matrix.
-
-#### Parameters
-
-##### matrix
-
-[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
-
-Source matrix.
-
-##### out?
-
-`Matrix3`
-
-Optional output matrix.
-
-#### Returns
-
-`Matrix3`
-
-Transposed matrix.
-
-#### Since
-
-0.1.0
+0.7.0
 
 ## Mutator
 
@@ -4120,7 +4588,7 @@ Transposed matrix.
 
 > **copy**(`matrix`): `this`
 
-Defined in: [src/core/matrix3.ts:2199](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L2199)
+Defined in: [src/core/matrix3.ts:2243](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L2243)
 
 Copies from another matrix.
 
@@ -4140,7 +4608,7 @@ This for chaining.
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -4148,7 +4616,7 @@ This for chaining.
 
 > **identity**(): `this`
 
-Defined in: [src/core/matrix3.ts:2244](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L2244)
+Defined in: [src/core/matrix3.ts:2288](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L2288)
 
 Resets to identity matrix.
 
@@ -4160,7 +4628,7 @@ This for chaining.
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -4168,7 +4636,7 @@ This for chaining.
 
 > **set**(`m00`, `m01`, `m02`, `m10`, `m11`, `m12`, `m20`, `m21`, `m22`): `this`
 
-Defined in: [src/core/matrix3.ts:2167](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L2167)
+Defined in: [src/core/matrix3.ts:2211](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L2211)
 
 Sets all matrix elements.
 
@@ -4236,7 +4704,7 @@ This for chaining.
 
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
@@ -4244,7 +4712,7 @@ This for chaining.
 
 > **setFromArray**(`array`, `offset`): `this`
 
-Defined in: [src/core/matrix3.ts:2222](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L2222)
+Defined in: [src/core/matrix3.ts:2266](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L2266)
 
 Sets this matrix from array values (column-major order).
 
@@ -4270,7 +4738,7 @@ This for chaining.
 
 #### Since
 
-0.14.0
+0.7.0
 
 ---
 
@@ -4278,7 +4746,7 @@ This for chaining.
 
 > **zero**(): `this`
 
-Defined in: [src/core/matrix3.ts:2256](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L2256)
+Defined in: [src/core/matrix3.ts:2300](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L2300)
 
 Sets all elements to zero.
 
@@ -4290,283 +4758,554 @@ This for chaining.
 
 #### Since
 
-0.9.0
+0.7.0
 
 ## Numeric Transform
 
-### abs()
+### transformPoint()
 
-> **abs**(): `this`
+> **transformPoint**(`point`, `out?`): [`Vector2`](Vector2.md)
 
-Defined in: [src/core/matrix3.ts:3083](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L3083)
+Defined in: [src/core/matrix3.ts:3521](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L3521)
 
-Takes the absolute value of all elements in place.
-
-#### Returns
-
-`this`
-
-This for chaining.
-
-#### Since
-
-0.9.0
-
----
-
-### ceil()
-
-> **ceil**(): `this`
-
-Defined in: [src/core/matrix3.ts:3020](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L3020)
-
-Ceils all elements in place.
-
-#### Returns
-
-`this`
-
-This for chaining.
-
-#### Since
-
-0.9.0
-
----
-
-### clamp()
-
-> **clamp**(`minMatrix`, `maxMatrix`): `this`
-
-Defined in: [src/core/matrix3.ts:3127](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L3127)
-
-Clamps all elements to a range in place.
+Transforms a point by this matrix.
 
 #### Parameters
 
-##### minMatrix
+##### point
 
-[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
+[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Minimum values per element.
+Point to transform.
 
-##### maxMatrix
+##### out?
 
-[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
+[`Vector2`](Vector2.md)
 
-Maximum values per element.
+Optional output vector.
 
 #### Returns
 
-`this`
+[`Vector2`](Vector2.md)
 
-This for chaining.
+Transformed point.
+
+#### Remarks
+
+Points are affected by translation (uses homogeneous coordinate w=1).
 
 #### Since
 
-0.9.0
+0.7.0
 
 ---
 
-### clampScalar()
+### transformVector()
 
-> **clampScalar**(`minValue`, `maxValue`): `this`
+> **transformVector**(`vector`, `out?`): [`Vector2`](Vector2.md)
 
-Defined in: [src/core/matrix3.ts:3150](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L3150)
+Defined in: [src/core/matrix3.ts:3538](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L3538)
 
-Clamps all elements to a scalar range in place.
+Transforms a vector by this matrix.
 
 #### Parameters
 
-##### minValue
+##### vector
 
-`number`
+[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Minimum value.
+Vector to transform.
 
-##### maxValue
+##### out?
 
-`number`
+[`Vector2`](Vector2.md)
 
-Maximum value.
-
-#### Returns
-
-`this`
-
-This for chaining.
-
-#### Since
-
-0.9.0
-
----
-
-### floor()
-
-> **floor**(): `this`
-
-Defined in: [src/core/matrix3.ts:2999](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L2999)
-
-Floors all elements in place.
+Optional output vector.
 
 #### Returns
 
-`this`
+[`Vector2`](Vector2.md)
 
-This for chaining.
+Transformed vector.
 
-#### Since
+#### Remarks
 
-0.9.0
-
----
-
-### max()
-
-> **max**(`other`): `this`
-
-Defined in: [src/core/matrix3.ts:3194](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L3194)
-
-Takes element-wise maximum with another matrix in place.
-
-#### Parameters
-
-##### other
-
-[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
-
-Matrix to compare.
-
-#### Returns
-
-`this`
-
-This for chaining.
+Vectors are NOT affected by translation (uses homogeneous coordinate w=0).
 
 #### Since
 
-0.9.0
+0.7.0
+
+## Other
+
+### m00
+
+> **m00**: `number`
+
+Defined in: [src/core/matrix3.ts:2049](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L2049)
+
+Element at row 0, column 0.
+
+#### Implementation of
+
+[`Matrix3Like`](../../types/interfaces/Matrix3Like.md).[`m00`](../../types/interfaces/Matrix3Like.md#m00)
 
 ---
 
-### min()
+### m01
 
-> **min**(`other`): `this`
+> **m01**: `number`
 
-Defined in: [src/core/matrix3.ts:3172](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L3172)
+Defined in: [src/core/matrix3.ts:2051](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L2051)
 
-Takes element-wise minimum with another matrix in place.
+Element at row 1, column 0.
 
-#### Parameters
+#### Implementation of
 
-##### other
-
-[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
-
-Matrix to compare.
-
-#### Returns
-
-`this`
-
-This for chaining.
-
-#### Since
-
-0.9.0
+[`Matrix3Like`](../../types/interfaces/Matrix3Like.md).[`m01`](../../types/interfaces/Matrix3Like.md#m01)
 
 ---
 
-### mod()
+### m02
 
-> **mod**(`other`): `this`
+> **m02**: `number`
 
-Defined in: [src/core/matrix3.ts:3216](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L3216)
+Defined in: [src/core/matrix3.ts:2053](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L2053)
 
-Computes element-wise modulo in place.
+Element at row 2, column 0.
 
-#### Parameters
+#### Implementation of
 
-##### other
-
-[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
-
-Divisor matrix.
-
-#### Returns
-
-`this`
-
-This for chaining.
-
-#### Since
-
-0.9.0
+[`Matrix3Like`](../../types/interfaces/Matrix3Like.md).[`m02`](../../types/interfaces/Matrix3Like.md#m02)
 
 ---
 
-### modScalar()
+### m10
 
-> **modScalar**(`scalar`): `this`
+> **m10**: `number`
 
-Defined in: [src/core/matrix3.ts:3238](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L3238)
+Defined in: [src/core/matrix3.ts:2055](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L2055)
 
-Computes scalar modulo in place.
+Element at row 0, column 1.
 
-#### Parameters
+#### Implementation of
 
-##### scalar
-
-`number`
-
-Divisor.
-
-#### Returns
-
-`this`
-
-This for chaining.
-
-#### Since
-
-0.9.0
+[`Matrix3Like`](../../types/interfaces/Matrix3Like.md).[`m10`](../../types/interfaces/Matrix3Like.md#m10)
 
 ---
 
-### rotate()
+### m11
 
-> **rotate**(`angle`): `this`
+> **m11**: `number`
 
-Defined in: [src/core/matrix3.ts:3390](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L3390)
+Defined in: [src/core/matrix3.ts:2057](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L2057)
 
-Applies a rotation to this matrix in place.
+Element at row 1, column 1.
 
-#### Parameters
+#### Implementation of
 
-##### angle
-
-`number`
-
-Rotation angle in radians.
-
-#### Returns
-
-`this`
-
-This for chaining.
-
-#### Since
-
-0.1.0
+[`Matrix3Like`](../../types/interfaces/Matrix3Like.md).[`m11`](../../types/interfaces/Matrix3Like.md#m11)
 
 ---
+
+### m12
+
+> **m12**: `number`
+
+Defined in: [src/core/matrix3.ts:2059](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L2059)
+
+Element at row 2, column 1.
+
+#### Implementation of
+
+[`Matrix3Like`](../../types/interfaces/Matrix3Like.md).[`m12`](../../types/interfaces/Matrix3Like.md#m12)
+
+---
+
+### m20
+
+> **m20**: `number`
+
+Defined in: [src/core/matrix3.ts:2061](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L2061)
+
+Element at row 0, column 2.
+
+#### Implementation of
+
+[`Matrix3Like`](../../types/interfaces/Matrix3Like.md).[`m20`](../../types/interfaces/Matrix3Like.md#m20)
+
+---
+
+### m21
+
+> **m21**: `number`
+
+Defined in: [src/core/matrix3.ts:2063](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L2063)
+
+Element at row 1, column 2.
+
+#### Implementation of
+
+[`Matrix3Like`](../../types/interfaces/Matrix3Like.md).[`m21`](../../types/interfaces/Matrix3Like.md#m21)
+
+---
+
+### m22
+
+> **m22**: `number`
+
+Defined in: [src/core/matrix3.ts:2065](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L2065)
+
+Element at row 2, column 2.
+
+#### Implementation of
+
+[`Matrix3Like`](../../types/interfaces/Matrix3Like.md).[`m22`](../../types/interfaces/Matrix3Like.md#m22)
+
+---
+
+### EPSILON_MATRIX
+
+> `readonly` `static` **EPSILON_MATRIX**: `Readonly`\<`Matrix3`\>
+
+Defined in: [src/core/matrix3.ts:160](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L160)
+
+Epsilon matrix (EPSILON in all elements).
+
+---
+
+### FLIP_X
+
+> `readonly` `static` **FLIP_X**: `Readonly`\<`Matrix3`\>
+
+Defined in: [src/core/matrix3.ts:165](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L165)
+
+Flip horizontally (mirror across Y axis).
+
+---
+
+### FLIP_XY
+
+> `readonly` `static` **FLIP_XY**: `Readonly`\<`Matrix3`\>
+
+Defined in: [src/core/matrix3.ts:171](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L171)
+
+Flip both axes (equivalent to ROTATE_180).
+
+---
+
+### FLIP_Y
+
+> `readonly` `static` **FLIP_Y**: `Readonly`\<`Matrix3`\>
+
+Defined in: [src/core/matrix3.ts:168](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L168)
+
+Flip vertically (mirror across X axis).
+
+---
+
+### IDENTITY
+
+> `readonly` `static` **IDENTITY**: `Readonly`\<`Matrix3`\>
+
+Defined in: [src/core/matrix3.ts:144](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L144)
+
+Identity matrix (no transformation).
+
+---
+
+### ONE
+
+> `readonly` `static` **ONE**: `Readonly`\<`Matrix3`\>
+
+Defined in: [src/core/matrix3.ts:157](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L157)
+
+All-ones matrix.
+
+---
+
+### ROTATE_180
+
+> `readonly` `static` **ROTATE_180**: `Readonly`\<`Matrix3`\>
+
+Defined in: [src/core/matrix3.ts:177](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L177)
+
+180° rotation.
+
+---
+
+### ROTATE_270
+
+> `readonly` `static` **ROTATE_270**: `Readonly`\<`Matrix3`\>
+
+Defined in: [src/core/matrix3.ts:180](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L180)
+
+270° counter-clockwise rotation (90° clockwise).
+
+---
+
+### ROTATE_90
+
+> `readonly` `static` **ROTATE_90**: `Readonly`\<`Matrix3`\>
+
+Defined in: [src/core/matrix3.ts:174](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L174)
+
+90° counter-clockwise rotation.
+
+---
+
+### SCALE_2
+
+> `readonly` `static` **SCALE_2**: `Readonly`\<`Matrix3`\>
+
+Defined in: [src/core/matrix3.ts:183](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L183)
+
+Uniform scale by 2.
+
+---
+
+### SCALE_HALF
+
+> `readonly` `static` **SCALE_HALF**: `Readonly`\<`Matrix3`\>
+
+Defined in: [src/core/matrix3.ts:186](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L186)
+
+Uniform scale by 0.5.
+
+---
+
+### ZERO
+
+> `readonly` `static` **ZERO**: `Readonly`\<`Matrix3`\>
+
+Defined in: [src/core/matrix3.ts:154](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L154)
+
+Zero matrix.
+
+---
+
+### column0
+
+#### Get Signature
+
+> **get** **column0**(): \[`number`, `number`, `number`\]
+
+Defined in: [src/core/matrix3.ts:2537](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L2537)
+
+Returns the first column as a tuple.
+
+##### Returns
+
+\[`number`, `number`, `number`\]
+
+Column 0 as [m00, m01, m02].
+
+---
+
+### column1
+
+#### Get Signature
+
+> **get** **column1**(): \[`number`, `number`, `number`\]
+
+Defined in: [src/core/matrix3.ts:2545](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L2545)
+
+Returns the second column as a tuple.
+
+##### Returns
+
+\[`number`, `number`, `number`\]
+
+Column 1 as [m10, m11, m12].
+
+---
+
+### column2
+
+#### Get Signature
+
+> **get** **column2**(): \[`number`, `number`, `number`\]
+
+Defined in: [src/core/matrix3.ts:2553](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L2553)
+
+Returns the third column as a tuple.
+
+##### Returns
+
+\[`number`, `number`, `number`\]
+
+Column 2 as [m20, m21, m22].
+
+---
+
+### diagonal
+
+#### Get Signature
+
+> **get** **diagonal**(): \[`number`, `number`, `number`\]
+
+Defined in: [src/core/matrix3.ts:2529](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L2529)
+
+Returns the diagonal elements as a 3-element array.
+
+##### Returns
+
+\[`number`, `number`, `number`\]
+
+Diagonal array [m00, m11, m22].
+
+---
+
+### inverted
+
+#### Get Signature
+
+> **get** **inverted**(): `Matrix3`
+
+Defined in: [src/core/matrix3.ts:2461](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L2461)
+
+Returns a new inverted matrix without modifying this one.
+Returns identity if singular.
+
+##### Returns
+
+`Matrix3`
+
+Inverted matrix.
+
+---
+
+### negated
+
+#### Get Signature
+
+> **get** **negated**(): `Matrix3`
+
+Defined in: [src/core/matrix3.ts:2495](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L2495)
+
+Returns a new negated matrix without modifying this one.
+
+##### Returns
+
+`Matrix3`
+
+Negated matrix.
+
+---
+
+### row0
+
+#### Get Signature
+
+> **get** **row0**(): \[`number`, `number`, `number`\]
+
+Defined in: [src/core/matrix3.ts:2561](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L2561)
+
+Returns the first row as a tuple.
+
+##### Returns
+
+\[`number`, `number`, `number`\]
+
+Row 0 as [m00, m10, m20].
+
+---
+
+### row1
+
+#### Get Signature
+
+> **get** **row1**(): \[`number`, `number`, `number`\]
+
+Defined in: [src/core/matrix3.ts:2569](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L2569)
+
+Returns the second row as a tuple.
+
+##### Returns
+
+\[`number`, `number`, `number`\]
+
+Row 1 as [m01, m11, m21].
+
+---
+
+### row2
+
+#### Get Signature
+
+> **get** **row2**(): \[`number`, `number`, `number`\]
+
+Defined in: [src/core/matrix3.ts:2577](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L2577)
+
+Returns the third row as a tuple.
+
+##### Returns
+
+\[`number`, `number`, `number`\]
+
+Row 2 as [m02, m12, m22].
+
+---
+
+### translation
+
+#### Get Signature
+
+> **get** **translation**(): [`Vector2`](Vector2.md)
+
+Defined in: [src/core/matrix3.ts:2521](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L2521)
+
+Returns the translation component as a Vector2.
+
+##### Returns
+
+[`Vector2`](Vector2.md)
+
+Translation vector.
+
+---
+
+### transposed
+
+#### Get Signature
+
+> **get** **transposed**(): `Matrix3`
+
+Defined in: [src/core/matrix3.ts:2442](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L2442)
+
+Returns a new transposed matrix without modifying this one.
+
+##### Returns
+
+`Matrix3`
+
+Transposed matrix.
+
+---
+
+### upperLeft2x2
+
+#### Get Signature
+
+> **get** **upperLeft2x2**(): [`Matrix2`](Matrix2.md)
+
+Defined in: [src/core/matrix3.ts:2513](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L2513)
+
+Returns the upper-left 2×2 portion as a Matrix2.
+
+##### Returns
+
+[`Matrix2`](Matrix2.md)
+
+Upper-left 2x2 matrix.
+
+## Transform
 
 ### rotateCS()
 
 > **rotateCS**(`cos`, `sin`): `this`
 
-Defined in: [src/core/matrix3.ts:3416](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L3416)
+Defined in: [src/core/matrix3.ts:3460](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L3460)
 
 Applies a rotation to this matrix using precomputed cosine and sine values in place.
 
@@ -4605,39 +5344,139 @@ m.rotateCS(rotation.cos, rotation.sin);
 
 #### Since
 
-0.12.0
+0.7.0
 
 ---
 
-### round()
+### rotate()
 
-> **round**(): `this`
+> `static` **rotate**(`matrix`, `angle`, `out?`): `Matrix3`
 
-Defined in: [src/core/matrix3.ts:3041](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L3041)
+Defined in: [src/core/matrix3.ts:1939](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L1939)
 
-Rounds all elements in place.
+Applies a rotation to a matrix.
+
+#### Parameters
+
+##### matrix
+
+[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
+
+Matrix to rotate.
+
+##### angle
+
+`number`
+
+Rotation angle in radians.
+
+##### out?
+
+`Matrix3`
+
+Optional output matrix.
 
 #### Returns
 
-`this`
+`Matrix3`
 
-This for chaining.
+Rotated matrix.
+
+#### Remarks
+
+Equivalent to `Matrix3.multiply(matrix, Matrix3.fromRotation(angle), out)`
+but more efficient as it avoids creating an intermediate matrix.
+
+#### Example
+
+```typescript
+const m = Matrix3.fromTranslation(100, 50);
+const rotated = Matrix3.rotate(m, Math.PI / 4);
+```
 
 #### Since
 
-0.9.0
+0.7.0
+
+---
+
+### rotateCS()
+
+> `static` **rotateCS**(`matrix`, `cos`, `sin`, `out?`): `Matrix3`
+
+Defined in: [src/core/matrix3.ts:1970](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L1970)
+
+Rotates a matrix using precomputed cosine and sine values.
+
+#### Parameters
+
+##### matrix
+
+[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
+
+Matrix to rotate.
+
+##### cos
+
+`number`
+
+Cosine of the rotation angle.
+
+##### sin
+
+`number`
+
+Sine of the rotation angle.
+
+##### out?
+
+`Matrix3`
+
+Optional output matrix.
+
+#### Returns
+
+`Matrix3`
+
+Rotated matrix.
+
+#### Remarks
+
+Use this method in hot paths where the same rotation is applied to multiple
+matrices. Precompute `cos` and `sin` once and reuse them.
+
+#### Example
+
+```typescript
+const rotation = Rotation2.fromAngle(Math.PI / 4);
+const m1 = Matrix3.fromTranslation(100, 50);
+const m2 = Matrix3.fromTranslation(200, 100);
+// Apply same rotation to both matrices efficiently
+const r1 = Matrix3.rotateCS(m1, rotation.cos, rotation.sin);
+const r2 = Matrix3.rotateCS(m2, rotation.cos, rotation.sin);
+```
+
+#### Since
+
+0.7.0
 
 ---
 
 ### scaleBy()
 
-> **scaleBy**(`scaleValue`): `this`
+> `static` **scaleBy**(`matrix`, `scaleValue`, `out?`): `Matrix3`
 
-Defined in: [src/core/matrix3.ts:3442](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L3442)
+Defined in: [src/core/matrix3.ts:2017](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L2017)
 
-Applies a scale transformation to this matrix in place.
+Applies a scale transformation to a matrix.
 
 #### Parameters
+
+##### matrix
+
+[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
+
+Matrix to scale.
 
 ##### scaleValue
 
@@ -4645,47 +5484,51 @@ Scale factor (scalar or per-axis vector).
 
 `number` | [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-#### Returns
+##### out?
 
-`this`
+`Matrix3`
 
-This for chaining.
-
-#### Since
-
-0.1.0
-
----
-
-### sign()
-
-> **sign**(): `this`
-
-Defined in: [src/core/matrix3.ts:3104](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L3104)
-
-Takes the sign of all elements in place.
+Optional output matrix.
 
 #### Returns
 
-`this`
+`Matrix3`
 
-This for chaining.
+Scaled matrix.
+
+#### Remarks
+
+Equivalent to `Matrix3.multiply(matrix, Matrix3.fromScale(scaleValue), out)`
+but more efficient as it avoids creating an intermediate matrix.
+
+#### Example
+
+```typescript
+const m = Matrix3.fromTranslation(100, 50);
+const scaled = Matrix3.scaleBy(m, { x: 2, y: 0.5 });
+```
 
 #### Since
 
-0.9.0
+0.7.0
 
 ---
 
 ### transformPoint()
 
-> **transformPoint**(`point`, `out?`): [`Vector2`](Vector2.md)
+> `static` **transformPoint**(`matrix`, `point`, `out?`): [`Vector2`](Vector2.md)
 
-Defined in: [src/core/matrix3.ts:3477](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L3477)
+Defined in: [src/core/matrix3.ts:1793](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L1793)
 
-Transforms a point by this matrix.
+Transforms a point by the matrix (applies translation).
 
 #### Parameters
+
+##### matrix
+
+[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
+
+Transform matrix.
 
 ##### point
 
@@ -4705,25 +5548,27 @@ Optional output vector.
 
 Transformed point.
 
-#### Remarks
-
-Points are affected by translation (uses homogeneous coordinate w=1).
-
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
 ### transformVector()
 
-> **transformVector**(`vector`, `out?`): [`Vector2`](Vector2.md)
+> `static` **transformVector**(`matrix`, `vector`, `out?`): [`Vector2`](Vector2.md)
 
-Defined in: [src/core/matrix3.ts:3494](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L3494)
+Defined in: [src/core/matrix3.ts:1826](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L1826)
 
-Transforms a vector by this matrix.
+Transforms a vector by the matrix (ignores translation).
 
 #### Parameters
+
+##### matrix
+
+[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
+
+Transform matrix.
 
 ##### vector
 
@@ -4743,25 +5588,27 @@ Optional output vector.
 
 Transformed vector.
 
-#### Remarks
-
-Vectors are NOT affected by translation (uses homogeneous coordinate w=0).
-
 #### Since
 
-0.1.0
+0.7.0
 
 ---
 
 ### translate()
 
-> **translate**(`translation`): `this`
+> `static` **translate**(`matrix`, `translation`, `out?`): `Matrix3`
 
-Defined in: [src/core/matrix3.ts:3372](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L3372)
+Defined in: [src/core/matrix3.ts:1897](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix3.ts#L1897)
 
-Applies a translation to this matrix in place.
+Applies a translation to a matrix.
 
 #### Parameters
+
+##### matrix
+
+[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
+
+Matrix to translate.
 
 ##### translation
 
@@ -4769,54 +5616,6 @@ Applies a translation to this matrix in place.
 
 Translation vector.
 
-#### Returns
-
-`this`
-
-This for chaining.
-
-#### Since
-
-0.1.0
-
----
-
-### trunc()
-
-> **trunc**(): `this`
-
-Defined in: [src/core/matrix3.ts:3062](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L3062)
-
-Applies Math.trunc to all elements in place (rounds towards zero).
-
-#### Returns
-
-`this`
-
-This for chaining.
-
-#### Since
-
-0.14.0
-
----
-
-### abs()
-
-> `static` **abs**(`matrix`, `out?`): `Matrix3`
-
-Defined in: [src/core/matrix3.ts:985](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L985)
-
-Applies absolute value to all elements.
-
-#### Parameters
-
-##### matrix
-
-[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
-
-Source matrix.
-
 ##### out?
 
 `Matrix3`
@@ -4827,813 +5626,20 @@ Optional output matrix.
 
 `Matrix3`
 
-Absolute-valued matrix.
+Translated matrix.
+
+#### Remarks
+
+Equivalent to `Matrix3.multiply(matrix, Matrix3.fromTranslation(translation), out)`
+but more efficient as it avoids creating an intermediate matrix.
+
+#### Example
+
+```typescript
+const m = Matrix3.fromRotation(Math.PI / 4);
+const translated = Matrix3.translate(m, { x: 100, y: 50 });
+```
 
 #### Since
 
-0.9.0
-
----
-
-### ceil()
-
-> `static` **ceil**(`matrix`, `out?`): `Matrix3`
-
-Defined in: [src/core/matrix3.ts:913](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L913)
-
-Applies Math.ceil to all elements.
-
-#### Parameters
-
-##### matrix
-
-[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
-
-Source matrix.
-
-##### out?
-
-`Matrix3`
-
-Optional output matrix.
-
-#### Returns
-
-`Matrix3`
-
-Ceiled matrix.
-
-#### Since
-
-0.9.0
-
----
-
-### clamp()
-
-> `static` **clamp**(`m`, `minM`, `maxM`, `out?`): `Matrix3`
-
-Defined in: [src/core/matrix3.ts:1085](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L1085)
-
-Component-wise clamp between two matrices.
-
-#### Parameters
-
-##### m
-
-[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
-
-Matrix to clamp.
-
-##### minM
-
-[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
-
-Per-component minima.
-
-##### maxM
-
-[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
-
-Per-component maxima.
-
-##### out?
-
-`Matrix3`
-
-Optional output matrix.
-
-#### Returns
-
-`Matrix3`
-
-Clamped matrix.
-
-#### Since
-
-0.9.0
-
----
-
-### clampScalar()
-
-> `static` **clampScalar**(`m`, `min`, `max`, `out?`): `Matrix3`
-
-Defined in: [src/core/matrix3.ts:1116](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L1116)
-
-Clamps all elements between scalar bounds.
-
-#### Parameters
-
-##### m
-
-[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
-
-Matrix to clamp.
-
-##### min
-
-`number`
-
-Minimum scalar.
-
-##### max
-
-`number`
-
-Maximum scalar.
-
-##### out?
-
-`Matrix3`
-
-Optional output matrix.
-
-#### Returns
-
-`Matrix3`
-
-Clamped matrix.
-
-#### Since
-
-0.9.0
-
----
-
-### floor()
-
-> `static` **floor**(`matrix`, `out?`): `Matrix3`
-
-Defined in: [src/core/matrix3.ts:889](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L889)
-
-Applies Math.floor to all elements.
-
-#### Parameters
-
-##### matrix
-
-[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
-
-Source matrix.
-
-##### out?
-
-`Matrix3`
-
-Optional output matrix.
-
-#### Returns
-
-`Matrix3`
-
-Floored matrix.
-
-#### Since
-
-0.9.0
-
----
-
-### max()
-
-> `static` **max**(`a`, `b`, `out?`): `Matrix3`
-
-Defined in: [src/core/matrix3.ts:1059](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L1059)
-
-Component-wise maximum of two matrices.
-
-#### Parameters
-
-##### a
-
-[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
-
-First matrix.
-
-##### b
-
-[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
-
-Second matrix.
-
-##### out?
-
-`Matrix3`
-
-Optional output matrix.
-
-#### Returns
-
-`Matrix3`
-
-Matrix with component-wise maxima.
-
-#### Since
-
-0.9.0
-
----
-
-### min()
-
-> `static` **min**(`a`, `b`, `out?`): `Matrix3`
-
-Defined in: [src/core/matrix3.ts:1034](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L1034)
-
-Component-wise minimum of two matrices.
-
-#### Parameters
-
-##### a
-
-[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
-
-First matrix.
-
-##### b
-
-[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
-
-Second matrix.
-
-##### out?
-
-`Matrix3`
-
-Optional output matrix.
-
-#### Returns
-
-`Matrix3`
-
-Matrix with component-wise minima.
-
-#### Since
-
-0.9.0
-
----
-
-### round()
-
-> `static` **round**(`matrix`, `out?`): `Matrix3`
-
-Defined in: [src/core/matrix3.ts:937](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L937)
-
-Applies Math.round to all elements.
-
-#### Parameters
-
-##### matrix
-
-[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
-
-Source matrix.
-
-##### out?
-
-`Matrix3`
-
-Optional output matrix.
-
-#### Returns
-
-`Matrix3`
-
-Rounded matrix.
-
-#### Since
-
-0.9.0
-
----
-
-### sign()
-
-> `static` **sign**(`matrix`, `out?`): `Matrix3`
-
-Defined in: [src/core/matrix3.ts:1009](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L1009)
-
-Applies sign function to all elements.
-
-#### Parameters
-
-##### matrix
-
-[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
-
-Source matrix.
-
-##### out?
-
-`Matrix3`
-
-Optional output matrix.
-
-#### Returns
-
-`Matrix3`
-
-Matrix with signs (-1, 0, or 1).
-
-#### Since
-
-0.9.0
-
----
-
-### trunc()
-
-> `static` **trunc**(`matrix`, `out?`): `Matrix3`
-
-Defined in: [src/core/matrix3.ts:961](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L961)
-
-Applies Math.trunc to all elements (rounds towards zero).
-
-#### Parameters
-
-##### matrix
-
-[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
-
-Source matrix.
-
-##### out?
-
-`Matrix3`
-
-Optional output matrix.
-
-#### Returns
-
-`Matrix3`
-
-Truncated matrix.
-
-#### Since
-
-0.14.0
-
-## Other
-
-### m00
-
-> **m00**: `number`
-
-Defined in: [src/core/matrix3.ts:2008](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L2008)
-
-Element at row 0, column 0.
-
-#### Implementation of
-
-[`Matrix3Like`](../../types/interfaces/Matrix3Like.md).[`m00`](../../types/interfaces/Matrix3Like.md#m00)
-
----
-
-### m01
-
-> **m01**: `number`
-
-Defined in: [src/core/matrix3.ts:2010](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L2010)
-
-Element at row 1, column 0.
-
-#### Implementation of
-
-[`Matrix3Like`](../../types/interfaces/Matrix3Like.md).[`m01`](../../types/interfaces/Matrix3Like.md#m01)
-
----
-
-### m02
-
-> **m02**: `number`
-
-Defined in: [src/core/matrix3.ts:2012](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L2012)
-
-Element at row 2, column 0.
-
-#### Implementation of
-
-[`Matrix3Like`](../../types/interfaces/Matrix3Like.md).[`m02`](../../types/interfaces/Matrix3Like.md#m02)
-
----
-
-### m10
-
-> **m10**: `number`
-
-Defined in: [src/core/matrix3.ts:2014](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L2014)
-
-Element at row 0, column 1.
-
-#### Implementation of
-
-[`Matrix3Like`](../../types/interfaces/Matrix3Like.md).[`m10`](../../types/interfaces/Matrix3Like.md#m10)
-
----
-
-### m11
-
-> **m11**: `number`
-
-Defined in: [src/core/matrix3.ts:2016](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L2016)
-
-Element at row 1, column 1.
-
-#### Implementation of
-
-[`Matrix3Like`](../../types/interfaces/Matrix3Like.md).[`m11`](../../types/interfaces/Matrix3Like.md#m11)
-
----
-
-### m12
-
-> **m12**: `number`
-
-Defined in: [src/core/matrix3.ts:2018](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L2018)
-
-Element at row 2, column 1.
-
-#### Implementation of
-
-[`Matrix3Like`](../../types/interfaces/Matrix3Like.md).[`m12`](../../types/interfaces/Matrix3Like.md#m12)
-
----
-
-### m20
-
-> **m20**: `number`
-
-Defined in: [src/core/matrix3.ts:2020](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L2020)
-
-Element at row 0, column 2.
-
-#### Implementation of
-
-[`Matrix3Like`](../../types/interfaces/Matrix3Like.md).[`m20`](../../types/interfaces/Matrix3Like.md#m20)
-
----
-
-### m21
-
-> **m21**: `number`
-
-Defined in: [src/core/matrix3.ts:2022](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L2022)
-
-Element at row 1, column 2.
-
-#### Implementation of
-
-[`Matrix3Like`](../../types/interfaces/Matrix3Like.md).[`m21`](../../types/interfaces/Matrix3Like.md#m21)
-
----
-
-### m22
-
-> **m22**: `number`
-
-Defined in: [src/core/matrix3.ts:2024](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L2024)
-
-Element at row 2, column 2.
-
-#### Implementation of
-
-[`Matrix3Like`](../../types/interfaces/Matrix3Like.md).[`m22`](../../types/interfaces/Matrix3Like.md#m22)
-
----
-
-### EPSILON_MATRIX
-
-> `readonly` `static` **EPSILON_MATRIX**: `Readonly`\<`Matrix3`\>
-
-Defined in: [src/core/matrix3.ts:154](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L154)
-
-Epsilon matrix (EPSILON in all elements).
-
----
-
-### FLIP_X
-
-> `readonly` `static` **FLIP_X**: `Readonly`\<`Matrix3`\>
-
-Defined in: [src/core/matrix3.ts:159](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L159)
-
-Flip horizontally (mirror across Y axis).
-
----
-
-### FLIP_XY
-
-> `readonly` `static` **FLIP_XY**: `Readonly`\<`Matrix3`\>
-
-Defined in: [src/core/matrix3.ts:165](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L165)
-
-Flip both axes (equivalent to ROTATE_180).
-
----
-
-### FLIP_Y
-
-> `readonly` `static` **FLIP_Y**: `Readonly`\<`Matrix3`\>
-
-Defined in: [src/core/matrix3.ts:162](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L162)
-
-Flip vertically (mirror across X axis).
-
----
-
-### IDENTITY
-
-> `readonly` `static` **IDENTITY**: `Readonly`\<`Matrix3`\>
-
-Defined in: [src/core/matrix3.ts:145](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L145)
-
-Identity matrix (no transformation).
-
----
-
-### ONE
-
-> `readonly` `static` **ONE**: `Readonly`\<`Matrix3`\>
-
-Defined in: [src/core/matrix3.ts:151](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L151)
-
-All-ones matrix.
-
----
-
-### ROTATE_180
-
-> `readonly` `static` **ROTATE_180**: `Readonly`\<`Matrix3`\>
-
-Defined in: [src/core/matrix3.ts:171](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L171)
-
-180° rotation.
-
----
-
-### ROTATE_270
-
-> `readonly` `static` **ROTATE_270**: `Readonly`\<`Matrix3`\>
-
-Defined in: [src/core/matrix3.ts:174](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L174)
-
-270° counter-clockwise rotation (90° clockwise).
-
----
-
-### ROTATE_90
-
-> `readonly` `static` **ROTATE_90**: `Readonly`\<`Matrix3`\>
-
-Defined in: [src/core/matrix3.ts:168](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L168)
-
-90° counter-clockwise rotation.
-
----
-
-### SCALE_2
-
-> `readonly` `static` **SCALE_2**: `Readonly`\<`Matrix3`\>
-
-Defined in: [src/core/matrix3.ts:177](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L177)
-
-Uniform scale by 2.
-
----
-
-### SCALE_HALF
-
-> `readonly` `static` **SCALE_HALF**: `Readonly`\<`Matrix3`\>
-
-Defined in: [src/core/matrix3.ts:180](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L180)
-
-Uniform scale by 0.5.
-
----
-
-### ZERO
-
-> `readonly` `static` **ZERO**: `Readonly`\<`Matrix3`\>
-
-Defined in: [src/core/matrix3.ts:148](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L148)
-
-Zero matrix.
-
----
-
-### column0
-
-#### Get Signature
-
-> **get** **column0**(): \[`number`, `number`, `number`\]
-
-Defined in: [src/core/matrix3.ts:2493](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L2493)
-
-Returns the first column as a tuple.
-
-##### Returns
-
-\[`number`, `number`, `number`\]
-
-Column 0 as [m00, m01, m02].
-
----
-
-### column1
-
-#### Get Signature
-
-> **get** **column1**(): \[`number`, `number`, `number`\]
-
-Defined in: [src/core/matrix3.ts:2501](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L2501)
-
-Returns the second column as a tuple.
-
-##### Returns
-
-\[`number`, `number`, `number`\]
-
-Column 1 as [m10, m11, m12].
-
----
-
-### column2
-
-#### Get Signature
-
-> **get** **column2**(): \[`number`, `number`, `number`\]
-
-Defined in: [src/core/matrix3.ts:2509](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L2509)
-
-Returns the third column as a tuple.
-
-##### Returns
-
-\[`number`, `number`, `number`\]
-
-Column 2 as [m20, m21, m22].
-
----
-
-### diagonal
-
-#### Get Signature
-
-> **get** **diagonal**(): \[`number`, `number`, `number`\]
-
-Defined in: [src/core/matrix3.ts:2485](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L2485)
-
-Returns the diagonal elements as a 3-element array.
-
-##### Returns
-
-\[`number`, `number`, `number`\]
-
-Diagonal array [m00, m11, m22].
-
----
-
-### inverted
-
-#### Get Signature
-
-> **get** **inverted**(): `Matrix3`
-
-Defined in: [src/core/matrix3.ts:2417](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L2417)
-
-Returns a new inverted matrix without modifying this one.
-Returns identity if singular.
-
-##### Returns
-
-`Matrix3`
-
-Inverted matrix.
-
----
-
-### negated
-
-#### Get Signature
-
-> **get** **negated**(): `Matrix3`
-
-Defined in: [src/core/matrix3.ts:2451](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L2451)
-
-Returns a new negated matrix without modifying this one.
-
-##### Returns
-
-`Matrix3`
-
-Negated matrix.
-
----
-
-### row0
-
-#### Get Signature
-
-> **get** **row0**(): \[`number`, `number`, `number`\]
-
-Defined in: [src/core/matrix3.ts:2517](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L2517)
-
-Returns the first row as a tuple.
-
-##### Returns
-
-\[`number`, `number`, `number`\]
-
-Row 0 as [m00, m10, m20].
-
----
-
-### row1
-
-#### Get Signature
-
-> **get** **row1**(): \[`number`, `number`, `number`\]
-
-Defined in: [src/core/matrix3.ts:2525](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L2525)
-
-Returns the second row as a tuple.
-
-##### Returns
-
-\[`number`, `number`, `number`\]
-
-Row 1 as [m01, m11, m21].
-
----
-
-### row2
-
-#### Get Signature
-
-> **get** **row2**(): \[`number`, `number`, `number`\]
-
-Defined in: [src/core/matrix3.ts:2533](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L2533)
-
-Returns the third row as a tuple.
-
-##### Returns
-
-\[`number`, `number`, `number`\]
-
-Row 2 as [m02, m12, m22].
-
----
-
-### translation
-
-#### Get Signature
-
-> **get** **translation**(): [`Vector2`](Vector2.md)
-
-Defined in: [src/core/matrix3.ts:2477](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L2477)
-
-Returns the translation component as a Vector2.
-
-##### Returns
-
-[`Vector2`](Vector2.md)
-
-Translation vector.
-
----
-
-### transposed
-
-#### Get Signature
-
-> **get** **transposed**(): `Matrix3`
-
-Defined in: [src/core/matrix3.ts:2398](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L2398)
-
-Returns a new transposed matrix without modifying this one.
-
-##### Returns
-
-`Matrix3`
-
-Transposed matrix.
-
----
-
-### upperLeft2x2
-
-#### Get Signature
-
-> **get** **upperLeft2x2**(): [`Matrix2`](Matrix2.md)
-
-Defined in: [src/core/matrix3.ts:2469](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix3.ts#L2469)
-
-Returns the upper-left 2×2 portion as a Matrix2.
-
-##### Returns
-
-[`Matrix2`](Matrix2.md)
-
-Upper-left 2x2 matrix.
+0.7.0

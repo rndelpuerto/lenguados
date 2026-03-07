@@ -2,7 +2,7 @@
 
 > **assertMatrix2Like**(`value`, `name?`): `void`
 
-Defined in: [src/validation/assert.ts:575](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/validation/assert.ts#L575)
+Defined in: [src/validation/assert.ts:619](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/validation/assert.ts#L619)
 
 Asserts that an object has valid Matrix2-like shape with finite elements.
 
@@ -35,4 +35,4 @@ No-op when assertions are disabled.
 
 ## Since
 
-0.14.0
+0.7.0

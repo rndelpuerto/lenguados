@@ -46,6 +46,14 @@ import { Vector2, type ReadonlyVector2 } from '../core/vector2';
 import { atan2 } from '../deterministic/deterministic-kernels';
 import type { ReadonlyRotation2Like } from '../types';
 
+/**
+ * Converts a fixed-precision number to a JSON-safe string.
+ */
+function jsonFixed(n: number, precision: number | undefined): string {
+ if (!Number.isFinite(n)) return 'null';
+ return precision !== undefined ? n.toFixed(precision) : n.toString();
+}
+
 /* ========================================================================== */
 /* Vector2 Parsing and Formatting                                             */
 /* ========================================================================== */
@@ -78,15 +86,17 @@ export function parseVector2(string_: string, out = new Vector2()): Vector2 {
  // Trim whitespace
  const trimmed = string_.trim();
 
- // Try JSON-like format first
+ // Fast structural check for JSON to avoid throwing exceptions (V8 de-opt)
  if (trimmed.startsWith('{') && trimmed.endsWith('}')) {
-  try {
-   const object = JSON.parse(trimmed);
-   if (typeof object.x === 'number' && typeof object.y === 'number') {
-    return out.set(object.x, object.y);
+  if (/"x"\s*:/i.test(trimmed) && /"y"\s*:/i.test(trimmed)) {
+   try {
+    const object = JSON.parse(trimmed);
+    if (typeof object.x === 'number' && typeof object.y === 'number') {
+     return out.set(object.x, object.y);
+    }
+   } catch {
+    // Malformed JSON falls through
    }
-  } catch {
-   // Fall through to other formats
   }
  }
 
@@ -142,8 +152,11 @@ export function formatVector2(
    return `${x},${y}`;
   case 'space':
    return `${x} ${y}`;
-  case 'json':
-   return `{"x":${x},"y":${y}}`;
+  case 'json': {
+   const jx = jsonFixed(v.x, precision);
+   const jy = jsonFixed(v.y, precision);
+   return `{"x":${jx},"y":${jy}}`;
+  }
   case 'brackets':
    return `[${x},${y}]`;
  }
@@ -180,19 +193,21 @@ export function formatVector2(
 export function parseRotation2(string_: string, out = new Rotation2()): Rotation2 {
  const trimmed = string_.trim();
 
- // Try JSON format
+ // Fast structural check for JSON to avoid throwing exceptions (V8 de-opt)
  if (trimmed.startsWith('{') && trimmed.endsWith('}')) {
-  try {
-   const object = JSON.parse(trimmed);
-   if (typeof object.cos === 'number' && typeof object.sin === 'number') {
-    return out.set(object.cos, object.sin);
+  if (/"(cos|c)"\s*:/i.test(trimmed) && /"(sin|s)"\s*:/i.test(trimmed)) {
+   try {
+    const object = JSON.parse(trimmed);
+    if (typeof object.cos === 'number' && typeof object.sin === 'number') {
+     return out.set(object.cos, object.sin);
+    }
+    // Legacy format support
+    if (typeof object.c === 'number' && typeof object.s === 'number') {
+     return out.set(object.c, object.s);
+    }
+   } catch {
+    // Malformed JSON falls through
    }
-   // Legacy format support
-   if (typeof object.c === 'number' && typeof object.s === 'number') {
-    return out.set(object.c, object.s);
-   }
-  } catch {
-   // Fall through
   }
  }
 
@@ -265,9 +280,9 @@ export function formatRotation2(
    return `${cos},${sin}`;
   }
   case 'json': {
-   const cos = precision !== undefined ? r.cos.toFixed(precision) : r.cos.toString();
-   const sin = precision !== undefined ? r.sin.toFixed(precision) : r.sin.toString();
-   return `{"cos":${cos},"sin":${sin}}`;
+   const jcos = jsonFixed(r.cos, precision);
+   const jsin = jsonFixed(r.sin, precision);
+   return `{"cos":${jcos},"sin":${jsin}}`;
   }
  }
 }
@@ -302,28 +317,30 @@ export function formatRotation2(
 export function parseMatrix2(string_: string, out = new Matrix2()): Matrix2 {
  const trimmed = string_.trim();
 
- // Try JSON format
+ // Fast structural check for JSON to avoid throwing exceptions (V8 de-opt)
  if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
-  try {
-   const parsed = JSON.parse(trimmed);
+  if (/^\[\s*\[/.test(trimmed) || /"m00"\s*:/.test(trimmed)) {
+   try {
+    const parsed = JSON.parse(trimmed);
 
-   // Handle nested arrays
-   if (Array.isArray(parsed) && parsed.length === 2) {
-    const [row0, row1] = parsed;
-    if (Array.isArray(row0) && Array.isArray(row1)) {
-     return out.set(row0[0], row0[1], row1[0], row1[1]);
+    // Handle nested arrays
+    if (Array.isArray(parsed) && parsed.length === 2) {
+     const [row0, row1] = parsed;
+     if (Array.isArray(row0) && Array.isArray(row1)) {
+      return out.set(row0[0], row0[1], row1[0], row1[1]);
+     }
     }
-   }
 
-   // Handle object format
-   if (parsed && typeof parsed === 'object') {
-    const values = [parsed.m00, parsed.m01, parsed.m10, parsed.m11];
-    if (values.every((v) => typeof v === 'number')) {
-     return out.set(...(values as [number, number, number, number]));
+    // Handle object format
+    if (parsed && typeof parsed === 'object') {
+     const values = [parsed.m00, parsed.m01, parsed.m10, parsed.m11];
+     if (values.every((v) => typeof v === 'number')) {
+      return out.set(...(values as [number, number, number, number]));
+     }
     }
+   } catch {
+    // Malformed JSON falls through
    }
-  } catch {
-   // Fall through
   }
  }
 
@@ -412,49 +429,51 @@ export function formatMatrix2(
 export function parseMatrix3(string_: string, out = new Matrix3()): Matrix3 {
  const trimmed = string_.trim();
 
- // Try JSON format
+ // Fast structural check for JSON to avoid throwing exceptions (V8 de-opt)
  if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
-  try {
-   const parsed = JSON.parse(trimmed);
+  if (/^\[\s*\[/.test(trimmed) || /"m00"\s*:/.test(trimmed)) {
+   try {
+    const parsed = JSON.parse(trimmed);
 
-   // Handle nested arrays
-   if (Array.isArray(parsed) && parsed.length === 3) {
-    const values: number[] = [];
-    for (const row of parsed) {
-     if (Array.isArray(row) && row.length === 3) {
-      values.push(...row);
-     } else {
-      throw new Error('Invalid row');
+    // Handle nested arrays
+    if (Array.isArray(parsed) && parsed.length === 3) {
+     const values: number[] = [];
+     for (const row of parsed) {
+      if (Array.isArray(row) && row.length === 3) {
+       values.push(...row);
+      } else {
+       throw new Error('Invalid row');
+      }
+     }
+     if (values.length === 9) {
+      return out.set(
+       ...(values as [number, number, number, number, number, number, number, number, number]),
+      );
      }
     }
-    if (values.length === 9) {
-     return out.set(
-      ...(values as [number, number, number, number, number, number, number, number, number]),
-     );
-    }
-   }
 
-   // Handle object format
-   if (parsed && typeof parsed === 'object') {
-    const values = [
-     parsed.m00,
-     parsed.m01,
-     parsed.m02,
-     parsed.m10,
-     parsed.m11,
-     parsed.m12,
-     parsed.m20,
-     parsed.m21,
-     parsed.m22,
-    ];
-    if (values.every((v) => typeof v === 'number')) {
-     return out.set(
-      ...(values as [number, number, number, number, number, number, number, number, number]),
-     );
+    // Handle object format
+    if (parsed && typeof parsed === 'object') {
+     const values = [
+      parsed.m00,
+      parsed.m01,
+      parsed.m02,
+      parsed.m10,
+      parsed.m11,
+      parsed.m12,
+      parsed.m20,
+      parsed.m21,
+      parsed.m22,
+     ];
+     if (values.every((v) => typeof v === 'number')) {
+      return out.set(
+       ...(values as [number, number, number, number, number, number, number, number, number]),
+      );
+     }
     }
+   } catch {
+    // Malformed JSON falls through
    }
-  } catch {
-   // Fall through
   }
  }
 
@@ -554,36 +573,49 @@ export function formatMatrix3(
 export function parseTransform2(string_: string, out = new Transform2()): Transform2 {
  const trimmed = string_.trim();
 
- // Try JSON format
+ // Fast structural check for JSON to avoid throwing exceptions (V8 de-opt)
  if (trimmed.startsWith('{') && trimmed.endsWith('}')) {
-  try {
-   const object = JSON.parse(trimmed);
-   if (object.p && object.r) {
-    // New format with cos/sin
-    if (
-     typeof object.p.x === 'number' &&
-     typeof object.p.y === 'number' &&
-     typeof object.r.cos === 'number' &&
-     typeof object.r.sin === 'number'
-    ) {
-     out.position.set(object.p.x, object.p.y);
-     out.rotation.copy({ cos: object.r.cos, sin: object.r.sin });
-     return out;
+  if (/"p"\s*:/i.test(trimmed) && /"r"\s*:/i.test(trimmed)) {
+   try {
+    const object = JSON.parse(trimmed);
+    if (object.p && object.r) {
+     // New format with cos/sin
+     if (
+      typeof object.p.x === 'number' &&
+      typeof object.p.y === 'number' &&
+      typeof object.r.cos === 'number' &&
+      typeof object.r.sin === 'number'
+     ) {
+      out.position.set(object.p.x, object.p.y);
+      out.rotation.copy({ cos: object.r.cos, sin: object.r.sin });
+      // Extract scale if present, default to (1,1)
+      if (object.s && typeof object.s.x === 'number' && typeof object.s.y === 'number') {
+       out.scale.set(object.s.x, object.s.y);
+      } else {
+       out.scale.set(1, 1);
+      }
+      return out;
+     }
+     // Legacy format with c/s
+     if (
+      typeof object.p.x === 'number' &&
+      typeof object.p.y === 'number' &&
+      typeof object.r.c === 'number' &&
+      typeof object.r.s === 'number'
+     ) {
+      out.position.set(object.p.x, object.p.y);
+      out.rotation.copy({ cos: object.r.c, sin: object.r.s });
+      if (object.s && typeof object.s.x === 'number' && typeof object.s.y === 'number') {
+       out.scale.set(object.s.x, object.s.y);
+      } else {
+       out.scale.set(1, 1);
+      }
+      return out;
+     }
     }
-    // Legacy format with c/s
-    if (
-     typeof object.p.x === 'number' &&
-     typeof object.p.y === 'number' &&
-     typeof object.r.c === 'number' &&
-     typeof object.r.s === 'number'
-    ) {
-     out.position.set(object.p.x, object.p.y);
-     out.rotation.copy({ cos: object.r.c, sin: object.r.s });
-     return out;
-    }
+   } catch {
+    // Malformed JSON falls through
    }
-  } catch {
-   // Fall through
   }
  }
 
@@ -593,13 +625,22 @@ export function parseTransform2(string_: string, out = new Transform2()): Transf
   .filter((s) => s.length > 0)
   .map(parseFloat);
 
- if (values.length !== 4 || values.some(isNaN)) {
-  throw new Error(`parseTransform2: expected 4 values, got ${values.length} in "${string_}"`);
+ if ((values.length !== 4 && values.length !== 6) || values.some(isNaN)) {
+  throw new Error(`parseTransform2: expected 4 or 6 values, got ${values.length} in "${string_}"`);
  }
 
- // Format is px, py, c, s
- const rotation = atan2(values[3]!, values[2]!);
- return Transform2.fromValues(values[0]!, values[1]!, rotation, 1, 1, out);
+ // Set position and rotation directly (avoid lossy atan2 round-trip)
+ out.position.set(values[0]!, values[1]!);
+ out.rotation.copy({ cos: values[2]!, sin: values[3]! });
+
+ // 6-component format includes scale
+ if (values.length === 6) {
+  out.scale.set(values[4]!, values[5]!);
+ } else {
+  out.scale.set(1, 1);
+ }
+
+ return out;
 }
 
 /**
@@ -632,11 +673,12 @@ export function formatTransform2(
 
  switch (format) {
   case 'flat':
-   return `${fmt(t.position.x)},${fmt(t.position.y)},${fmt(cosValue)},${fmt(sinValue)}`;
+   return `${fmt(t.position.x)},${fmt(t.position.y)},${fmt(cosValue)},${fmt(sinValue)},${fmt(t.scale.x)},${fmt(t.scale.y)}`;
   case 'json':
    return JSON.stringify({
     p: { x: parseFloat(fmt(t.position.x)), y: parseFloat(fmt(t.position.y)) },
     r: { cos: parseFloat(fmt(cosValue)), sin: parseFloat(fmt(sinValue)) },
+    s: { x: parseFloat(fmt(t.scale.x)), y: parseFloat(fmt(t.scale.y)) },
    });
  }
 }
@@ -660,6 +702,8 @@ export function formatTransform2(
  * - "(a,b)" (with parentheses)
  * - "{real:a, imag:b}" (JSON-like)
  *
+ * Note: bracket stripping accepts mismatched brackets (e.g., "(1,2]").
+ *
  * @example
  * ```typescript
  * const c1 = parseComplex("3+4i");     // 3 + 4i
@@ -673,20 +717,24 @@ export function formatTransform2(
 export function parseComplex(string_: string, out = new Complex()): Complex {
  const trimmed = string_.trim();
 
- // Try JSON format first
+ // Fast structural check for JSON to avoid throwing exceptions (V8 de-opt)
  if (trimmed.startsWith('{') && trimmed.endsWith('}')) {
-  try {
-   const object = JSON.parse(trimmed);
-   if (typeof object.real === 'number' && typeof object.imag === 'number') {
-    return out.set(object.real, object.imag);
+  if (/"real"\s*:/i.test(trimmed) && /"imag"\s*:/i.test(trimmed)) {
+   try {
+    const object = JSON.parse(trimmed);
+    if (typeof object.real === 'number' && typeof object.imag === 'number') {
+     return out.set(object.real, object.imag);
+    }
+   } catch {
+    // Malformed JSON falls through
    }
-  } catch {
-   // Fall through
   }
  }
 
  // Try mathematical notation: a+bi, a-bi
- const mathMatch = trimmed.match(/^([+-]?[\d.]+)\s*([+-])\s*([\d.]+)i$/);
+ const mathMatch = trimmed.match(
+  /^([+-]?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)\s*([+-])\s*(\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)i$/,
+ );
  if (mathMatch) {
   const real = parseFloat(mathMatch[1]!);
   const sign = mathMatch[2] === '-' ? -1 : 1;
@@ -697,7 +745,7 @@ export function parseComplex(string_: string, out = new Complex()): Complex {
  }
 
  // Try pure imaginary: bi, +bi, -bi
- const pureImagMatch = trimmed.match(/^([+-]?[\d.]+)i$/);
+ const pureImagMatch = trimmed.match(/^([+-]?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)i$/);
  if (pureImagMatch) {
   const imag = parseFloat(pureImagMatch[1]!);
   if (!isNaN(imag)) {
@@ -759,12 +807,17 @@ export function formatComplex(
  const imag = fmt(c.imag);
 
  switch (format) {
-  case 'math':
+  case 'math': {
+   if (Object.is(c.imag, -0)) return `${real}-0i`;
    return c.imag >= 0 ? `${real}+${imag}i` : `${real}${imag}i`;
+  }
   case 'csv':
    return `${real},${imag}`;
-  case 'json':
-   return `{"real":${real},"imag":${imag}}`;
+  case 'json': {
+   const jr = jsonFixed(c.real, precision);
+   const ji = jsonFixed(c.imag, precision);
+   return `{"real":${jr},"imag":${ji}}`;
+  }
  }
 }
 
@@ -805,10 +858,14 @@ export function parseInterval(string_: string, out = new Interval()): Interval {
   try {
    const object = JSON.parse(trimmed);
    if (typeof object.min === 'number' && typeof object.max === 'number') {
+    if (object.min > object.max) {
+     throw new Error(`parseInterval: min (${object.min}) must not exceed max (${object.max})`);
+    }
     return out.set(object.min, object.max);
    }
-  } catch {
-   // Fall through
+  } catch (error) {
+   // Re-throw validation errors, swallow only SyntaxError from JSON.parse
+   if (!(error instanceof SyntaxError)) throw error;
   }
  }
 
@@ -873,7 +930,10 @@ export function formatInterval(
    return `[${min},${max}]`;
   case 'csv':
    return `${min},${max}`;
-  case 'json':
-   return `{"min":${min},"max":${max}}`;
+  case 'json': {
+   const jmin = jsonFixed(interval.min, precision);
+   const jmax = jsonFixed(interval.max, precision);
+   return `{"min":${jmin},"max":${jmax}}`;
+  }
  }
 }

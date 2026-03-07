@@ -2,7 +2,7 @@
 
 > `const` **MAX_SAFE_INTEGER_F64**: `number` = `Number.MAX_SAFE_INTEGER`
 
-Defined in: [src/auxiliary/scalar/constants.ts:71](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/auxiliary/scalar/constants.ts#L71)
+Defined in: [src/auxiliary/scalar/constants.ts:71](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/auxiliary/scalar/constants.ts#L71)
 
 Maximum safe integer in float64 (2^53 - 1).
 
@@ -15,4 +15,4 @@ IEEE 754 double precision limitations.
 
 ## Since
 
-1.0.0
+0.7.0

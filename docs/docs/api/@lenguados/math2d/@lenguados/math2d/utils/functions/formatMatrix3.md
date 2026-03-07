@@ -2,7 +2,7 @@
 
 > **formatMatrix3**(`m`, `format`, `precision?`): `string`
 
-Defined in: [src/utils/parse.ts:495](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/utils/parse.ts#L495)
+Defined in: [src/utils/parse.ts:504](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/utils/parse.ts#L504)
 
 Formats a 3x3 matrix as a string.
 
@@ -44,4 +44,4 @@ const text = formatMatrix3(parseMatrix3('1,0,0,0,1,0,0,0,1'));
 
 ## Since
 
-0.1.0
+0.7.0

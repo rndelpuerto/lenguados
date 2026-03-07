@@ -174,10 +174,10 @@ v.divideScalarUnchecked(scalar);
 
 The library uses two distinct tolerance values:
 
-| Constant           | Value    | Purpose                                  |
-| ------------------ | -------- | ---------------------------------------- |
-| `EPSILON`          | `1e-10`  | Approximate equality comparisons         |
-| `MIN_SAFE_DIVISOR` | `≈2e-16` | Safe division (avoid underflow/overflow) |
+| Constant           | Value   | Purpose                          |
+| ------------------ | ------- | -------------------------------- |
+| `EPSILON`          | `1e-10` | Approximate equality comparisons |
+| `MIN_SAFE_DIVISOR` | `1e-10` | Safe division guard (= EPSILON)  |
 
 ```ts
 import { EPSILON } from '@lenguados/math2d';
@@ -186,8 +186,8 @@ import { MIN_SAFE_DIVISOR } from '@lenguados/math2d/auxiliary/numeric/safety';
 // EPSILON: "Are these values approximately equal?"
 isNearZero(value, EPSILON);
 
-// MIN_SAFE_DIVISOR: "Is this divisor safe to use?"
-safeDivide(a, b, MIN_SAFE_DIVISOR);
+// MIN_SAFE_DIVISOR: "Is this divisor safe to use?" (equals EPSILON by design)
+divideSafe(a, b, MIN_SAFE_DIVISOR);
 ```
 
 ---

@@ -2,7 +2,7 @@
 
 > **isNearZero**(`value`, `epsilon`): `boolean`
 
-Defined in: [src/auxiliary/scalar/comparison.ts:46](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/auxiliary/scalar/comparison.ts#L46)
+Defined in: [src/auxiliary/scalar/comparison.ts:50](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/auxiliary/scalar/comparison.ts#L50)
 
 Tests if value is near zero.
 
@@ -36,4 +36,4 @@ isNearZero(0.01, 0.1); // true (within custom epsilon)
 
 ## Since
 
-1.0.0
+0.7.0

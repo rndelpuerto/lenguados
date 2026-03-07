@@ -2,7 +2,7 @@
 
 > **clamp**(`value`, `min`, `max`): `number`
 
-Defined in: [src/auxiliary/scalar/arithmetic.ts:25](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/auxiliary/scalar/arithmetic.ts#L25)
+Defined in: [src/auxiliary/scalar/arithmetic.ts:25](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/auxiliary/scalar/arithmetic.ts#L25)
 
 Clamps a value between min and max bounds.
 
@@ -43,4 +43,4 @@ clamp(NaN, 0, 10); // NaN
 
 ## Since
 
-1.0.0
+0.7.0

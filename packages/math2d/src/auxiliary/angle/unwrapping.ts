@@ -4,7 +4,7 @@
  * @description Angle unwrapping for continuous sequences.
  */
 
-import { normalizeRadiansAround } from './normalization';
+import { normalizeRadians } from './normalization';
 import { angleDifference } from './operations';
 
 /**
@@ -25,20 +25,20 @@ import { angleDifference } from './operations';
  * @example
  * ```typescript
  * unwrapAngles([0, 3, -3, 0]);           // [0, 3, 3.28..., 6.28...]
- * unwrapAngles([0, Math.PI, 0]);         // [0, Math.PI, 2*Math.PI]
+ * unwrapAngles([0, Math.PI, 0]);         // [0, Math.PI, 0] (shortest arc back)
  * unwrapAngles([0, 3, 6], -Math.PI);     // [-6.28..., -3.28..., -0.28...]
  * ```
  *
  * @throws {TypeError} If input array contains holes (undefined values).
  *
- * @category Unwrapping
+ * @category Normalization
  * @since 0.7.0
  */
 export function unwrapAngles(angles: number[], reference?: number): number[] {
  const n = angles.length;
  if (n === 0) return [];
 
- const result = new Array<number>(n);
+ const result = new Array<number>(n).fill(0);
  const first = angles[0];
 
  if (first === undefined) {
@@ -46,7 +46,7 @@ export function unwrapAngles(angles: number[], reference?: number): number[] {
  }
 
  // Initialize first element
- let previous = reference !== undefined ? normalizeRadiansAround(first, reference) : first;
+ let previous = reference !== undefined ? normalizeRadians(first - reference) + reference : first;
 
  result[0] = previous;
 
@@ -84,7 +84,7 @@ export function unwrapAngles(angles: number[], reference?: number): number[] {
  *
  * @throws {TypeError} If input array contains holes (undefined values).
  *
- * @category Unwrapping
+ * @category Normalization
  * @since 0.7.0
  */
 export function unwrapAnglesInPlace(angles: number[], reference?: number): number[] {
@@ -98,7 +98,7 @@ export function unwrapAnglesInPlace(angles: number[], reference?: number): numbe
  }
 
  // Initialize first element
- let previous = reference !== undefined ? normalizeRadiansAround(first, reference) : first;
+ let previous = reference !== undefined ? normalizeRadians(first - reference) + reference : first;
 
  angles[0] = previous;
 
@@ -135,7 +135,12 @@ export function unwrapAnglesInPlace(angles: number[], reference?: number): numbe
  * console.log(unwrapper.next(Math.PI));     // Math.PI
  * ```
  *
- * @category Unwrapping
+ * @remarks
+ * For very long sequences (>100K samples), accumulated floating-point error
+ * in the unwrapped value may cause precision degradation. Consider periodic
+ * re-anchoring via `reset()` for such use cases.
+ *
+ * @category Normalization
  * @since 0.7.0
  */
 export class AngleUnwrapper {
@@ -154,12 +159,20 @@ export class AngleUnwrapper {
  }
 
  /**
+  * Whether the unwrapper has received at least one angle.
+  * Distinguishes uninitialized state from "initialized at 0".
+  */
+ get initialized(): boolean {
+  return this._initialized;
+ }
+
+ /**
   * Feeds a new wrapped angle and returns the continuous (unwrapped) value.
   * On first call, it initializes to the provided angle.
   * @param theta - Wrapped angle in radians.
   * @returns Unwrapped angle in radians.
   *
-  * @category Unwrapping
+  * @category Normalization
   * @since 0.7.0
   */
  next(theta: number): number {
@@ -177,7 +190,7 @@ export class AngleUnwrapper {
   * Returns the last unwrapped value.
   * @returns The last unwrapped value.
   *
-  * @category Unwrapping
+  * @category Normalization
   * @since 0.7.0
   */
  get value(): number {
@@ -188,7 +201,7 @@ export class AngleUnwrapper {
   * Resets the internal state. If `theta` is provided, sets it as the starting value.
   * @param theta - Optional new starting angle.
   *
-  * @category Unwrapping
+  * @category Normalization
   * @since 0.7.0
   */
  reset(theta?: number): void {

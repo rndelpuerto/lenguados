@@ -109,13 +109,15 @@ describe('Transform2 Properties', () => {
   // NOTE: t * t⁻¹ has higher error accumulation than t⁻¹ * t due to order of operations
   // The test below (t⁻¹ * t) proves the same mathematical property with less accumulated error
 
-  it('should satisfy: t⁻¹ * t ≈ identity (low scale ratio ≤ 2)', () => {
+  it('should satisfy: inverseTransformPoint reverses transformPoint (non-uniform scale)', () => {
+   // For non-uniform scale, t⁻¹ * t ≠ identity (SRT composition is approximate),
+   // but inverseTransformPoint IS exact (it undoes the forward transform directly).
    fc.assert(
-    fc.property(arbLowRatioTransform, (t) => {
-     const inverse = Transform2.inverse(t);
-     const result = Transform2.multiply(inverse, t);
-     const scaleRatio = Math.max(t.scale.x, t.scale.y) / Math.min(t.scale.x, t.scale.y);
-     return result.isIdentity(scaleRatio * 1e-5);
+    fc.property(arbLowRatioTransform, arbVector2, (t, p) => {
+     const transformed = t.transformPoint(p);
+     const restored = Transform2.inverseTransformPoint(t, transformed);
+     const magnitude = Math.max(p.magnitude(), 1);
+     return restored.nearEquals(p, magnitude * 1e-6);
     }),
    );
   });

@@ -4,7 +4,7 @@
  * @description Deterministic closed-interval arithmetic helpers.
  */
 
-import { safeDivide, safeSqrt } from '../auxiliary/numeric/safety';
+import { divideSafe, sqrtSafe } from '../auxiliary/numeric/safety';
 import { clamp, saturate } from '../auxiliary/scalar/arithmetic';
 import {
  isNearZero,
@@ -28,6 +28,8 @@ import { assert, assertNonNegative } from '../validation/assert';
  * @public
  */
 export type ReadonlyInterval = Readonly<Interval>;
+
+export { isIntervalLike } from '../types';
 
 /* ========================================================================== */
 /* Helper Functions                                                           */
@@ -181,12 +183,6 @@ export class Interval implements IntervalLike {
   * @category Core
   */
  public static readonly RADIANS = Object.freeze(new Interval(0, TAU)) as ReadonlyInterval;
-
- /**
-  * Normalized interval [0, 1] (same as UNIT).
-  * @category Core
-  */
- public static readonly NORMALIZED = Object.freeze(new Interval(0, 1)) as ReadonlyInterval;
 
  /* ======================================================================== */
  /* Constructor                                                              */
@@ -425,7 +421,7 @@ export class Interval implements IntervalLike {
   * @since 0.7.0
   */
  public static divide(interval: ReadonlyIntervalLike, scalar: number, out?: Interval): Interval {
-  if (isNearZero(scalar)) {
+  if (scalar === 0) {
    throw new RangeError('Interval.divide: cannot divide by zero');
   }
   return Interval.scale(interval, 1 / scalar, out);
@@ -448,7 +444,7 @@ export class Interval implements IntervalLike {
   scalar: number,
   out?: Interval,
  ): Interval {
-  if (isNearZero(scalar)) {
+  if (scalar === 0) {
    return Interval.ensureOut(out).set(0, 0);
   }
   return Interval.scale(interval, 1 / scalar, out);
@@ -527,7 +523,49 @@ export class Interval implements IntervalLike {
   if (interval.min < 0) {
    throw new RangeError('Interval.sqrt: interval contains negative values');
   }
-  return Interval.ensureOut(out).set(safeSqrt(interval.min), safeSqrt(interval.max));
+  return Interval.ensureOut(out).set(sqrtSafe(interval.min), sqrtSafe(interval.max));
+ }
+
+ /**
+  * Returns the square root of an interval (safe version).
+  * @param interval - Interval
+  * @param out - Optional output interval
+  * @returns Square root interval, or `[0, 0]` if fully negative; clamps min to 0 if partially negative
+  *
+  * @see {@link sqrt} - Throws if interval contains negative values
+  * @see {@link sqrtUnchecked} - No validation, for hot paths
+  *
+  * @category Arithmetic
+  * @since 0.7.0
+  */
+ public static sqrtSafe(interval: ReadonlyIntervalLike, out?: Interval): Interval {
+  if (interval.max < 0) {
+   return Interval.ensureOut(out).set(0, 0);
+  }
+  const safeMin = interval.min < 0 ? 0 : sqrtSafe(interval.min);
+  return Interval.ensureOut(out).set(safeMin, sqrtSafe(interval.max));
+ }
+
+ /**
+  * Returns the square root of an interval without validation (for hot paths).
+  * @param interval - Interval (must be non-negative)
+  * @param out - Optional output interval
+  * @returns Square root interval
+  *
+  * @remarks
+  * **Precondition:** Interval must be non-negative.
+  * If interval contains negative values, result will contain NaN.
+  *
+  * Use in performance-critical code where interval validity is guaranteed.
+  *
+  * @see {@link sqrt} - Throws if interval contains negative values
+  * @see {@link sqrtSafe} - Clamps negatives, never throws
+  *
+  * @category Arithmetic
+  * @since 0.7.0
+  */
+ public static sqrtUnchecked(interval: ReadonlyIntervalLike, out?: Interval): Interval {
+  return Interval.ensureOut(out).set(Math.sqrt(interval.min), Math.sqrt(interval.max));
  }
 
  /**
@@ -544,8 +582,8 @@ export class Interval implements IntervalLike {
   if (interval.min <= 0 && interval.max >= 0) {
    throw new RangeError('Interval.reciprocal: interval contains zero');
   }
-  const recipMin = safeDivide(1, interval.min);
-  const recipMax = safeDivide(1, interval.max);
+  const recipMin = 1 / interval.min;
+  const recipMax = 1 / interval.max;
   return Interval.ensureOut(out).set(Math.min(recipMin, recipMax), Math.max(recipMin, recipMax));
  }
 
@@ -564,8 +602,8 @@ export class Interval implements IntervalLike {
   if (interval.min <= 0 && interval.max >= 0) {
    return Interval.ensureOut(out).set(0, 0);
   }
-  const recipMin = safeDivide(1, interval.min);
-  const recipMax = safeDivide(1, interval.max);
+  const recipMin = 1 / interval.min;
+  const recipMax = 1 / interval.max;
   return Interval.ensureOut(out).set(Math.min(recipMin, recipMax), Math.max(recipMin, recipMax));
  }
 
@@ -615,6 +653,24 @@ export class Interval implements IntervalLike {
   out?: Interval,
  ): Interval {
   return Interval.ensureOut(out).set(lerp(a.min, b.min, t), lerp(a.max, b.max, t));
+ }
+
+ /**
+  * Samples a value within an interval using linear interpolation.
+  * @param interval - Interval to sample
+  * @param t - Interpolation factor [0, 1], clamped
+  * @returns Value within the interval (min when t=0, max when t=1)
+  *
+  * @remarks
+  * Samples a point WITHIN the interval, unlike {@link lerp}
+  * which interpolates BETWEEN two intervals.
+  *
+  * @category Interpolation
+  * @since 0.7.0
+  */
+ public static sample(interval: ReadonlyIntervalLike, t: number): number {
+  const clamped = saturate(t);
+  return lerp(interval.min, interval.max, clamped);
  }
 
  /**
@@ -695,7 +751,7 @@ export class Interval implements IntervalLike {
   if (scalarNearEquals(width, 0)) {
    return 0;
   }
-  return safeDivide(value - interval.min, width);
+  return divideSafe(value - interval.min, width);
  }
 
  /**
@@ -973,6 +1029,11 @@ export class Interval implements IntervalLike {
   * @param rest - Additional values (when using varargs)
   * @returns Interval enclosing all inputs
   *
+  * @remarks
+  * Supports two calling conventions:
+  * - **Array form**: `hull([a, b, c], out?)` — `second` serves as optional output parameter
+  * - **Varargs form**: `hull(a, b, c, ...)` — `second` is another value to include in the hull
+  *
   * @category Set Operations
   * @since 0.7.0
   */
@@ -1070,6 +1131,49 @@ export class Interval implements IntervalLike {
    return Interval.ensureOut(out).set(newMin, newMax);
   }
   return undefined;
+ }
+
+ /**
+  * Expands an interval symmetrically by a delta.
+  * @param interval - Source interval
+  * @param delta - Amount to expand each side (must be non-negative)
+  * @param out - Optional output interval
+  * @returns Expanded interval [min - delta, max + delta]
+  * @throws {RangeError} If delta is negative
+  *
+  * @category Set Operations
+  * @since 0.8.0
+  */
+ public static expand(interval: ReadonlyIntervalLike, delta: number, out?: Interval): Interval {
+  if (delta < 0) {
+   throw new RangeError('Interval.expand: delta must be non-negative');
+  }
+  return Interval.ensureOut(out).set(interval.min - delta, interval.max + delta);
+ }
+
+ /**
+  * Shrinks an interval symmetrically by a delta.
+  * If delta exceeds half the interval width, returns the midpoint as a degenerate interval.
+  * @param interval - Source interval
+  * @param delta - Amount to shrink each side (must be non-negative)
+  * @param out - Optional output interval
+  * @returns Shrunk interval, or degenerate midpoint interval if fully collapsed
+  * @throws {RangeError} If delta is negative
+  *
+  * @category Set Operations
+  * @since 0.8.0
+  */
+ public static shrink(interval: ReadonlyIntervalLike, delta: number, out?: Interval): Interval {
+  if (delta < 0) {
+   throw new RangeError('Interval.shrink: delta must be non-negative');
+  }
+  const newMin = interval.min + delta;
+  const newMax = interval.max - delta;
+  if (newMin > newMax) {
+   const mid = (interval.min + interval.max) * 0.5;
+   return Interval.ensureOut(out).set(mid, mid);
+  }
+  return Interval.ensureOut(out).set(newMin, newMax);
  }
 
  /* ======================================================================== */
@@ -1294,26 +1398,28 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Divides this interval by another in place.
-  * @param other - Interval to divide by (must not contain zero)
+  * Divides this interval by a scalar in place.
+  * @param scalar - Scalar to divide by
   * @returns This for chaining
-  * @throws {RangeError} If divisor interval contains zero
+  * @throws {RangeError} If scalar is zero
   *
   * @category Arithmetic
   * @since 0.7.0
   */
- divide(other: ReadonlyInterval): this {
-  if (other.contains(0)) {
-   throw new RangeError('Interval.divide: divisor interval contains zero');
+ divide(scalar: number): this {
+  if (scalar === 0) {
+   throw new RangeError('Interval.divide: cannot divide by zero');
   }
-  const quotients = [
-   safeDivide(this.min, other.min),
-   safeDivide(this.min, other.max),
-   safeDivide(this.max, other.min),
-   safeDivide(this.max, other.max),
-  ];
-  this.min = Math.min(quotients[0]!, quotients[1]!, quotients[2]!, quotients[3]!);
-  this.max = Math.max(quotients[0]!, quotients[1]!, quotients[2]!, quotients[3]!);
+  const inv = 1 / scalar;
+  if (inv >= 0) {
+   this.min *= inv;
+   this.max *= inv;
+  } else {
+   const newMin = this.max * inv;
+   const newMax = this.min * inv;
+   this.min = newMin;
+   this.max = newMax;
+  }
   return this;
  }
 
@@ -1389,8 +1495,49 @@ export class Interval implements IntervalLike {
   if (this.min < 0) {
    throw new RangeError('Interval.sqrt: interval contains negative values');
   }
-  this.min = safeSqrt(this.min);
-  this.max = safeSqrt(this.max);
+  this.min = sqrtSafe(this.min);
+  this.max = sqrtSafe(this.max);
+  return this;
+ }
+
+ /**
+  * Computes the square root of this interval in place (safe version).
+  * @returns This for chaining, set to `[0, 0]` if fully negative; clamps min to 0 if partially negative
+  *
+  * @see {@link sqrt} - Throws if contains negative values
+  * @see {@link sqrtUnchecked} - No validation, for hot paths
+  *
+  * @category Arithmetic
+  * @since 0.7.0
+  */
+ sqrtSafe(): this {
+  if (this.max < 0) {
+   this.min = 0;
+   this.max = 0;
+   return this;
+  }
+  this.min = this.min < 0 ? 0 : sqrtSafe(this.min);
+  this.max = sqrtSafe(this.max);
+  return this;
+ }
+
+ /**
+  * Computes the square root of this interval in place without validation (for hot paths).
+  * @returns This for chaining
+  *
+  * @remarks
+  * **Precondition:** Interval must be non-negative.
+  * If interval contains negative values, result will contain NaN.
+  *
+  * @see {@link sqrt} - Throws if contains negative values
+  * @see {@link sqrtSafe} - Clamps negatives, never throws
+  *
+  * @category Arithmetic
+  * @since 0.7.0
+  */
+ sqrtUnchecked(): this {
+  this.min = Math.sqrt(this.min);
+  this.max = Math.sqrt(this.max);
   return this;
  }
 
@@ -1406,8 +1553,8 @@ export class Interval implements IntervalLike {
   if (this.contains(0)) {
    throw new RangeError('Interval.reciprocal: interval contains zero');
   }
-  const recipMin = safeDivide(1, this.min);
-  const recipMax = safeDivide(1, this.max);
+  const recipMin = 1 / this.min;
+  const recipMax = 1 / this.max;
   this.min = Math.min(recipMin, recipMax);
   this.max = Math.max(recipMin, recipMax);
   return this;
@@ -1429,8 +1576,8 @@ export class Interval implements IntervalLike {
    this.max = 0;
    return this;
   }
-  const recipMin = safeDivide(1, this.min);
-  const recipMax = safeDivide(1, this.max);
+  const recipMin = 1 / this.min;
+  const recipMax = 1 / this.max;
   this.min = Math.min(recipMin, recipMax);
   this.max = Math.max(recipMin, recipMax);
   return this;
@@ -1478,7 +1625,7 @@ export class Interval implements IntervalLike {
   */
  intersect(other: ReadonlyInterval): this | undefined {
   const newMin = Math.max(this.min, other.min);
-  const newMax = Math.max(newMin, Math.min(this.max, other.max));
+  const newMax = Math.min(this.max, other.max);
   if (newMin <= newMax) {
    this.min = newMin;
    this.max = newMax;
@@ -1498,6 +1645,51 @@ export class Interval implements IntervalLike {
  union(other: ReadonlyInterval): this {
   this.min = Math.min(this.min, other.min);
   this.max = Math.max(this.max, other.max);
+  return this;
+ }
+
+ /**
+  * Expands this interval symmetrically by a delta.
+  * @param delta - Amount to expand each side (must be non-negative)
+  * @returns This for chaining
+  * @throws {RangeError} If delta is negative
+  *
+  * @category Set Operations
+  * @since 0.8.0
+  */
+ expand(delta: number): this {
+  if (delta < 0) {
+   throw new RangeError('Interval.expand: delta must be non-negative');
+  }
+  this.min -= delta;
+  this.max += delta;
+  return this;
+ }
+
+ /**
+  * Shrinks this interval symmetrically by a delta.
+  * If delta exceeds half the width, collapses to the midpoint.
+  * @param delta - Amount to shrink each side (must be non-negative)
+  * @returns This for chaining
+  * @throws {RangeError} If delta is negative
+  *
+  * @category Set Operations
+  * @since 0.8.0
+  */
+ shrink(delta: number): this {
+  if (delta < 0) {
+   throw new RangeError('Interval.shrink: delta must be non-negative');
+  }
+  const newMin = this.min + delta;
+  const newMax = this.max - delta;
+  if (newMin > newMax) {
+   const mid = (this.min + this.max) * 0.5;
+   this.min = mid;
+   this.max = mid;
+  } else {
+   this.min = newMin;
+   this.max = newMax;
+  }
   return this;
  }
 
@@ -1683,7 +1875,7 @@ export class Interval implements IntervalLike {
   if (scalarNearEquals(width, 0)) {
    return 0;
   }
-  return safeDivide(value - this.min, width);
+  return divideSafe(value - this.min, width);
  }
 
  /**
@@ -1754,8 +1946,8 @@ export class Interval implements IntervalLike {
   if (this.contains(0)) {
    throw new RangeError('Interval.reciprocated: interval contains zero');
   }
-  const recipMin = safeDivide(1, this.min);
-  const recipMax = safeDivide(1, this.max);
+  const recipMin = 1 / this.min;
+  const recipMax = 1 / this.max;
   return new Interval(Math.min(recipMin, recipMax), Math.max(recipMin, recipMax));
  }
 

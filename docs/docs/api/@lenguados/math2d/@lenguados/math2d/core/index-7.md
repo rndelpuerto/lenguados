@@ -23,7 +23,7 @@ Two-dimensional vector implementation for the Lenguado 2-D physics-engine family
 
 - Instance methods mutate `this` for fluent chaining.
 - Static methods are pure and accept an optional `out` parameter to avoid allocations.
-- Trigonometric and square-root operations delegate to [DeterministicMath](../deterministic/classes/DeterministicMath.md).
+- Trigonometric and square-root operations delegate to deterministic kernels.
 - All operations use auxiliary modules to maintain DRY principle.
 
 ## Core

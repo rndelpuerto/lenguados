@@ -15,9 +15,25 @@ instead of NaN/Infinity. For boolean predicates (type guards),
 see ./guards.
 
 **Determinism Guarantee**: Mathematical operations that could vary across
-JavaScript engines (sqrt) are delegated to [DeterministicMath](../../deterministic/classes/DeterministicMath.md) to
-ensure cross-platform reproducibility for physics simulations, lockstep
-networking, and replay systems.
+JavaScript engines are delegated to deterministic-kernels.
+
+## Other
+
+### safeAcos
+
+Renames and re-exports [acosSafe](../../deterministic/functions/acosSafe.md)
+
+---
+
+### safeAsin
+
+Renames and re-exports [asinSafe](../../deterministic/functions/asinSafe.md)
+
+---
+
+### safeSqrt
+
+Renames and re-exports [sqrtSafe](../../deterministic/functions/sqrtSafe.md)
 
 ## Safety
 
@@ -26,13 +42,9 @@ networking, and replay systems.
 - [ensureFinite](functions/ensureFinite.md)
 - [neumaierSum](functions/neumaierSum.md)
 - [robustSum](functions/robustSum.md)
-- [safeAcos](functions/safeAcos.md)
-- [safeAsin](functions/safeAsin.md)
 - [safeDivide](functions/safeDivide.md)
 - [safeLerp](functions/safeLerp.md)
 - [safeLog](functions/safeLog.md)
-- [safeMod](functions/safeMod.md)
 - [safePow](functions/safePow.md)
 - [safeReciprocal](functions/safeReciprocal.md)
-- [safeSqrt](functions/safeSqrt.md)
 - [sanitizeNumber](functions/sanitizeNumber.md)

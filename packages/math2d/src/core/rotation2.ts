@@ -56,8 +56,7 @@ import {
 } from '../auxiliary/angle/conversion';
 import { lerpAngle } from '../auxiliary/angle/interpolation';
 import { normalizeRadians } from '../auxiliary/angle/normalization';
-import { angleDifference, sinCos } from '../auxiliary/angle/operations';
-import { safeDivide } from '../auxiliary/numeric/safety';
+import { sinCos } from '../auxiliary/angle/operations';
 import { saturate } from '../auxiliary/scalar/arithmetic';
 import {
  isNearZero,
@@ -72,9 +71,25 @@ import type { ReadonlyRotation2Like, ReadonlyVector2Like, Rotation2Like } from '
 import { assertFinite } from '../validation/assert';
 
 import { Complex, type ReadonlyComplex } from './complex';
+import { Matrix2 } from './matrix2';
 import { Vector2 } from './vector2';
 
 // NOTE: ReadonlyRotation2Like is imported from '../types' - do not redefine here
+
+/* ========================================================================== */
+/* Type Exports                                                               */
+/* ========================================================================== */
+
+/**
+ * Readonly view of a {@link Rotation2} instance.
+ *
+ * @category Types
+ * @since 0.7.0
+ * @public
+ */
+export type ReadonlyRotation2 = Readonly<Rotation2>;
+
+export { isRotation2Like } from '../types';
 
 /* ========================================================================== */
 /* Helper Functions                                                           */
@@ -99,7 +114,7 @@ import { Vector2 } from './vector2';
  * @category Helpers
  * @since 0.7.0
  */
-export function freezeRotation2(rotation: Rotation2): ReadonlyRotation2Like {
+export function freezeRotation2(rotation: Rotation2): ReadonlyRotation2 {
  return Object.freeze(rotation);
 }
 
@@ -112,6 +127,7 @@ export function freezeRotation2(rotation: Rotation2): ReadonlyRotation2Like {
  *
  * @remarks
  * Instances are normalized to unit magnitude, making them efficient for rotations.
+ * Following standard mathematical conventions, all rotations in this library are **Counter-Clockwise (CCW) Positive**.
  *
  * @category Core
  * @since 0.7.0
@@ -128,6 +144,14 @@ export class Rotation2 implements Rotation2Like {
  /* Constructor                                                              */
  /* ======================================================================== */
 
+ /**
+  * Creates a Rotation2 from cosine and sine components.
+  *
+  * @remarks
+  * Does NOT normalize the input. If `(cos, sin)` is not on the unit circle,
+  * the rotation will scale vectors. Use {@link Rotation2.fromAngle} for
+  * guaranteed normalization, or call {@link normalize} after construction.
+  */
  constructor(cos = 1, sin = 0) {
   this.cos = cos;
   this.sin = sin;
@@ -143,7 +167,7 @@ export class Rotation2 implements Rotation2Like {
   if (isNearZero(magnitude)) {
    return { cos: 1, sin: 0 };
   }
-  const inverse = safeDivide(1, magnitude);
+  const inverse = 1 / magnitude;
   return { cos: cos * inverse, sin: sin * inverse };
  }
 
@@ -182,6 +206,7 @@ export class Rotation2 implements Rotation2Like {
 
  /**
   * 270° counter-clockwise rotation (90° clockwise).
+  * @see {@link NEGATIVE_QUARTER} — same rotation, named as clockwise quarter turn
   * @category Core
   */
  public static readonly THREE_QUARTER_TURN = Object.freeze(
@@ -214,6 +239,7 @@ export class Rotation2 implements Rotation2Like {
 
  /**
   * -90° rotation (clockwise quarter turn).
+  * @see {@link THREE_QUARTER_TURN} — same rotation, named as 270° CCW
   * @category Core
   */
  public static readonly NEGATIVE_QUARTER = Object.freeze(
@@ -255,6 +281,25 @@ export class Rotation2 implements Rotation2Like {
  }
 
  /**
+  * Creates a rotation from pre-computed cos/sin values.
+  * @param cos - Pre-computed cosine of the angle
+  * @param sin - Pre-computed sine of the angle
+  * @param out - Optional output rotation
+  * @returns Rotation with the given cos/sin
+  *
+  * @remarks
+  * Trusts caller-provided cos/sin without normalization or validation,
+  * consistent with all *CS methods in the library. Use when trig has
+  * been pre-computed (e.g., via {@link sinCos}) to avoid redundant computation.
+  *
+  * @category Factory
+  * @since 0.7.0
+  */
+ public static fromCS(cos: number, sin: number, out?: Rotation2): Rotation2 {
+  return Rotation2.ensureOut(out).set(cos, sin);
+ }
+
+ /**
   * Creates a rotation from a direction vector.
   * @param direction - Direction vector (will be normalized)
   * @param out - Optional output rotation
@@ -271,6 +316,7 @@ export class Rotation2 implements Rotation2Like {
   if (isNearZero(magnitudeSquared)) {
    return Rotation2.ensureOut(out).set(1, 0);
   }
+  // Use hypot for overflow-safe magnitude (handles components > ~1.34e154)
   const inv = 1 / hypot(x, y);
   return Rotation2.ensureOut(out).set(x * inv, y * inv);
  }
@@ -290,9 +336,27 @@ export class Rotation2 implements Rotation2Like {
   to: ReadonlyVector2Like,
   out?: Rotation2,
  ): Rotation2 {
-  const normFrom = Rotation2.fromVector2(from);
-  const normTo = Rotation2.fromVector2(to);
-  return Rotation2.relative(normFrom, normTo, out);
+  // Inline cross/dot computation to avoid two temporary Rotation2 allocations
+  const fx = from.x;
+  const fy = from.y;
+  const tx = to.x;
+  const ty = to.y;
+
+  const fromMagSq = fx * fx + fy * fy;
+  const toMagSq = tx * tx + ty * ty;
+
+  if (isNearZero(fromMagSq) || isNearZero(toMagSq)) {
+   return Rotation2.ensureOut(out).set(1, 0);
+  }
+
+  // Use hypot for overflow-safe magnitude computation
+  const fromMag = hypot(fx, fy);
+  const toMag = hypot(tx, ty);
+  const invScale = 1 / (fromMag * toMag);
+  // dot(from, to) = cos of angle, cross(from, to) = sin of angle
+  const cos = (fx * tx + fy * ty) * invScale;
+  const sin = (fx * ty - fy * tx) * invScale;
+  return Rotation2.ensureOut(out).set(cos, sin);
  }
 
  /**
@@ -301,11 +365,17 @@ export class Rotation2 implements Rotation2Like {
   * @param out - Optional output rotation
   * @returns Rotation from the complex number
   *
+  * @remarks
+  * Zero-magnitude input produces identity rotation (cos=1, sin=0) after normalization.
+  *
   * @category Factory
   * @since 0.7.0
   */
  public static fromComplex(complex: ReadonlyComplex, out?: Rotation2): Rotation2 {
-  return Rotation2.ensureOut(out).set(complex.real, complex.imag).normalize();
+  const target = Rotation2.ensureOut(out);
+  target.cos = complex.real;
+  target.sin = complex.imag;
+  return target.normalize();
  }
 
  /**
@@ -320,7 +390,10 @@ export class Rotation2 implements Rotation2Like {
   * @since 0.7.0
   */
  public static fromComplexSafe(complex: ReadonlyComplex, out?: Rotation2): Rotation2 {
-  return Rotation2.ensureOut(out).set(complex.real, complex.imag).normalizeSafe();
+  const target = Rotation2.ensureOut(out);
+  target.cos = complex.real;
+  target.sin = complex.imag;
+  return target.normalizeSafe();
  }
 
  /**
@@ -443,8 +516,10 @@ export class Rotation2 implements Rotation2Like {
   *
   * @remarks
   * Unlike {@link normalize}, this method returns the identity rotation
-  * instead of throwing when the input has zero magnitude. This is useful
-  * for accumulated rotations that may drift due to floating-point errors.
+  * `(cos=1, sin=0)` instead of throwing when the input has zero magnitude.
+  * The identity rotation is the neutral element for rotation composition —
+  * applying it leaves vectors unchanged. This is useful for accumulated
+  * rotations that may drift due to floating-point errors.
   *
   * @example
   * ```typescript
@@ -507,6 +582,11 @@ export class Rotation2 implements Rotation2Like {
   * @param out - Optional output rotation
   * @returns Combined rotation (a then b)
   *
+  * @remarks
+  * Repeated multiplication accumulates floating-point drift, causing the
+  * result to deviate from unit magnitude. Call {@link normalize} periodically
+  * (e.g., every 60–120 frames) in physics loops to maintain accuracy.
+  *
   * @category Arithmetic
   * @since 0.7.0
   */
@@ -554,15 +634,19 @@ export class Rotation2 implements Rotation2Like {
  }
 
  /**
-  * Negates a rotation (same as rotating by -angle).
-  * @param rotation - Rotation to negate
+  * Returns the conjugate of a rotation (inverse for unit rotations).
+  * @param rotation - Rotation to conjugate
   * @param out - Optional output rotation
-  * @returns Negated rotation
+  * @returns Conjugated rotation
+  *
+  * @remarks
+  * For unit complex numbers in SO(2), the conjugate `(cos, -sin)` is the inverse
+  * rotation. Applying a rotation followed by its conjugate yields the identity.
   *
   * @category Arithmetic
   * @since 0.7.0
   */
- public static negate(rotation: ReadonlyRotation2Like, out?: Rotation2): Rotation2 {
+ public static conjugate(rotation: ReadonlyRotation2Like, out?: Rotation2): Rotation2 {
   return Rotation2.ensureOut(out).set(rotation.cos, -rotation.sin);
  }
 
@@ -578,8 +662,9 @@ export class Rotation2 implements Rotation2Like {
   * @returns Rotated vector
   *
   * @remarks
-  * Mathematically equivalent to `Vector2.rotateCS(vector, rotation.cos, rotation.sin, out)`.
-  * Implemented inline for performance in hot paths.
+  * - Use `Rotation2.apply` for pure rotation (operator semantics).
+  * - Use `Matrix2.transformVector` for general linear transformations (spatial semantics).
+  * - Mathematically equivalent to `Vector2.rotateCS(vector, rotation.cos, rotation.sin, out)`.
   *
   * @example
   * ```typescript
@@ -608,9 +693,9 @@ export class Rotation2 implements Rotation2Like {
   * @returns Inversely rotated vector
   *
   * @remarks
-  * Mathematically equivalent to rotating by the negated angle.
-  * Uses the conjugate: `(cos, -sin)` instead of `(cos, sin)`.
-  * Implemented inline for performance in hot paths.
+  * - Use `Rotation2.applyInverse` for pure rotation (operator semantics).
+  * - Use `Matrix2.transformVector` for general linear transformations (spatial semantics).
+  * - Mathematically equivalent to rotating by the negated angle.
   *
   * @example
   * ```typescript
@@ -640,9 +725,15 @@ export class Rotation2 implements Rotation2Like {
   * Linear interpolation between two rotations.
   * @param a - Start rotation
   * @param b - End rotation
-  * @param t - Interpolation factor [0, 1], clamped
+  * @param t - Interpolation factor (not clamped; allows extrapolation which is linear in angle space and may wrap for large |t|)
   * @param out - Optional output rotation
   * @returns Interpolated rotation
+  *
+  * @remarks
+  * For unit complex numbers in 2D (SO(2)), lerp via angle interpolation IS
+  * equivalent to slerp. Unlike 3D quaternions where lerp and slerp differ,
+  * in 2D the shortest-path angular interpolation produces the same result
+  * as spherical interpolation on the unit circle.
   *
   * @category Interpolation
   * @since 0.7.0
@@ -675,47 +766,6 @@ export class Rotation2 implements Rotation2Like {
   out?: Rotation2,
  ): Rotation2 {
   return Rotation2.lerp(a, b, saturate(t), out);
- }
-
- /**
-  * Spherical linear interpolation between two rotations.
-  * @param from - Start rotation
-  * @param to - End rotation
-  * @param t - Interpolation factor (not clamped, allows extrapolation)
-  * @param out - Optional output rotation
-  * @returns Interpolated rotation
-  *
-  * @category Interpolation
-  * @since 0.7.0
-  */
- public static slerp(
-  from: ReadonlyRotation2Like,
-  to: ReadonlyRotation2Like,
-  t: number,
-  out?: Rotation2,
- ): Rotation2 {
-  const angle = lerpAngle(Rotation2.angle(from), Rotation2.angle(to), t);
-  return Rotation2.fromAngle(angle, out);
- }
-
- /**
-  * Spherical linear interpolation with t clamped to [0, 1].
-  * @param from - Start rotation
-  * @param to - End rotation
-  * @param t - Interpolation factor (clamped to [0, 1])
-  * @param out - Optional output rotation
-  * @returns Interpolated rotation
-  *
-  * @category Interpolation
-  * @since 0.7.0
-  */
- public static slerpClamped(
-  from: ReadonlyRotation2Like,
-  to: ReadonlyRotation2Like,
-  t: number,
-  out?: Rotation2,
- ): Rotation2 {
-  return Rotation2.slerp(from, to, saturate(t), out);
  }
 
  /**
@@ -793,8 +843,12 @@ export class Rotation2 implements Rotation2Like {
   if (relativeEquals(a.cos, b.cos, epsilon) && relativeEquals(a.sin, b.sin, epsilon)) {
    return true;
   }
-  // Slow path: compare angles (handles wrap-around)
-  const diff = angleDifference(Rotation2.angle(a), Rotation2.angle(b));
+  // Slow path: compute angle difference via cross/dot products (avoids two atan2 calls)
+  // cross = a.cos * b.sin - a.sin * b.cos (sin of angle difference)
+  // dot   = a.cos * b.cos + a.sin * b.sin (cos of angle difference)
+  const cross = a.cos * b.sin - a.sin * b.cos;
+  const dot = a.cos * b.cos + a.sin * b.sin;
+  const diff = atan2(cross, dot);
   return isNearZero(diff, epsilon);
  }
 
@@ -803,6 +857,9 @@ export class Rotation2 implements Rotation2Like {
   * @param rotation - Rotation to test
   * @param epsilon - Tolerance (default: EPSILON)
   * @returns True if rotation is identity
+  *
+  * @remarks
+  * Uses {@link EPSILON} (1e-10) as default tolerance. Checks cos ≈ 1 and sin ≈ 0.
   *
   * @category Comparison
   * @since 0.7.0
@@ -897,10 +954,16 @@ export class Rotation2 implements Rotation2Like {
   * @since 0.7.0
   */
  set(cos: number, sin: number): this {
-  // Pure math: no assertions - direct assignment
-  const normalized = Rotation2.normalizeComponents(cos, sin);
-  this.cos = normalized.cos;
-  this.sin = normalized.sin;
+  // Normalize inline to avoid intermediate object allocation
+  const magnitude = hypot(cos, sin);
+  if (isNearZero(magnitude)) {
+   this.cos = 1;
+   this.sin = 0;
+  } else {
+   const inv = 1 / magnitude;
+   this.cos = cos * inv;
+   this.sin = sin * inv;
+  }
   return this;
  }
 
@@ -1152,13 +1215,17 @@ export class Rotation2 implements Rotation2Like {
  }
 
  /**
-  * Negates this rotation in place (same as inverse for unit rotations).
+  * Conjugates this rotation in place (inverse for unit rotations).
   * @returns This for chaining
+  *
+  * @remarks
+  * For unit complex numbers in SO(2), the conjugate `(cos, -sin)` is the inverse
+  * rotation. Applying a rotation followed by its conjugate yields the identity.
   *
   * @category Arithmetic
   * @since 0.7.0
   */
- negate(): this {
+ conjugate(): this {
   this.sin = -this.sin;
   return this;
  }
@@ -1395,17 +1462,6 @@ export class Rotation2 implements Rotation2Like {
   return new Rotation2(n.cos, n.sin);
  }
 
- /**
-  * Returns the angle in radians without method call.
-  * @returns Angle in radians
-  *
-  * @category Computed
-  * @since 0.7.0
-  */
- public get angleValue(): number {
-  return atan2(this.sin, this.cos);
- }
-
  /* ======================================================================== */
  /* Instance Interpolation                                                   */
  /* ======================================================================== */
@@ -1454,36 +1510,6 @@ export class Rotation2 implements Rotation2Like {
   return this.lerp(other, smoothStep(0, 1, clamped));
  }
 
- /**
-  * Spherical linear interpolation with another rotation in place.
-  * @param other - Target rotation
-  * @param t - Interpolation factor (not clamped, allows extrapolation)
-  * @returns This for chaining
-  *
-  * @category Interpolation
-  * @since 0.7.0
-  */
- slerp(other: ReadonlyRotation2Like, t: number): this {
-  const interpolatedAngle = lerpAngle(this.angle, Rotation2.angle(other), t);
-  const result = sinCos(interpolatedAngle);
-  this.cos = result.cos;
-  this.sin = result.sin;
-  return this;
- }
-
- /**
-  * Spherical linear interpolation with t clamped to [0, 1].
-  * @param other - Target rotation
-  * @param t - Interpolation factor (clamped to [0, 1])
-  * @returns This for chaining
-  *
-  * @category Interpolation
-  * @since 0.7.0
-  */
- slerpClamped(other: ReadonlyRotation2Like, t: number): this {
-  return this.slerp(other, saturate(t));
- }
-
  /* ======================================================================== */
  /* Instance Conversion                                                      */
  /* ======================================================================== */
@@ -1525,6 +1551,25 @@ export class Rotation2 implements Rotation2Like {
   */
  public toVector2(out?: Vector2): Vector2 {
   return Vector2.fromValues(this.cos, this.sin, out);
+ }
+
+ /**
+  * Converts the rotation to a 2×2 rotation matrix.
+  * @param out - Optional output matrix
+  * @returns Matrix2 representing this rotation
+  *
+  * @example
+  * ```typescript
+  * const r = Rotation2.fromAngle(Math.PI / 2);
+  * const m = r.toMatrix2();
+  * // m ≈ [0, 1, -1, 0]
+  * ```
+  *
+  * @category Conversion
+  * @since 0.8.0
+  */
+ public toMatrix2(out?: Matrix2): Matrix2 {
+  return Matrix2.fromRotation(this, out);
  }
 
  /* ======================================================================== */

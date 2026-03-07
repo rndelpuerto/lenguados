@@ -2,7 +2,7 @@
 
 > **formatComplex**(`c`, `format`, `precision?`): `string`
 
-Defined in: [src/utils/parse.ts:751](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/utils/parse.ts#L751)
+Defined in: [src/utils/parse.ts:764](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/utils/parse.ts#L764)
 
 Formats a complex number as a string.
 
@@ -50,4 +50,4 @@ formatComplex(new Complex(3, 4), 'csv'); // "3,4"
 
 ## Since
 
-0.14.0
+0.7.0

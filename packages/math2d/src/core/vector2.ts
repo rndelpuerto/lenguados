@@ -20,7 +20,7 @@
  */
 
 import { sinCos } from '../auxiliary/angle/operations';
-import { safeAcos, safeDivide, safeSqrt } from '../auxiliary/numeric/safety';
+import { acosSafe, divideSafe, sqrtSafe } from '../auxiliary/numeric/safety';
 import {
  clamp,
  mod as scalarModule,
@@ -35,7 +35,7 @@ import {
 } from '../auxiliary/scalar/comparison';
 import { EPSILON, SQRT_HALF } from '../auxiliary/scalar/constants';
 import { lerp, smoothStep } from '../auxiliary/scalar/interpolation';
-import { atan2, hypot, sin, sqrt } from '../deterministic/deterministic-kernels';
+import { atan2, hypot, sin } from '../deterministic/deterministic-kernels';
 import type {
  ReadonlyComplexLike,
  ReadonlyMatrix2Like,
@@ -45,7 +45,7 @@ import type {
  ReadonlyVector2Like,
  Vector2Like,
 } from '../types';
-import { assertFinite } from '../validation/assert';
+import { assert, assertFinite } from '../validation/assert';
 
 /* ========================================================================== */
 /* Type Exports                                                               */
@@ -289,6 +289,7 @@ export class Vector2 implements Vector2Like {
   */
  public static fromAngle(angle: number, radius = 1, out?: Vector2): Vector2 {
   assertFinite(angle, 'Vector2.fromAngle:angle');
+  assertFinite(radius, 'Vector2.fromAngle:radius');
   const { cos, sin } = sinCos(angle);
   return this.ensureOut(out).set(cos * radius, sin * radius);
  }
@@ -797,6 +798,10 @@ export class Vector2 implements Vector2Like {
   * @param out - Optional output vector.
   * @returns Safe inverted vector.
   *
+  * @remarks
+  * Uses {@link isNearZero} with default {@link EPSILON} (1e-10) per component.
+  * Components with |value| ≤ EPSILON become 0 instead of Infinity.
+  *
   * @category Numeric Transform
   * @since 0.7.0
   */
@@ -945,7 +950,7 @@ export class Vector2 implements Vector2Like {
 
   // Angle between normalized vectors
   const dot = clamp(ax * bx + ay * by, -1, 1);
-  const theta = safeAcos(dot);
+  const theta = acosSafe(dot);
 
   if (isNearZero(theta)) {
    return this.lerp(a, b, t, out);
@@ -1019,7 +1024,7 @@ export class Vector2 implements Vector2Like {
   t: number,
   out?: Vector2,
  ): Vector2 {
-  const smoothT = smoothStep(0, 1, saturate(t));
+  const smoothT = smoothStep(0, 1, t);
   return Vector2.lerp(a, b, smoothT, out);
  }
 
@@ -1115,7 +1120,7 @@ export class Vector2 implements Vector2Like {
   * @category Geometry
   * @since 0.7.0
   */
- public static magnitudeSquared(v: ReadonlyVector2Like): number {
+ public static magnitudeSq(v: ReadonlyVector2Like): number {
   return v.x * v.x + v.y * v.y;
  }
 
@@ -1321,7 +1326,7 @@ export class Vector2 implements Vector2Like {
 
   const dot = Vector2.dot(a, b);
   const cosAngle = clamp(dot / (lengthA * lengthB), -1, 1);
-  return safeAcos(cosAngle);
+  return acosSafe(cosAngle);
  }
 
  /* ======================================================================== */
@@ -1411,9 +1416,9 @@ export class Vector2 implements Vector2Like {
   * @since 0.7.0
   */
  public static limit(v: ReadonlyVector2Like, maxLength: number, out?: Vector2): Vector2 {
-  const lengthSq = Vector2.magnitudeSquared(v);
+  const lengthSq = Vector2.magnitudeSq(v);
   if (lengthSq > maxLength * maxLength && lengthSq > 0) {
-   const scale = maxLength / safeSqrt(lengthSq);
+   const scale = maxLength / sqrtSafe(lengthSq);
    return this.ensureOut(out).set(v.x * scale, v.y * scale);
   }
   return this.ensureOut(out).set(v.x, v.y);
@@ -1508,11 +1513,11 @@ export class Vector2 implements Vector2Like {
   * @since 0.7.0
   */
  public static normalize(v: ReadonlyVector2Like, out?: Vector2): Vector2 {
-  const lengthSq = Vector2.magnitudeSquared(v);
-  if (isNearZero(lengthSq)) {
+  const mag = hypot(v.x, v.y);
+  if (isNearZero(mag)) {
    throw new RangeError('Vector2.normalize: cannot normalize zero-length vector');
   }
-  const inv = 1 / safeSqrt(lengthSq);
+  const inv = 1 / mag;
   return this.ensureOut(out).set(v.x * inv, v.y * inv);
  }
 
@@ -1523,15 +1528,21 @@ export class Vector2 implements Vector2Like {
   * @param out - Optional output vector.
   * @returns Normalized vector or zero vector.
   *
+  * @remarks
+  * Returns `(0,0)` for zero-length vectors because there is no meaningful
+  * unit direction to preserve. Unlike Complex and Rotation2 which use `(1,0)`
+  * as their identity element, vectors have no algebraic identity for
+  * normalization — the zero vector is the least surprising fallback.
+  *
   * @category Transform
   * @since 0.7.0
   */
  public static normalizeSafe(v: ReadonlyVector2Like, out?: Vector2): Vector2 {
-  const lengthSq = Vector2.magnitudeSquared(v);
-  if (isNearZero(lengthSq)) {
+  const mag = hypot(v.x, v.y);
+  if (isNearZero(mag)) {
    return this.ensureOut(out).set(0, 0);
   }
-  const inv = 1 / safeSqrt(lengthSq);
+  const inv = 1 / mag;
   return this.ensureOut(out).set(v.x * inv, v.y * inv);
  }
 
@@ -1555,7 +1566,7 @@ export class Vector2 implements Vector2Like {
   */
  public static normalizeUnchecked(v: ReadonlyVector2Like, out?: Vector2): Vector2 {
   const lengthSq = v.x * v.x + v.y * v.y;
-  const inv = 1 / sqrt(lengthSq);
+  const inv = 1 / Math.sqrt(lengthSq);
   return this.ensureOut(out).set(v.x * inv, v.y * inv);
  }
 
@@ -1577,11 +1588,10 @@ export class Vector2 implements Vector2Like {
   v: ReadonlyVector2Like,
   out?: Vector2,
  ): { length: number; unit: Vector2 } {
-  const lengthSq = v.x * v.x + v.y * v.y;
-  if (lengthSq < EPSILON * EPSILON) {
+  const length = hypot(v.x, v.y);
+  if (isNearZero(length)) {
    return { length: 0, unit: this.ensureOut(out).set(0, 0) };
   }
-  const length = safeSqrt(lengthSq);
   const inv = 1 / length;
   return { length, unit: this.ensureOut(out).set(v.x * inv, v.y * inv) };
  }
@@ -1690,7 +1700,7 @@ export class Vector2 implements Vector2Like {
   * @throws {RangeError} If axis has zero length.
   *
   * @remarks
-  * Mathematically equivalent to `axis * (dot(v, axis) / magnitudeSquared(axis))`.
+  * Mathematically equivalent to `axis * (dot(v, axis) / magnitudeSq(axis))`.
   *
   * @example
   * ```typescript
@@ -1707,7 +1717,7 @@ export class Vector2 implements Vector2Like {
   * @since 0.7.0
   */
  public static project(v: ReadonlyVector2Like, axis: ReadonlyVector2Like, out?: Vector2): Vector2 {
-  const denom = Vector2.magnitudeSquared(axis);
+  const denom = Vector2.magnitudeSq(axis);
   if (isNearZero(denom)) {
    throw new RangeError('Vector2.project: cannot project onto zero-length axis');
   }
@@ -1735,7 +1745,7 @@ export class Vector2 implements Vector2Like {
   axis: ReadonlyVector2Like,
   out?: Vector2,
  ): Vector2 {
-  const denom = Vector2.magnitudeSquared(axis);
+  const denom = Vector2.magnitudeSq(axis);
   if (isNearZero(denom)) {
    return this.ensureOut(out).set(0, 0);
   }
@@ -1766,7 +1776,7 @@ export class Vector2 implements Vector2Like {
   axis: ReadonlyVector2Like,
   out?: Vector2,
  ): Vector2 {
-  const denom = Vector2.magnitudeSquared(axis);
+  const denom = Vector2.magnitudeSq(axis);
   const s = Vector2.dot(v, axis) / denom;
   return this.ensureOut(out).set(axis.x * s, axis.y * s);
  }
@@ -1787,6 +1797,10 @@ export class Vector2 implements Vector2Like {
   unitAxis: ReadonlyVector2Like,
   out?: Vector2,
  ): Vector2 {
+  assert(
+   isNearZero(Vector2.magnitudeSq(unitAxis) - 1),
+   'Vector2.projectOnUnit: unitAxis must be unit-length. Use Vector2.project() for non-unit axes.',
+  );
   const s = Vector2.dot(v, unitAxis);
   return this.ensureOut(out).set(unitAxis.x * s, unitAxis.y * s);
  }
@@ -1818,7 +1832,7 @@ export class Vector2 implements Vector2Like {
   * @since 0.7.0
   */
  public static reject(a: ReadonlyVector2Like, b: ReadonlyVector2Like, out?: Vector2): Vector2 {
-  const denom = Vector2.magnitudeSquared(b);
+  const denom = Vector2.magnitudeSq(b);
   if (isNearZero(denom)) {
    throw new RangeError('Vector2.reject: cannot reject from zero-length vector');
   }
@@ -1842,7 +1856,7 @@ export class Vector2 implements Vector2Like {
   * @since 0.7.0
   */
  public static rejectSafe(a: ReadonlyVector2Like, b: ReadonlyVector2Like, out?: Vector2): Vector2 {
-  const denom = Vector2.magnitudeSquared(b);
+  const denom = Vector2.magnitudeSq(b);
   if (isNearZero(denom)) {
    return this.ensureOut(out).set(a.x, a.y);
   }
@@ -1873,7 +1887,7 @@ export class Vector2 implements Vector2Like {
   b: ReadonlyVector2Like,
   out?: Vector2,
  ): Vector2 {
-  const denom = Vector2.magnitudeSquared(b);
+  const denom = Vector2.magnitudeSq(b);
   const s = Vector2.dot(a, b) / denom;
   return this.ensureOut(out).set(a.x - b.x * s, a.y - b.y * s);
  }
@@ -1934,7 +1948,7 @@ export class Vector2 implements Vector2Like {
   unitNormal: ReadonlyVector2Like,
   out?: Vector2,
  ): Vector2 {
-  const magSq = Vector2.magnitudeSquared(unitNormal);
+  const magSq = Vector2.magnitudeSq(unitNormal);
   if (!scalarNearEquals(magSq, 1)) {
    throw new RangeError('Vector2.reflect: normal must be unit length');
   }
@@ -1961,11 +1975,11 @@ export class Vector2 implements Vector2Like {
   normal: ReadonlyVector2Like,
   out?: Vector2,
  ): Vector2 {
-  const lengthSq = Vector2.magnitudeSquared(normal);
+  const lengthSq = Vector2.magnitudeSq(normal);
   if (isNearZero(lengthSq)) {
    return this.ensureOut(out).set(v.x, v.y);
   }
-  const invLength = 1 / safeSqrt(lengthSq);
+  const invLength = 1 / sqrtSafe(lengthSq);
   const nx = normal.x * invLength;
   const ny = normal.y * invLength;
   const d2 = 2 * (v.x * nx + v.y * ny);
@@ -2170,8 +2184,9 @@ export class Vector2 implements Vector2Like {
   * @returns Rotated vector.
   *
   * @remarks
-  * Equivalent to `rotateCS(v, rotation.cos, rotation.sin, out)`.
-  * Uses interface for loose coupling.
+  * - Use `Rotation2.apply` semantics (pure operator).
+  * - Equivalent to `rotateCS(v, rotation.cos, rotation.sin, out)`.
+  * - Uses interface for loose coupling.
   *
   * @category Transform Integration
   * @since 0.7.0
@@ -2193,8 +2208,9 @@ export class Vector2 implements Vector2Like {
   * @returns Transformed vector.
   *
   * @remarks
-  * Computes: [m00*x + m10*y, m01*x + m11*y] (column-major convention).
-  * Uses interface for loose coupling.
+  * - Use `Matrix2.transformVector` semantics (spatial transform).
+  * - Computes: [m00*x + m10*y, m01*x + m11*y] (column-major convention).
+  * - Uses interface for loose coupling.
   *
   * @example
   * ```typescript
@@ -2226,10 +2242,12 @@ export class Vector2 implements Vector2Like {
   * @returns Transformed vector.
   *
   * @remarks
-  * For affine matrices (m02=0, m12=0, m22=1), computes:
+  * - Use `Matrix3.transformPoint` semantics (spatial transform + translation).
+  * - For affine matrices (m02=0, m12=0, m22=1), computes:
   * `[m00*x + m10*y + m20, m01*x + m11*y + m21]`
   *
   * For projective matrices, divides by the homogeneous coordinate w.
+  * When w ≈ 0, the point collapses to origin via `divideSafe` (returns 0).
   *
   * This treats the vector as a point (applies translation).
   * For direction vectors (no translation), use Matrix3.transformVector.
@@ -2260,7 +2278,7 @@ export class Vector2 implements Vector2Like {
   if (isNearZero(w - 1)) {
    return this.ensureOut(out).set(rx, ry);
   }
-  const invW = safeDivide(1, w);
+  const invW = divideSafe(1, w);
   return this.ensureOut(out).set(rx * invW, ry * invW);
  }
 
@@ -2273,8 +2291,9 @@ export class Vector2 implements Vector2Like {
   * @returns Transformed vector.
   *
   * @remarks
-  * Transform order: Scale first, then rotate, then translate.
-  * Uses interface for loose coupling.
+  * - Use `Transform2.transformPoint` semantics (spatial transform).
+  * - Transform order: Scale first, then rotate, then translate.
+  * - Uses interface for loose coupling.
   *
   * @example
   * ```typescript
@@ -2309,7 +2328,8 @@ export class Vector2 implements Vector2Like {
   * @returns Rotated vector.
   *
   * @remarks
-  * The complex number is normalized before applying to ensure
+  * - Use `Complex.apply` semantics (pure operator).
+  * - The complex number is normalized before applying to ensure
   * a pure rotation without scaling. For unit complex numbers,
   * this is equivalent to complex multiplication.
   *
@@ -2335,7 +2355,7 @@ export class Vector2 implements Vector2Like {
   if (isNearZero(magSq)) {
    return this.clone(v, out);
   }
-  const invMag = 1 / safeSqrt(magSq);
+  const invMag = 1 / sqrtSafe(magSq);
   const c = complex.real * invMag;
   const s = complex.imag * invMag;
   return this.ensureOut(out).set(c * v.x - s * v.y, s * v.x + c * v.y);
@@ -2421,8 +2441,9 @@ export class Vector2 implements Vector2Like {
   * @category Comparison
   * @since 0.7.0
   */
- public static isUnit(v: ReadonlyVector2Like): boolean {
-  return scalarNearEquals(Vector2.magnitude(v), 1);
+ public static isUnit(v: ReadonlyVector2Like, epsilon: number = EPSILON): boolean {
+  const magnitudeSq = v.x * v.x + v.y * v.y;
+  return Math.abs(magnitudeSq - 1) <= epsilon;
  }
 
  /**
@@ -2485,6 +2506,7 @@ export class Vector2 implements Vector2Like {
   b: ReadonlyVector2Like,
   epsilon = EPSILON,
  ): boolean {
+  if (isNearZero(Vector2.magnitudeSq(a)) || isNearZero(Vector2.magnitudeSq(b))) return false;
   return isNearZero(Vector2.cross(a, b), epsilon);
  }
 
@@ -2504,6 +2526,7 @@ export class Vector2 implements Vector2Like {
   b: ReadonlyVector2Like,
   epsilon = EPSILON,
  ): boolean {
+  if (isNearZero(Vector2.magnitudeSq(a)) || isNearZero(Vector2.magnitudeSq(b))) return false;
   return isNearZero(Vector2.dot(a, b), epsilon);
  }
 
@@ -2576,11 +2599,11 @@ export class Vector2 implements Vector2Like {
   * @returns New unit vector.
   */
  public get normalized(): Vector2 {
-  const lengthSq = this.magnitudeSquared();
+  const lengthSq = this.magnitudeSq();
   if (isNearZero(lengthSq)) {
    return new Vector2(0, 0);
   }
-  const inv = 1 / safeSqrt(lengthSq);
+  const inv = 1 / sqrtSafe(lengthSq);
   return new Vector2(this.x * inv, this.y * inv);
  }
 
@@ -2685,6 +2708,11 @@ export class Vector2 implements Vector2Like {
   * @since 0.7.0
   */
  public setFromArray(array: ArrayLike<number>, offset = 0): this {
+  if (offset < 0 || offset + 2 > array.length) {
+   throw new RangeError(
+    `Vector2.setFromArray: offset ${offset} out of bounds for array length ${array.length}`,
+   );
+  }
   return this.set(array[offset]!, array[offset + 1]!);
  }
 
@@ -3133,7 +3161,7 @@ export class Vector2 implements Vector2Like {
   * Squared length.
   * @returns The squared length.
   */
- public magnitudeSquared(): number {
+ public magnitudeSq(): number {
   return this.x * this.x + this.y * this.y;
  }
 
@@ -3191,10 +3219,16 @@ export class Vector2 implements Vector2Like {
 
  /**
   * Heading angle from +X axis.
-  * @returns Angle in radians.
   */
- public angle(): number {
+ public get angle(): number {
   return atan2(this.y, this.x);
+ }
+
+ /**
+  * Sets the direction angle while preserving magnitude.
+  */
+ public set angle(radians: number) {
+  this.setAngle(radians);
  }
 
  /**
@@ -3229,7 +3263,7 @@ export class Vector2 implements Vector2Like {
   if (isNearZero(length)) {
    throw new RangeError('Vector2.normalize: cannot normalize zero-length vector');
   }
-  return this.divideScalar(length);
+  return this.scale(1 / length);
  }
 
  /**
@@ -3237,12 +3271,11 @@ export class Vector2 implements Vector2Like {
   * @returns This for chaining.
   */
  public normalizeSafe(): this {
-  const lengthSq = this.magnitudeSquared();
-  if (isNearZero(lengthSq)) {
+  const mag = this.magnitude();
+  if (isNearZero(mag)) {
    return this.set(0, 0);
   }
-  const inv = 1 / safeSqrt(lengthSq);
-  return this.scale(inv);
+  return this.scale(1 / mag);
  }
 
  /**
@@ -3261,7 +3294,7 @@ export class Vector2 implements Vector2Like {
   * @example
   * ```typescript
   * // Only use when you know the vector is non-zero
-  * if (v.magnitudeSquared() > 0) {
+  * if (v.magnitudeSq() > 0) {
   *   v.normalizeUnchecked();
   * }
   * ```
@@ -3271,7 +3304,7 @@ export class Vector2 implements Vector2Like {
   */
  public normalizeUnchecked(): this {
   const lengthSq = this.x * this.x + this.y * this.y;
-  const inv = 1 / sqrt(lengthSq);
+  const inv = 1 / Math.sqrt(lengthSq);
   this.x *= inv;
   this.y *= inv;
   return this;
@@ -3362,9 +3395,9 @@ export class Vector2 implements Vector2Like {
   * @returns This for chaining.
   */
  public limit(maxLength: number): this {
-  const lengthSq = this.magnitudeSquared();
-  if (lengthSq > maxLength * maxLength) {
-   const scale = maxLength / safeSqrt(lengthSq);
+  const lengthSq = this.magnitudeSq();
+  if (lengthSq > maxLength * maxLength && lengthSq > 0) {
+   const scale = maxLength / sqrtSafe(lengthSq);
    this.scale(scale);
   }
   return this;
@@ -3484,12 +3517,38 @@ export class Vector2 implements Vector2Like {
   * Projects onto axis.
   * @param axis - Projection axis.
   * @returns This for chaining.
+  * @throws {RangeError} If axis has zero length.
   */
  public project(axis: ReadonlyVector2Like): this {
-  const denom = Vector2.magnitudeSquared(axis);
+  const denom = Vector2.magnitudeSq(axis);
+  if (isNearZero(denom)) {
+   throw new RangeError('Vector2.project: cannot project onto zero-length axis');
+  }
+  const s = this.dot(axis) / denom;
+  return this.set(axis.x * s, axis.y * s);
+ }
+
+ /**
+  * Safe projection onto axis. Returns (0,0) if axis has zero length.
+  * @param axis - Projection axis.
+  * @returns This for chaining.
+  */
+ public projectSafe(axis: ReadonlyVector2Like): this {
+  const denom = Vector2.magnitudeSq(axis);
   if (isNearZero(denom)) {
    return this.set(0, 0);
   }
+  const s = this.dot(axis) / denom;
+  return this.set(axis.x * s, axis.y * s);
+ }
+
+ /**
+  * Unchecked projection onto axis (hot path).
+  * @param axis - Projection axis (must have non-zero length).
+  * @returns This for chaining.
+  */
+ public projectUnchecked(axis: ReadonlyVector2Like): this {
+  const denom = Vector2.magnitudeSq(axis);
   const s = this.dot(axis) / denom;
   return this.set(axis.x * s, axis.y * s);
  }
@@ -3508,8 +3567,13 @@ export class Vector2 implements Vector2Like {
   * Reflects about unit normal.
   * @param unitNormal - Unit-length normal.
   * @returns This for chaining.
+  * @throws {RangeError} If unitNormal is not unit length.
   */
  public reflect(unitNormal: ReadonlyVector2Like): this {
+  const magSq = Vector2.magnitudeSq(unitNormal);
+  if (!scalarNearEquals(magSq, 1)) {
+   throw new RangeError('Vector2.reflect: normal must be unit length');
+  }
   const d2 = 2 * this.dot(unitNormal);
   return this.set(this.x - d2 * unitNormal.x, this.y - d2 * unitNormal.y);
  }
@@ -3520,11 +3584,11 @@ export class Vector2 implements Vector2Like {
   * @returns This for chaining.
   */
  public reflectSafe(normal: ReadonlyVector2Like): this {
-  const lengthSq = Vector2.magnitudeSquared(normal);
+  const lengthSq = Vector2.magnitudeSq(normal);
   if (isNearZero(lengthSq)) {
    return this;
   }
-  const invLength = 1 / safeSqrt(lengthSq);
+  const invLength = 1 / sqrtSafe(lengthSq);
   const nx = normal.x * invLength;
   const ny = normal.y * invLength;
   const d2 = 2 * (this.x * nx + this.y * ny);
@@ -3599,12 +3663,38 @@ export class Vector2 implements Vector2Like {
   * Vector rejection: removes projection onto axis.
   * @param onto - Axis to reject from.
   * @returns This for chaining.
+  * @throws {RangeError} If onto has zero length.
   */
  public reject(onto: ReadonlyVector2Like): this {
-  const denom = Vector2.magnitudeSquared(onto);
+  const denom = Vector2.magnitudeSq(onto);
+  if (isNearZero(denom)) {
+   throw new RangeError('Vector2.reject: cannot reject from zero-length vector');
+  }
+  const s = this.dot(onto) / denom;
+  return this.set(this.x - onto.x * s, this.y - onto.y * s);
+ }
+
+ /**
+  * Safe rejection. Returns copy of this if onto has zero length.
+  * @param onto - Axis to reject from.
+  * @returns This for chaining.
+  */
+ public rejectSafe(onto: ReadonlyVector2Like): this {
+  const denom = Vector2.magnitudeSq(onto);
   if (isNearZero(denom)) {
    return this;
   }
+  const s = this.dot(onto) / denom;
+  return this.set(this.x - onto.x * s, this.y - onto.y * s);
+ }
+
+ /**
+  * Unchecked rejection (hot path).
+  * @param onto - Axis to reject from (must have non-zero length).
+  * @returns This for chaining.
+  */
+ public rejectUnchecked(onto: ReadonlyVector2Like): this {
+  const denom = Vector2.magnitudeSq(onto);
   const s = this.dot(onto) / denom;
   return this.set(this.x - onto.x * s, this.y - onto.y * s);
  }
@@ -3784,10 +3874,10 @@ export class Vector2 implements Vector2Like {
 
  /**
   * Tests if unit length.
-  * @returns True if |length - 1| ≤ EPSILON.
+  * @returns True if |magnitudeSq - 1| ≤ EPSILON.
   */
  public isUnit(): boolean {
-  return scalarNearEquals(this.magnitude(), 1);
+  return Vector2.isUnit(this);
  }
 
  /**
@@ -3960,6 +4050,10 @@ export class Vector2 implements Vector2Like {
   * @param rotation - Rotation2 with cos and sin components.
   * @returns This for chaining.
   *
+  * @remarks
+  * - Use `Rotation2.apply` semantics (pure operator).
+  * - Use for chaining operations.
+  *
   * @category Transform Integration
   * @since 0.7.0
   */
@@ -3973,6 +4067,11 @@ export class Vector2 implements Vector2Like {
   * Transforms this vector by a 2x2 matrix in place.
   * @param matrix - Matrix with m00, m01, m10, m11 components.
   * @returns This for chaining.
+  * @remarks
+  * - Use `Matrix2.transformVector` semantics (spatial transform).
+  * - Use for chaining operations.
+  *
+  * @category Transform Integration
   */
  public applyMatrix2(matrix: ReadonlyMatrix2Like): this {
   const rx = matrix.m00 * this.x + matrix.m10 * this.y;
@@ -3986,8 +4085,9 @@ export class Vector2 implements Vector2Like {
   * @returns This for chaining.
   *
   * @remarks
-  * Treats this vector as a point (applies translation).
-  * For projective matrices, divides by the homogeneous coordinate w.
+  * - Use `Matrix3.transformPoint` semantics (spatial transform + translation).
+  * - Treats this vector as a point (applies translation).
+  * - For projective matrices, divides by the homogeneous coordinate w.
   *
   * @category Transform Integration
   * @since 0.7.0
@@ -4001,7 +4101,7 @@ export class Vector2 implements Vector2Like {
   if (isNearZero(w - 1)) {
    return this.set(rx, ry);
   }
-  const invW = safeDivide(1, w);
+  const invW = divideSafe(1, w);
   return this.set(rx * invW, ry * invW);
  }
 
@@ -4009,6 +4109,10 @@ export class Vector2 implements Vector2Like {
   * Applies a full 2D transform (scale → rotate → translate) in place.
   * @param transform - Transform2 with position, rotation, and scale.
   * @returns This for chaining.
+  *
+  * @remarks
+  * - Use `Transform2.transformPoint` semantics (spatial transform).
+  * - Transform order: Scale first, then rotate, then translate.
   *
   * @category Transform Integration
   * @since 0.7.0
@@ -4028,7 +4132,8 @@ export class Vector2 implements Vector2Like {
   * @returns This for chaining.
   *
   * @remarks
-  * The complex number is normalized before applying to ensure
+  * - Use `Complex.apply` semantics (pure operator).
+  * - The complex number is normalized before applying to ensure
   * a pure rotation without scaling.
   *
   * @example
@@ -4046,7 +4151,7 @@ export class Vector2 implements Vector2Like {
   if (isNearZero(magSq)) {
    return this;
   }
-  const invMag = 1 / safeSqrt(magSq);
+  const invMag = 1 / sqrtSafe(magSq);
   const c = complex.real * invMag;
   const s = complex.imag * invMag;
   const rx = c * this.x - s * this.y;

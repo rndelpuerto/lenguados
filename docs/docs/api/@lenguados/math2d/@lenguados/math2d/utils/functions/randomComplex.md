@@ -2,7 +2,7 @@
 
 > **randomComplex**(`min`, `max`, `out`, `source`): [`Complex`](../../core/classes/Complex.md)
 
-Defined in: [src/utils/random.ts:610](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/utils/random.ts#L610)
+Defined in: [src/utils/random.ts:607](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/utils/random.ts#L607)
 
 Generates a random complex number with components in range [min, max).
 
@@ -51,4 +51,4 @@ const c = randomComplex(-1, 1); // Random complex in [-1,1) x [-1,1)
 
 ## Since
 
-0.14.0
+0.7.0

@@ -4,17 +4,10 @@
  * @description Angular operations and comparisons.
  */
 
-import { atan2, cos, sin } from '../../deterministic/deterministic-kernels';
-import { EPSILON, HALF_PI, ITERATIVE_TOLERANCE } from '../scalar/constants';
+import { atan2, sinCos as deterministicSinCos } from '../../deterministic/deterministic-kernels';
+import { EPSILON } from '../scalar/constants';
 
 import { normalizeRadians, normalizeRadiansPositive } from './normalization';
-
-/**
- * Smoothing factor for inverse-distance weighting in angle averaging.
- * Prevents division by zero when angles are very close.
- * @internal
- */
-const INVERSE_WEIGHT_SMOOTHING = 0.001;
 
 /* ========================================================================== */
 /* SinCos Type and Utility                                                    */
@@ -41,60 +34,31 @@ export interface SinCos {
  * Uses deterministic math for cross-platform reproducibility.
  *
  * @param angle - Angle in radians.
+ * @param out - Optional output object to write sin/cos into (zero-allocation).
  * @returns Object with sin and cos properties.
  *
  * @remarks
- * Creates a new object on each call. For hot paths where allocation
- * must be avoided, use {@link sinCosInto} with a reusable object.
+ * When `out` is provided, writes directly to it (zero-allocation for hot paths).
+ * Otherwise, creates a new object.
  *
  * @example
  * ```typescript
+ * // Convenience: creates new object
  * const { sin, cos } = sinCos(Math.PI / 4);
- * // sin ≈ 0.7071, cos ≈ 0.7071
- * ```
  *
- * @see {@link sinCosInto} for zero-allocation variant.
- * @category Operations
- * @since 0.7.0
- */
-export function sinCos(angle: number): SinCos {
- return {
-  sin: sin(angle),
-  cos: cos(angle),
- };
-}
-
-/**
- * Computes sine and cosine into an existing output object.
- * Zero-allocation version of {@link sinCos} for hot paths.
- *
- * @param angle - Angle in radians.
- * @param out - Output object to write sin/cos into.
- * @returns The same `out` object with updated sin/cos.
- *
- * @remarks
- * **Hot path optimization:** Use this in tight loops to avoid
- * creating new objects on each call, reducing GC pressure.
- *
- * @example
- * ```typescript
+ * // Hot path: reuse object
  * const result: SinCos = { sin: 0, cos: 0 };
- *
- * // Reuse object in hot loop
  * for (let i = 0; i < 1000; i++) {
- *   sinCosInto(angles[i], result);
+ *   sinCos(angles[i], result);
  *   // use result.sin, result.cos...
  * }
  * ```
  *
- * @see {@link sinCos} for convenience variant that creates new object.
- * @category Operations
+ * @category Arithmetic
  * @since 0.7.0
  */
-export function sinCosInto(angle: number, out: SinCos): SinCos {
- out.sin = sin(angle);
- out.cos = cos(angle);
- return out;
+export function sinCos(angle: number, out?: SinCos): SinCos {
+ return deterministicSinCos(angle, out);
 }
 
 /**
@@ -102,6 +66,7 @@ export function sinCosInto(angle: number, out: SinCos): SinCos {
  * Normalizes the angle to [-π, π) before computing.
  *
  * @param angle - Angle in radians (will be normalized).
+ * @param out - Optional output object to write sin/cos into (zero-allocation).
  * @returns Object with sin and cos properties.
  *
  * @example
@@ -110,15 +75,14 @@ export function sinCosInto(angle: number, out: SinCos): SinCos {
  * // Equivalent to sinCos(Math.PI)
  * ```
  *
- * @category Operations
+ * @remarks Uses deterministic math (`sin`, `cos` from deterministic-kernels).
+ *
+ * @category Arithmetic
  * @since 0.7.0
  */
-export function sinCosNormalized(angle: number): SinCos {
+export function sinCosNormalized(angle: number, out?: SinCos): SinCos {
  const normalized = normalizeRadians(angle);
- return {
-  sin: sin(normalized),
-  cos: cos(normalized),
- };
+ return deterministicSinCos(normalized, out);
 }
 
 /* ========================================================================== */
@@ -139,7 +103,12 @@ export function sinCosNormalized(angle: number): SinCos {
  * angleDifference(-Math.PI, Math.PI);     // 0 (same angle)
  * ```
  *
- * @category Operations
+ * @remarks
+ * Anti-symmetry breaks at the PI boundary due to the half-open [-PI, PI) range:
+ * `angleDifference(0, PI)` and `angleDifference(PI, 0)` both return `-PI`
+ * (not `+PI` and `-PI` respectively). This is inherent to the convention.
+ *
+ * @category Arithmetic
  * @since 0.7.0
  */
 export function angleDifference(from: number, to: number): number {
@@ -160,7 +129,7 @@ export function angleDifference(from: number, to: number): number {
  * angleDistance(-Math.PI, Math.PI);     // 0
  * ```
  *
- * @category Operations
+ * @category Arithmetic
  * @since 0.7.0
  */
 export function angleDistance(a: number, b: number): number {
@@ -182,7 +151,7 @@ export function angleDistance(a: number, b: number): number {
  * anglesNearEqual(0, 0.1);                      // false
  * ```
  *
- * @category Operations
+ * @category Arithmetic
  * @since 0.7.0
  */
 export function anglesNearEqual(a: number, b: number, epsilon: number = EPSILON): boolean {
@@ -203,7 +172,7 @@ export function anglesNearEqual(a: number, b: number, epsilon: number = EPSILON)
  * angleBisector(-Math.PI / 2, Math.PI / 2); // 0
  * ```
  *
- * @category Operations
+ * @category Arithmetic
  * @since 0.7.0
  */
 export function angleBisector(a: number, b: number): number {
@@ -223,6 +192,9 @@ export function angleBisector(a: number, b: number): number {
  * Uses counter-clockwise convention. The arc from start to end
  * is traversed in the positive (CCW) direction.
  *
+ * When `start === end`, the arc has zero length (a point), not a full circle.
+ * Only the exact boundary angle matches (with `inclusive = true`).
+ *
  * @example
  * ```typescript
  * isAngleBetween(Math.PI / 4, 0, Math.PI / 2);      // true
@@ -231,7 +203,7 @@ export function angleBisector(a: number, b: number): number {
  * isAngleBetween(0, 0, Math.PI, false);             // false (boundary excluded)
  * ```
  *
- * @category Operations
+ * @category Arithmetic
  * @since 0.7.0
  */
 export function isAngleBetween(
@@ -262,7 +234,7 @@ export function isAngleBetween(
  * @param angle - Angle to clamp.
  * @param min - Minimum angle.
  * @param max - Maximum angle.
- * @returns Clamped angle.
+ * @returns Clamped angle in [-PI, PI) range.
  *
  * @remarks
  * Clamps to the nearest boundary of the shortest arc between min and max.
@@ -274,7 +246,7 @@ export function isAngleBetween(
  * clampAngle(Math.PI, 0, Math.PI / 2);          // Math.PI / 2 (clamped to max)
  * ```
  *
- * @category Operations
+ * @category Arithmetic
  * @since 0.7.0
  */
 export function clampAngle(angle: number, min: number, max: number): number {
@@ -289,142 +261,11 @@ export function clampAngle(angle: number, min: number, max: number): number {
  }
 
  // Find distances to both boundaries
- const distributionToMin = angleDistance(normAngle, normMin);
- const distributionToMax = angleDistance(normAngle, normMax);
+ const distanceToMin = angleDistance(normAngle, normMin);
+ const distanceToMax = angleDistance(normAngle, normMax);
 
  // Return the closer boundary
- return distributionToMin <= distributionToMax ? normMin : normMax;
-}
-
-/**
- * Reflects angle across axis.
- * @param angle - Angle to reflect.
- * @param axis - Axis of reflection.
- * @returns Reflected angle.
- *
- * @example
- * ```typescript
- * reflectAngle(Math.PI / 4, 0);           // -Math.PI / 4 (reflect across x-axis)
- * reflectAngle(Math.PI / 4, Math.PI / 2); // 3 * Math.PI / 4 (reflect across y-axis)
- * reflectAngle(0, Math.PI / 4);           // Math.PI / 2
- * ```
- *
- * @category Operations
- * @since 0.7.0
- */
-export function reflectAngle(angle: number, axis: number): number {
- // Reflection formula: reflected = 2 * axis - angle
- return normalizeRadians(2 * axis - angle);
-}
-
-/**
- * Calculates average of multiple angles.
- * Handles wrap-around correctly using vector addition.
- * @param angles - Array of angles in radians.
- * @returns Average angle.
- *
- * @example
- * ```typescript
- * angleAverage([0, Math.PI / 2]);                    // Math.PI / 4
- * angleAverage([0, Math.PI]);                        // Math.PI / 2
- * angleAverage([-Math.PI * 0.9, Math.PI * 0.9]);    // Math.PI (handles wrap)
- * angleAverage([]);                                  // 0 (empty input)
- * ```
- *
- * @category Operations
- * @since 0.7.0
- */
-export function angleAverage(angles: number[]): number {
- if (angles.length === 0) return 0;
-
- // Use unit vector addition for correct averaging
- let sumX = 0;
- let sumY = 0;
-
- for (const angle of angles) {
-  sumX += cos(angle);
-  sumY += sin(angle);
- }
-
- // Return angle of average vector
- return atan2(sumY, sumX);
-}
-
-/**
- * Calculates weighted average of angles.
- * @param angles - Array of angles in radians.
- * @param weights - Array of weights (same length as angles).
- * @returns Weighted average angle.
- *
- * @example
- * ```typescript
- * angleWeightedAverage([0, Math.PI / 2], [1, 1]);      // Math.PI / 4
- * angleWeightedAverage([0, Math.PI / 2], [3, 1]);      // ~0.32 (weighted towards 0)
- * angleWeightedAverage([0, Math.PI], [1, 0]);          // 0 (second angle ignored)
- * ```
- *
- * @category Operations
- * @since 0.7.0
- */
-export function angleWeightedAverage(angles: number[], weights: number[]): number {
- if (angles.length === 0 || angles.length !== weights.length) return 0;
-
- let sumX = 0;
- let sumY = 0;
-
- for (let index = 0; index < angles.length; index++) {
-  const angle = angles[index]!;
-  const weight = weights[index]!;
-  sumX += cos(angle) * weight;
-  sumY += sin(angle) * weight;
- }
-
- return atan2(sumY, sumX);
-}
-
-/**
- * Finds the principal angle from a set of angles.
- * The angle that minimizes total angular distance to all others.
- * @param angles - Array of angles in radians.
- * @returns Principal angle.
- *
- * @example
- * ```typescript
- * principalAngle([0, Math.PI / 4, Math.PI / 2]);       // Math.PI / 4 (middle)
- * principalAngle([-Math.PI, Math.PI]);                  // Math.PI (same angle)
- * ```
- *
- * @category Operations
- * @since 0.7.0
- */
-export function principalAngle(angles: number[]): number {
- if (angles.length === 0) return 0;
- if (angles.length === 1) return angles[0]!;
-
- // Start with average as initial guess
- let principal = angleAverage(angles);
- const maxIterations = 10;
-
- // Iterative refinement
- for (let iter = 0; iter < maxIterations; iter++) {
-  let sumX = 0;
-  let sumY = 0;
-
-  for (const angle of angles) {
-   const diff = angleDifference(principal, angle);
-   const weight = 1 / (Math.abs(diff) + INVERSE_WEIGHT_SMOOTHING);
-   sumX += cos(angle) * weight;
-   sumY += sin(angle) * weight;
-  }
-
-  const newPrincipal = atan2(sumY, sumX);
-  if (Math.abs(angleDifference(principal, newPrincipal)) < ITERATIVE_TOLERANCE) {
-   break;
-  }
-  principal = newPrincipal;
- }
-
- return principal;
+ return distanceToMin <= distanceToMax ? normMin : normMax;
 }
 
 /**
@@ -442,35 +283,14 @@ export function principalAngle(angles: number[]): number {
  * angleFromVectors(1, 0, -1, 0);     // Math.PI (opposite)
  * ```
  *
- * @category Operations
+ * @remarks Uses deterministic math (`atan2` from deterministic-kernels).
+ *
+ * @category Arithmetic
  * @since 0.7.0
  */
 export function angleFromVectors(x1: number, y1: number, x2: number, y2: number): number {
- const angle1 = atan2(y1, x1);
- const angle2 = atan2(y2, x2);
- return angleDifference(angle1, angle2);
-}
-
-/**
- * Tests if an angle represents a quadrant boundary (0, 90, 180, or 270 degrees).
- * @param radians - Angle in radians.
- * @param epsilon - Tolerance (default: EPSILON).
- * @returns True if angle is near a quadrant boundary.
- *
- * @example
- * ```typescript
- * isQuadrantAngle(0);                   // true
- * isQuadrantAngle(Math.PI / 2);         // true
- * isQuadrantAngle(Math.PI);             // true
- * isQuadrantAngle(Math.PI / 4);         // false
- * ```
- *
- * @category Operations
- * @since 0.7.0
- */
-export function isQuadrantAngle(radians: number, epsilon: number = EPSILON): boolean {
- const normalized = normalizeRadiansPositive(radians);
- const quarterTurns = normalized / HALF_PI;
- const nearest = Math.round(quarterTurns);
- return Math.abs(quarterTurns - nearest) * HALF_PI <= epsilon;
+ // Single atan2 using cross product (sin) and dot product (cos)
+ const cross = x1 * y2 - y1 * x2;
+ const dot = x1 * x2 + y1 * y2;
+ return atan2(cross, dot);
 }

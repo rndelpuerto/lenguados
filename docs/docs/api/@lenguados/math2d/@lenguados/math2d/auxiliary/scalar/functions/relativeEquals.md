@@ -2,7 +2,7 @@
 
 > **relativeEquals**(`a`, `b`, `relativeEpsilon`): `boolean`
 
-Defined in: [src/auxiliary/scalar/comparison.ts:91](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/auxiliary/scalar/comparison.ts#L91)
+Defined in: [src/auxiliary/scalar/comparison.ts:95](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/auxiliary/scalar/comparison.ts#L95)
 
 Tests relative equality: |a-b| <= epsilon \* max(|a|, |b|, 1).
 Better for large numbers.
@@ -48,4 +48,4 @@ If relativeEpsilon is negative.
 
 ## Since
 
-1.0.0
+0.7.0

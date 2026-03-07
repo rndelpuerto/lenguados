@@ -184,23 +184,5 @@ describe('Rotation2 Properties', () => {
     }),
    );
   });
-
-  it('slerp should satisfy: slerp(a, b, 0) = a', () => {
-   fc.assert(
-    fc.property(arbRotation2, arbRotation2, (a, b) => {
-     const result = Rotation2.slerp(a, b, 0);
-     return result.nearEquals(a, TEST_TOLERANCE);
-    }),
-   );
-  });
-
-  it('slerp should satisfy: slerp(a, b, 1) = b', () => {
-   fc.assert(
-    fc.property(arbRotation2, arbRotation2, (a, b) => {
-     const result = Rotation2.slerp(a, b, 1);
-     return result.nearEquals(b, TEST_TOLERANCE);
-    }),
-   );
-  });
  });
 });

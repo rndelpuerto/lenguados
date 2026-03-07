@@ -10,18 +10,23 @@ import { describe, expect, it, beforeEach, afterAll } from '@jest/globals';
 
 import {
  assert,
+ assertComplex,
  assertComplexLike,
  assertFinite,
+ assertInterval,
  assertIntervalLike,
  assertMatrix2,
  assertMatrix2Like,
  assertMatrix3,
+ assertMatrix3Like,
  assertNonNegative,
  assertNonZero,
  assertPositive,
  assertRange,
  assertRotation2,
+ assertRotation2Like,
  assertSafeInteger,
+ assertTransform2,
  assertTransform2Like,
  assertVector2,
  assertVector2Like,
@@ -287,8 +292,8 @@ describe('Validation Assert Module', () => {
    }
 
    const elapsed = performance.now() - start;
-   // Allow 100ms to account for system load variability
-   expect(elapsed).toBeLessThan(100);
+   // Allow 200ms to account for system load variability
+   expect(elapsed).toBeLessThan(200);
   });
  });
 
@@ -503,7 +508,7 @@ describe('Validation Assert Module', () => {
    expect(() =>
     assertTransform2Like({
      position: { x: 0, y: 0 },
-     rotation: 0,
+     rotation: { cos: 1, sin: 0 },
      scale: { x: 1, y: 1 },
     }),
    ).not.toThrow();
@@ -545,6 +550,231 @@ describe('Validation Assert Module', () => {
 
   it('uses custom name in error', () => {
    expect(() => assertTransform2Like(null, 'myTransform')).toThrow('myTransform');
+  });
+ });
+
+ describe('assertComplex', () => {
+  beforeEach(() => {
+   setAssertionsEnabled(true);
+  });
+
+  it('accepts valid components', () => {
+   expect(() => assertComplex(0, 0)).not.toThrow();
+   expect(() => assertComplex(1, -1)).not.toThrow();
+   expect(() => assertComplex(-1e10, 1e10)).not.toThrow();
+  });
+
+  it('rejects invalid real', () => {
+   expect(() => assertComplex(NaN, 0)).toThrow(/real must be finite/);
+   expect(() => assertComplex(Infinity, 0)).toThrow(/real must be finite/);
+  });
+
+  it('rejects invalid imag', () => {
+   expect(() => assertComplex(0, NaN)).toThrow(/imag must be finite/);
+   expect(() => assertComplex(0, -Infinity)).toThrow(/imag must be finite/);
+  });
+
+  it('includes name in error', () => {
+   expect(() => assertComplex(NaN, 0, 'z')).toThrow(/z\.real/);
+   expect(() => assertComplex(0, NaN, 'z')).toThrow(/z\.imag/);
+  });
+
+  it('uses default prefix when no name provided', () => {
+   expect(() => assertComplex(NaN, 0)).toThrow(/real must be finite/);
+  });
+ });
+
+ describe('assertInterval', () => {
+  beforeEach(() => {
+   setAssertionsEnabled(true);
+  });
+
+  it('accepts valid interval', () => {
+   expect(() => assertInterval(0, 10)).not.toThrow();
+   expect(() => assertInterval(-5, 5)).not.toThrow();
+   expect(() => assertInterval(3, 3)).not.toThrow(); // degenerate but valid
+  });
+
+  it('rejects non-finite min', () => {
+   expect(() => assertInterval(NaN, 10)).toThrow(/min must be finite/);
+   expect(() => assertInterval(Infinity, 10)).toThrow(/min must be finite/);
+  });
+
+  it('rejects non-finite max', () => {
+   expect(() => assertInterval(0, NaN)).toThrow(/max must be finite/);
+   expect(() => assertInterval(0, -Infinity)).toThrow(/max must be finite/);
+  });
+
+  it('rejects min > max', () => {
+   expect(() => assertInterval(10, 5)).toThrow(/must not exceed/);
+  });
+
+  it('includes name in error', () => {
+   expect(() => assertInterval(NaN, 10, 'bounds')).toThrow(/bounds\.min/);
+   expect(() => assertInterval(0, NaN, 'bounds')).toThrow(/bounds\.max/);
+   expect(() => assertInterval(10, 5, 'bounds')).toThrow(/bounds\.min/);
+  });
+
+  it('uses default name when not provided', () => {
+   expect(() => assertInterval(NaN, 10)).toThrow(/interval/);
+  });
+ });
+
+ describe('assertTransform2', () => {
+  beforeEach(() => {
+   setAssertionsEnabled(true);
+  });
+
+  it('accepts valid components', () => {
+   expect(() => assertTransform2(0, 0, 1, 0, 1, 1)).not.toThrow();
+   expect(() => assertTransform2(100, -50, 0.707, 0.707, 2, 2)).not.toThrow();
+  });
+
+  it('rejects non-finite px', () => {
+   expect(() => assertTransform2(NaN, 0, 1, 0, 1, 1)).toThrow(/position\.x must be finite/);
+  });
+
+  it('rejects non-finite py', () => {
+   expect(() => assertTransform2(0, Infinity, 1, 0, 1, 1)).toThrow(/position\.y must be finite/);
+  });
+
+  it('rejects non-finite cos', () => {
+   expect(() => assertTransform2(0, 0, NaN, 0, 1, 1)).toThrow(/rotation\.cos must be finite/);
+  });
+
+  it('rejects non-finite sin', () => {
+   expect(() => assertTransform2(0, 0, 1, NaN, 1, 1)).toThrow(/rotation\.sin must be finite/);
+  });
+
+  it('rejects non-finite sx', () => {
+   expect(() => assertTransform2(0, 0, 1, 0, Infinity, 1)).toThrow(/scale\.x must be finite/);
+  });
+
+  it('rejects non-finite sy', () => {
+   expect(() => assertTransform2(0, 0, 1, 0, 1, -Infinity)).toThrow(/scale\.y must be finite/);
+  });
+
+  it('includes name in error', () => {
+   expect(() => assertTransform2(NaN, 0, 1, 0, 1, 1, 'xf')).toThrow(/xf\.position\.x/);
+   expect(() => assertTransform2(0, 0, 1, 0, 1, NaN, 'xf')).toThrow(/xf\.scale\.y/);
+  });
+
+  it('uses default prefix when no name provided', () => {
+   expect(() => assertTransform2(NaN, 0, 1, 0, 1, 1)).toThrow(/position\.x must be finite/);
+  });
+ });
+
+ describe('assertMatrix3Like', () => {
+  beforeEach(() => {
+   setAssertionsEnabled(true);
+  });
+
+  it('accepts valid Matrix3Like object', () => {
+   expect(() =>
+    assertMatrix3Like({
+     m00: 1,
+     m01: 0,
+     m02: 0,
+     m10: 0,
+     m11: 1,
+     m12: 0,
+     m20: 0,
+     m21: 0,
+     m22: 1,
+    }),
+   ).not.toThrow();
+  });
+
+  it('throws for null', () => {
+   expect(() => assertMatrix3Like(null)).toThrow();
+  });
+
+  it('throws for non-object', () => {
+   expect(() => assertMatrix3Like('string' as unknown)).toThrow();
+   expect(() => assertMatrix3Like(123 as unknown)).toThrow();
+  });
+
+  it('throws for missing properties', () => {
+   expect(() => assertMatrix3Like({ m00: 1, m01: 0, m02: 0 } as unknown)).toThrow();
+  });
+
+  it('throws for non-numeric properties', () => {
+   expect(() =>
+    assertMatrix3Like({
+     m00: 'bad',
+     m01: 0,
+     m02: 0,
+     m10: 0,
+     m11: 1,
+     m12: 0,
+     m20: 0,
+     m21: 0,
+     m22: 1,
+    } as unknown),
+   ).toThrow();
+  });
+
+  it('uses custom name in error', () => {
+   expect(() => assertMatrix3Like(null, 'myMat3')).toThrow('myMat3');
+  });
+ });
+
+ describe('assertXLike error messages include type information', () => {
+  it('assertVector2Like includes type name on structural failure', () => {
+   expect(() => assertVector2Like('bad')).toThrow(/Vector2Like/);
+   expect(() => assertVector2Like('bad')).toThrow(TypeError);
+  });
+
+  it('assertMatrix2Like includes type name on structural failure', () => {
+   expect(() => assertMatrix2Like(42)).toThrow(/Matrix2Like/);
+   expect(() => assertMatrix2Like(42)).toThrow(TypeError);
+  });
+
+  it('assertComplexLike includes type name on structural failure', () => {
+   expect(() => assertComplexLike(null)).toThrow(/ComplexLike/);
+   expect(() => assertComplexLike(null)).toThrow(TypeError);
+  });
+
+  it('assertRotation2Like includes type name on structural failure', () => {
+   expect(() => assertRotation2Like(undefined)).toThrow(/Rotation2Like/);
+   expect(() => assertRotation2Like(undefined)).toThrow(TypeError);
+  });
+
+  it('assertIntervalLike includes type name on structural failure', () => {
+   expect(() => assertIntervalLike([])).toThrow(/IntervalLike/);
+   expect(() => assertIntervalLike([])).toThrow(TypeError);
+  });
+
+  it('assertTransform2Like includes type name on structural failure', () => {
+   expect(() => assertTransform2Like(null)).toThrow(/Transform2Like/);
+   expect(() => assertTransform2Like(null)).toThrow(TypeError);
+  });
+
+  it('assertMatrix3Like includes type name on structural failure', () => {
+   expect(() => assertMatrix3Like('abc')).toThrow(/Matrix3Like/);
+   expect(() => assertMatrix3Like('abc')).toThrow(TypeError);
+  });
+ });
+
+ describe('Safe variant suggestions in error messages', () => {
+  it('assertFinite suggests ensureFinite()', () => {
+   expect(() => assertFinite(NaN)).toThrow(/ensureFinite\(\)/);
+  });
+
+  it('assertNonZero suggests divideSafe()', () => {
+   expect(() => assertNonZero(0)).toThrow(/divideSafe\(\)/);
+  });
+
+  it('assertPositive suggests clamp() or saturate()', () => {
+   expect(() => assertPositive(-1)).toThrow(/clamp\(\)|saturate\(\)/);
+  });
+
+  it('assertNonNegative suggests clamp() or saturate()', () => {
+   expect(() => assertNonNegative(-1)).toThrow(/clamp\(\)|saturate\(\)/);
+  });
+
+  it('assertRange includes range and value', () => {
+   expect(() => assertRange(5, 0, 1)).toThrow(/\[0, 1\].*got 5/);
   });
  });
 });

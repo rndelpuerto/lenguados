@@ -49,14 +49,6 @@ describe('Angular Boundary Tests', () => {
     // Should go through ±π, not through 0
     expect(Math.abs(mid.angle)).toBeGreaterThan(PI * 0.8);
    });
-
-   it('slerp crosses ±π boundary correctly', () => {
-    const r1 = Rotation2.fromAngle(PI * 0.9);
-    const r2 = Rotation2.fromAngle(-PI * 0.9);
-    const mid = Rotation2.slerp(r1, r2, 0.5);
-    // Should go through ±π, not through 0
-    expect(Math.abs(mid.angle)).toBeGreaterThan(PI * 0.8);
-   });
   });
 
   describe('Transform2', () => {

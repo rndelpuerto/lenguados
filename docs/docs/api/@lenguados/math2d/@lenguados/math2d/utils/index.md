@@ -19,7 +19,7 @@ Design principles:
 - Consistent error handling
 - Support for both creation and in-place parsing (out parameter)
 
-All trigonometric operations use [DeterministicMath](../deterministic/classes/DeterministicMath.md) for
+All trigonometric operations use deterministic kernels for
 cross-platform reproducibility.
 
 ## Migration

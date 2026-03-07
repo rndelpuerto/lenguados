@@ -1,6 +1,6 @@
 # Class: MathRandomSource
 
-Defined in: [src/utils/random-source.ts:83](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/utils/random-source.ts#L83)
+Defined in: [src/utils/random-source.ts:81](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/utils/random-source.ts#L81)
 
 Non-deterministic random source backed by `Math.random`.
 
@@ -10,7 +10,7 @@ This source is not seedable and is not deterministic.
 
 ## Since
 
-0.1.0
+0.7.0
 
 ## Implements
 
@@ -32,7 +32,7 @@ This source is not seedable and is not deterministic.
 
 > **next**(): `number`
 
-Defined in: [src/utils/random-source.ts:92](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/utils/random-source.ts#L92)
+Defined in: [src/utils/random-source.ts:90](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/utils/random-source.ts#L90)
 
 Generates a random number using Math.random().
 
@@ -44,7 +44,7 @@ A random number in [0, 1).
 
 #### Since
 
-0.1.0
+0.7.0
 
 #### Implementation of
 
@@ -56,7 +56,7 @@ A random number in [0, 1).
 
 > **nextInt**(`max`): `number`
 
-Defined in: [src/utils/random-source.ts:105](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/utils/random-source.ts#L105)
+Defined in: [src/utils/random-source.ts:103](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/utils/random-source.ts#L103)
 
 Generates a random integer using Math.random().
 
@@ -76,7 +76,7 @@ A random integer in [0, max).
 
 #### Since
 
-0.1.0
+0.7.0
 
 #### Implementation of
 

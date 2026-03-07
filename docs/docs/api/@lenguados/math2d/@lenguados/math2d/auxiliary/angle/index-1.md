@@ -20,12 +20,6 @@ This module provides specialized angular operations including:
 
 ## References
 
-### angleAverage
-
-Re-exports [angleAverage](functions/angleAverage.md)
-
----
-
 ### angleBisector
 
 Re-exports [angleBisector](functions/angleBisector.md)
@@ -62,12 +56,6 @@ Re-exports [AngleUnwrapper](classes/AngleUnwrapper.md)
 
 ---
 
-### angleWeightedAverage
-
-Re-exports [angleWeightedAverage](functions/angleWeightedAverage.md)
-
----
-
 ### clampAngle
 
 Re-exports [clampAngle](functions/clampAngle.md)
@@ -80,21 +68,9 @@ Re-exports [degreesToRadians](functions/degreesToRadians.md)
 
 ---
 
-### gradiansToRadians
-
-Re-exports [gradiansToRadians](functions/gradiansToRadians.md)
-
----
-
 ### isAngleBetween
 
 Re-exports [isAngleBetween](functions/isAngleBetween.md)
-
----
-
-### isQuadrantAngle
-
-Re-exports [isQuadrantAngle](functions/isQuadrantAngle.md)
 
 ---
 
@@ -134,33 +110,15 @@ Re-exports [normalizeRadiansPositive](functions/normalizeRadiansPositive.md)
 
 ---
 
-### principalAngle
-
-Re-exports [principalAngle](functions/principalAngle.md)
-
----
-
 ### radiansToDegrees
 
 Re-exports [radiansToDegrees](functions/radiansToDegrees.md)
 
 ---
 
-### radiansToGradians
-
-Re-exports [radiansToGradians](functions/radiansToGradians.md)
-
----
-
 ### radiansToTurns
 
 Re-exports [radiansToTurns](functions/radiansToTurns.md)
-
----
-
-### reflectAngle
-
-Re-exports [reflectAngle](functions/reflectAngle.md)
 
 ---
 
@@ -176,33 +134,15 @@ Re-exports [SinCos](interfaces/SinCos.md)
 
 ---
 
-### sinCosInto
-
-Re-exports [sinCosInto](functions/sinCosInto.md)
-
----
-
 ### sinCosNormalized
 
 Re-exports [sinCosNormalized](functions/sinCosNormalized.md)
 
 ---
 
-### slerpAngle
-
-Re-exports [slerpAngle](functions/slerpAngle.md)
-
----
-
 ### smoothStepAngle
 
 Re-exports [smoothStepAngle](functions/smoothStepAngle.md)
-
----
-
-### springAngle
-
-Re-exports [springAngle](functions/springAngle.md)
 
 ---
 

@@ -2,7 +2,7 @@
 
 > **robustSum**(`values`): `number`
 
-Defined in: [src/auxiliary/numeric/safety.ts:288](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/auxiliary/numeric/safety.ts#L288)
+Defined in: [src/auxiliary/numeric/safety.ts:182](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/auxiliary/numeric/safety.ts#L182)
 
 Kahan summation algorithm for improved precision.
 Compensates for floating-point errors in large sums.
@@ -31,4 +31,4 @@ robustSum(values); // Closer to 100000 than naive sum
 
 ## Since
 
-1.0.0
+0.7.0

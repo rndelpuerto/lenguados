@@ -8,7 +8,7 @@ auxiliary/angle/unwrapping.ts
 
 Angle unwrapping for continuous sequences.
 
-## Unwrapping
+## Normalization
 
 - [AngleUnwrapper](classes/AngleUnwrapper.md)
 - [unwrapAngles](functions/unwrapAngles.md)

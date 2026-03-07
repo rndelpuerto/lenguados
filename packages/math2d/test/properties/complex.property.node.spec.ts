@@ -217,4 +217,20 @@ describe('Complex Property-Based Tests', () => {
    );
   });
  });
+
+ // ========================================================================
+ // Exp/Log Properties
+ // ========================================================================
+
+ describe('Exp/Log', () => {
+  it('should satisfy: exp(log(z)) ≈ z for non-zero z', () => {
+   fc.assert(
+    fc.property(arbNonZeroComplex, (z) => {
+     const roundTrip = Complex.exp(Complex.log(z));
+     const maxMag = Math.max(z.magnitude(), 1);
+     return Complex.nearEquals(roundTrip, z, TEST_TOLERANCE * maxMag);
+    }),
+   );
+  });
+ });
 });

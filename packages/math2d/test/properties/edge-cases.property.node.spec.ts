@@ -48,8 +48,8 @@ describe('Edge Case Properties', () => {
    fc.assert(
     fc.property(arbVector2, arbAngleNearZero, (v, angle) => {
      const rotated = Vector2.rotate(v, angle);
-     // Relative tolerance for large vectors
-     const tolerance = Math.max(1e-6, Vector2.magnitude(v) * 1e-9);
+     // Error ≈ magnitude * |sin(θ)| ≈ magnitude * |θ|; use 10x margin
+     const tolerance = Math.max(1e-6, Vector2.magnitude(v) * 1e-8);
      return rotated.nearEquals(v, tolerance);
     }),
    );

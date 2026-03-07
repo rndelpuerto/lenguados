@@ -2,7 +2,7 @@
 
 > **wrapAngle**(`angle`, `period`): `number`
 
-Defined in: [src/auxiliary/angle/normalization.ts:133](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/auxiliary/angle/normalization.ts#L133)
+Defined in: [src/auxiliary/angle/normalization.ts:133](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/auxiliary/angle/normalization.ts#L133)
 
 Wraps angle to specific period.
 
@@ -36,4 +36,4 @@ wrapAngle(370, 360); // 10 (degrees example)
 
 ## Since
 
-1.0.0
+0.7.0

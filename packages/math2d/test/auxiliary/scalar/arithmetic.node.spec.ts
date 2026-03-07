@@ -13,6 +13,9 @@ import {
  pingPongUnchecked,
  remap,
  remapSafe,
+ loopSafe,
+ pingPongSafe,
+ modSafe,
  clamp,
  sign,
  saturate,
@@ -21,7 +24,8 @@ import {
  mod as module_,
  modUnchecked,
  floorDivide,
- roundAwayFromZero,
+ floorDivideSafe,
+ floorDivideUnchecked,
 } from '../../../src/auxiliary/scalar/arithmetic';
 
 describe('scalar/arithmetic – focused behaviors', () => {
@@ -49,6 +53,15 @@ describe('scalar/arithmetic – focused behaviors', () => {
   test('preserves endpoints exactly to avoid drift', () => {
    expect(remap(10, 10, 20, -5, 5)).toBe(-5);
    expect(remap(20, 10, 20, -5, 5)).toBe(5);
+  });
+
+  test('throws for zero input range (inMin === inMax) when value is not at endpoint', () => {
+   expect(() => remap(5, 10, 10, 0, 100)).toThrow(RangeError);
+  });
+
+  test('returns exact endpoint for value at boundary of zero range', () => {
+   // When value === inMin === inMax, endpoint guard returns outMin
+   expect(remap(0, 0, 0, -1, 1)).toBe(-1);
   });
  });
 
@@ -171,19 +184,27 @@ describe('scalar/arithmetic – focused behaviors', () => {
    expect(floorDivide(7, 3)).toBe(2);
    expect(floorDivide(-7, 3)).toBe(-3);
   });
+
+  test('throws for zero divisor', () => {
+   expect(() => floorDivide(7, 0)).toThrow(RangeError);
+  });
  });
 
- describe('roundAwayFromZero', () => {
-  test('rounds away from zero at halfway', () => {
-   expect(roundAwayFromZero(1.5)).toBe(2);
-   expect(roundAwayFromZero(-1.5)).toBe(-2);
+ describe('floorDivideSafe', () => {
+  test('returns floor of division for valid divisor', () => {
+   expect(floorDivideSafe(7, 3)).toBe(2);
+   expect(floorDivideSafe(-7, 3)).toBe(-3);
   });
 
-  test('rounds normally for non-halfway values', () => {
-   expect(roundAwayFromZero(1.4)).toBe(1);
-   expect(roundAwayFromZero(-1.4)).toBe(-1);
-   expect(roundAwayFromZero(1.6)).toBe(2);
-   expect(roundAwayFromZero(-1.6)).toBe(-2);
+  test('returns 0 for zero divisor', () => {
+   expect(floorDivideSafe(7, 0)).toBe(0);
+  });
+ });
+
+ describe('floorDivideUnchecked', () => {
+  test('returns floor of division without validation', () => {
+   expect(floorDivideUnchecked(7, 3)).toBe(2);
+   expect(floorDivideUnchecked(-7, 3)).toBe(-3);
   });
  });
 
@@ -227,6 +248,71 @@ describe('scalar/arithmetic – focused behaviors', () => {
    expect(pingPongUnchecked(2, 0, 2)).toBe(2);
    expect(pingPongUnchecked(3, 0, 2)).toBe(1);
    expect(pingPongUnchecked(4, 0, 2)).toBe(0);
+  });
+ });
+ describe('loopSafe', () => {
+  test('delegates to loop for valid range', () => {
+   expect(loopSafe(5, 0, 10)).toBe(5);
+   expect(loopSafe(15, 0, 10)).toBe(5);
+  });
+
+  test('returns min for invalid range (max <= min)', () => {
+   expect(loopSafe(5, 5, 5)).toBe(5);
+   expect(loopSafe(5, 10, 0)).toBe(10);
+  });
+ });
+
+ describe('pingPongSafe', () => {
+  test('delegates to pingPong for valid range', () => {
+   expect(pingPongSafe(3, 0, 2)).toBe(1);
+   expect(pingPongSafe(5, 0, 2)).toBe(1);
+  });
+
+  test('returns min for invalid range', () => {
+   expect(pingPongSafe(5, 5, 5)).toBe(5);
+   expect(pingPongSafe(5, 10, 0)).toBe(10);
+  });
+ });
+
+ describe('modSafe', () => {
+  test('returns positive modulo for positive divisor', () => {
+   expect(modSafe(7, 3)).toBe(1);
+   expect(modSafe(-7, 3)).toBe(2);
+  });
+
+  test('returns 0 for non-positive divisor', () => {
+   expect(modSafe(7, 0)).toBe(0);
+   expect(modSafe(7, -3)).toBe(0);
+  });
+ });
+
+ /* ===== Section 8: NaN/Infinity edge case tests ===== */
+
+ describe('NaN behavior for scalar functions', () => {
+  test('clamp(5, NaN, 10) returns 5 (NaN comparisons are false)', () => {
+   expect(clamp(5, NaN, 10)).toBe(5);
+  });
+
+  test('sign(NaN) returns 0', () => {
+   expect(sign(NaN)).toBe(0);
+  });
+
+  test('step(NaN, 5) returns 1 (5 is not < NaN)', () => {
+   expect(step(NaN, 5)).toBe(1);
+  });
+
+  test('loop(Infinity, 0, 10) returns NaN', () => {
+   expect(loop(Infinity, 0, 10)).toBeNaN();
+  });
+
+  test('sign(-0) returns 0', () => {
+   expect(sign(-0)).toBe(0);
+  });
+ });
+
+ describe('degenerate range tests', () => {
+  test('clamp with min > max returns min (5 < 10 is true)', () => {
+   expect(clamp(5, 10, 0)).toBe(10);
   });
  });
 });

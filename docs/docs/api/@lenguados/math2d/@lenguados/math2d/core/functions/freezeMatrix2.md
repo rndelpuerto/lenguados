@@ -2,7 +2,7 @@
 
 > **freezeMatrix2**(`matrix`): [`ReadonlyMatrix2`](../type-aliases/ReadonlyMatrix2.md)
 
-Defined in: [src/core/matrix2.ts:72](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/core/matrix2.ts#L72)
+Defined in: [src/core/matrix2.ts:71](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/matrix2.ts#L71)
 
 Permanently freezes a [Matrix2](../classes/Matrix2.md) instance so it can no longer be mutated.
 
@@ -34,4 +34,4 @@ IDENTITY.m00 = 5; // Throws in strict mode
 
 ## Since
 
-0.9.0
+0.7.0

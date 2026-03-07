@@ -71,9 +71,6 @@
  * // Validation - assertions for development (Box2D/Bullet style)
  * import { assertFinite, assertVector2, setAssertionsEnabled } from '@lenguados/math2d/validation/assert';
  *
- * // Deterministic - precision arithmetic and rounding control
- * import { PrecisionMath } from '@lenguados/math2d/deterministic/precision-math';
- * import { RoundingControl } from '@lenguados/math2d/deterministic/rounding-control';
  *
  * // Random generation
  * import { randomVector2, randomInCircle } from '@lenguados/math2d/utils/random';
@@ -99,8 +96,6 @@ export * from './auxiliary/numeric';
 export * from './core';
 
 // Re-export deterministic kernels for L0 cross-platform math
-// Other deterministic utilities (PrecisionMath, RoundingControl) are available
-// via '@lenguados/math2d/deterministic/*'
 export { DeterministicKernels } from './deterministic/deterministic-kernels';
 
 // Re-export individual functions for convenience
@@ -111,12 +106,15 @@ export {
  asinSafe,
  atan,
  atan2,
+ config,
  cos,
+ exp,
+ expSafe,
+ hypot,
+ log,
  pow,
  sin,
  sinCos,
- sqrt,
- sqrtSafe,
  tan,
 } from './deterministic/deterministic-kernels';
 
@@ -135,8 +133,13 @@ export {
  assertMatrix2,
  assertMatrix3,
  assertRotation2,
+ assertComplex,
+ assertInterval,
+ assertTransform2,
  assertVector2Like,
+ assertRotation2Like,
  assertMatrix2Like,
+ assertMatrix3Like,
  assertComplexLike,
  assertIntervalLike,
  assertTransform2Like,

@@ -9,7 +9,8 @@ import { describe, expect, it } from '@jest/globals';
 import { Vector2, type ReadonlyVector2 } from '../../src/core/vector2';
 import { isVector2Like } from '../../src/types';
 
-const DIGITS = 8; // toBeCloseTo decimal digits (8 for float tolerance) // toBeCloseTo decimal digits
+// DIGITS = 10 matches EPSILON = 1e-10 — the library's documented tolerance
+const DIGITS = 10;
 
 function expectVecClose(v: ReadonlyVector2, x: number, y: number, digits = DIGITS) {
  expect(v.x).toBeCloseTo(x, digits);
@@ -145,10 +146,10 @@ describe('Vector2', () => {
  });
 
  describe('Geometric Methods', () => {
-  it('length and magnitudeSquared', () => {
+  it('length and magnitudeSq', () => {
    const v = new Vector2(3, 4);
    expect(v.magnitude()).toBeCloseTo(5);
-   expect(v.magnitudeSquared()).toBe(25);
+   expect(v.magnitudeSq()).toBe(25);
   });
 
   it('manhattanLength', () => {
@@ -636,8 +637,8 @@ describe('Vector2', () => {
    expect(Vector2.sumComponents(new Vector2(3, 4))).toBe(7);
   });
 
-  it('magnitudeSquared computes squared length', () => {
-   expect(Vector2.magnitudeSquared(new Vector2(3, 4))).toBe(25);
+  it('magnitudeSq computes squared length', () => {
+   expect(Vector2.magnitudeSq(new Vector2(3, 4))).toBe(25);
   });
 
   it('fromAngle creates vector from angle', () => {
@@ -953,9 +954,9 @@ describe('Vector2', () => {
    expect(Vector2.angle(v)).toBeCloseTo(Math.PI / 4, DIGITS);
   });
 
-  it('magnitudeSquared returns squared length', () => {
+  it('magnitudeSq returns squared length', () => {
    const v = new Vector2(3, 4);
-   expect(v.magnitudeSquared()).toBe(25);
+   expect(v.magnitudeSq()).toBe(25);
   });
 
   it('manhattanLength returns manhattan distance', () => {
@@ -969,6 +970,39 @@ describe('Vector2', () => {
    const result = Vector2.normalizeSafe(new Vector2(0, 0));
    expectVecClose(result, 0, 0);
   });
+
+  it('getLengthAndNormalize and normalizeSafe agree on zero-detection boundary', () => {
+   // magnitude ≈ 7.07e-11, below EPSILON = 1e-10
+   const v = new Vector2(5e-11, 5e-11);
+   const safe = Vector2.normalizeSafe(v);
+   const { length, unit } = Vector2.getLengthAndNormalize(v);
+
+   // Both should treat this as zero-length (magnitude < EPSILON)
+   expectVecClose(safe, 0, 0);
+   expect(length).toBe(0);
+   expectVecClose(unit, 0, 0);
+  });
+
+  it('getLengthAndNormalize normalizes vectors above threshold', () => {
+   const v = new Vector2(3, 4);
+   const { length, unit } = Vector2.getLengthAndNormalize(v);
+   expect(length).toBeCloseTo(5, DIGITS);
+   expectVecClose(unit, 3 / 5, 4 / 5);
+  });
+
+  it('normalize handles very large components without overflow', () => {
+   const v = new Vector2(1e200, 1e200);
+   const n = Vector2.normalize(v);
+   expect(Number.isFinite(n.x)).toBe(true);
+   expect(Number.isFinite(n.y)).toBe(true);
+   expect(n.x).toBeCloseTo(Math.SQRT1_2, DIGITS);
+   expect(n.y).toBeCloseTo(Math.SQRT1_2, DIGITS);
+  });
+
+  // Note: underflow protection (x*x → denormal) cannot be tested independently
+  // because any x where x*x underflows (~1e-154) is already below EPSILON (1e-10),
+  // so the library correctly treats it as zero-length. The overflow test above
+  // validates hypot's numerical advantage.
 
   it('distance computes distance', () => {
    const a = new Vector2(0, 0);
@@ -1662,10 +1696,9 @@ describe('Vector2', () => {
    expectVecClose(v, 3, 0, 5);
   });
 
-  it('project handles zero axis', () => {
+  it('project throws on zero axis', () => {
    const v = new Vector2(3, 4);
-   v.project({ x: 0, y: 0 });
-   expectVecClose(v, 0, 0, 5);
+   expect(() => v.project({ x: 0, y: 0 })).toThrow(RangeError);
   });
 
   it('projectOnUnit projects onto unit axis', () => {
@@ -1768,10 +1801,9 @@ describe('Vector2', () => {
    expectVecClose(v, 3, 0, DIGITS);
   });
 
-  it('project onto zero axis returns zero', () => {
+  it('project onto zero axis throws', () => {
    const v = new Vector2(3, 4);
-   v.project({ x: 0, y: 0 });
-   expectVecClose(v, 0, 0, DIGITS);
+   expect(() => v.project({ x: 0, y: 0 })).toThrow(RangeError);
   });
 
   it('projectOnUnit projects onto unit vector', () => {
@@ -2485,12 +2517,10 @@ describe('Vector2', () => {
    expectVecClose(v, original.x, original.y, DIGITS);
   });
 
-  it('reject handles near-zero axis', () => {
+  it('reject throws on near-zero axis', () => {
    expect.hasAssertions();
    const v = new Vector2(3, 4);
-   const original = v.clone();
-   v.reject({ x: 0, y: 0 });
-   expectVecClose(v, original.x, original.y, DIGITS);
+   expect(() => v.reject({ x: 0, y: 0 })).toThrow(RangeError);
   });
  });
 
@@ -2604,11 +2634,10 @@ describe('Vector2', () => {
    expectVecClose(v, 3, 0, DIGITS);
   });
 
-  it('project handles zero axis', () => {
+  it('project throws on zero axis', () => {
    expect.hasAssertions();
    const v = new Vector2(3, 4);
-   v.project({ x: 0, y: 0 });
-   expectVecClose(v, 0, 0, DIGITS);
+   expect(() => v.project({ x: 0, y: 0 })).toThrow(RangeError);
   });
 
   it('slerp falls back to lerp for small angle', () => {
@@ -3481,6 +3510,12 @@ describe('Vector2', () => {
    const result = Vector2.projectOnUnit(v, Vector2.UNIT_Y);
    expectVecClose(result, 0, 4);
   });
+
+  it('projectOnUnit asserts unitAxis is unit-length in dev mode', () => {
+   const v = new Vector2(3, 4);
+   const nonUnit = new Vector2(2, 0); // magnitude = 2, not unit
+   expect(() => Vector2.projectOnUnit(v, nonUnit)).toThrow();
+  });
  });
 
  describe('Coverage - divideSafe near-zero branches', () => {
@@ -3557,6 +3592,78 @@ describe('Vector2', () => {
    const result = Vector2.applyComplex(v, complex);
    expect(result.x).toBe(1);
    expect(result.y).toBe(0);
+  });
+ });
+
+ describe('angle getter/setter', () => {
+  it('get angle returns heading from +X axis', () => {
+   expect(new Vector2(1, 0).angle).toBeCloseTo(0, DIGITS);
+   expect(new Vector2(0, 1).angle).toBeCloseTo(Math.PI / 2, DIGITS);
+   expect(new Vector2(-1, 0).angle).toBeCloseTo(Math.PI, DIGITS);
+   expect(new Vector2(1, 1).angle).toBeCloseTo(Math.PI / 4, DIGITS);
+  });
+
+  it('set angle changes direction while preserving magnitude', () => {
+   const v = new Vector2(3, 4); // magnitude = 5
+   const mag = v.magnitude();
+   v.angle = Math.PI / 2;
+   expect(v.magnitude()).toBeCloseTo(mag, DIGITS);
+   expect(v.x).toBeCloseTo(0, DIGITS);
+   expect(v.y).toBeCloseTo(5, DIGITS);
+  });
+
+  it('set angle to 0 aligns with +X axis', () => {
+   const v = new Vector2(0, 5);
+   v.angle = 0;
+   expect(v.x).toBeCloseTo(5, DIGITS);
+   expect(v.y).toBeCloseTo(0, DIGITS);
+  });
+ });
+
+ describe('instance reject/project/reflect triality', () => {
+  it('reject throws on zero-length axis', () => {
+   const v = new Vector2(3, 4);
+   expect(() => v.reject({ x: 0, y: 0 })).toThrow(RangeError);
+  });
+
+  it('rejectSafe returns unchanged on zero-length axis', () => {
+   const v = new Vector2(3, 4);
+   v.rejectSafe({ x: 0, y: 0 });
+   expectVecClose(v, 3, 4, DIGITS);
+  });
+
+  it('rejectUnchecked works on valid axis', () => {
+   const v = new Vector2(3, 4);
+   v.rejectUnchecked({ x: 1, y: 0 });
+   expectVecClose(v, 0, 4, DIGITS);
+  });
+
+  it('project throws on zero-length axis', () => {
+   const v = new Vector2(3, 4);
+   expect(() => v.project({ x: 0, y: 0 })).toThrow(RangeError);
+  });
+
+  it('projectSafe returns zero on zero-length axis', () => {
+   const v = new Vector2(3, 4);
+   v.projectSafe({ x: 0, y: 0 });
+   expectVecClose(v, 0, 0, DIGITS);
+  });
+
+  it('projectUnchecked works on valid axis', () => {
+   const v = new Vector2(3, 4);
+   v.projectUnchecked({ x: 1, y: 0 });
+   expectVecClose(v, 3, 0, DIGITS);
+  });
+
+  it('reflect throws on non-unit normal', () => {
+   const v = new Vector2(1, -1);
+   expect(() => v.reflect({ x: 0, y: 2 })).toThrow(RangeError);
+  });
+
+  it('reflect works with unit normal', () => {
+   const v = new Vector2(1, -1);
+   v.reflect({ x: 0, y: 1 });
+   expectVecClose(v, 1, 1, DIGITS);
   });
  });
 });

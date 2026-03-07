@@ -9,7 +9,8 @@ import { describe, expect, it } from '@jest/globals';
 import { Matrix3 } from '../../src/core/matrix3';
 import { Vector2 } from '../../src/core/vector2';
 
-const DIGITS = 8; // toBeCloseTo decimal digits (8 for float tolerance)
+// DIGITS = 10 matches EPSILON = 1e-10 — the library's documented tolerance
+const DIGITS = 10;
 
 function expectVecClose(vector: Vector2, x: number, y: number, digits = DIGITS): void {
  expect(vector.x).toBeCloseTo(x, digits);
@@ -2358,10 +2359,15 @@ describe('Matrix3', () => {
  });
 
  describe('Coverage - Ortho Edge Cases', () => {
-  it('ortho handles zero width/height (produces Infinity)', () => {
-   const m = Matrix3.ortho(0, 0, 0, 0);
-   expect(m.m00).toBe(Infinity);
-   expect(m.m11).toBe(Infinity);
+  it('ortho throws for zero width/height', () => {
+   expect(() => Matrix3.ortho(0, 0, 0, 0)).toThrow(RangeError);
+  });
+
+  it('orthoSafe returns identity for zero width/height', () => {
+   const m = Matrix3.orthoSafe(0, 0, 0, 0);
+   expect(m.m00).toBe(1);
+   expect(m.m11).toBe(1);
+   expect(m.m22).toBe(1);
   });
  });
 
@@ -2530,6 +2536,373 @@ describe('Matrix3', () => {
    expect(m.m00).toBe(5);
    expect(m.m11).toBe(45);
    expect(m.m22).toBe(85);
+  });
+ });
+
+ describe('Static mod/modScalar', () => {
+  it('static mod computes element-wise modulo', () => {
+   const a = new Matrix3(10, 7, 15, 9, 11, 13, 20, 17, 14);
+   const b = new Matrix3(3, 4, 6, 5, 3, 7, 9, 8, 5);
+   const result = Matrix3.mod(a, b);
+   expect(result.m00).toBeCloseTo(1, 10);
+   expect(result.m01).toBeCloseTo(3, 10);
+   expect(result.m02).toBeCloseTo(3, 10);
+   expect(result.m10).toBeCloseTo(4, 10);
+   expect(result.m11).toBeCloseTo(2, 10);
+   expect(result.m12).toBeCloseTo(6, 10);
+   expect(result.m20).toBeCloseTo(2, 10);
+   expect(result.m21).toBeCloseTo(1, 10);
+   expect(result.m22).toBeCloseTo(4, 10);
+  });
+
+  it('static mod uses out parameter', () => {
+   const out = new Matrix3();
+   const result = Matrix3.mod(
+    new Matrix3(10, 7, 15, 9, 11, 13, 20, 17, 14),
+    new Matrix3(3, 4, 6, 5, 3, 7, 9, 8, 5),
+    out,
+   );
+   expect(result).toBe(out);
+  });
+
+  it('static mod matches instance mod', () => {
+   const a = new Matrix3(10, 7, 15, 9, 11, 13, 20, 17, 14);
+   const b = new Matrix3(3, 4, 6, 5, 3, 7, 9, 8, 5);
+   const staticResult = Matrix3.mod(a, b);
+   const instanceResult = a.clone().mod(b);
+   expect(staticResult.m00).toBeCloseTo(instanceResult.m00, 10);
+   expect(staticResult.m11).toBeCloseTo(instanceResult.m11, 10);
+   expect(staticResult.m22).toBeCloseTo(instanceResult.m22, 10);
+  });
+
+  it('static modScalar computes scalar modulo', () => {
+   const result = Matrix3.modScalar(new Matrix3(10, 7, 15, 9, 11, 13, 20, 17, 14), 4);
+   expect(result.m00).toBeCloseTo(2, 10);
+   expect(result.m01).toBeCloseTo(3, 10);
+   expect(result.m02).toBeCloseTo(3, 10);
+  });
+
+  it('static modScalar uses out parameter', () => {
+   const out = new Matrix3();
+   const result = Matrix3.modScalar(new Matrix3(10, 7, 15, 9, 11, 13, 20, 17, 14), 4, out);
+   expect(result).toBe(out);
+  });
+
+  it('static modScalar matches instance modScalar', () => {
+   const a = new Matrix3(10, 7, 15, 9, 11, 13, 20, 17, 14);
+   const staticResult = Matrix3.modScalar(a, 4);
+   const instanceResult = a.clone().modScalar(4);
+   expect(staticResult.m00).toBeCloseTo(instanceResult.m00, 10);
+   expect(staticResult.m11).toBeCloseTo(instanceResult.m11, 10);
+   expect(staticResult.m22).toBeCloseTo(instanceResult.m22, 10);
+  });
+ });
+
+ describe('Static premultiply', () => {
+  it('premultiply(A, B) equals multiply(A, B)', () => {
+   const a = Matrix3.fromRotation(0.5);
+   const b = Matrix3.fromScale(new Vector2(2, 3));
+   const multiply = Matrix3.multiply(a, b);
+   const pre = Matrix3.premultiply(a, b);
+   expect(pre.m00).toBeCloseTo(multiply.m00, DIGITS);
+   expect(pre.m11).toBeCloseTo(multiply.m11, DIGITS);
+   expect(pre.m22).toBeCloseTo(multiply.m22, DIGITS);
+  });
+
+  it('static premultiply(A, B) matches instance B.premultiply(A)', () => {
+   const a = Matrix3.fromRotation(0.7);
+   const b = Matrix3.fromTranslation(new Vector2(5, 10));
+   const staticResult = Matrix3.premultiply(a, b);
+   const instanceResult = b.clone().premultiply(a);
+   expect(staticResult.m00).toBeCloseTo(instanceResult.m00, DIGITS);
+   expect(staticResult.m20).toBeCloseTo(instanceResult.m20, DIGITS);
+   expect(staticResult.m21).toBeCloseTo(instanceResult.m21, DIGITS);
+  });
+ });
+
+ describe('Static transformPoints/transformVectors', () => {
+  it('transformPoints transforms array of points', () => {
+   const m = Matrix3.fromTranslation(new Vector2(10, 20));
+   const points = [
+    { x: 0, y: 0 },
+    { x: 1, y: 0 },
+    { x: 0, y: 1 },
+   ];
+   const result = Matrix3.transformPoints(m, points);
+   expect(result).toHaveLength(3);
+   expect(result[0]!.x).toBeCloseTo(10, DIGITS);
+   expect(result[0]!.y).toBeCloseTo(20, DIGITS);
+   expect(result[1]!.x).toBeCloseTo(11, DIGITS);
+   expect(result[2]!.y).toBeCloseTo(21, DIGITS);
+  });
+
+  it('transformPoints matches instance transformPoints', () => {
+   const m = Matrix3.fromRotation(0.5);
+   const points = [
+    { x: 1, y: 0 },
+    { x: 0, y: 1 },
+   ];
+   const staticResult = Matrix3.transformPoints(m, points);
+   const instanceResult = m.transformPoints(points);
+   expect(staticResult[0]!.x).toBeCloseTo(instanceResult[0]!.x, DIGITS);
+   expect(staticResult[0]!.y).toBeCloseTo(instanceResult[0]!.y, DIGITS);
+   expect(staticResult[1]!.x).toBeCloseTo(instanceResult[1]!.x, DIGITS);
+  });
+
+  it('transformVectors ignores translation', () => {
+   const m = Matrix3.fromTranslation(new Vector2(100, 200));
+   const vectors = [{ x: 1, y: 0 }];
+   const result = Matrix3.transformVectors(m, vectors);
+   expect(result[0]!.x).toBeCloseTo(1, DIGITS);
+   expect(result[0]!.y).toBeCloseTo(0, DIGITS);
+  });
+
+  it('transformVectors applies rotation', () => {
+   const m = Matrix3.fromRotation(Math.PI / 2);
+   const vectors = [{ x: 1, y: 0 }];
+   const result = Matrix3.transformVectors(m, vectors);
+   expect(result[0]!.x).toBeCloseTo(0, 8);
+   expect(result[0]!.y).toBeCloseTo(1, 8);
+  });
+ });
+
+ describe('Static isAffine', () => {
+  it('identity is affine', () => {
+   expect(Matrix3.isAffine(new Matrix3())).toBe(true);
+  });
+
+  it('translation matrix is affine', () => {
+   expect(Matrix3.isAffine(Matrix3.fromTranslation(new Vector2(5, 10)))).toBe(true);
+  });
+
+  it('non-affine matrix returns false', () => {
+   const m = new Matrix3(1, 0, 0, 0, 1, 0, 0, 0, 2);
+   expect(Matrix3.isAffine(m)).toBe(false);
+  });
+
+  it('static isAffine matches instance isAffine', () => {
+   const m = Matrix3.fromRotation(0.5);
+   expect(Matrix3.isAffine(m)).toBe(m.isAffine());
+  });
+ });
+
+ describe('Instance decompose', () => {
+  it('decomposes translation + rotation + scale', () => {
+   const m = Matrix3.fromTranslation(new Vector2(5, 3));
+   const rot = Matrix3.fromRotation(Math.PI / 4);
+   const scl = Matrix3.fromScale(new Vector2(2, 2));
+   const combined = Matrix3.multiply(Matrix3.multiply(m, rot), scl);
+   const d = combined.decompose();
+   expect(d.translation.x).toBeCloseTo(5, 8);
+   expect(d.translation.y).toBeCloseTo(3, 8);
+   expect(d.rotation).toBeCloseTo(Math.PI / 4, 8);
+   expect(d.scale.x).toBeCloseTo(2, 8);
+   expect(d.scale.y).toBeCloseTo(2, 8);
+  });
+
+  it('instance decompose matches static decompose', () => {
+   const m = Matrix3.fromRotation(0.5);
+   const inst = m.decompose();
+   const stat = Matrix3.decompose(m);
+   expect(inst.rotation).toBeCloseTo(stat.rotation, DIGITS);
+   expect(inst.scale.x).toBeCloseTo(stat.scale.x, DIGITS);
+   expect(inst.translation.x).toBeCloseTo(stat.translation.x, DIGITS);
+  });
+
+  it('decompose of identity returns zero translation, zero rotation, unit scale', () => {
+   const d = new Matrix3().decompose();
+   expect(d.translation.x).toBeCloseTo(0, DIGITS);
+   expect(d.translation.y).toBeCloseTo(0, DIGITS);
+   expect(d.rotation).toBeCloseTo(0, DIGITS);
+   expect(d.scale.x).toBeCloseTo(1, DIGITS);
+   expect(d.scale.y).toBeCloseTo(1, DIGITS);
+  });
+ });
+
+ describe('Near-singular boundary', () => {
+  const EPS = 1e-10;
+
+  it('inverse throws when determinant equals EPSILON', () => {
+   // Diagonal matrix with det = 1 * 1 * EPS = EPS → singular
+   const m = new Matrix3(1, 0, 0, 0, 1, 0, 0, 0, EPS);
+   expect(() => Matrix3.inverse(m)).toThrow(RangeError);
+  });
+
+  it('inverse throws when determinant is zero', () => {
+   // Row 0 = Row 1 → det = 0
+   const m = new Matrix3(1, 0, 0, 1, 0, 0, 0, 0, 1);
+   expect(() => Matrix3.inverse(m)).toThrow(RangeError);
+  });
+
+  it('inverse succeeds when determinant is above EPSILON', () => {
+   // det = 1 * 1 * 2e-10 = 2e-10 > EPSILON
+   const m = new Matrix3(1, 0, 0, 0, 1, 0, 0, 0, 2e-10);
+   const inv = Matrix3.inverse(m);
+   expect(inv.m00).toBe(1);
+   expect(inv.m11).toBe(1);
+   expect(inv.m22).toBe(1 / 2e-10);
+  });
+
+  it('inverse succeeds with negative determinant beyond -EPSILON', () => {
+   // det = 1 * 1 * (-2e-10) = -2e-10, |det| > EPSILON
+   const m = new Matrix3(1, 0, 0, 0, 1, 0, 0, 0, -2e-10);
+   const inv = Matrix3.inverse(m);
+   expect(inv.m22).toBe(1 / -2e-10);
+  });
+
+  it('inverseSafe returns identity when determinant equals EPSILON', () => {
+   const m = new Matrix3(1, 0, 0, 0, 1, 0, 0, 0, EPS);
+   const inv = Matrix3.inverseSafe(m);
+   expect(Matrix3.isIdentity(inv)).toBe(true);
+  });
+
+  it('inverseSafe returns identity when determinant is zero', () => {
+   const m = new Matrix3(1, 0, 0, 1, 0, 0, 0, 0, 1);
+   const inv = Matrix3.inverseSafe(m);
+   expect(Matrix3.isIdentity(inv)).toBe(true);
+  });
+
+  it('inverseSafe inverts when determinant is above EPSILON', () => {
+   const m = new Matrix3(1, 0, 0, 0, 1, 0, 0, 0, 2e-10);
+   const inv = Matrix3.inverseSafe(m);
+   expect(inv.m22).toBe(1 / 2e-10);
+  });
+ });
+
+ describe('Coverage: static factories and operations', () => {
+  it('fromObject creates matrix from plain object', () => {
+   const m = Matrix3.fromObject({
+    m00: 1,
+    m01: 2,
+    m02: 3,
+    m10: 4,
+    m11: 5,
+    m12: 6,
+    m20: 7,
+    m21: 8,
+    m22: 9,
+   });
+   expect(m.m00).toBe(1);
+   expect(m.m12).toBe(6);
+   expect(m.m22).toBe(9);
+  });
+
+  it('fromRows creates matrix from row tuples (transposed to column-major)', () => {
+   const m = Matrix3.fromRows([1, 2, 3], [4, 5, 6], [7, 8, 9]);
+   // row0=[1,2,3] → m00=1, m10=2, m20=3
+   expect(m.m00).toBe(1);
+   expect(m.m10).toBe(2);
+   expect(m.m20).toBe(3);
+   // row1=[4,5,6] → m01=4, m11=5, m21=6
+   expect(m.m01).toBe(4);
+   expect(m.m11).toBe(5);
+   expect(m.m21).toBe(6);
+  });
+
+  it('determinant computes cofactor expansion', () => {
+   expect(Matrix3.determinant(Matrix3.IDENTITY)).toBe(1);
+   expect(Matrix3.determinant(Matrix3.ZERO)).toBe(0);
+  });
+
+  it('adjugate satisfies adj(A) * A = det(A) * I', () => {
+   const m = new Matrix3(2, 1, 0, 0, 3, 1, 0, 0, 1);
+   const adj = Matrix3.adjugate(m);
+   const product = Matrix3.multiply(adj, m);
+   const det = Matrix3.determinant(m);
+   expect(product.m00).toBeCloseTo(det, 8);
+   expect(product.m11).toBeCloseTo(det, 8);
+   expect(product.m22).toBeCloseTo(det, 8);
+  });
+
+  it('translate applies translation to matrix', () => {
+   const m = new Matrix3();
+   const r = Matrix3.translate(m, { x: 10, y: 20 });
+   expect(r.m20).toBeCloseTo(10, DIGITS);
+   expect(r.m21).toBeCloseTo(20, DIGITS);
+  });
+
+  it('rotateCS rotates with precomputed cos/sin', () => {
+   const m = new Matrix3();
+   const r = Matrix3.rotateCS(m, 0, 1); // 90°
+   expect(r.m00).toBeCloseTo(0, DIGITS);
+   expect(r.m01).toBeCloseTo(1, DIGITS);
+  });
+
+  it('scaleBy scales matrix per-axis', () => {
+   const m = new Matrix3();
+   const r = Matrix3.scaleBy(m, { x: 2, y: 3 });
+   expect(r.m00).toBeCloseTo(2, DIGITS);
+   expect(r.m11).toBeCloseTo(3, DIGITS);
+  });
+ });
+
+ describe('Coverage: instance operations', () => {
+  it('set updates all 9 components', () => {
+   const m = new Matrix3();
+   m.set(1, 2, 3, 4, 5, 6, 7, 8, 9);
+   expect(m.m00).toBe(1);
+   expect(m.m22).toBe(9);
+  });
+
+  it('isAffine checks bottom row', () => {
+   const affine = new Matrix3(1, 0, 0, 0, 1, 0, 5, 10, 1);
+   expect(affine.isAffine()).toBe(true);
+   const nonAffine = new Matrix3(1, 0, 0.5, 0, 1, 0, 0, 0, 1);
+   expect(nonAffine.isAffine()).toBe(false);
+  });
+
+  it('inverted getter returns new inverted matrix', () => {
+   const m = new Matrix3(2, 0, 0, 0, 3, 0, 0, 0, 1);
+   const inv = m.inverted;
+   expect(inv).not.toBe(m);
+   expect(inv.m00).toBeCloseTo(0.5, DIGITS);
+   expect(inv.m11).toBeCloseTo(1 / 3, DIGITS);
+  });
+
+  it('inverted returns identity for singular matrix', () => {
+   const m = new Matrix3(1, 0, 0, 1, 0, 0, 0, 0, 1);
+   const inv = m.inverted;
+   expect(Matrix3.isIdentity(inv)).toBe(true);
+  });
+
+  it('negated getter returns new negated matrix', () => {
+   const m = new Matrix3(1, 2, 3, 4, 5, 6, 7, 8, 9);
+   const neg = m.negated;
+   expect(neg).not.toBe(m);
+   expect(neg.m00).toBe(-1);
+   expect(neg.m22).toBe(-9);
+  });
+
+  it('subtractScalar subtracts from all elements', () => {
+   const m = new Matrix3(5, 5, 5, 5, 5, 5, 5, 5, 5);
+   m.subtractScalar(1);
+   expect(m.m00).toBe(4);
+   expect(m.m22).toBe(4);
+  });
+
+  it('negate negates all elements in place', () => {
+   const m = new Matrix3(1, 2, 3, 4, 5, 6, 7, 8, 9);
+   m.negate();
+   expect(m.m00).toBe(-1);
+   expect(m.m22).toBe(-9);
+  });
+
+  it('adjugate instance matches static', () => {
+   const m1 = new Matrix3(2, 1, 0, 0, 3, 1, 0, 0, 1);
+   const m2 = m1.clone();
+   const staticAdj = Matrix3.adjugate(m1);
+   m2.adjugate();
+   expect(m2.m00).toBeCloseTo(staticAdj.m00, DIGITS);
+   expect(m2.m11).toBeCloseTo(staticAdj.m11, DIGITS);
+  });
+
+  it('premultiply instance computes other * this', () => {
+   const a = new Matrix3(1, 2, 0, 3, 4, 0, 0, 0, 1);
+   const b = new Matrix3(5, 6, 0, 7, 8, 0, 0, 0, 1);
+   const expected = Matrix3.multiply(b, new Matrix3(1, 2, 0, 3, 4, 0, 0, 0, 1));
+   a.premultiply(b);
+   expect(a.m00).toBeCloseTo(expected.m00, DIGITS);
+   expect(a.m11).toBeCloseTo(expected.m11, DIGITS);
   });
  });
 });

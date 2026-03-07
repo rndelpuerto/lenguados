@@ -5,7 +5,6 @@
  */
 
 import { saturate } from './arithmetic';
-import { isNearZero } from './comparison';
 
 /**
  * Linear interpolation between two values.
@@ -33,6 +32,7 @@ import { isNearZero } from './comparison';
  * @since 0.7.0
  */
 export function lerp(a: number, b: number, t: number): number {
+ if (t === 1) return b;
  return a + (b - a) * t;
 }
 
@@ -60,8 +60,9 @@ export function lerp(a: number, b: number, t: number): number {
  * @since 0.7.0
  */
 export function lerpClamped(a: number, b: number, t: number): number {
- const clampedT = t < 0 ? 0 : t > 1 ? 1 : t;
- return a + (b - a) * clampedT;
+ if (t >= 1) return b;
+ if (t <= 0) return a;
+ return a + (b - a) * t;
 }
 
 /**
@@ -88,7 +89,7 @@ export function lerpClamped(a: number, b: number, t: number): number {
  */
 export function inverseLerp(a: number, b: number, value: number): number {
  const denominator = b - a;
- if (isNearZero(denominator)) {
+ if (denominator === 0) {
   throw new RangeError('inverseLerp: degenerate range (a === b)');
  }
  return (value - a) / denominator;
@@ -106,7 +107,7 @@ export function inverseLerp(a: number, b: number, value: number): number {
  */
 export function inverseLerpSafe(a: number, b: number, value: number): number {
  const denominator = b - a;
- if (isNearZero(denominator)) return 0;
+ if (denominator === 0) return 0;
  return (value - a) / denominator;
 }
 
@@ -189,72 +190,4 @@ export function smootherStep(edge0: number, edge1: number, x: number): number {
  }
  const t = saturate((x - edge0) / range);
  return t * t * t * (t * (t * 6 - 15) + 10);
-}
-
-/**
- * Bezier interpolation using control points.
- * @param t - Parameter [0, 1].
- * @param p0 - Start point.
- * @param p1 - Control point 1.
- * @param p2 - Control point 2.
- * @param p3 - End point.
- * @returns Interpolated value.
- *
- * @remarks
- * Uses the cubic Bezier formula for smooth curves.
- *
- * @example
- * ```typescript
- * // Ease-out curve
- * bezierInterp(0.5, 0, 0.58, 1, 1);
- * ```
- *
- * @category Interpolation
- * @since 0.7.0
- */
-export function bezierInterp(t: number, p0: number, p1: number, p2: number, p3: number): number {
- const t2 = t * t;
- const t3 = t2 * t;
- const mt = 1 - t;
- const mt2 = mt * mt;
- const mt3 = mt2 * mt;
-
- return mt3 * p0 + 3 * mt2 * t * p1 + 3 * mt * t2 * p2 + t3 * p3;
-}
-
-/**
- * Catmull-Rom spline interpolation.
- * @param t - Parameter [0, 1].
- * @param p0 - Point before start.
- * @param p1 - Start point.
- * @param p2 - End point.
- * @param p3 - Point after end.
- * @returns Interpolated value.
- *
- * @remarks
- * Passes through p1 and p2, using p0 and p3 for tangent calculation.
- *
- * @example
- * ```typescript
- * // Smooth interpolation through points
- * catmullRomInterp(0.5, 0, 1, 2, 3);  // 1.5
- * ```
- *
- * @category Interpolation
- * @since 0.7.0
- */
-export function catmullRomInterp(
- t: number,
- p0: number,
- p1: number,
- p2: number,
- p3: number,
-): number {
- const t2 = t * t;
- const t3 = t2 * t;
-
- const v0 = (p2 - p0) * 0.5;
- const v1 = (p3 - p1) * 0.5;
-
- return p1 + v0 * t + (3 * (p2 - p1) - 2 * v0 - v1) * t2 + (2 * (p1 - p2) + v0 + v1) * t3;
 }

@@ -7,8 +7,10 @@
 import { describe, expect, it } from '@jest/globals';
 
 import { Complex, freezeComplex } from '../../src/core/complex';
+import { Vector2 } from '../../src/core/vector2';
 
-const DIGITS = 8; // toBeCloseTo decimal digits (8 for float tolerance)
+// DIGITS = 10 matches EPSILON = 1e-10 — the library's documented tolerance
+const DIGITS = 10;
 
 describe('Complex', () => {
  describe('Factories', () => {
@@ -394,10 +396,10 @@ describe('Complex', () => {
    expect(unit.magnitude()).toBeCloseTo(1, DIGITS);
   });
 
-  it('normalized handles zero complex', () => {
+  it('normalized returns identity (1,0) for zero complex (BREAKING v0.6.0 → v0.7.0)', () => {
    const c = new Complex(0, 0);
    const unit = c.normalized;
-   expect(unit.real).toBe(0);
+   expect(unit.real).toBe(1);
    expect(unit.imag).toBe(0);
   });
  });
@@ -1626,6 +1628,28 @@ describe('Coverage - Instance slerp', () => {
    expect(result.real).toBe(0);
    expect(result.imag).toBe(0);
   });
+
+  it('pow throws for zero base with negative exponent', () => {
+   expect(() => Complex.pow(new Complex(0, 0), -1)).toThrow(RangeError);
+  });
+ });
+
+ describe('slerp zero-magnitude fallback', () => {
+  it('falls back to lerp when first input has zero magnitude', () => {
+   const a = new Complex(0, 0);
+   const b = new Complex(2, 4);
+   const result = Complex.slerp(a, b, 0.5);
+   expect(result.real).toBeCloseTo(1);
+   expect(result.imag).toBeCloseTo(2);
+  });
+
+  it('falls back to lerp when second input has zero magnitude', () => {
+   const a = new Complex(2, 4);
+   const b = new Complex(0, 0);
+   const result = Complex.slerp(a, b, 0.5);
+   expect(result.real).toBeCloseTo(1);
+   expect(result.imag).toBeCloseTo(2);
+  });
  });
 
  describe('Branch Coverage - sqrt edge cases', () => {
@@ -1648,6 +1672,21 @@ describe('Coverage - Instance slerp', () => {
    expect(result.real).toBe(1);
    expect(result.imag).toBe(0);
   });
+ });
+
+ describe('Normalize with extreme values', () => {
+  it('normalize handles very large components without overflow', () => {
+   const c = new Complex(1e200, 1e200);
+   const n = Complex.normalize(c);
+   expect(Number.isFinite(n.real)).toBe(true);
+   expect(Number.isFinite(n.imag)).toBe(true);
+   expect(n.magnitude()).toBeCloseTo(1, DIGITS);
+  });
+
+  // Note: underflow protection (real*real → denormal) cannot be tested independently
+  // because any value where real*real underflows (~1e-154) is already below EPSILON (1e-10),
+  // so the library correctly treats it as zero-magnitude. The overflow test above
+  // validates hypot's numerical advantage.
  });
 
  describe('Coverage - Instance subtract method', () => {
@@ -1855,5 +1894,412 @@ describe('Coverage - Instance slerp', () => {
    expect(a.real).toBe(2);
    expect(a.imag).toBe(2);
   });
+ });
+
+ describe('toVector2', () => {
+  it('maps real to x and imag to y', () => {
+   const c = new Complex(3, 4);
+   const v = c.toVector2();
+   expect(v.x).toBe(3);
+   expect(v.y).toBe(4);
+  });
+
+  it('accepts out parameter', () => {
+   const c = new Complex(-1, 2);
+   const out = new Vector2();
+   const result = c.toVector2(out);
+   expect(result).toBe(out);
+   expect(out.x).toBe(-1);
+   expect(out.y).toBe(2);
+  });
+ });
+});
+
+describe('Complex.exp', () => {
+ it('exp(0) = 1', () => {
+  const result = Complex.exp(new Complex(0, 0));
+  expect(result.real).toBeCloseTo(1, DIGITS);
+  expect(result.imag).toBeCloseTo(0, DIGITS);
+ });
+
+ it('exp of real number equals e^re', () => {
+  const result = Complex.exp(new Complex(1, 0));
+  expect(result.real).toBeCloseTo(Math.E, DIGITS);
+  expect(result.imag).toBeCloseTo(0, DIGITS);
+ });
+
+ it('exp of purely imaginary number gives rotation', () => {
+  const result = Complex.exp(new Complex(0, Math.PI / 2));
+  expect(result.real).toBeCloseTo(0, DIGITS);
+  expect(result.imag).toBeCloseTo(1, DIGITS);
+ });
+
+ it('Euler identity: e^(iπ) + 1 = 0', () => {
+  const result = Complex.exp(new Complex(0, Math.PI));
+  expect(result.real).toBeCloseTo(-1, DIGITS);
+  expect(result.imag).toBeCloseTo(0, DIGITS);
+ });
+
+ it('exp overflow returns Infinity components', () => {
+  const result = Complex.exp(new Complex(1000, 0));
+  expect(result.real).toBe(Infinity);
+ });
+
+ it('exp with out parameter', () => {
+  const out = new Complex();
+  const result = Complex.exp(new Complex(0, 0), out);
+  expect(result).toBe(out);
+  expect(out.real).toBeCloseTo(1, DIGITS);
+ });
+
+ it('instance exp mutates in place', () => {
+  const c = new Complex(1, 0);
+  const result = c.exp();
+  expect(result).toBe(c);
+  expect(c.real).toBeCloseTo(Math.E, DIGITS);
+  expect(c.imag).toBeCloseTo(0, DIGITS);
+ });
+});
+
+describe('Complex.log', () => {
+ it('log(e) = 1 + 0i', () => {
+  const result = Complex.log(new Complex(Math.E, 0));
+  expect(result.real).toBeCloseTo(1, DIGITS);
+  expect(result.imag).toBeCloseTo(0, DIGITS);
+ });
+
+ it('log of negative real gives π imaginary part', () => {
+  const result = Complex.log(new Complex(-1, 0));
+  expect(result.real).toBeCloseTo(0, DIGITS);
+  expect(result.imag).toBeCloseTo(Math.PI, DIGITS);
+ });
+
+ it('log of unit circle point gives angle', () => {
+  const result = Complex.log(Complex.fromPolar(1, Math.PI / 4));
+  expect(result.real).toBeCloseTo(0, DIGITS);
+  expect(result.imag).toBeCloseTo(Math.PI / 4, DIGITS);
+ });
+
+ it('log of zero returns -Infinity real', () => {
+  const result = Complex.log(new Complex(0, 0));
+  expect(result.real).toBe(-Infinity);
+ });
+
+ it('round-trip: exp(log(z)) ≈ z for non-zero z', () => {
+  const z = new Complex(3, 4);
+  const result = Complex.exp(Complex.log(z));
+  expect(result.real).toBeCloseTo(3, 6);
+  expect(result.imag).toBeCloseTo(4, 6);
+ });
+
+ it('instance log mutates in place', () => {
+  const c = new Complex(Math.E, 0);
+  const result = c.log();
+  expect(result).toBe(c);
+  expect(c.real).toBeCloseTo(1, DIGITS);
+  expect(c.imag).toBeCloseTo(0, DIGITS);
+ });
+});
+
+describe('Complex.toPolar', () => {
+ it('real axis returns angle 0', () => {
+  const polar = Complex.toPolar(new Complex(5, 0));
+  expect(polar.magnitude).toBeCloseTo(5, DIGITS);
+  expect(polar.angle).toBeCloseTo(0, DIGITS);
+ });
+
+ it('unit circle point returns correct angle', () => {
+  const polar = Complex.toPolar(Complex.fromPolar(1, Math.PI / 3));
+  expect(polar.magnitude).toBeCloseTo(1, DIGITS);
+  expect(polar.angle).toBeCloseTo(Math.PI / 3, DIGITS);
+ });
+
+ it('zero returns magnitude 0', () => {
+  const polar = Complex.toPolar(new Complex(0, 0));
+  expect(polar.magnitude).toBe(0);
+ });
+
+ it('round-trip: fromPolar(toPolar(z)) ≈ z', () => {
+  const z = new Complex(3, 4);
+  const polar = Complex.toPolar(z);
+  const back = Complex.fromPolar(polar.magnitude, polar.angle);
+  expect(back.real).toBeCloseTo(3, DIGITS);
+  expect(back.imag).toBeCloseTo(4, DIGITS);
+ });
+
+ it('instance toPolar delegates to static', () => {
+  const c = new Complex(3, 4);
+  const polar = c.toPolar();
+  expect(polar.magnitude).toBeCloseTo(5, DIGITS);
+  expect(polar.angle).toBeCloseTo(Math.atan2(4, 3), 6);
+ });
+});
+
+describe('Complex NaN/Infinity handling', () => {
+ it('magnitude of NaN complex is NaN', () => {
+  const c = new Complex(NaN, 1);
+  expect(c.magnitude()).toBeNaN();
+ });
+
+ it('magnitude of Infinity complex is Infinity', () => {
+  const c = new Complex(Infinity, 0);
+  expect(c.magnitude()).toBe(Infinity);
+ });
+
+ it('fromPolar with NaN magnitude produces NaN', () => {
+  const c = Complex.fromPolar(NaN, 0);
+  expect(c.real).toBeNaN();
+  expect(c.imag).toBeNaN();
+ });
+
+ it('fromPolar with NaN angle throws (assertFinite)', () => {
+  expect(() => Complex.fromPolar(1, NaN)).toThrow();
+ });
+
+ it('normalizeSafe of NaN complex propagates NaN (not caught by isNearZero)', () => {
+  const c = new Complex(NaN, NaN);
+  const result = Complex.normalizeSafe(c);
+  expect(result.real).toBeNaN();
+  expect(result.imag).toBeNaN();
+ });
+
+ describe('fromPolarCS', () => {
+  it('creates unit complex from cos/sin', () => {
+   const c = Complex.fromPolarCS(1, Math.cos(Math.PI / 4), Math.sin(Math.PI / 4));
+   expect(c.real).toBeCloseTo(Math.SQRT1_2, DIGITS);
+   expect(c.imag).toBeCloseTo(Math.SQRT1_2, DIGITS);
+  });
+
+  it('creates complex with arbitrary magnitude', () => {
+   const c = Complex.fromPolarCS(5, 0, 1);
+   expect(c.real).toBeCloseTo(0, DIGITS);
+   expect(c.imag).toBeCloseTo(5, DIGITS);
+  });
+
+  it('zero magnitude produces zero complex', () => {
+   const c = Complex.fromPolarCS(0, 1, 0);
+   expect(c.real).toBe(0);
+   expect(c.imag).toBe(0);
+  });
+
+  it('uses out parameter', () => {
+   const out = new Complex();
+   const result = Complex.fromPolarCS(1, 1, 0, out);
+   expect(result).toBe(out);
+   expect(out.real).toBe(1);
+   expect(out.imag).toBe(0);
+  });
+
+  it('matches fromPolar for same angle', () => {
+   const angle = 1.23;
+   const cs = Complex.fromPolarCS(3, Math.cos(angle), Math.sin(angle));
+   const polar = Complex.fromPolar(3, angle);
+   expect(cs.real).toBeCloseTo(polar.real, 8);
+   expect(cs.imag).toBeCloseTo(polar.imag, 8);
+  });
+ });
+
+ describe('Coverage: static predicates and factories', () => {
+  it('fromArray throws on out-of-bounds offset', () => {
+   expect(() => Complex.fromArray([1, 2], 2)).toThrow(RangeError);
+  });
+
+  it('normalizeSafe returns (1,0) for zero-magnitude', () => {
+   const r = Complex.normalizeSafe(Complex.ZERO);
+   expect(r.real).toBe(1);
+   expect(r.imag).toBe(0);
+  });
+
+  it('isZero detects zero complex', () => {
+   expect(Complex.isZero(new Complex(0, 0))).toBe(true);
+   expect(Complex.isZero(new Complex(1e-11, 0))).toBe(false);
+  });
+
+  it('isFinite detects non-finite components', () => {
+   expect(Complex.isFinite(new Complex(1, 2))).toBe(true);
+   expect(Complex.isFinite(new Complex(Infinity, 0))).toBe(false);
+   expect(Complex.isFinite(new Complex(0, NaN))).toBe(false);
+  });
+
+  it('hasNaN detects NaN components', () => {
+   expect(Complex.hasNaN(new Complex(1, 2))).toBe(false);
+   expect(Complex.hasNaN(new Complex(NaN, 1))).toBe(true);
+   expect(Complex.hasNaN(new Complex(1, NaN))).toBe(true);
+  });
+
+  it('hasInfinity detects Infinity components', () => {
+   expect(Complex.hasInfinity(new Complex(Infinity, 0))).toBe(true);
+   expect(Complex.hasInfinity(new Complex(0, -Infinity))).toBe(true);
+   expect(Complex.hasInfinity(new Complex(NaN, 0))).toBe(false);
+  });
+
+  it('isNearZero uses tolerance', () => {
+   expect(Complex.isNearZero(new Complex(1e-11, 1e-11))).toBe(true);
+   expect(Complex.isNearZero(new Complex(1, 0))).toBe(false);
+  });
+
+  it('isReal and isImaginary', () => {
+   expect(Complex.isReal(new Complex(5, 0))).toBe(true);
+   expect(Complex.isReal(new Complex(5, 1))).toBe(false);
+   expect(Complex.isImaginary(new Complex(0, 5))).toBe(true);
+   expect(Complex.isImaginary(new Complex(1, 5))).toBe(false);
+  });
+ });
+
+ describe('Coverage: instance mutators', () => {
+  it('add mutates and returns this', () => {
+   const c = new Complex(1, 2);
+   const result = c.add(new Complex(3, 4));
+   expect(result).toBe(c);
+   expect(c.real).toBe(4);
+   expect(c.imag).toBe(6);
+  });
+
+  it('divideSafe returns (0,0) for zero divisor', () => {
+   const c = new Complex(5, 3);
+   const result = c.divideSafe(Complex.ZERO);
+   expect(result).toBe(c);
+   expect(c.real).toBe(0);
+   expect(c.imag).toBe(0);
+  });
+
+  it('divideUnchecked divides without validation', () => {
+   const c = new Complex(6, 0);
+   c.divideUnchecked(new Complex(2, 0));
+   expect(c.real).toBeCloseTo(3, DIGITS);
+   expect(c.imag).toBeCloseTo(0, DIGITS);
+  });
+
+  it('scale multiplies both components', () => {
+   const c = new Complex(2, 3);
+   const result = c.scale(2);
+   expect(result).toBe(c);
+   expect(c.real).toBe(4);
+   expect(c.imag).toBe(6);
+  });
+
+  it('reciprocalUnchecked computes 1/z', () => {
+   const c = new Complex(2, 0);
+   c.reciprocalUnchecked();
+   expect(c.real).toBeCloseTo(0.5, DIGITS);
+   expect(c.imag).toBeCloseTo(0, DIGITS);
+  });
+
+  it('applyInverse rotates vector in opposite direction', () => {
+   const rot = Complex.fromPolar(1, Math.PI / 2);
+   const v = rot.applyInverse({ x: 0, y: 1 });
+   expect(v.x).toBeCloseTo(1, 8);
+   expect(v.y).toBeCloseTo(0, 8);
+  });
+ });
+
+ describe('Coverage: instance comparison and getters', () => {
+  it('exactEquals checks bit-identical equality', () => {
+   expect(new Complex(1, 2).exactEquals(new Complex(1, 2))).toBe(true);
+   expect(new Complex(1, 2).exactEquals(new Complex(1, 2.0001))).toBe(false);
+  });
+
+  it('nearEquals instance delegates to static', () => {
+   const a = new Complex(1, 2);
+   const b = new Complex(1 + 1e-12, 2);
+   expect(a.nearEquals(b)).toBe(true);
+  });
+
+  it('isIdentity checks (1,0) within tolerance', () => {
+   expect(new Complex(1, 0).isIdentity()).toBe(true);
+   expect(new Complex(1 + 1e-11, 1e-11).isIdentity()).toBe(true);
+   expect(new Complex(0, 1).isIdentity()).toBe(false);
+  });
+
+  it('isUnit checks unit magnitude', () => {
+   expect(new Complex(1, 0).isUnit()).toBe(true);
+   expect(new Complex(2, 0).isUnit()).toBe(false);
+  });
+
+  it('isNearZero instance', () => {
+   expect(new Complex(1e-11, 1e-11).isNearZero()).toBe(true);
+  });
+
+  it('isReal and isImaginary instance', () => {
+   expect(new Complex(5, 0).isReal()).toBe(true);
+   expect(new Complex(0, 5).isImaginary()).toBe(true);
+  });
+
+  it('conjugated getter returns new instance', () => {
+   const c = new Complex(3, 4);
+   const conj = c.conjugated;
+   expect(conj.real).toBe(3);
+   expect(conj.imag).toBe(-4);
+   expect(conj).not.toBe(c);
+  });
+
+  it('negated getter returns new instance', () => {
+   const c = new Complex(3, 4);
+   const neg = c.negated;
+   expect(neg.real).toBe(-3);
+   expect(neg.imag).toBe(-4);
+   expect(neg).not.toBe(c);
+  });
+ });
+});
+
+describe('Smith algorithm division robustness', () => {
+ it('handles overflow: (1,0) / (1e200, 1e200)', () => {
+  const a = new Complex(1, 0);
+  const b = new Complex(1e200, 1e200);
+  const result = Complex.divide(a, b);
+  // Expected: ~(5e-201, -5e-201)
+  expect(result.real).toBeCloseTo(5e-201, 210);
+  expect(result.imag).toBeCloseTo(-5e-201, 210);
+ });
+
+ it('handles large magnitude ratio: (1,1) / (1e-4, 1e-4)', () => {
+  const a = new Complex(1, 1);
+  const b = new Complex(1e-4, 1e-4);
+  const result = Complex.divide(a, b);
+  // (1+i)/(1e-4+1e-4·i) = 1/(1e-4) = 1e4
+  expect(result.real).toBeCloseTo(1e4, -1);
+  expect(result.imag).toBeCloseTo(0, DIGITS);
+ });
+
+ it('normal-range regression: identical results for typical inputs', () => {
+  const a = new Complex(3, 4);
+  const b = new Complex(1, 2);
+  const result = Complex.divide(a, b);
+  // (3+4i)/(1+2i) = (3+4i)(1-2i)/(1+4) = (3+8+i(4-6))/5 = (11-2i)/5
+  expect(result.real).toBeCloseTo(11 / 5, DIGITS);
+  expect(result.imag).toBeCloseTo(-2 / 5, DIGITS);
+ });
+
+ it('reciprocal threshold: Complex(1e-5, 0) reciprocal succeeds', () => {
+  const c = new Complex(1e-5, 0);
+  const recip = Complex.reciprocal(c);
+  expect(recip.real).toBeCloseTo(1e5, DIGITS);
+  expect(recip.imag).toBeCloseTo(0, DIGITS);
+ });
+});
+
+/* ===== Section 8: Edge case tests ===== */
+
+describe('Complex.exp overflow', () => {
+ it('Complex.exp(Complex(710, 0)) overflows to Infinity', () => {
+  const result = Complex.exp(new Complex(710, 0));
+  // e^710 > Number.MAX_VALUE, so er = Infinity
+  // Infinity * cos(0) = Infinity, Infinity * sin(0) = NaN (Inf*0)
+  expect(result.real).toBe(Infinity);
+ });
+
+ it('Complex.exp(Complex(1, 0)) returns e', () => {
+  const result = Complex.exp(new Complex(1, 0));
+  expect(result.real).toBeCloseTo(Math.E);
+  expect(result.imag).toBeCloseTo(0);
+ });
+});
+
+describe('negative-zero edge cases', () => {
+ it('Complex.toString with -0 imaginary', () => {
+  const c = new Complex(1, -0);
+  const string_ = c.toString();
+  expect(typeof string_).toBe('string');
  });
 });

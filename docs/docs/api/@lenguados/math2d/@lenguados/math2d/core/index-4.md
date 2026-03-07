@@ -21,7 +21,7 @@ Deterministic 3×3 matrix implementation for 2D affine transformations.
 
 - Instance methods mutate `this` for fluent chaining
 - Static helpers are pure and provide optional `out` parameters for allocation control
-- Trigonometric operations use [DeterministicMath](../deterministic/classes/DeterministicMath.md) for cross-platform reproducibility
+- Trigonometric operations use deterministic kernels for cross-platform reproducibility
 
 **Matrix Layout (Column-Major)**
 

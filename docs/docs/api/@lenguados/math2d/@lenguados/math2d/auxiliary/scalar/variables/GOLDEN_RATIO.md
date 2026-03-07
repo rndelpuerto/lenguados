@@ -2,17 +2,16 @@
 
 > `const` **GOLDEN_RATIO**: `number`
 
-Defined in: [src/auxiliary/scalar/constants.ts:271](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/auxiliary/scalar/constants.ts#L271)
+Defined in: [src/auxiliary/scalar/constants.ts:251](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/auxiliary/scalar/constants.ts#L251)
 
-Golden ratio φ (phi) ≈ 1.6180339887.
+Golden Ratio φ ≈ 1.618033988749895.
 
 ## Remarks
 
-φ = (1 + √5) / 2. Appears in art, architecture, and nature.
-Has the property that φ² = φ + 1.
+Used in aesthetic proportions, Fibonacci sequences, and optimal spacing algorithms.
 
 ## Constant
 
 ## Since
 
-1.0.0
+0.7.0

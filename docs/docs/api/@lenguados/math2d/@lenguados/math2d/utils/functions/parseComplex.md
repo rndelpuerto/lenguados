@@ -2,7 +2,7 @@
 
 > **parseComplex**(`string_`, `out`): [`Complex`](../../core/classes/Complex.md)
 
-Defined in: [src/utils/parse.ts:672](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/utils/parse.ts#L672)
+Defined in: [src/utils/parse.ts:683](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/utils/parse.ts#L683)
 
 Parses a string representation of a complex number.
 
@@ -49,4 +49,4 @@ const c3 = parseComplex('{"real":1,"imag":0}'); // 1 + 0i
 
 ## Since
 
-0.14.0
+0.7.0

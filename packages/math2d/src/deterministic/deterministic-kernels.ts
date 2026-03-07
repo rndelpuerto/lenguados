@@ -27,7 +27,46 @@
  * @since 0.8.0
  */
 
-import { HALF_PI, PI, QUARTER_PI, TAU } from '../auxiliary/scalar/constants';
+import type { SinCos } from '../auxiliary/angle/operations';
+import { HALF_PI, PI, QUARTER_PI } from '../auxiliary/scalar/constants';
+
+/* ======================================================================== */
+/* Runtime Configuration                                                     */
+/* ======================================================================== */
+
+/**
+ * Global configuration for deterministic math execution.
+ *
+ * @remarks
+ * By default, this module uses `fdlibm` bit-exact polynomial algorithms
+ * (L0 Determinism) for perfect network lockstep sync across browsers/CPUs.
+ * However, this is significantly slower than native assembly floats.
+ *
+ * Set `config.useNativeMath = true` to bypass deterministic kernels and use
+ * native `Math.*` functions instead, recovering maximum CPU performance for
+ * single-player or non-networked scenarios.
+ *
+ * **Global mutability**: This object is a shared mutable singleton. Changing
+ * `useNativeMath` affects ALL subsequent calls to deterministic functions
+ * across the entire application. There is no per-context or per-thread
+ * isolation — JavaScript is single-threaded, but Web Workers each get their
+ * own module instance and thus their own `config`.
+ *
+ * **Recommendation**: Set `config.useNativeMath` once at application startup,
+ * before any math computation begins. Toggling it mid-computation may produce
+ * inconsistent results if earlier computations used different kernels.
+ *
+ * @example
+ * ```typescript
+ * import { config } from '@lenguados/math2d/deterministic';
+ *
+ * // Disable determinism, run native C-level floats on local CPU
+ * config.useNativeMath = true;
+ * ```
+ */
+export const config = {
+ useNativeMath: false,
+};
 
 /* ======================================================================== */
 /* Internal Constants                                                        */
@@ -36,6 +75,15 @@ import { HALF_PI, PI, QUARTER_PI, TAU } from '../auxiliary/scalar/constants';
 // Local aliases for performance (avoid repeated property access)
 const PI_2 = HALF_PI;
 const PI_4 = QUARTER_PI;
+
+/**
+ * Cody-Waite split constants for π/2 range reduction.
+ * PIO2_HI + PIO2_LO = π/2 to extended precision.
+ * Source: fdlibm e_rem_pio2.c
+ */
+const PIO2_HI = 1.5707963267948966; // 0x3FF921FB54442D18 (53 bits of π/2)
+const PIO2_LO = 6.123233995736766e-17; // 0x3C91A62633145C07 (remaining bits)
+const INV_PIO2 = 6.36619772367581382433e-1; // 2/π for quadrant computation
 
 /* ======================================================================== */
 /* Polynomial Coefficients (from fdlibm)                                     */
@@ -118,99 +166,27 @@ const E5 = 4.13813679705723846039e-8; // approximation
 /**
  * Shared buffer for IEEE 754 bit manipulation.
  * Using a single buffer avoids allocation overhead.
+ * Not reentrant: callers must not nest functions that use this buffer.
  * @internal
  */
-const sqrtBuffer = new ArrayBuffer(8);
-const sqrtView = new DataView(sqrtBuffer);
+const ieeeBuffer = new ArrayBuffer(8);
+const ieeeView = new DataView(ieeeBuffer);
 
 /**
- * Deterministic square root using IEEE 754 exponent extraction
- * and Newton-Raphson iteration.
- *
- * @param x - Value to compute square root of
- * @returns Square root of x, NaN for negative values, handles Infinity correctly
- *
- * @remarks
- * Uses IEEE 754 exponent extraction for a good initial guess, then refines
- * with Newton-Raphson iterations. This achieves full double precision (~15 digits)
- * with deterministic cross-platform behavior.
- *
- * **Algorithm**: Based on fdlibm (Sun Microsystems)
- * 1. Extract exponent from IEEE 754 representation
- * 2. Initial guess: 2^(exponent/2)
- * 3. Newton-Raphson: y_{n+1} = (y_n + x/y_n) / 2
- *
- * @example
- * ```typescript
- * sqrt(4);        // 2
- * sqrt(2);        // 1.4142135623730951
- * sqrt(1e10);     // 100000 (fixed!)
- * sqrt(-1);       // NaN
- * sqrt(Infinity); // Infinity
- * ```
- *
- * @category Arithmetic
- * @since 0.8.0
+ * Compute 2^n via IEEE 754 bit construction. Handles the full exponent range.
+ * @returns 2 raised to the power n
+ * @internal
  */
-export function sqrt(x: number): number {
- // Handle special cases
- if (x < 0) return NaN;
- if (x === 0 || !Number.isFinite(x)) return x;
-
- // Extract IEEE 754 exponent for good initial guess
- // IEEE 754 double: sign(1) | exponent(11) | mantissa(52)
- sqrtView.setFloat64(0, x, false); // big-endian for consistent bit layout
- const highWord = sqrtView.getInt32(0, false);
-
- // Extract biased exponent (bits 20-30 of high word)
- const biasedExponent = (highWord >>> 20) & 0x7ff;
- const exponent = biasedExponent - 1023; // unbias
-
- // Initial guess: sqrt(x) ≈ 2^(exponent/2)
- // For x = m * 2^e where 1 ≤ m < 2, sqrt(x) ≈ sqrt(m) * 2^(e/2)
- // sqrt(m) is between 1 and sqrt(2) ≈ 1.414
- const halfExponent = exponent >> 1; // integer division by 2
- let y: number;
-
- // Use IEEE 754 bit manipulation for 2^k (L0 deterministic, 4x faster than Math.pow)
- // Start with 1.0 and add k to exponent bits
- sqrtView.setFloat64(0, 1.0, false);
- let hi = sqrtView.getUint32(0, false);
- hi += halfExponent << 20; // Add k * 2^20 to shift exponent field
- sqrtView.setUint32(0, hi, false);
- const pow2HalfExp = sqrtView.getFloat64(0, false);
-
- if (exponent & 1) {
-  // Odd exponent: multiply by sqrt(2) ≈ 1.4142135623730951
-  y = 1.4142135623730951 * pow2HalfExp;
- } else {
-  // Even exponent: initial guess is simply 2^(e/2)
-  y = pow2HalfExp;
+export function pow2(n: number): number {
+ // Subnormal range: two-step scaling to avoid exponent field underflow
+ if (n < -1022) {
+  return pow2(-1022) * pow2(n + 1022);
  }
-
- // Newton-Raphson iteration: y = (y + x/y) / 2
- // From a good initial guess, 5 iterations give ~15 digit precision
- // (each iteration roughly doubles precision)
- y = (y + x / y) * 0.5;
- y = (y + x / y) * 0.5;
- y = (y + x / y) * 0.5;
- y = (y + x / y) * 0.5;
- y = (y + x / y) * 0.5;
-
- return y;
-}
-
-/**
- * Safe deterministic square root (clamps negative values to 0).
- *
- * @param x - Value to compute square root of
- * @returns Square root of x, or 0 for negative values
- *
- * @category Arithmetic
- * @since 0.8.0
- */
-export function sqrtSafe(x: number): number {
- return x <= 0 ? 0 : sqrt(x);
+ // Construct 2^n by setting the exponent field directly
+ ieeeView.setFloat64(0, 0, false);
+ ieeeView.setUint32(0, ((n + 1023) & 0x7ff) << 20, false);
+ ieeeView.setUint32(4, 0, false);
+ return ieeeView.getFloat64(0, false);
 }
 
 /**
@@ -242,6 +218,7 @@ export function sqrtSafe(x: number): number {
  * @since 0.9.0
  */
 export function hypot(x: number, y: number): number {
+ if (config.useNativeMath) return Math.hypot(x, y);
  const ax = x < 0 ? -x : x; // Math.abs inlined for performance
  const ay = y < 0 ? -y : y;
 
@@ -273,8 +250,9 @@ export function hypot(x: number, y: number): number {
  }
 
  // Standard formula: max * sqrt(1 + (min/max)²)
+ // Math.sqrt is IEEE 754 required — correctly rounded, deterministic across all platforms
  const ratio = min / max;
- return max * sqrt(1 + ratio * ratio);
+ return max * Math.sqrt(1 + ratio * ratio);
 }
 
 /**
@@ -289,31 +267,17 @@ export function hypot(x: number, y: number): number {
  * The reduced value is always in [-π/4, π/4] after adjustment.
  */
 function reduceAngle(x: number): [number, number] {
- // Normalize to [0, 2π)
- let y = x % TAU;
- if (y < 0) y += TAU;
+ // Cody-Waite two-step range reduction for precision on large angles.
+ // Compute n = round(x / (π/2)) so that x - n*(π/2) ∈ [-π/4, π/4].
+ const n = Math.round(x * INV_PIO2);
 
- // Determine quadrant (0-3) based on which quarter of the circle
- // quadrant 0: [0, π/2)
- // quadrant 1: [π/2, π)
- // quadrant 2: [π, 3π/2)
- // quadrant 3: [3π/2, 2π)
- const quadrant = Math.trunc(y / PI_2) % 4;
+ // Two-step subtraction preserves precision: x - n*PIO2_HI - n*PIO2_LO
+ const reduced = x - n * PIO2_HI - n * PIO2_LO;
 
- // Reduce to [0, π/2) then to [-π/4, π/4]
- let reduced = y - quadrant * PI_2;
+ // n mod 4 gives the quadrant (handle negative modulo)
+ const quadrant = ((n % 4) + 4) % 4;
 
- // If in upper half of quadrant, flip to use the other kernel
- // This is the key: we need to track if we're in [0, π/4] or [π/4, π/2]
- const useAlt = reduced > PI_4;
- if (useAlt) {
-  reduced = PI_2 - reduced;
- }
-
- // Encode both quadrant and useAlt in a single value (0-7)
- const octant = quadrant * 2 + (useAlt ? 1 : 0);
-
- return [reduced, octant];
+ return [reduced, quadrant];
 }
 
 /**
@@ -367,28 +331,21 @@ function kernelCos(x: number): number {
  * @since 0.8.0
  */
 export function sin(x: number): number {
+ if (config.useNativeMath) return Math.sin(x);
  if (!Number.isFinite(x)) return NaN;
 
- const [reduced, octant] = reduceAngle(x);
+ const [reduced, quadrant] = reduceAngle(x);
 
- // Use octant to determine which kernel function and sign
- switch (octant) {
+ // sin(n*π/2 + r): kernelSin is odd, kernelCos is even — sign handled naturally
+ switch (quadrant) {
   case 0:
    return kernelSin(reduced);
   case 1:
    return kernelCos(reduced);
   case 2:
-   return kernelCos(reduced);
+   return -kernelSin(reduced);
   case 3:
-   return kernelSin(reduced);
-  case 4:
-   return -kernelSin(reduced);
-  case 5:
    return -kernelCos(reduced);
-  case 6:
-   return -kernelCos(reduced);
-  case 7:
-   return -kernelSin(reduced);
   default:
    return kernelSin(reduced);
  }
@@ -415,28 +372,21 @@ export function sin(x: number): number {
  * @since 0.8.0
  */
 export function cos(x: number): number {
+ if (config.useNativeMath) return Math.cos(x);
  if (!Number.isFinite(x)) return NaN;
 
- const [reduced, octant] = reduceAngle(x);
+ const [reduced, quadrant] = reduceAngle(x);
 
- // Use octant to determine which kernel function and sign
- switch (octant) {
+ // cos(n*π/2 + r): kernelSin is odd, kernelCos is even — sign handled naturally
+ switch (quadrant) {
   case 0:
    return kernelCos(reduced);
   case 1:
-   return kernelSin(reduced);
+   return -kernelSin(reduced);
   case 2:
-   return -kernelSin(reduced);
+   return -kernelCos(reduced);
   case 3:
-   return -kernelCos(reduced);
-  case 4:
-   return -kernelCos(reduced);
-  case 5:
-   return -kernelSin(reduced);
-  case 6:
    return kernelSin(reduced);
-  case 7:
-   return kernelCos(reduced);
   default:
    return kernelCos(reduced);
  }
@@ -446,39 +396,59 @@ export function cos(x: number): number {
  * Compute sin and cos simultaneously (more efficient than separate calls).
  *
  * @param x - Angle in radians
+ * @param out - Optional output object to write sin/cos into (zero-allocation)
  * @returns Object with sin and cos values
+ *
+ * @remarks
+ * Range reduction uses Cody-Waite two-step subtraction with 106-bit extended
+ * precision for PI/2 (PIO2_HI + PIO2_LO). For `|x| > 2^20·PI` (~3.3e6 radians),
+ * the reduction error may exceed 1 ULP, causing gradual precision degradation.
+ * Typical 2D physics simulations operate well within this bound.
  *
  * @category Trigonometry
  * @since 0.8.0
  */
-export function sinCos(x: number): { sin: number; cos: number } {
- if (!Number.isFinite(x)) return { sin: NaN, cos: NaN };
+export function sinCos(x: number, out?: SinCos): SinCos {
+ const result = out ?? { sin: 0, cos: 0 };
 
- const [reduced, octant] = reduceAngle(x);
+ if (config.useNativeMath) {
+  result.sin = Math.sin(x);
+  result.cos = Math.cos(x);
+  return result;
+ }
+ if (!Number.isFinite(x)) {
+  result.sin = NaN;
+  result.cos = NaN;
+  return result;
+ }
+
+ const [reduced, quadrant] = reduceAngle(x);
  const s = kernelSin(reduced);
  const c = kernelCos(reduced);
 
- // Return based on octant
- switch (octant) {
+ // Assign based on quadrant: kernelSin is odd, kernelCos is even
+ switch (quadrant) {
   case 0:
-   return { sin: s, cos: c };
+   result.sin = s;
+   result.cos = c;
+   break;
   case 1:
-   return { sin: c, cos: s };
+   result.sin = c;
+   result.cos = -s;
+   break;
   case 2:
-   return { sin: c, cos: -s };
+   result.sin = -s;
+   result.cos = -c;
+   break;
   case 3:
-   return { sin: s, cos: -c };
-  case 4:
-   return { sin: -s, cos: -c };
-  case 5:
-   return { sin: -c, cos: -s };
-  case 6:
-   return { sin: -c, cos: s };
-  case 7:
-   return { sin: -s, cos: c };
+   result.sin = -c;
+   result.cos = s;
+   break;
   default:
-   return { sin: s, cos: c };
+   result.sin = s;
+   result.cos = c;
  }
+ return result;
 }
 
 /**
@@ -491,6 +461,7 @@ export function sinCos(x: number): { sin: number; cos: number } {
  * @since 0.8.0
  */
 export function tan(x: number): number {
+ if (config.useNativeMath) return Math.tan(x);
  const { sin: s, cos: c } = sinCos(x);
  return s / c;
 }
@@ -532,6 +503,7 @@ function kernelAtan(x: number): number {
  * @since 0.8.0
  */
 export function atan(x: number): number {
+ if (config.useNativeMath) return Math.atan(x);
  if (!Number.isFinite(x)) {
   if (x === Infinity) return PI_2;
   if (x === -Infinity) return -PI_2;
@@ -592,6 +564,7 @@ export function atan(x: number): number {
  * @since 0.8.0
  */
 export function atan2(y: number, x: number): number {
+ if (config.useNativeMath) return Math.atan2(y, x);
  // Handle special cases
  if (!Number.isFinite(x) || !Number.isFinite(y)) {
   if (Number.isNaN(x) || Number.isNaN(y)) return NaN;
@@ -604,15 +577,19 @@ export function atan2(y: number, x: number): number {
   if (x === -Infinity) {
    if (y === Infinity) return PI - PI_4;
    if (y === -Infinity) return -(PI - PI_4);
-   return y >= 0 ? PI : -PI;
+   return Object.is(y, -0) || y < 0 ? -PI : PI;
   }
   if (y === Infinity) return PI_2;
   if (y === -Infinity) return -PI_2;
  }
 
- // Handle zero cases
+ // Handle zero cases (Object.is needed: -0 === 0 and -0 >= 0 are both true in JS)
  if (y === 0) {
-  return x >= 0 ? 0 : PI;
+  const negY = Object.is(y, -0);
+  if (x > 0 || Object.is(x, 0)) {
+   return negY ? -0 : 0;
+  }
+  return negY ? -PI : PI;
  }
  if (x === 0) {
   return y > 0 ? PI_2 : -PI_2;
@@ -638,9 +615,11 @@ export function atan2(y: number, x: number): number {
  * @since 0.8.0
  */
 export function acos(x: number): number {
+ if (config.useNativeMath) return Math.acos(x);
+ if (x !== x) return NaN;
  if (x < -1 || x > 1) return NaN;
  // acos(x) = atan2(sqrt(1 - x²), x)
- return atan2(sqrt(1 - x * x), x);
+ return atan2(Math.sqrt(1 - x * x), x);
 }
 
 /**
@@ -653,9 +632,11 @@ export function acos(x: number): number {
  * @since 0.8.0
  */
 export function asin(x: number): number {
+ if (config.useNativeMath) return Math.asin(x);
+ if (x !== x) return NaN;
  if (x < -1 || x > 1) return NaN;
  // asin(x) = atan2(x, sqrt(1 - x²))
- return atan2(x, sqrt(1 - x * x));
+ return atan2(x, Math.sqrt(1 - x * x));
 }
 
 /**
@@ -715,6 +696,7 @@ export function asinSafe(x: number): number {
  * @since 0.9.0
  */
 export function log(x: number): number {
+ if (config.useNativeMath) return Math.log(x);
  // Handle special cases
  if (x !== x || x < 0) return NaN; // NaN or negative
  if (x === 0) return -Infinity;
@@ -722,25 +704,30 @@ export function log(x: number): number {
  if (x === 1) return 0;
 
  // Extract exponent and mantissa using IEEE 754 bit manipulation
- sqrtView.setFloat64(0, x, false);
- let hx = sqrtView.getUint32(0, false);
+ ieeeView.setFloat64(0, x, false);
+ let hx = ieeeView.getUint32(0, false);
  let k = 0;
 
  // Subnormal number handling
  if (hx < 0x00100000) {
   x *= 1.8014398509481984e16; // 2^54
-  sqrtView.setFloat64(0, x, false);
-  hx = sqrtView.getUint32(0, false);
+  ieeeView.setFloat64(0, x, false);
+  hx = ieeeView.getUint32(0, false);
   k = -54;
  }
 
  // Extract exponent
  k += ((hx >> 20) & 0x7ff) - 1023;
- hx = (hx & 0x000fffff) | 0x3ff00000; // Normalize to [1, 2)
+ hx &= 0x000fffff;
+ // sqrt(2) boundary adjustment: keep 1+f in [sqrt(2)/2, sqrt(2)]
+ // When mantissa >= sqrt(2), divide by 2 and increment k (per fdlibm e_log.c)
+ const index = (hx + 0x95f64) & 0x100000;
+ hx |= index ^ 0x3ff00000;
+ k += index >> 20;
 
  // Write back normalized value
- sqrtView.setUint32(0, hx, false);
- const f = sqrtView.getFloat64(0, false) - 1.0;
+ ieeeView.setUint32(0, hx, false);
+ const f = ieeeView.getFloat64(0, false) - 1.0;
 
  // log(1+f) approximation using s = f/(2+f)
  const s = f / (2.0 + f);
@@ -758,15 +745,23 @@ export function log(x: number): number {
 }
 
 /**
- * Safe natural logarithm (returns 0 for non-positive values).
+ * Kernel-level safe natural logarithm (returns 0 for non-positive values).
  *
  * @param x - Value to compute logarithm of
  * @returns ln(x) for x > 0, 0 otherwise
  *
+ * @remarks
+ * This is the kernel-level safe variant (single-argument, no base support).
+ * The public API `logSafe` in `auxiliary/numeric/safety` adds custom base
+ * support and delegates to this kernel. Both return 0 for non-positive input.
+ * Not exported from the main index to avoid naming collisions with the
+ * richer public variant.
+ *
+ * @internal
  * @category Arithmetic
  * @since 0.9.0
  */
-export function logSafe(x: number): number {
+export function logKernelSafe(x: number): number {
  if (x <= 0) return 0;
  return log(x);
 }
@@ -794,6 +789,7 @@ export function logSafe(x: number): number {
  * @since 0.9.0
  */
 export function exp(x: number): number {
+ if (config.useNativeMath) return Math.exp(x);
  // Handle special cases
  if (x !== x) return NaN;
  if (x === Infinity) return Infinity;
@@ -819,15 +815,16 @@ export function exp(x: number): number {
  // exp(r) = 1 + r + r*c/(2-c)
  const expR = 1 + (r + (r * c) / (2 - c));
 
- // Scale by 2^k using IEEE 754 bit manipulation for exact scaling
+ // Scale by 2^k using two-step ldexp-style multiply (fdlibm approach)
  if (k === 0) return expR;
 
- // Fast 2^k multiplication using bit manipulation
- sqrtView.setFloat64(0, expR, false);
- let hi = sqrtView.getUint32(0, false);
- hi += k << 20; // Add k to exponent
- sqrtView.setUint32(0, hi, false);
- return sqrtView.getFloat64(0, false);
+ // Two-step scaling avoids intermediate overflow/underflow for large |k|.
+ // Split k into two halves so neither 2^(k1) nor 2^(k2) overflows on its own.
+ const k1 = Math.trunc(k / 2);
+ const k2 = k - k1;
+ const scale1 = pow2(k1);
+ const scale2 = pow2(k2);
+ return expR * scale1 * scale2;
 }
 
 /**
@@ -840,7 +837,7 @@ export function exp(x: number): number {
  * @since 0.9.0
  */
 export function expSafe(x: number): number {
- if (x !== x) return 1; // NaN returns 1 (neutral element)
+ if (x !== x) return NaN;
  const result = exp(x);
  if (!Number.isFinite(result)) return result > 0 ? Number.MAX_VALUE : 0;
  return result;
@@ -862,6 +859,7 @@ export function expSafe(x: number): number {
  * @since 0.8.0
  */
 export function pow(base: number, exponent: number): number {
+ if (config.useNativeMath) return Math.pow(base, exponent);
  // Handle special cases
  if (exponent === 0) return 1;
  if (exponent === 1) return base;
@@ -900,22 +898,25 @@ export function pow(base: number, exponent: number): number {
  * @remarks
  * Contains ONLY functions that are not deterministic in native JavaScript:
  * - Trigonometric: sin, cos, tan, atan, atan2, acos, asin
- * - Square root: sqrt
  * - Power: pow (for non-integer exponents)
+ * - Hypotenuse: hypot
  *
- * For deterministic floor/ceil/abs/sign, use Math.* directly (IEEE 754 guarantees).
+ * `Math.sqrt`, `Math.floor`, `Math.ceil`, `Math.abs` are IEEE 754 required
+ * operations and should be used directly — they are deterministic.
  *
  * @category Deterministic
  * @since 0.8.0
  */
 export const DeterministicKernels = {
+ // Configuration
+ config,
+
  // Core
- sqrt,
- sqrtSafe,
+ hypot,
 
  // Logarithm and exponential
  log,
- logSafe,
+ logKernelSafe,
  exp,
  expSafe,
 
@@ -936,6 +937,9 @@ export const DeterministicKernels = {
  // Power
  pow,
 } as const;
+
+// Re-export sqrtSafe from numeric/safety for backward compatibility
+export { sqrtSafe } from '../auxiliary/numeric/safety';
 
 // Re-export individual functions for convenience
 export type { SinCos } from '../auxiliary/angle/operations';

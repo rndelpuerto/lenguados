@@ -49,6 +49,8 @@ export type ReadonlyTransform2 = Readonly<Transform2> & {
  readonly scale: ReadonlyVector2;
 };
 
+export { isTransform2Like } from '../types';
+
 /* ========================================================================== */
 /* Helper Functions                                                           */
 /* ========================================================================== */
@@ -75,6 +77,7 @@ export type ReadonlyTransform2 = Readonly<Transform2> & {
  */
 export function freezeTransform2(transform: Transform2): ReadonlyTransform2 {
  Object.freeze(transform.position);
+ Object.freeze(transform.rotation);
  Object.freeze(transform.scale);
  return Object.freeze(transform) as ReadonlyTransform2;
 }
@@ -151,7 +154,7 @@ export class Transform2 implements Transform2Like {
   * Identity transform (no transformation).
   * @category Core
   */
- public static readonly IDENTITY = Object.freeze(new Transform2()) as ReadonlyTransform2;
+ public static readonly IDENTITY = freezeTransform2(new Transform2());
 
  /**
   * Number of elements when serialized to an array (x, y, angle, sx, sy).
@@ -164,17 +167,13 @@ export class Transform2 implements Transform2Like {
   * Flip horizontally (scale.x = -1).
   * @category Core
   */
- public static readonly FLIP_X = Object.freeze(
-  new Transform2(undefined, 0, { x: -1, y: 1 }),
- ) as ReadonlyTransform2;
+ public static readonly FLIP_X = freezeTransform2(new Transform2(undefined, 0, { x: -1, y: 1 }));
 
  /**
   * Flip vertically (scale.y = -1).
   * @category Core
   */
- public static readonly FLIP_Y = Object.freeze(
-  new Transform2(undefined, 0, { x: 1, y: -1 }),
- ) as ReadonlyTransform2;
+ public static readonly FLIP_Y = freezeTransform2(new Transform2(undefined, 0, { x: 1, y: -1 }));
 
  /* ======================================================================== */
  /* Constructor                                                              */
@@ -292,6 +291,31 @@ export class Transform2 implements Transform2Like {
    const scaleValues = Transform2.extractVector(scale, 'Transform2.fromComponents:scale', 1, 1);
    target.scale.set(scaleValues.x, scaleValues.y);
   }
+  return target;
+ }
+
+ /**
+  * Creates a transform from a 2D pose (position + angle, uniform scale = 1).
+  * @param x - Position X
+  * @param y - Position Y
+  * @param angle - Rotation angle in radians
+  * @param out - Optional output transform
+  * @returns Transform with given position and rotation, scale (1,1)
+  *
+  * @example
+  * ```typescript
+  * const t = Transform2.fromPose(100, 50, Math.PI / 4);
+  * // position = (100, 50), rotation = 45°, scale = (1, 1)
+  * ```
+  *
+  * @category Factory
+  * @since 0.8.0
+  */
+ public static fromPose(x: number, y: number, angle: number, out?: Transform2): Transform2 {
+  const target = Transform2.ensureOut(out);
+  target.position.set(x, y);
+  target.rotation.setAngle(angle);
+  target.scale.set(1, 1);
   return target;
  }
 
@@ -450,12 +474,17 @@ export class Transform2 implements Transform2Like {
   * @throws {RangeError} If scale.x or scale.y is near zero (non-invertible).
   *
   * @remarks
-  * A transform with zero scale in any axis is not invertible.
-  * Use {@link inverseSafe} for a null-returning variant, or
-  * {@link inverseUnchecked} for hot paths where invertibility is guaranteed.
+  * **Non-uniform scale warning:** This inversion is an APPROXIMATION when
+  * `scale.x !== scale.y`. The SRT representation cannot exactly represent
+  * the true inverse linear part `(R · S)⁻¹ = S⁻¹ · R⁻¹` because the SRT
+  * format forces `R_inv · S_inv = R⁻¹ · S⁻¹`. For exact point inverse
+  * transformation, use {@link inverseTransformPoint}. For exact full inverse,
+  * convert to Matrix3 via {@link toMatrix3} and use {@link Matrix3.inverse}.
+  * This is a common SRT limitation documented by engines such as DigitalRune.
   *
   * @see {@link inverseSafe} - Returns identity instead of throwing
   * @see {@link inverseUnchecked} - No validation, for hot paths
+  * @see {@link inverseTransformPoint} - Exact point inverse (no SRT approximation)
   *
   * @category Arithmetic
   * @since 0.7.0
@@ -473,10 +502,11 @@ export class Transform2 implements Transform2Like {
   const invRotation = Rotation2.inverse(transform.rotation);
   const { cos, sin } = invRotation;
 
-  const scaledPosX = transform.position.x * invScaleX;
-  const scaledPosY = transform.position.y * invScaleY;
-  const invPosX = -(scaledPosX * cos - scaledPosY * sin);
-  const invPosY = -(scaledPosX * sin + scaledPosY * cos);
+  // Position: -(S⁻¹ · R⁻¹ · t) — apply inverse rotation first, then inverse scale
+  const rotPosX = transform.position.x * cos - transform.position.y * sin;
+  const rotPosY = transform.position.x * sin + transform.position.y * cos;
+  const invPosX = -(rotPosX * invScaleX);
+  const invPosY = -(rotPosY * invScaleY);
 
   target.rotation.copy(invRotation);
   target.scale.set(invScaleX, invScaleY);
@@ -489,6 +519,13 @@ export class Transform2 implements Transform2Like {
   * @param transform - Transform to invert
   * @param out - Optional output transform
   * @returns Inverse transform, or identity if scale is near zero
+  *
+  * @remarks
+  * Uses {@link isNearZero} with default {@link EPSILON} (1e-10) on each scale
+  * component. Returns identity when either |scale.x| or |scale.y| ≤ EPSILON.
+  *
+  * **Non-uniform scale warning:** See {@link inverse} for details on SRT
+  * approximation. Use {@link inverseTransformPoint} for exact point inverse.
   *
   * @see {@link inverse} - Throws on non-invertible transform
   * @see {@link inverseUnchecked} - No validation, for hot paths
@@ -511,10 +548,11 @@ export class Transform2 implements Transform2Like {
   const invRotation = Rotation2.inverse(transform.rotation);
   const { cos, sin } = invRotation;
 
-  const scaledPosX = transform.position.x * invScaleX;
-  const scaledPosY = transform.position.y * invScaleY;
-  const invPosX = -(scaledPosX * cos - scaledPosY * sin);
-  const invPosY = -(scaledPosX * sin + scaledPosY * cos);
+  // Position: -(S⁻¹ · R⁻¹ · t) — apply inverse rotation first, then inverse scale
+  const rotPosX = transform.position.x * cos - transform.position.y * sin;
+  const rotPosY = transform.position.x * sin + transform.position.y * cos;
+  const invPosX = -(rotPosX * invScaleX);
+  const invPosY = -(rotPosY * invScaleY);
 
   target.rotation.copy(invRotation);
   target.scale.set(invScaleX, invScaleY);
@@ -532,6 +570,9 @@ export class Transform2 implements Transform2Like {
   * **⚠️ Precondition:** `transform.scale.x ≠ 0` and `transform.scale.y ≠ 0`.
   * Calling with zero scale produces `Infinity`/`NaN` in the result.
   *
+  * **Non-uniform scale warning:** See {@link inverse} for details on SRT
+  * approximation. Use {@link inverseTransformPoint} for exact point inverse.
+  *
   * @see {@link inverse} - Throws on non-invertible transform
   * @see {@link inverseSafe} - Returns identity instead of throwing
   *
@@ -545,10 +586,11 @@ export class Transform2 implements Transform2Like {
   const invRotation = Rotation2.inverse(transform.rotation);
   const { cos, sin } = invRotation;
 
-  const scaledPosX = transform.position.x * invScaleX;
-  const scaledPosY = transform.position.y * invScaleY;
-  const invPosX = -(scaledPosX * cos - scaledPosY * sin);
-  const invPosY = -(scaledPosX * sin + scaledPosY * cos);
+  // Position: -(S⁻¹ · R⁻¹ · t) — apply inverse rotation first, then inverse scale
+  const rotPosX = transform.position.x * cos - transform.position.y * sin;
+  const rotPosY = transform.position.x * sin + transform.position.y * cos;
+  const invPosX = -(rotPosX * invScaleX);
+  const invPosY = -(rotPosY * invScaleY);
 
   target.rotation.copy(invRotation);
   target.scale.set(invScaleX, invScaleY);
@@ -779,8 +821,8 @@ export class Transform2 implements Transform2Like {
   * Inverse transforms a point using precomputed cos/sin values (unchecked).
   * @param transform - Transform to apply inversely (position and scale)
   * @param point - Point to inverse transform
-  * @param cos - Precomputed cosine of NEGATIVE rotation
-  * @param sin - Precomputed sine of NEGATIVE rotation
+  * @param cos - Precomputed cosine of rotation
+  * @param sin - Precomputed sine of rotation
   * @param out - Optional output vector
   * @returns Inverse transformed point
   *
@@ -788,7 +830,6 @@ export class Transform2 implements Transform2Like {
   * **⚠️ Precondition:** `transform.scale.x ≠ 0` and `transform.scale.y ≠ 0`.
   *
   * Use this method in hot paths where cos/sin are already computed.
-  * **Important:** Pass cos(-rotation) and sin(-rotation), not cos(rotation) and sin(rotation).
   *
   * @category Transform
   * @since 0.7.0
@@ -802,8 +843,7 @@ export class Transform2 implements Transform2Like {
  ): Vector2 {
   const tx = point.x - transform.position.x;
   const ty = point.y - transform.position.y;
-  // Inverse rotation: cos(-θ) = cos(θ), sin(-θ) = -sin(θ)
-  // So we use +sin where forward uses -sin, and -sin where forward uses +sin
+  // Inverse rotation applied via transposition
   const rotatedX = tx * cos + ty * sin;
   const rotatedY = -tx * sin + ty * cos;
   const invScaleX = 1 / transform.scale.x;
@@ -887,8 +927,8 @@ export class Transform2 implements Transform2Like {
   * Inverse transforms a vector using precomputed cos/sin values (unchecked).
   * @param transform - Transform to apply inversely (scale only)
   * @param vector - Vector to inverse transform
-  * @param cos - Precomputed cosine of NEGATIVE rotation
-  * @param sin - Precomputed sine of NEGATIVE rotation
+  * @param cos - Precomputed cosine of rotation
+  * @param sin - Precomputed sine of rotation
   * @param out - Optional output vector
   * @returns Inverse transformed vector
   *
@@ -896,7 +936,6 @@ export class Transform2 implements Transform2Like {
   * **⚠️ Precondition:** `transform.scale.x ≠ 0` and `transform.scale.y ≠ 0`.
   *
   * Use this method in hot paths where cos/sin are already computed.
-  * **Important:** Pass cos(-rotation) and sin(-rotation), not cos(rotation) and sin(rotation).
   *
   * @category Transform
   * @since 0.7.0
@@ -908,7 +947,7 @@ export class Transform2 implements Transform2Like {
   sin: number,
   out?: Vector2,
  ): Vector2 {
-  // Inverse rotation: cos(-θ) = cos(θ), sin(-θ) = -sin(θ)
+  // Inverse rotation applied via transposition
   const rotatedX = vector.x * cos + vector.y * sin;
   const rotatedY = -vector.x * sin + vector.y * cos;
   const invScaleX = 1 / transform.scale.x;
@@ -1051,6 +1090,10 @@ export class Transform2 implements Transform2Like {
   * @param transform - Transform to test
   * @param epsilon - Tolerance (default: EPSILON)
   * @returns True if identity
+  *
+  * @remarks
+  * Uses {@link EPSILON} (1e-10) as default tolerance. Checks position ≈ (0,0),
+  * rotation ≈ identity, and scale ≈ (1,1).
   *
   * @category Comparison
   * @since 0.7.0
@@ -1428,8 +1471,8 @@ export class Transform2 implements Transform2Like {
  /**
   * Inverse transforms a point using precomputed cos/sin values.
   * @param point - Point to inverse transform
-  * @param cos - Precomputed cosine of NEGATIVE rotation
-  * @param sin - Precomputed sine of NEGATIVE rotation
+  * @param cos - Precomputed cosine of rotation
+  * @param sin - Precomputed sine of rotation
   * @param out - Optional output vector
   * @returns Inverse transformed point
   *
@@ -1465,8 +1508,8 @@ export class Transform2 implements Transform2Like {
  /**
   * Inverse transforms a vector using precomputed cos/sin values.
   * @param vector - Vector to inverse transform
-  * @param cos - Precomputed cosine of NEGATIVE rotation
-  * @param sin - Precomputed sine of NEGATIVE rotation
+  * @param cos - Precomputed cosine of rotation
+  * @param sin - Precomputed sine of rotation
   * @param out - Optional output vector
   * @returns Inverse transformed vector
   *
@@ -1597,6 +1640,10 @@ export class Transform2 implements Transform2Like {
   * @returns This for chaining
   * @throws {RangeError} If scale.x or scale.y is near zero.
   *
+  * @remarks
+  * **Non-uniform scale warning:** See static {@link Transform2.inverse} for
+  * details on SRT approximation.
+  *
   * @see {@link inverseSafe} - Sets to identity instead of throwing
   * @see {@link inverseUnchecked} - No validation, for hot paths
   *
@@ -1615,10 +1662,11 @@ export class Transform2 implements Transform2Like {
   const invRotation = Rotation2.inverse(this.rotation);
   const { cos, sin } = invRotation;
 
-  const scaledPosX = this.position.x * invScaleX;
-  const scaledPosY = this.position.y * invScaleY;
-  const invPosX = -(scaledPosX * cos - scaledPosY * sin);
-  const invPosY = -(scaledPosX * sin + scaledPosY * cos);
+  // Position: -(S⁻¹ · R⁻¹ · t) — apply inverse rotation first, then inverse scale
+  const rotPosX = this.position.x * cos - this.position.y * sin;
+  const rotPosY = this.position.x * sin + this.position.y * cos;
+  const invPosX = -(rotPosX * invScaleX);
+  const invPosY = -(rotPosY * invScaleY);
 
   this.rotation.copy(invRotation);
   this.scale.set(invScaleX, invScaleY);
@@ -1659,10 +1707,11 @@ export class Transform2 implements Transform2Like {
   const invRotation = Rotation2.inverse(this.rotation);
   const { cos, sin } = invRotation;
 
-  const scaledPosX = this.position.x * invScaleX;
-  const scaledPosY = this.position.y * invScaleY;
-  const invPosX = -(scaledPosX * cos - scaledPosY * sin);
-  const invPosY = -(scaledPosX * sin + scaledPosY * cos);
+  // Position: -(S⁻¹ · R⁻¹ · t) — apply inverse rotation first, then inverse scale
+  const rotPosX = this.position.x * cos - this.position.y * sin;
+  const rotPosY = this.position.x * sin + this.position.y * cos;
+  const invPosX = -(rotPosX * invScaleX);
+  const invPosY = -(rotPosY * invScaleY);
 
   this.rotation.copy(invRotation);
   this.scale.set(invScaleX, invScaleY);
@@ -1887,7 +1936,7 @@ export class Transform2 implements Transform2Like {
  public toObject(): Transform2Like {
   return {
    position: this.position.toObject(),
-   rotation: this.rotation,
+   rotation: this.rotation.toObject(),
    scale: this.scale.toObject(),
   };
  }

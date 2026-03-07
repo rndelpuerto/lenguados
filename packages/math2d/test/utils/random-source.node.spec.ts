@@ -9,7 +9,6 @@ import { describe, expect, it } from '@jest/globals';
 import {
  MathRandomSource,
  SeededRandomSource,
- defaultRandomSource,
  getDefaultRandomSource,
  setDefaultRandomSource,
 } from '../../src/utils/random-source';
@@ -82,6 +81,14 @@ describe('utils/random-source', () => {
    }
   });
 
+  it('nextInt throws for invalid max', () => {
+   const source = new SeededRandomSource(42);
+   expect(() => source.nextInt(0)).toThrow(TypeError);
+   expect(() => source.nextInt(-5)).toThrow(TypeError);
+   expect(() => source.nextInt(NaN)).toThrow(TypeError);
+   expect(() => source.nextInt(1.5)).toThrow(TypeError);
+  });
+
   it('seed() resets the generator', () => {
    const source = new SeededRandomSource(12345);
    const firstValues = [source.next(), source.next(), source.next()];
@@ -92,7 +99,7 @@ describe('utils/random-source', () => {
    expect(resetValues).toEqual(firstValues);
   });
 
-  it('getState/setState allows save/restore', () => {
+  it('getState/restoreState allows save/restore', () => {
    const source = new SeededRandomSource(12345);
 
    // Generate some values
@@ -102,32 +109,34 @@ describe('utils/random-source', () => {
 
    // Save state
    const savedState = source.getState();
+   expect(savedState).toHaveLength(4);
 
    // Generate more values
    const afterSaveValues = [source.next(), source.next(), source.next()];
 
    // Restore state
-   source.setState(savedState);
+   source.restoreState(savedState);
 
    // Values should be the same as after save
    const restoredValues = [source.next(), source.next(), source.next()];
    expect(restoredValues).toEqual(afterSaveValues);
   });
 
-  it('setState throws for invalid state', () => {
+  it('restoreState throws for invalid state', () => {
    const source = new SeededRandomSource(12345);
 
-   expect(() => source.setState(0)).toThrow(RangeError);
-   expect(() => source.setState(-1)).toThrow(RangeError);
-   expect(() => source.setState(2147483647)).toThrow(RangeError);
+   expect(() => source.restoreState([0, 0, 0, 0])).toThrow(RangeError);
+   expect(() => source.restoreState([] as unknown as [number, number, number, number])).toThrow(
+    RangeError,
+   );
   });
 
   it('handles edge case seeds', () => {
-   // Seed of 0 should be treated as 1
+   // Seed of 0 should work
    const source0 = new SeededRandomSource(0);
    expect(source0.next()).toBeGreaterThanOrEqual(0);
 
-   // Negative seed should work (absolute value used)
+   // Negative seed should work
    const sourceNeg = new SeededRandomSource(-12345);
    expect(sourceNeg.next()).toBeGreaterThanOrEqual(0);
 
@@ -145,12 +154,64 @@ describe('utils/random-source', () => {
    expect(source1.next()).toBeGreaterThanOrEqual(0);
    expect(source2.next()).toBeGreaterThanOrEqual(0);
   });
+
+  it('determinism: two instances with same seed produce identical sequences', () => {
+   const seed = 42;
+   const source1 = new SeededRandomSource(seed);
+   const source2 = new SeededRandomSource(seed);
+
+   for (let index = 0; index < 10000; index++) {
+    expect(source1.next()).toBe(source2.next());
+   }
+  });
+
+  it('nextInt is unbiased (chi-squared test for small max)', () => {
+   const source = new SeededRandomSource(42);
+   const max = 3;
+   const samples = 100000;
+   const counts = new Array<number>(max).fill(0);
+
+   for (let index = 0; index < samples; index++) {
+    counts[source.nextInt(max)]!++;
+   }
+
+   // Expected count per bucket
+   const expected = samples / max;
+   let chiSquared = 0;
+   for (let bucket = 0; bucket < max; bucket++) {
+    const diff = counts[bucket]! - expected;
+    chiSquared += (diff * diff) / expected;
+   }
+   // With 2 degrees of freedom, chi-squared < 9.21 is p > 0.01
+   expect(chiSquared).toBeLessThan(9.21);
+  });
+
+  it('nextInt is unbiased (chi-squared test for max=256)', () => {
+   const source = new SeededRandomSource(123);
+   const max = 256;
+   const samples = 100000;
+   const counts = new Array<number>(max).fill(0);
+
+   for (let index = 0; index < samples; index++) {
+    counts[source.nextInt(max)]!++;
+   }
+
+   const expected = samples / max;
+   let chiSquared = 0;
+   for (let bucket = 0; bucket < max; bucket++) {
+    const diff = counts[bucket]! - expected;
+    chiSquared += (diff * diff) / expected;
+   }
+   // With 255 degrees of freedom, chi-squared < 310.46 is p > 0.01
+   expect(chiSquared).toBeLessThan(310.46);
+  });
  });
 
- describe('defaultRandomSource', () => {
-  it('exists and works', () => {
-   expect(defaultRandomSource).toBeDefined();
-   expect(defaultRandomSource.next()).toBeGreaterThanOrEqual(0);
+ describe('getDefaultRandomSource / setDefaultRandomSource', () => {
+  it('returns a working random source', () => {
+   const source = getDefaultRandomSource();
+   expect(source).toBeDefined();
+   expect(source.next()).toBeGreaterThanOrEqual(0);
   });
 
   it('can be changed globally', () => {

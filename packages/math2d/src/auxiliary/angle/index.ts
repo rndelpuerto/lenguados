@@ -5,10 +5,10 @@
  *
  * @remarks
  * This module provides specialized angular operations including:
- * - Angle conversions (degrees, radians, turns, gradians)
+ * - Angle conversions (degrees, radians, turns)
  * - Angle normalization (wrap to standard ranges)
  * - Angular operations (difference, distance, bisector, etc.)
- * - Angular interpolation (lerp, slerp, spring)
+ * - Angular interpolation (lerp, smoothStep)
  * - Angle unwrapping (continuous sequences)
  */
 

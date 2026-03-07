@@ -23,9 +23,7 @@ Mathematical constants for scalar operations.
 ## Conversion
 
 - [DEG_TO_RAD](variables/DEG_TO_RAD.md)
-- [GRAD_TO_RAD](variables/GRAD_TO_RAD.md)
 - [RAD_TO_DEG](variables/RAD_TO_DEG.md)
-- [RAD_TO_GRAD](variables/RAD_TO_GRAD.md)
 - [RAD_TO_TURN](variables/RAD_TO_TURN.md)
 - [TURN_TO_RAD](variables/TURN_TO_RAD.md)
 
@@ -33,7 +31,7 @@ Mathematical constants for scalar operations.
 
 - [E](variables/E.md)
 - [GOLDEN_RATIO](variables/GOLDEN_RATIO.md)
-- [LN_10](variables/LN_10.md)
+- [GOLDEN_RATIO_CONJUGATE](variables/GOLDEN_RATIO_CONJUGATE.md)
 - [LN_2](variables/LN_2.md)
 - [SQRT_2](variables/SQRT_2.md)
 - [SQRT_HALF](variables/SQRT_HALF.md)
@@ -41,6 +39,7 @@ Mathematical constants for scalar operations.
 ## Numeric Limits
 
 - [MAX_SAFE_INTEGER_F64](variables/MAX_SAFE_INTEGER_F64.md)
+- [SMALLEST_NORMAL](variables/SMALLEST_NORMAL.md)
 
 ## Tolerance
 

@@ -114,19 +114,6 @@ export const HALF_PI = Math.PI / 2;
  */
 export const QUARTER_PI = Math.PI / 4;
 
-/**
- * Angle epsilon for near-zero angle comparisons.
- *
- * @remarks
- * Used in deterministic kernels for detecting angles near zero
- * where special handling may be needed.
- *
- * @constant {number}
- * @category Angular
- * @since 0.7.0
- */
-export const ANGLE_EPSILON = 1e-12;
-
 /* ========================================================================== */
 /* Conversion Factors                                                         */
 /* ========================================================================== */
@@ -189,28 +176,6 @@ export const RAD_TO_TURN = 1 / TAU;
  */
 export const TURN_TO_RAD = TAU;
 
-/**
- * Conversion factor from gradians to radians.
- *
- * @remarks
- * Gradians (also called gon or grade) divide a right angle into 100 units.
- * 400 gradians = 2π radians = 360 degrees.
- *
- * @constant {number}
- * @category Conversion
- * @since 0.7.0
- */
-export const GRAD_TO_RAD = PI / 200;
-
-/**
- * Conversion factor from radians to gradians.
- *
- * @constant {number}
- * @category Conversion
- * @since 0.7.0
- */
-export const RAD_TO_GRAD = 200 / PI;
-
 /* ========================================================================== */
 /* Mathematical Constants                                                     */
 /* ========================================================================== */
@@ -249,28 +214,6 @@ export const SQRT_HALF = Math.SQRT1_2;
 export const LN_2 = Math.LN2;
 
 /**
- * Natural logarithm of 10 ≈ 2.302585092994.
- *
- * @constant {number}
- * @category Mathematical
- * @since 0.7.0
- */
-export const LN_10 = Math.LN10;
-
-/**
- * Golden ratio φ (phi) ≈ 1.6180339887.
- *
- * @remarks
- * φ = (1 + √5) / 2. Appears in art, architecture, and nature.
- * Has the property that φ² = φ + 1.
- *
- * @constant {number}
- * @category Mathematical
- * @since 0.7.0
- */
-export const GOLDEN_RATIO = 1.618033988749895;
-
-/**
  * Euler's number e ≈ 2.718281828459045.
  *
  * @remarks
@@ -281,6 +224,43 @@ export const GOLDEN_RATIO = 1.618033988749895;
  * @since 0.7.0
  */
 export const E = Math.E;
+
+/**
+ * Golden Ratio φ ≈ 1.618033988749895.
+ *
+ * @remarks
+ * The unique positive solution to φ² = φ + 1.
+ * Satisfies φ = (1 + √5) / 2 and φ * GOLDEN_RATIO_CONJUGATE = 1.
+ *
+ * @constant {number}
+ * @category Mathematical
+ * @since 0.7.0
+ */
+const SQRT5 = Math.sqrt(5);
+
+export const GOLDEN_RATIO = (1 + SQRT5) / 2;
+
+/**
+ * Golden Ratio Conjugate Φ ≈ 0.618033988749895.
+ *
+ * @remarks
+ * Equals 1 / φ or φ - 1.
+ *
+ * @constant {number}
+ * @category Mathematical
+ * @since 0.7.0
+ */
+export const GOLDEN_RATIO_CONJUGATE = (SQRT5 - 1) / 2;
+
+/**
+ * Smallest positive normal number in IEEE 754 double precision.
+ * Numbers smaller than this (but not zero) are denormal/subnormal.
+ *
+ * @constant {number}
+ * @category Numeric Limits
+ * @since 0.7.0
+ */
+export const SMALLEST_NORMAL = 2.2250738585072014e-308; // 2^-1022
 
 /* ========================================================================== */
 /* Unified Constants Object                                                   */
@@ -308,17 +288,20 @@ export const Constants = {
  TAU,
  HALF_PI,
  QUARTER_PI,
- ANGLE_EPSILON,
  DEG_TO_RAD,
  RAD_TO_DEG,
  RAD_TO_TURN,
  TURN_TO_RAD,
- GRAD_TO_RAD,
- RAD_TO_GRAD,
+
  SQRT_2,
  SQRT_HALF,
  LN_2,
- LN_10,
- GOLDEN_RATIO,
+
  E,
+ GOLDEN_RATIO,
+ GOLDEN_RATIO_CONJUGATE,
+
+ SMALLEST_NORMAL,
 } as const;
+
+Object.freeze(Constants);

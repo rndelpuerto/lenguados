@@ -2,7 +2,7 @@
 
 > **parseMatrix2**(`string_`, `out`): [`Matrix2`](../../core/classes/Matrix2.md)
 
-Defined in: [src/utils/parse.ts:301](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/utils/parse.ts#L301)
+Defined in: [src/utils/parse.ts:306](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/utils/parse.ts#L306)
 
 Parses a string representation of a 2x2 matrix.
 
@@ -47,4 +47,4 @@ const m = parseMatrix2('1,0,0,1');
 
 ## Since
 
-0.1.0
+0.7.0

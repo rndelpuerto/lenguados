@@ -10,8 +10,6 @@ Scalar interpolation operations.
 
 ## Interpolation
 
-- [bezierInterp](functions/bezierInterp.md)
-- [catmullRomInterp](functions/catmullRomInterp.md)
 - [inverseLerp](functions/inverseLerp.md)
 - [inverseLerpSafe](functions/inverseLerpSafe.md)
 - [inverseLerpUnchecked](functions/inverseLerpUnchecked.md)

@@ -1,6 +1,6 @@
 # Interface: ReadonlyRotation2Like
 
-Defined in: [src/types/index.ts:135](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/types/index.ts#L135)
+Defined in: [src/types/index.ts:135](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/types/index.ts#L135)
 
 Readonly interface for 2D rotation represented as cosine/sine components.
 
@@ -27,7 +27,7 @@ const rot: ReadonlyRotation2Like = {
 
 ## Since
 
-0.1.0
+0.7.0
 
 ## Properties
 
@@ -35,7 +35,7 @@ const rot: ReadonlyRotation2Like = {
 
 > `readonly` **cos**: `number`
 
-Defined in: [src/types/index.ts:140](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/types/index.ts#L140)
+Defined in: [src/types/index.ts:140](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/types/index.ts#L140)
 
 Cosine component of the rotation.
 For a rotation of angle θ, this equals cos(θ).
@@ -46,7 +46,7 @@ For a rotation of angle θ, this equals cos(θ).
 
 > `readonly` **sin**: `number`
 
-Defined in: [src/types/index.ts:146](https://github.com/rndelpuerto/lenguados/blob/39bc447afe3bf2e923cd6256cbc68afb64bc0fd0/packages/math2d/src/types/index.ts#L146)
+Defined in: [src/types/index.ts:146](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/types/index.ts#L146)
 
 Sine component of the rotation.
 For a rotation of angle θ, this equals sin(θ).

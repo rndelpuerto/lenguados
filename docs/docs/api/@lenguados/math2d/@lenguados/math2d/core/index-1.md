@@ -130,12 +130,6 @@ Re-exports [ReadonlyMatrix3](type-aliases/ReadonlyMatrix3.md)
 
 ---
 
-### ReadonlyRotation2
-
-Re-exports [ReadonlyRotation2](type-aliases/ReadonlyRotation2.md)
-
----
-
 ### ReadonlyTransform2
 
 Re-exports [ReadonlyTransform2](type-aliases/ReadonlyTransform2.md)

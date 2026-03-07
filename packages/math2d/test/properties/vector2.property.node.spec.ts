@@ -4,7 +4,7 @@
  * @description Property-based tests for Vector2.
  */
 
-import { describe, it } from '@jest/globals';
+import { describe, expect, it } from '@jest/globals';
 import * as fc from 'fast-check';
 
 import { Complex } from '../../src/core/complex';
@@ -62,6 +62,17 @@ describe('Vector2 Properties', () => {
      const negA = Vector2.negate(a);
      const result = Vector2.add(a, negA);
      return result.nearEquals(Vector2.ZERO, TEST_TOLERANCE);
+    }),
+   );
+  });
+ });
+
+ describe('Negation', () => {
+  it('should be involutive: -(-v) = v', () => {
+   fc.assert(
+    fc.property(arbVector2, (v) => {
+     const doubleNegated = Vector2.negate(Vector2.negate(v));
+     return doubleNegated.exactEquals(v);
     }),
    );
   });
@@ -145,7 +156,7 @@ describe('Vector2 Properties', () => {
    fc.assert(
     fc.property(arbVector2, (a) => {
      const dotSelf = Vector2.dot(a, a);
-     const lengthSq = Vector2.magnitudeSquared(a);
+     const lengthSq = Vector2.magnitudeSq(a);
      return Math.abs(dotSelf - lengthSq) < TEST_TOLERANCE;
     }),
    );
@@ -369,6 +380,55 @@ describe('Vector2 Properties', () => {
     ),
    );
   });
+ });
+});
+
+describe('Vector2 NaN/Infinity Propagation', () => {
+ const nanVec = new Vector2(NaN, 1);
+ const infVec = new Vector2(Infinity, 0);
+
+ it('add propagates NaN', () => {
+  fc.assert(
+   fc.property(arbVector2, (v) => {
+    const result = Vector2.add(v, nanVec);
+    return Number.isNaN(result.x);
+   }),
+  );
+ });
+
+ it('add propagates Infinity', () => {
+  fc.assert(
+   fc.property(arbVector2, (v) => {
+    const result = Vector2.add(v, infVec);
+    return !Number.isFinite(result.x);
+   }),
+  );
+ });
+
+ it('scale with NaN produces NaN', () => {
+  fc.assert(
+   fc.property(arbVector2, (v) => {
+    const result = Vector2.scale(v, NaN);
+    return Number.isNaN(result.x) && Number.isNaN(result.y);
+   }),
+  );
+ });
+
+ it('dot with NaN produces NaN', () => {
+  fc.assert(
+   fc.property(arbVector2, (v) => {
+    return Number.isNaN(Vector2.dot(v, nanVec));
+   }),
+  );
+ });
+
+ it('magnitude of NaN vector is NaN', () => {
+  expect(Vector2.magnitude(nanVec)).toBeNaN();
+ });
+
+ it('normalizeSafe of NaN vector propagates NaN (not caught by isNearZero)', () => {
+  const result = Vector2.normalizeSafe(nanVec);
+  expect(result.x).toBeNaN();
  });
 });
 
