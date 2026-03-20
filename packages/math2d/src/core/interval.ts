@@ -375,6 +375,30 @@ export class Interval implements IntervalLike {
  }
 
  /**
+  * Creates an interval from two values in any order.
+  *
+  * @remarks
+  * Unlike {@link fromValues}, this does not require `a ≤ b`.
+  *
+  * @param a - First bound
+  * @param b - Second bound
+  * @param out - Optional output interval
+  * @returns Interval with min = min(a, b), max = max(a, b)
+  *
+  * @example
+  * ```typescript
+  * Interval.fromUnsorted(5, 2); // → [2, 5]
+  * Interval.fromUnsorted(2, 5); // → [2, 5]
+  * ```
+  *
+  * @category Factory
+  * @since 0.8.0
+  */
+ public static fromUnsorted(a: number, b: number, out?: Interval): Interval {
+  return Interval.fromValues(Math.min(a, b), Math.max(a, b), out);
+ }
+
+ /**
   * Creates a deep copy of an interval.
   * @param source - Interval to clone
   * @param out - Optional output interval
@@ -466,11 +490,11 @@ export class Interval implements IntervalLike {
   b: ReadonlyIntervalLike,
   out?: Interval,
  ): Interval {
-  const products = [a.min * b.min, a.min * b.max, a.max * b.min, a.max * b.max];
-  return Interval.ensureOut(out).set(
-   Math.min(products[0]!, products[1]!, products[2]!, products[3]!),
-   Math.max(products[0]!, products[1]!, products[2]!, products[3]!),
-  );
+  const p0 = a.min * b.min;
+  const p1 = a.min * b.max;
+  const p2 = a.max * b.min;
+  const p3 = a.max * b.max;
+  return Interval.ensureOut(out).set(Math.min(p0, p1, p2, p3), Math.max(p0, p1, p2, p3));
  }
 
  /**
@@ -570,6 +594,39 @@ export class Interval implements IntervalLike {
   */
  public static negate(interval: ReadonlyIntervalLike, out?: Interval): Interval {
   return Interval.ensureOut(out).set(-interval.max, -interval.min);
+ }
+
+ /**
+  * Returns the absolute value of an interval (Moore's definition).
+  *
+  * @remarks
+  * Three cases:
+  * - All positive (`min ≥ 0`): result is `[min, max]`
+  * - Crosses zero (`min < 0 < max`): result is `[0, max(|min|, max)]`
+  * - All negative (`max ≤ 0`): result is `[|max|, |min|]`
+  *
+  * @param interval - Interval to take absolute value of
+  * @param out - Optional output interval
+  * @returns Interval of absolute values
+  *
+  * @example
+  * ```typescript
+  * Interval.abs({ min: 2, max: 5 });   // → [2, 5]
+  * Interval.abs({ min: -3, max: 5 });  // → [0, 5]
+  * Interval.abs({ min: -5, max: -2 }); // → [2, 5]
+  * ```
+  *
+  * @category Arithmetic
+  * @since 0.8.0
+  */
+ public static abs(interval: ReadonlyIntervalLike, out?: Interval): Interval {
+  if (interval.min >= 0) {
+   return Interval.ensureOut(out).set(interval.min, interval.max);
+  }
+  if (interval.max <= 0) {
+   return Interval.ensureOut(out).set(-interval.max, -interval.min);
+  }
+  return Interval.ensureOut(out).set(0, Math.max(-interval.min, interval.max));
  }
 
  /**
@@ -721,10 +778,15 @@ export class Interval implements IntervalLike {
  /* ======================================================================== */
 
  /**
-  * Linear interpolation between two intervals.
+  * Linear interpolation between two intervals (unclamped).
+  *
+  * @remarks
+  * The interpolation factor `t` is NOT clamped — values outside [0, 1] will
+  * extrapolate beyond the input intervals. Use {@link lerpClamped} to clamp.
+  *
   * @param a - Start interval
   * @param b - End interval
-  * @param t - Interpolation factor [0, 1], clamped
+  * @param t - Interpolation factor (unclamped, allows extrapolation)
   * @param out - Optional output interval
   * @returns Interpolated interval
   *
@@ -1096,7 +1158,7 @@ export class Interval implements IntervalLike {
   * @since 0.7.0
   */
  public static center(interval: ReadonlyIntervalLike): number {
-  return (interval.min + interval.max) * 0.5;
+  return interval.min + (interval.max - interval.min) * 0.5;
  }
 
  /**
@@ -1137,7 +1199,7 @@ export class Interval implements IntervalLike {
   ...rest: Array<number | ReadonlyIntervalLike>
  ): Interval {
   if (Array.isArray(first)) {
-   return Interval.computeHull(first, second as Interval | undefined);
+   return Interval.computeHull(first, second instanceof Interval ? second : undefined);
   }
   const values = [first, second as number | ReadonlyIntervalLike, ...rest].filter(
    (value): value is number | ReadonlyIntervalLike => value !== undefined,
@@ -1302,7 +1364,7 @@ export class Interval implements IntervalLike {
   * @category Mutator
   * @since 0.7.0
   */
- copy(other: ReadonlyInterval): this {
+ copy(other: ReadonlyIntervalLike): this {
   this.min = other.min;
   this.max = other.max;
   return this;
@@ -1357,7 +1419,7 @@ export class Interval implements IntervalLike {
   * @since 0.7.0
   */
  center(): number {
-  return (this.min + this.max) * 0.5;
+  return this.min + (this.max - this.min) * 0.5;
  }
 
  /**
@@ -1425,7 +1487,7 @@ export class Interval implements IntervalLike {
   * @category Set Operations
   * @since 0.7.0
   */
- overlaps(other: ReadonlyInterval): boolean {
+ overlaps(other: ReadonlyIntervalLike): boolean {
   return this.min <= other.max && this.max >= other.min;
  }
 
@@ -1437,7 +1499,7 @@ export class Interval implements IntervalLike {
   * @category Set Operations
   * @since 0.7.0
   */
- isSubsetOf(other: ReadonlyInterval): boolean {
+ isSubsetOf(other: ReadonlyIntervalLike): boolean {
   return this.min >= other.min && this.max <= other.max;
  }
 
@@ -1453,7 +1515,7 @@ export class Interval implements IntervalLike {
   * @category Arithmetic
   * @since 0.7.0
   */
- add(other: ReadonlyInterval): this {
+ add(other: ReadonlyIntervalLike): this {
   this.min += other.min;
   this.max += other.max;
   return this;
@@ -1467,7 +1529,7 @@ export class Interval implements IntervalLike {
   * @category Arithmetic
   * @since 0.7.0
   */
- subtract(other: ReadonlyInterval): this {
+ subtract(other: ReadonlyIntervalLike): this {
   const newMin = this.min - other.max;
   const newMax = this.max - other.min;
   this.min = newMin;
@@ -1483,15 +1545,13 @@ export class Interval implements IntervalLike {
   * @category Arithmetic
   * @since 0.7.0
   */
- multiply(other: ReadonlyInterval): this {
-  const products = [
-   this.min * other.min,
-   this.min * other.max,
-   this.max * other.min,
-   this.max * other.max,
-  ];
-  this.min = Math.min(products[0]!, products[1]!, products[2]!, products[3]!);
-  this.max = Math.max(products[0]!, products[1]!, products[2]!, products[3]!);
+ multiply(other: ReadonlyIntervalLike): this {
+  const p0 = this.min * other.min;
+  const p1 = this.min * other.max;
+  const p2 = this.max * other.min;
+  const p3 = this.max * other.max;
+  this.min = Math.min(p0, p1, p2, p3);
+  this.max = Math.max(p0, p1, p2, p3);
   return this;
  }
 
@@ -1555,6 +1615,29 @@ export class Interval implements IntervalLike {
   const newMax = -this.min;
   this.min = newMin;
   this.max = newMax;
+  return this;
+ }
+
+ /**
+  * Takes the absolute value of this interval in place (Moore's definition).
+  * @returns This for chaining
+  *
+  * @category Arithmetic
+  * @since 0.8.0
+  */
+ abs(): this {
+  if (this.min >= 0) {
+   return this;
+  }
+  if (this.max <= 0) {
+   const newMin = -this.max;
+   const newMax = -this.min;
+   this.min = newMin;
+   this.max = newMax;
+   return this;
+  }
+  this.max = Math.max(-this.min, this.max);
+  this.min = 0;
   return this;
  }
 
@@ -1724,7 +1807,7 @@ export class Interval implements IntervalLike {
   * @category Set Operations
   * @since 0.7.0
   */
- intersect(other: ReadonlyInterval): this | undefined {
+ intersect(other: ReadonlyIntervalLike): this | undefined {
   const newMin = Math.max(this.min, other.min);
   const newMax = Math.min(this.max, other.max);
   if (newMin <= newMax) {
@@ -1743,7 +1826,7 @@ export class Interval implements IntervalLike {
   * @category Set Operations
   * @since 0.7.0
   */
- union(other: ReadonlyInterval): this {
+ union(other: ReadonlyIntervalLike): this {
   this.min = Math.min(this.min, other.min);
   this.max = Math.max(this.max, other.max);
   return this;
@@ -1806,7 +1889,7 @@ export class Interval implements IntervalLike {
   * @category Comparison
   * @since 0.7.0
   */
- exactEquals(other: ReadonlyInterval): boolean {
+ exactEquals(other: ReadonlyIntervalLike): boolean {
   return Interval.exactEquals(this, other);
  }
 
@@ -1823,7 +1906,7 @@ export class Interval implements IntervalLike {
   * @category Comparison
   * @since 0.7.0
   */
- nearEquals(other: ReadonlyInterval, epsilon: number = EPSILON): boolean {
+ nearEquals(other: ReadonlyIntervalLike, epsilon: number = EPSILON): boolean {
   return Interval.nearEquals(this, other, epsilon);
  }
 
@@ -2010,7 +2093,7 @@ export class Interval implements IntervalLike {
   * @category Interpolation
   * @since 0.7.0
   */
- lerpInterval(other: ReadonlyInterval, t: number, out?: Interval): Interval {
+ lerpInterval(other: ReadonlyIntervalLike, t: number, out?: Interval): Interval {
   return Interval.lerp(this, other, t, out);
  }
 

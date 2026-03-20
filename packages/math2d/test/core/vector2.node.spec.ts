@@ -3460,6 +3460,39 @@ describe('Vector2', () => {
   });
  });
 
+ describe('Instance tier variants', () => {
+  it('setMagnitudeUnchecked sets length on valid vector', () => {
+   const v = new Vector2(3, 4);
+   v.setMagnitudeUnchecked(10);
+   expectVecClose(v, 6, 8);
+  });
+
+  it('setMagnitudeUnchecked on zero vector produces NaN', () => {
+   const v = new Vector2(0, 0);
+   v.setMagnitudeUnchecked(5);
+   expect(Number.isNaN(v.x)).toBe(true);
+   expect(Number.isNaN(v.y)).toBe(true);
+  });
+
+  it('reflectUnchecked reflects without unit check', () => {
+   const v = new Vector2(1, -1);
+   v.reflectUnchecked(new Vector2(0, 1));
+   expectVecClose(v, 1, 1);
+  });
+
+  it('directionToSafe returns zero for coincident points', () => {
+   const v = new Vector2(5, 5);
+   const result = v.directionToSafe(new Vector2(5, 5));
+   expectVecClose(result, 0, 0);
+  });
+
+  it('directionToSafe returns unit direction for non-coincident points', () => {
+   const v = new Vector2(0, 0);
+   const result = v.directionToSafe(new Vector2(3, 4));
+   expectVecClose(result, 0.6, 0.8);
+  });
+ });
+
  describe('Coverage - minScalar maxScalar', () => {
   it('minScalar clamps to scalar', () => {
    const result = Vector2.minScalar(new Vector2(5, 10), 7);

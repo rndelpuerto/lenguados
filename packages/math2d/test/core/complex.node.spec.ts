@@ -2311,6 +2311,25 @@ describe('Smith algorithm division robustness', () => {
   expect(recip.real).toBeCloseTo(1e5, DIGITS);
   expect(recip.imag).toBeCloseTo(0, DIGITS);
  });
+
+ it('reciprocal parity: Complex(5e-6, 0) static and instance must agree', () => {
+  // magnitude = 5e-6 is between EPSILON (1e-10) and sqrt(EPSILON) (~3.16e-6)
+  // Previously the instance used magnitudeSq for zero-detection which would incorrectly
+  // treat this as zero (magnitudeSq = 2.5e-11 < EPSILON), while static would not
+  const z = new Complex(5e-6, 0);
+  const staticResult = Complex.reciprocal(new Complex(5e-6, 0));
+  const instanceResult = z.reciprocal();
+
+  // Both must succeed (not throw, not return zero)
+  expect(staticResult.real).toBeCloseTo(200000, DIGITS);
+  expect(staticResult.imag).toBeCloseTo(0, DIGITS);
+  expect(instanceResult.real).toBeCloseTo(200000, DIGITS);
+  expect(instanceResult.imag).toBeCloseTo(0, DIGITS);
+
+  // Results must be identical
+  expect(instanceResult.real).toBe(staticResult.real);
+  expect(instanceResult.imag).toBe(staticResult.imag);
+ });
 });
 
 /* ===== Section 8: Edge case tests ===== */
@@ -2386,5 +2405,94 @@ describe('Instance pow zero-to-negative validation', () => {
   const result = zero.pow(2);
   expect(result.real).toBeCloseTo(0);
   expect(result.imag).toBeCloseTo(0);
+ });
+});
+
+describe('Static divideScalar tiers', () => {
+ it('divideScalar divides by scalar', () => {
+  const result = Complex.divideScalar(new Complex(6, 4), 2);
+  expect(result.real).toBeCloseTo(3);
+  expect(result.imag).toBeCloseTo(2);
+ });
+
+ it('divideScalar throws for near-zero scalar', () => {
+  expect(() => Complex.divideScalar(new Complex(1, 2), 0)).toThrow(RangeError);
+ });
+
+ it('divideScalarSafe returns zero for near-zero scalar', () => {
+  const result = Complex.divideScalarSafe(new Complex(1, 2), 0);
+  expect(result.real).toBe(0);
+  expect(result.imag).toBe(0);
+ });
+
+ it('divideScalarSafe divides normally for valid scalar', () => {
+  const result = Complex.divideScalarSafe(new Complex(6, 4), 2);
+  expect(result.real).toBeCloseTo(3);
+  expect(result.imag).toBeCloseTo(2);
+ });
+
+ it('divideScalarUnchecked divides without validation', () => {
+  const result = Complex.divideScalarUnchecked(new Complex(9, 3), 3);
+  expect(result.real).toBeCloseTo(3);
+  expect(result.imag).toBeCloseTo(1);
+ });
+
+ it('divideScalar writes to out parameter', () => {
+  const out = new Complex();
+  const result = Complex.divideScalar(new Complex(10, 4), 2, out);
+  expect(result).toBe(out);
+  expect(out.real).toBeCloseTo(5);
+  expect(out.imag).toBeCloseTo(2);
+ });
+});
+
+describe('Instance divideScalar tiers', () => {
+ it('divideScalar divides in place', () => {
+  const c = new Complex(6, 4);
+  c.divideScalar(2);
+  expect(c.real).toBeCloseTo(3);
+  expect(c.imag).toBeCloseTo(2);
+ });
+
+ it('divideScalar throws for near-zero scalar', () => {
+  const c = new Complex(1, 2);
+  expect(() => c.divideScalar(0)).toThrow(RangeError);
+ });
+
+ it('divideScalarSafe returns zero for near-zero scalar', () => {
+  const c = new Complex(1, 2);
+  c.divideScalarSafe(0);
+  expect(c.real).toBe(0);
+  expect(c.imag).toBe(0);
+ });
+
+ it('divideScalarUnchecked divides in place', () => {
+  const c = new Complex(9, 3);
+  c.divideScalarUnchecked(3);
+  expect(c.real).toBeCloseTo(3);
+  expect(c.imag).toBeCloseTo(1);
+ });
+});
+
+describe('Complex.fromVector2', () => {
+ it('creates complex from vector2', () => {
+  const v = new Vector2(3, 4);
+  const z = Complex.fromVector2(v);
+  expect(z.real).toBe(3);
+  expect(z.imag).toBe(4);
+ });
+
+ it('writes to out parameter', () => {
+  const out = new Complex();
+  const result = Complex.fromVector2(new Vector2(5, 6), out);
+  expect(result).toBe(out);
+  expect(out.real).toBe(5);
+  expect(out.imag).toBe(6);
+ });
+
+ it('accepts plain object with x, y', () => {
+  const z = Complex.fromVector2({ x: 1, y: -1 });
+  expect(z.real).toBe(1);
+  expect(z.imag).toBe(-1);
  });
 });

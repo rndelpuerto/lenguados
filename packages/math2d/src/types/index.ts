@@ -418,3 +418,24 @@ export function isTransform2Like(value: unknown): value is ReadonlyTransform2Lik
  const v = value as Record<string, unknown>;
  return isVector2Like(v.position) && isRotation2Like(v.rotation) && isVector2Like(v.scale);
 }
+
+/* ========================================================================== */
+/* SinCos                                                                      */
+/* ========================================================================== */
+
+/**
+ * Pre-computed sine and cosine pair.
+ *
+ * @remarks
+ * Used by angle operations and deterministic kernels to return both
+ * sin and cos from a single computation, avoiding redundant trig calls.
+ *
+ * @category Types
+ * @since 0.8.0
+ */
+export interface SinCos {
+ /** Sine of the angle. */
+ sin: number;
+ /** Cosine of the angle. */
+ cos: number;
+}

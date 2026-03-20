@@ -107,7 +107,9 @@ export function freezeTransform2(transform: Transform2): ReadonlyTransform2 {
  * ```typescript
  * // Create and compose transforms
  * const t = new Transform2();
- * t.setPosition(10, 20).setRotation(Math.PI / 4).setScale(2, 2);
+ * t.position.set(10, 20);
+ * t.rotation.setAngle(Math.PI / 4);
+ * t.scale.set(2, 2);
  *
  * // Apply to a point
  * const worldPoint = Transform2.transformPoint(t, localPoint);
@@ -534,17 +536,22 @@ export class Transform2 implements Transform2Like {
   out?: Transform2,
  ): Transform2 {
   const target = Transform2.ensureOut(out);
-  const rotation = Rotation2.multiply(a.rotation, b.rotation);
+  // Inline rotation multiply: cos = a.cos*b.cos - a.sin*b.sin, sin = a.sin*b.cos + a.cos*b.sin
+  const aCos = a.rotation.cos;
+  const aSin = a.rotation.sin;
+  const bCos = b.rotation.cos;
+  const bSin = b.rotation.sin;
+  const rotCos = aCos * bCos - aSin * bSin;
+  const rotSin = aSin * bCos + aCos * bSin;
   const scaleX = a.scale.x * b.scale.x;
   const scaleY = a.scale.y * b.scale.y;
 
   const scaledX = b.position.x * a.scale.x;
   const scaledY = b.position.y * a.scale.y;
-  const { cos, sin } = a.rotation;
-  const posX = scaledX * cos - scaledY * sin + a.position.x;
-  const posY = scaledX * sin + scaledY * cos + a.position.y;
+  const posX = scaledX * aCos - scaledY * aSin + a.position.x;
+  const posY = scaledX * aSin + scaledY * aCos + a.position.y;
 
-  target.rotation.copy(rotation);
+  target.rotation.set(rotCos, rotSin);
   target.scale.set(scaleX, scaleY);
   target.position.set(posX, posY);
   return target;
@@ -584,8 +591,9 @@ export class Transform2 implements Transform2Like {
   const target = Transform2.ensureOut(out);
   const invScaleX = 1 / transform.scale.x;
   const invScaleY = 1 / transform.scale.y;
-  const invRotation = Rotation2.inverse(transform.rotation);
-  const { cos, sin } = invRotation;
+  // Inline rotation inverse: invCos = cos, invSin = -sin
+  const cos = transform.rotation.cos;
+  const sin = -transform.rotation.sin;
 
   // Position: -(S⁻¹ · R⁻¹ · t) — apply inverse rotation first, then inverse scale
   const rotPosX = transform.position.x * cos - transform.position.y * sin;
@@ -593,7 +601,7 @@ export class Transform2 implements Transform2Like {
   const invPosX = -(rotPosX * invScaleX);
   const invPosY = -(rotPosY * invScaleY);
 
-  target.rotation.copy(invRotation);
+  target.rotation.set(cos, sin);
   target.scale.set(invScaleX, invScaleY);
   target.position.set(invPosX, invPosY);
   return target;
@@ -631,8 +639,9 @@ export class Transform2 implements Transform2Like {
   const target = Transform2.ensureOut(out);
   const invScaleX = 1 / transform.scale.x;
   const invScaleY = 1 / transform.scale.y;
-  const invRotation = Rotation2.inverse(transform.rotation);
-  const { cos, sin } = invRotation;
+  // Inline rotation inverse: invCos = cos, invSin = -sin
+  const cos = transform.rotation.cos;
+  const sin = -transform.rotation.sin;
 
   // Position: -(S⁻¹ · R⁻¹ · t) — apply inverse rotation first, then inverse scale
   const rotPosX = transform.position.x * cos - transform.position.y * sin;
@@ -640,7 +649,7 @@ export class Transform2 implements Transform2Like {
   const invPosX = -(rotPosX * invScaleX);
   const invPosY = -(rotPosY * invScaleY);
 
-  target.rotation.copy(invRotation);
+  target.rotation.set(cos, sin);
   target.scale.set(invScaleX, invScaleY);
   target.position.set(invPosX, invPosY);
   return target;
@@ -670,8 +679,9 @@ export class Transform2 implements Transform2Like {
   const target = Transform2.ensureOut(out);
   const invScaleX = 1 / transform.scale.x;
   const invScaleY = 1 / transform.scale.y;
-  const invRotation = Rotation2.inverse(transform.rotation);
-  const { cos, sin } = invRotation;
+  // Inline rotation inverse: invCos = cos, invSin = -sin
+  const cos = transform.rotation.cos;
+  const sin = -transform.rotation.sin;
 
   // Position: -(S⁻¹ · R⁻¹ · t) — apply inverse rotation first, then inverse scale
   const rotPosX = transform.position.x * cos - transform.position.y * sin;
@@ -679,7 +689,7 @@ export class Transform2 implements Transform2Like {
   const invPosX = -(rotPosX * invScaleX);
   const invPosY = -(rotPosY * invScaleY);
 
-  target.rotation.copy(invRotation);
+  target.rotation.set(cos, sin);
   target.scale.set(invScaleX, invScaleY);
   target.position.set(invPosX, invPosY);
   return target;
@@ -827,6 +837,119 @@ export class Transform2 implements Transform2Like {
   const scaledX = vector.x * transform.scale.x;
   const scaledY = vector.y * transform.scale.y;
   return Vector2.fromValues(scaledX * cos - scaledY * sin, scaledX * sin + scaledY * cos, out);
+ }
+
+ /**
+  * Transforms a direction by applying rotation only, ignoring scale and translation.
+  *
+  * @remarks
+  * Standard linear algebra operation: extracts and applies the orthogonal
+  * (rotational) part of an affine transform. Useful for transforming normals
+  * and direction vectors that should not be affected by scale or translation.
+  *
+  * @param transform - Transform whose rotation to apply
+  * @param direction - Direction vector to transform
+  * @param out - Optional output vector
+  * @returns Rotated direction vector
+  *
+  * @example
+  * ```typescript
+  * const t = new Transform2({ x: 10, y: 0 }, Math.PI / 2, { x: 2, y: 2 });
+  * const dir = { x: 1, y: 0 };
+  * Transform2.transformDirection(t, dir); // (0, 1) — rotation only
+  * ```
+  *
+  * @category Transform
+  * @since 0.8.0
+  */
+ public static transformDirection(
+  transform: ReadonlyTransform2Like,
+  direction: ReadonlyVector2Like,
+  out?: Vector2,
+ ): Vector2 {
+  const { cos, sin } = transform.rotation;
+  return Vector2.fromValues(
+   direction.x * cos - direction.y * sin,
+   direction.x * sin + direction.y * cos,
+   out,
+  );
+ }
+
+ /**
+  * Transforms a direction using precomputed cos/sin values.
+  * @param cos - Precomputed cosine
+  * @param sin - Precomputed sine
+  * @param direction - Direction vector to transform
+  * @param out - Optional output vector
+  * @returns Rotated direction vector
+  *
+  * @category Transform
+  * @since 0.8.0
+  */
+ public static transformDirectionCS(
+  cos: number,
+  sin: number,
+  direction: ReadonlyVector2Like,
+  out?: Vector2,
+ ): Vector2 {
+  return Vector2.fromValues(
+   direction.x * cos - direction.y * sin,
+   direction.x * sin + direction.y * cos,
+   out,
+  );
+ }
+
+ /**
+  * Inverse transforms a direction by applying inverse rotation only.
+  *
+  * @remarks
+  * Applies the conjugate rotation (negated sin) to the direction.
+  * Ignores scale and translation.
+  *
+  * @param transform - Transform whose inverse rotation to apply
+  * @param direction - Direction vector to inverse transform
+  * @param out - Optional output vector
+  * @returns Inverse-rotated direction vector
+  *
+  * @category Transform
+  * @since 0.8.0
+  */
+ public static inverseTransformDirection(
+  transform: ReadonlyTransform2Like,
+  direction: ReadonlyVector2Like,
+  out?: Vector2,
+ ): Vector2 {
+  const cos = transform.rotation.cos;
+  const sin = -transform.rotation.sin;
+  return Vector2.fromValues(
+   direction.x * cos - direction.y * sin,
+   direction.x * sin + direction.y * cos,
+   out,
+  );
+ }
+
+ /**
+  * Inverse transforms a direction using precomputed cos/sin values.
+  * @param cos - Precomputed cosine of the rotation
+  * @param sin - Precomputed sine of the rotation (will be negated internally)
+  * @param direction - Direction vector to inverse transform
+  * @param out - Optional output vector
+  * @returns Inverse-rotated direction vector
+  *
+  * @category Transform
+  * @since 0.8.0
+  */
+ public static inverseTransformDirectionCS(
+  cos: number,
+  sin: number,
+  direction: ReadonlyVector2Like,
+  out?: Vector2,
+ ): Vector2 {
+  return Vector2.fromValues(
+   direction.x * cos + direction.y * sin,
+   -direction.x * sin + direction.y * cos,
+   out,
+  );
  }
 
  /**
@@ -1564,6 +1687,72 @@ export class Transform2 implements Transform2Like {
  }
 
  /**
+  * Transforms a direction by applying rotation only, ignoring scale and translation.
+  * @param direction - Direction vector to transform
+  * @param out - Optional output vector
+  * @returns Rotated direction vector
+  *
+  * @category Transform
+  * @since 0.8.0
+  */
+ transformDirection(direction: ReadonlyVector2Like, out?: Vector2): Vector2 {
+  return Transform2.transformDirection(this, direction, out);
+ }
+
+ /**
+  * Transforms a direction using precomputed cos/sin values.
+  * @param cos - Precomputed cosine
+  * @param sin - Precomputed sine
+  * @param direction - Direction vector to transform
+  * @param out - Optional output vector
+  * @returns Rotated direction vector
+  *
+  * @category Transform
+  * @since 0.8.0
+  */
+ transformDirectionCS(
+  cos: number,
+  sin: number,
+  direction: ReadonlyVector2Like,
+  out?: Vector2,
+ ): Vector2 {
+  return Transform2.transformDirectionCS(cos, sin, direction, out);
+ }
+
+ /**
+  * Inverse transforms a direction by applying inverse rotation only.
+  * @param direction - Direction vector to inverse transform
+  * @param out - Optional output vector
+  * @returns Inverse-rotated direction vector
+  *
+  * @category Transform
+  * @since 0.8.0
+  */
+ inverseTransformDirection(direction: ReadonlyVector2Like, out?: Vector2): Vector2 {
+  return Transform2.inverseTransformDirection(this, direction, out);
+ }
+
+ /**
+  * Inverse transforms a direction using precomputed cos/sin values.
+  * @param cos - Precomputed cosine
+  * @param sin - Precomputed sine
+  * @param direction - Direction vector to inverse transform
+  * @param out - Optional output vector
+  * @returns Inverse-rotated direction vector
+  *
+  * @category Transform
+  * @since 0.8.0
+  */
+ inverseTransformDirectionCS(
+  cos: number,
+  sin: number,
+  direction: ReadonlyVector2Like,
+  out?: Vector2,
+ ): Vector2 {
+  return Transform2.inverseTransformDirectionCS(cos, sin, direction, out);
+ }
+
+ /**
   * Inverse transforms a point.
   * @param point - Point to inverse transform
   * @param out - Optional output vector
@@ -1748,6 +1937,30 @@ export class Transform2 implements Transform2Like {
   this.rotation.sin = newSin;
   this.scale.set(newScaleX, newScaleY);
   this.position.set(newPosX, newPosY);
+  return this;
+ }
+
+ /**
+  * Premultiplies this transform by another: `this = other × this`.
+  *
+  * @remarks
+  * Since transform composition is non-commutative, both multiplication orders
+  * are required for algebraic completeness. {@link multiply} computes
+  * `this = this × other`, while `premultiply` computes `this = other × this`.
+  *
+  * @param other - Transform to premultiply by
+  * @returns This for chaining
+  *
+  * @see {@link multiply} - Computes `this = this × other`
+  *
+  * @category Arithmetic
+  * @since 0.8.0
+  */
+ premultiply(other: ReadonlyTransform2): this {
+  const result = Transform2.multiply(other, this);
+  this.rotation.set(result.rotation.cos, result.rotation.sin);
+  this.scale.set(result.scale.x, result.scale.y);
+  this.position.set(result.position.x, result.position.y);
   return this;
  }
 

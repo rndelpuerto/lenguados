@@ -3356,6 +3356,20 @@ export class Vector2 implements Vector2Like {
  }
 
  /**
+  * Unit direction from this to target, returning (0, 0) if coincident.
+  * @param target - Target vector
+  * @returns Unit direction vector, or (0, 0) if coincident
+  *
+  * @see {@link directionTo} - Throws on coincident points
+  *
+  * @category Direction
+  * @since 0.8.0
+  */
+ public directionToSafe(target: ReadonlyVector2Like): Vector2 {
+  return Vector2.directionSafe(this, target);
+ }
+
+ /**
   * Heading angle from +X axis.
   * @returns Angle in radians from +X axis
   * @category Accessor
@@ -3504,6 +3518,27 @@ export class Vector2 implements Vector2Like {
    return this.set(nn, 0);
   }
   return this.scale(nn / length);
+ }
+
+ /**
+  * Sets magnitude without validation (hot path).
+  *
+  * @remarks
+  * **Precondition:** `newMagnitude >= 0` and this vector has non-zero length.
+  * Zero-length vectors produce NaN. Negative magnitudes scale backwards.
+  *
+  * @param newMagnitude - Desired magnitude (must be non-negative)
+  * @returns This for chaining
+  *
+  * @see {@link setMagnitude} - Throws on invalid input
+  * @see {@link setMagnitudeSafe} - Handles edge cases gracefully
+  *
+  * @category Transform
+  * @since 0.8.0
+  */
+ public setMagnitudeUnchecked(newMagnitude: number): this {
+  const length = hypot(this.x, this.y);
+  return this.scale(newMagnitude / length);
  }
 
  /**
@@ -3813,6 +3848,27 @@ export class Vector2 implements Vector2Like {
   const ny = normal.y * invLength;
   const d2 = 2 * (this.x * nx + this.y * ny);
   return this.set(this.x - d2 * nx, this.y - d2 * ny);
+ }
+
+ /**
+  * Reflection without validation (hot path).
+  *
+  * @remarks
+  * **Precondition:** `unitNormal` must be unit length.
+  * If not unit, the result will be geometrically incorrect but not NaN.
+  *
+  * @param unitNormal - Unit-length normal (must be unit)
+  * @returns This for chaining
+  *
+  * @see {@link reflect} - Throws if normal is not unit
+  * @see {@link reflectSafe} - Normalizes normal first
+  *
+  * @category Transform
+  * @since 0.8.0
+  */
+ public reflectUnchecked(unitNormal: ReadonlyVector2Like): this {
+  const d2 = 2 * this.dot(unitNormal);
+  return this.set(this.x - d2 * unitNormal.x, this.y - d2 * unitNormal.y);
  }
 
  /**

@@ -67,7 +67,12 @@ import { EPSILON, PI } from '../auxiliary/scalar/constants';
 import { smoothStep } from '../auxiliary/scalar/interpolation';
 import { hypot } from '../deterministic/deterministic-kernels';
 import { atan2 } from '../deterministic/deterministic-kernels';
-import type { ReadonlyRotation2Like, ReadonlyVector2Like, Rotation2Like } from '../types';
+import type {
+ ReadonlyMatrix2Like,
+ ReadonlyRotation2Like,
+ ReadonlyVector2Like,
+ Rotation2Like,
+} from '../types';
 import { assertFinite } from '../validation/assert';
 
 import { Complex, type ReadonlyComplex } from './complex';
@@ -467,6 +472,31 @@ export class Rotation2 implements Rotation2Like {
   target.cos = complex.real;
   target.sin = complex.imag;
   return target.normalizeSafe();
+ }
+
+ /**
+  * Creates a rotation from a 2×2 matrix by extracting the rotation angle.
+  *
+  * @remarks
+  * Extracts the rotation via `atan2(m01, m00)` and constructs a normalized
+  * rotation. This is the inverse of {@link Rotation2.prototype.toMatrix2}.
+  *
+  * @param matrix - Source matrix
+  * @param out - Optional output rotation
+  * @returns Rotation extracted from the matrix
+  *
+  * @example
+  * ```typescript
+  * const m = Matrix2.fromRotation(Math.PI / 4);
+  * const r = Rotation2.fromMatrix2(m); // ≈ 45° rotation
+  * ```
+  *
+  * @category Factory
+  * @since 0.8.0
+  */
+ public static fromMatrix2(matrix: ReadonlyMatrix2Like, out?: Rotation2): Rotation2 {
+  const angle = atan2(matrix.m01, matrix.m00);
+  return Rotation2.fromAngle(angle, out);
  }
 
  /**

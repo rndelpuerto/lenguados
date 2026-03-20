@@ -39,6 +39,15 @@
  * @see {@link sqrtSafe} - Always-active safe square root
  */
 
+import type {
+ ComplexLike,
+ IntervalLike,
+ Matrix2Like,
+ Matrix3Like,
+ Rotation2Like,
+ Transform2Like,
+ Vector2Like,
+} from '../types';
 import {
  isComplexLike,
  isIntervalLike,
@@ -738,7 +747,7 @@ export function assertTransform2(
  * @category Assertion
  * @since 0.7.0
  */
-export function assertVector2Like(value: unknown, name?: string): void {
+export function assertVector2Like(value: unknown, name?: string): asserts value is Vector2Like {
  /* istanbul ignore next -- DCE: eliminated in production */
  if (!DEV_MODE) return;
  if (!assertionsEnabled) return;
@@ -773,7 +782,7 @@ export function assertVector2Like(value: unknown, name?: string): void {
  * @category Assertion
  * @since 0.8.0
  */
-export function assertRotation2Like(value: unknown, name?: string): void {
+export function assertRotation2Like(value: unknown, name?: string): asserts value is Rotation2Like {
  /* istanbul ignore next -- DCE: eliminated in production */
  if (!DEV_MODE) return;
  if (!assertionsEnabled) return;
@@ -808,7 +817,7 @@ export function assertRotation2Like(value: unknown, name?: string): void {
  * @category Assertion
  * @since 0.7.0
  */
-export function assertMatrix2Like(value: unknown, name?: string): void {
+export function assertMatrix2Like(value: unknown, name?: string): asserts value is Matrix2Like {
  /* istanbul ignore next -- DCE: eliminated in production */
  if (!DEV_MODE) return;
  if (!assertionsEnabled) return;
@@ -845,7 +854,7 @@ export function assertMatrix2Like(value: unknown, name?: string): void {
  * @category Assertion
  * @since 0.8.0
  */
-export function assertMatrix3Like(value: unknown, name?: string): void {
+export function assertMatrix3Like(value: unknown, name?: string): asserts value is Matrix3Like {
  /* istanbul ignore next -- DCE: eliminated in production */
  if (!DEV_MODE) return;
  if (!assertionsEnabled) return;
@@ -882,7 +891,7 @@ export function assertMatrix3Like(value: unknown, name?: string): void {
  * @category Assertion
  * @since 0.7.0
  */
-export function assertComplexLike(value: unknown, name?: string): void {
+export function assertComplexLike(value: unknown, name?: string): asserts value is ComplexLike {
  /* istanbul ignore next -- DCE: eliminated in production */
  if (!DEV_MODE) return;
  if (!assertionsEnabled) return;
@@ -918,7 +927,7 @@ export function assertComplexLike(value: unknown, name?: string): void {
  * @category Assertion
  * @since 0.7.0
  */
-export function assertIntervalLike(value: unknown, name?: string): void {
+export function assertIntervalLike(value: unknown, name?: string): asserts value is IntervalLike {
  /* istanbul ignore next -- DCE: eliminated in production */
  if (!DEV_MODE) return;
  if (!assertionsEnabled) return;
@@ -958,7 +967,10 @@ export function assertIntervalLike(value: unknown, name?: string): void {
  * @category Assertion
  * @since 0.7.0
  */
-export function assertTransform2Like(value: unknown, name?: string): void {
+export function assertTransform2Like(
+ value: unknown,
+ name?: string,
+): asserts value is Transform2Like {
  /* istanbul ignore next -- DCE: eliminated in production */
  if (!DEV_MODE) return;
  if (!assertionsEnabled) return;

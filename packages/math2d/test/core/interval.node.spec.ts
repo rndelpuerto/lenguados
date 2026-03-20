@@ -1059,6 +1059,14 @@ describe('Interval', () => {
    expect(Interval.center({ min: 2, max: 8 })).toBe(5);
   });
 
+  it('static center does not overflow for extreme values', () => {
+   // (1e308 + 1e308) * 0.5 would overflow to Infinity with naive formula
+   expect(Interval.center({ min: 1e308, max: 1e308 })).toBe(1e308);
+   expect(Interval.center({ min: 1e308, max: 1.5e308 })).toBe(1.25e308);
+   // Instance version must also be safe
+   expect(Interval.fromValues(1e308, 1e308).center()).toBe(1e308);
+  });
+
   it('static radius returns half width', () => {
    expect(Interval.radius({ min: 2, max: 8 })).toBe(3);
   });
@@ -2114,6 +2122,60 @@ describe('Interval', () => {
    a.lerpClamped(new Interval(100, 200), 2.0);
    expect(a.min).toBe(100);
    expect(a.max).toBe(200);
+  });
+ });
+
+ describe('Interval.abs (Moore)', () => {
+  it('abs of all-positive interval', () => {
+   const result = Interval.abs({ min: 2, max: 5 });
+   expect(result.min).toBe(2);
+   expect(result.max).toBe(5);
+  });
+
+  it('abs of interval crossing zero', () => {
+   const result = Interval.abs({ min: -3, max: 5 });
+   expect(result.min).toBe(0);
+   expect(result.max).toBe(5);
+  });
+
+  it('abs of all-negative interval', () => {
+   const result = Interval.abs({ min: -5, max: -2 });
+   expect(result.min).toBe(2);
+   expect(result.max).toBe(5);
+  });
+
+  it('instance abs mutates in place', () => {
+   const a = new Interval(-5, -2);
+   a.abs();
+   expect(a.min).toBe(2);
+   expect(a.max).toBe(5);
+  });
+
+  it('instance abs crossing zero', () => {
+   const a = new Interval(-3, 5);
+   a.abs();
+   expect(a.min).toBe(0);
+   expect(a.max).toBe(5);
+  });
+ });
+
+ describe('Interval.fromUnsorted', () => {
+  it('fromUnsorted(5, 2) returns [2, 5]', () => {
+   const result = Interval.fromUnsorted(5, 2);
+   expect(result.min).toBe(2);
+   expect(result.max).toBe(5);
+  });
+
+  it('fromUnsorted(2, 5) returns [2, 5]', () => {
+   const result = Interval.fromUnsorted(2, 5);
+   expect(result.min).toBe(2);
+   expect(result.max).toBe(5);
+  });
+
+  it('fromUnsorted with equal values', () => {
+   const result = Interval.fromUnsorted(3, 3);
+   expect(result.min).toBe(3);
+   expect(result.max).toBe(3);
   });
  });
 });

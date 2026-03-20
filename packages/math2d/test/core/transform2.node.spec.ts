@@ -1558,3 +1558,74 @@ describe('Transform2 batch vs individual parity', () => {
   }
  });
 });
+
+describe('Transform2 direction methods', () => {
+ it('transformDirection applies rotation only, ignores translation and scale', () => {
+  const t = new Transform2({ x: 100, y: 200 }, Math.PI / 2, { x: 3, y: 5 });
+  const dir = { x: 1, y: 0 };
+  const result = Transform2.transformDirection(t, dir);
+  expect(result.x).toBeCloseTo(0, DIGITS);
+  expect(result.y).toBeCloseTo(1, DIGITS);
+ });
+
+ it('instance transformDirection matches static', () => {
+  const t = new Transform2({ x: 10, y: 20 }, Math.PI / 4, { x: 2, y: 2 });
+  const dir = new Vector2(1, 0);
+  const staticResult = Transform2.transformDirection(t, dir);
+  const instanceResult = t.transformDirection(dir);
+  expect(instanceResult.x).toBeCloseTo(staticResult.x, DIGITS);
+  expect(instanceResult.y).toBeCloseTo(staticResult.y, DIGITS);
+ });
+
+ it('transformDirectionCS matches transformDirection', () => {
+  const t = new Transform2({ x: 10, y: 20 }, Math.PI / 3, { x: 2, y: 2 });
+  const dir = { x: 1, y: 0 };
+  const { cos, sin } = t.rotation;
+  const csResult = Transform2.transformDirectionCS(cos, sin, dir);
+  const normalResult = Transform2.transformDirection(t, dir);
+  expect(csResult.x).toBeCloseTo(normalResult.x, DIGITS);
+  expect(csResult.y).toBeCloseTo(normalResult.y, DIGITS);
+ });
+
+ it('inverseTransformDirection undoes transformDirection', () => {
+  const t = new Transform2({ x: 10, y: 20 }, Math.PI / 6, { x: 3, y: 4 });
+  const dir = new Vector2(1, 0);
+  const transformed = Transform2.transformDirection(t, dir);
+  const recovered = Transform2.inverseTransformDirection(t, transformed);
+  expect(recovered.x).toBeCloseTo(dir.x, DIGITS);
+  expect(recovered.y).toBeCloseTo(dir.y, DIGITS);
+ });
+
+ it('inverseTransformDirectionCS matches inverseTransformDirection', () => {
+  const t = new Transform2({ x: 10, y: 20 }, Math.PI / 3, { x: 2, y: 2 });
+  const dir = { x: 0.5, y: 0.866 };
+  const { cos, sin } = t.rotation;
+  const csResult = Transform2.inverseTransformDirectionCS(cos, sin, dir);
+  const normalResult = Transform2.inverseTransformDirection(t, dir);
+  expect(csResult.x).toBeCloseTo(normalResult.x, DIGITS);
+  expect(csResult.y).toBeCloseTo(normalResult.y, DIGITS);
+ });
+});
+
+describe('Transform2.premultiply', () => {
+ it('premultiply(other) equals Transform2.multiply(other, this)', () => {
+  const a = new Transform2({ x: 1, y: 2 }, Math.PI / 4, { x: 2, y: 3 });
+  const b = new Transform2({ x: 3, y: 1 }, Math.PI / 6, { x: 1, y: 2 });
+  const expected = Transform2.multiply(a, b);
+  const bClone = new Transform2({ x: 3, y: 1 }, Math.PI / 6, { x: 1, y: 2 });
+  bClone.premultiply(a);
+  expect(bClone.position.x).toBeCloseTo(expected.position.x, DIGITS);
+  expect(bClone.position.y).toBeCloseTo(expected.position.y, DIGITS);
+  expect(bClone.rotation.cos).toBeCloseTo(expected.rotation.cos, DIGITS);
+  expect(bClone.rotation.sin).toBeCloseTo(expected.rotation.sin, DIGITS);
+  expect(bClone.scale.x).toBeCloseTo(expected.scale.x, DIGITS);
+  expect(bClone.scale.y).toBeCloseTo(expected.scale.y, DIGITS);
+ });
+
+ it('premultiply returns this for chaining', () => {
+  const a = new Transform2({ x: 0, y: 0 }, 0, { x: 1, y: 1 });
+  const b = new Transform2({ x: 1, y: 1 }, 0, { x: 1, y: 1 });
+  const result = b.premultiply(a);
+  expect(result).toBe(b);
+ });
+});

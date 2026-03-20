@@ -26,8 +26,8 @@
  * @see {@link https://www.netlib.org/fdlibm/} - FreeBSD fdlibm reference implementation
  */
 
-import type { SinCos } from '../auxiliary/angle/operations';
 import { HALF_PI, PI, QUARTER_PI } from '../auxiliary/scalar/constants';
+import type { SinCos } from '../types';
 
 /* ========================================================================== */
 /* Runtime Configuration                                                       */
@@ -993,4 +993,4 @@ export const DeterministicKernels = {
 export { sqrtSafe } from '../auxiliary/numeric/safety';
 
 // Re-export individual functions for convenience
-export type { SinCos } from '../auxiliary/angle/operations';
+export type { SinCos } from '../types';

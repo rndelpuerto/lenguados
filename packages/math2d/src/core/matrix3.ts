@@ -24,7 +24,7 @@
  */
 
 import { sinCos } from '../auxiliary/angle/operations';
-import { divideSafe, sqrtSafe } from '../auxiliary/numeric/safety';
+import { divideSafe } from '../auxiliary/numeric/safety';
 import {
  clamp,
  mod as scalarModule,
@@ -1395,16 +1395,18 @@ export class Matrix3 implements Matrix3Like {
  /* ======================================================================== */
 
  /**
-  * Linear interpolation with t clamped to [0, 1].
+  * Linear interpolation between two matrices (unclamped).
   *
   * @remarks
+  * The interpolation factor `t` is NOT clamped — values outside [0, 1] will
+  * extrapolate beyond the input matrices. Use {@link lerpClamped} to clamp.
   * Component-wise lerp between rotation matrices does not produce a valid
   * rotation matrix. For affine transforms, consider decomposing into
   * translation/rotation/scale and interpolating each independently.
   *
   * @param a - Start matrix
   * @param b - End matrix
-  * @param t - Interpolation factor (clamped)
+  * @param t - Interpolation factor (unclamped, allows extrapolation)
   * @param out - Optional output matrix
   * @returns Interpolated matrix
   *
@@ -1431,15 +1433,14 @@ export class Matrix3 implements Matrix3Like {
  }
 
  /**
-  * Clamped linear interpolation (alias for lerp).
+  * Clamped linear interpolation.
   *
   * @remarks
-  * This is an alias for `lerp` which already clamps t.
-  * Provided for API symmetry with Vector2.
+  * Clamps `t` to [0, 1] before delegating to {@link lerp}.
   *
   * @param a - Start matrix
   * @param b - End matrix
-  * @param t - Interpolation factor (clamped to [0, 1])
+  * @param t - Interpolation factor (clamped to [0, 1] before interpolation)
   * @param out - Optional output matrix
   * @returns Interpolated matrix
   *
@@ -1887,7 +1888,7 @@ export class Matrix3 implements Matrix3Like {
   * @since 0.7.0
   */
  public static frobeniusNorm(matrix: ReadonlyMatrix3Like): number {
-  return sqrtSafe(
+  return Math.sqrt(
    matrix.m00 * matrix.m00 +
     matrix.m01 * matrix.m01 +
     matrix.m02 * matrix.m02 +
@@ -2833,7 +2834,7 @@ export class Matrix3 implements Matrix3Like {
   * @since 0.7.0
   */
  public frobeniusNorm(): number {
-  return sqrtSafe(
+  return Math.sqrt(
    this.m00 * this.m00 +
     this.m01 * this.m01 +
     this.m02 * this.m02 +
@@ -4401,10 +4402,10 @@ export class Matrix3 implements Matrix3Like {
  /* ======================================================================== */
 
  /**
-  * Linear interpolation with another matrix in place.
+  * Linear interpolation with another matrix in place (unclamped).
   *
   * @param other - Target matrix
-  * @param t - Interpolation factor [0, 1], clamped
+  * @param t - Interpolation factor (unclamped, allows extrapolation)
   * @returns This for chaining
   *
   * @category Interpolation
@@ -4425,10 +4426,13 @@ export class Matrix3 implements Matrix3Like {
  }
 
  /**
-  * Clamped linear interpolation (alias for lerp).
+  * Clamped linear interpolation.
+  *
+  * @remarks
+  * Clamps `t` to [0, 1] before delegating to {@link lerp}.
   *
   * @param other - Target matrix
-  * @param t - Interpolation factor (clamped to [0, 1])
+  * @param t - Interpolation factor (clamped to [0, 1] before interpolation)
   * @returns This for chaining
   *
   * @category Interpolation

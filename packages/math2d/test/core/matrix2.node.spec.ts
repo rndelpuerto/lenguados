@@ -1526,6 +1526,41 @@ describe('Matrix2', () => {
   });
  });
 
+ describe('Static getRotation / getScale', () => {
+  it('getRotation extracts rotation from pure rotation matrix', () => {
+   const m = Matrix2.fromRotation(Math.PI / 4);
+   expect(Matrix2.getRotation(m)).toBeCloseTo(Math.PI / 4);
+  });
+
+  it('getRotation extracts rotation from rotation+scale matrix', () => {
+   const m = Matrix2.compose(Math.PI / 3, new Vector2(2, 3));
+   expect(Matrix2.getRotation(m)).toBeCloseTo(Math.PI / 3);
+  });
+
+  it('getScale extracts scale from pure scale matrix', () => {
+   const m = Matrix2.fromScale(new Vector2(2, 3));
+   const scale = Matrix2.getScale(m);
+   expect(scale.x).toBeCloseTo(2);
+   expect(scale.y).toBeCloseTo(3);
+  });
+
+  it('getScale extracts scale from rotation+scale matrix', () => {
+   const m = Matrix2.compose(Math.PI / 6, new Vector2(4, 5));
+   const scale = Matrix2.getScale(m);
+   expect(scale.x).toBeCloseTo(4);
+   expect(scale.y).toBeCloseTo(5);
+  });
+
+  it('getScale writes to out parameter', () => {
+   const m = Matrix2.fromScale(new Vector2(7, 8));
+   const out = new Vector2();
+   const result = Matrix2.getScale(m, out);
+   expect(result).toBe(out);
+   expect(out.x).toBeCloseTo(7);
+   expect(out.y).toBeCloseTo(8);
+  });
+ });
+
  describe('Instance Row Operations', () => {
   it('getRow returns row 0', () => {
    const m = new Matrix2(1, 2, 3, 4);

@@ -752,6 +752,28 @@ describe('Rotation2', () => {
    expect(result).toBe(out);
   });
 
+  it('fromMatrix2 extracts rotation from matrix', () => {
+   const m = Matrix2.fromRotation(DEG45);
+   const rot = Rotation2.fromMatrix2(m);
+   expect(rot.angle).toBeCloseTo(DEG45, DIGITS);
+  });
+
+  it('fromMatrix2 round-trip with toMatrix2', () => {
+   const original = Rotation2.fromAngle(Math.PI / 3);
+   const matrix = original.toMatrix2();
+   const recovered = Rotation2.fromMatrix2(matrix);
+   expect(recovered.cos).toBeCloseTo(original.cos, DIGITS);
+   expect(recovered.sin).toBeCloseTo(original.sin, DIGITS);
+  });
+
+  it('fromMatrix2 with out parameter', () => {
+   const m = Matrix2.fromRotation(DEG90);
+   const out = new Rotation2();
+   const result = Rotation2.fromMatrix2(m, out);
+   expect(result).toBe(out);
+   expect(out.angle).toBeCloseTo(DEG90, DIGITS);
+  });
+
   it('fromObject with out parameter', () => {
    const out = new Rotation2();
    const result = Rotation2.fromObject({ cos: 0, sin: 1 }, out);

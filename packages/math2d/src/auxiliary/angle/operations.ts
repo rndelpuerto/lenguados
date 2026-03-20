@@ -5,29 +5,13 @@
  */
 
 import { atan2, sinCos as deterministicSinCos } from '../../deterministic/deterministic-kernels';
+import type { SinCos } from '../../types';
 import { EPSILON } from '../scalar/constants';
 
 import { normalizeRadians, normalizeRadiansPositive } from './normalization';
 
-/* ========================================================================== */
-/* SinCos Type and Utility                                                    */
-/* ========================================================================== */
-
-/**
- * Represents sine and cosine of an angle.
- *
- * @remarks
- * Used to avoid computing both separately when both are needed.
- *
- * @category Types
- * @since 0.7.0
- */
-export interface SinCos {
- /** Sine of the angle. */
- sin: number;
- /** Cosine of the angle. */
- cos: number;
-}
+// Re-export SinCos from its canonical location in types/
+export type { SinCos } from '../../types';
 
 /**
  * Computes sine and cosine of an angle simultaneously.

@@ -10,7 +10,7 @@
  */
 
 import { sinCos } from '../auxiliary/angle/operations';
-import { divideSafe, sqrtSafe } from '../auxiliary/numeric/safety';
+import { divideSafe } from '../auxiliary/numeric/safety';
 import {
  clamp,
  mod as scalarModule,
@@ -35,7 +35,7 @@ import type {
 } from '../types';
 import { assertSafeInteger } from '../validation/assert';
 
-import { Vector2, type ReadonlyVector2 } from './vector2';
+import { Vector2 } from './vector2';
 
 /* ========================================================================== */
 /* Type Exports                                                               */
@@ -1240,15 +1240,17 @@ export class Matrix2 implements Matrix2Like {
  /* ======================================================================== */
 
  /**
-  * Linear interpolation between two matrices with t clamped to [0, 1].
+  * Linear interpolation between two matrices (unclamped).
   *
   * @remarks
+  * The interpolation factor `t` is NOT clamped — values outside [0, 1] will
+  * extrapolate beyond the input matrices. Use {@link lerpClamped} to clamp.
   * Component-wise lerp between rotation matrices does not produce a valid
   * rotation matrix. Use {@link Rotation2.lerp} for interpolating rotations.
   *
   * @param a - Start matrix
   * @param b - End matrix
-  * @param t - Interpolation factor [0, 1], clamped
+  * @param t - Interpolation factor (unclamped, allows extrapolation)
   * @param out - Optional output matrix
   * @returns Interpolated matrix
   *
@@ -1277,15 +1279,14 @@ export class Matrix2 implements Matrix2Like {
  }
 
  /**
-  * Clamped linear interpolation (alias for lerp).
+  * Clamped linear interpolation.
   *
   * @remarks
-  * This is an alias for `lerp` which already clamps t.
-  * Provided for API symmetry with Vector2.
+  * Clamps `t` to [0, 1] before delegating to {@link lerp}.
   *
   * @param a - Start matrix
   * @param b - End matrix
-  * @param t - Interpolation factor (clamped to [0, 1])
+  * @param t - Interpolation factor (clamped to [0, 1] before interpolation)
   * @param out - Optional output matrix
   * @returns Interpolated matrix
   *
@@ -1629,12 +1630,62 @@ export class Matrix2 implements Matrix2Like {
   * @since 0.7.0
   */
  public static frobeniusNorm(matrix: ReadonlyMatrix2Like): number {
-  return sqrtSafe(
+  return Math.sqrt(
    matrix.m00 * matrix.m00 +
     matrix.m01 * matrix.m01 +
     matrix.m10 * matrix.m10 +
     matrix.m11 * matrix.m11,
   );
+ }
+
+ /**
+  * Extracts rotation angle from a matrix.
+  *
+  * @remarks
+  * Computes the angle from the first column vector. For matrices with
+  * non-uniform scale, the result reflects the rotation of the X axis.
+  *
+  * @param matrix - Source matrix
+  * @returns Rotation angle in radians
+  *
+  * @example
+  * ```typescript
+  * const m = Matrix2.fromRotation(Math.PI / 4);
+  * Matrix2.getRotation(m); // ≈ PI/4
+  * ```
+  *
+  * @category Computed
+  * @since 0.8.0
+  */
+ public static getRotation(matrix: ReadonlyMatrix2Like): number {
+  return atan2(matrix.m01, matrix.m00);
+ }
+
+ /**
+  * Extracts scale factors from a matrix (always positive).
+  *
+  * @remarks
+  * Returns the length of each column vector. Values are always non-negative
+  * since `hypot` computes magnitudes. This does NOT account for determinant
+  * sign (reflection). Use {@link Matrix2.decompose} for signed scale.
+  *
+  * @param matrix - Source matrix
+  * @param out - Optional output vector
+  * @returns Scale factors for each axis (always ≥ 0)
+  *
+  * @example
+  * ```typescript
+  * const m = Matrix2.fromScale(new Vector2(2, 3));
+  * Matrix2.getScale(m); // Vector2(2, 3)
+  * ```
+  *
+  * @category Computed
+  * @since 0.8.0
+  */
+ public static getScale(matrix: ReadonlyMatrix2Like, out?: Vector2): Vector2 {
+  const sx = hypot(matrix.m00, matrix.m01);
+  const sy = hypot(matrix.m10, matrix.m11);
+  return Vector2.fromValues(sx, sy, out);
  }
 
  /**
@@ -2058,7 +2109,7 @@ export class Matrix2 implements Matrix2Like {
   * @since 0.7.0
   */
  public frobeniusNorm(): number {
-  return sqrtSafe(
+  return Math.sqrt(
    this.m00 * this.m00 + this.m01 * this.m01 + this.m10 * this.m10 + this.m11 * this.m11,
   );
  }
@@ -2868,7 +2919,7 @@ export class Matrix2 implements Matrix2Like {
   * @category Transform
   * @since 0.7.0
   */
- public transformVector(vector: ReadonlyVector2, out?: Vector2): Vector2 {
+ public transformVector(vector: ReadonlyVector2Like, out?: Vector2): Vector2 {
   const { x, y } = vector;
   return Vector2.fromValues(this.m00 * x + this.m10 * y, this.m01 * x + this.m11 * y, out);
  }
@@ -3228,9 +3279,9 @@ export class Matrix2 implements Matrix2Like {
  /* ======================================================================== */
 
  /**
-  * Linear interpolation with another matrix in place.
+  * Linear interpolation with another matrix in place (unclamped).
   * @param other - Target matrix
-  * @param t - Interpolation factor [0, 1], clamped
+  * @param t - Interpolation factor (unclamped, allows extrapolation)
   * @returns This matrix for chaining
   *
   * @example

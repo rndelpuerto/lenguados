@@ -36,15 +36,23 @@
  */
 
 import { DEG_TO_RAD, RAD_TO_DEG } from '../auxiliary/scalar/constants';
-import { Complex, type ReadonlyComplex } from '../core/complex';
-import { Interval, type ReadonlyInterval } from '../core/interval';
-import { Matrix2, type ReadonlyMatrix2 } from '../core/matrix2';
-import { Matrix3, type ReadonlyMatrix3 } from '../core/matrix3';
+import { Complex } from '../core/complex';
+import { Interval } from '../core/interval';
+import { Matrix2 } from '../core/matrix2';
+import { Matrix3 } from '../core/matrix3';
 import { Rotation2 } from '../core/rotation2';
-import { Transform2, type ReadonlyTransform2 } from '../core/transform2';
-import { Vector2, type ReadonlyVector2 } from '../core/vector2';
+import { Transform2 } from '../core/transform2';
+import { Vector2 } from '../core/vector2';
 import { atan2 } from '../deterministic/deterministic-kernels';
-import type { ReadonlyRotation2Like } from '../types';
+import type {
+ ReadonlyComplexLike,
+ ReadonlyIntervalLike,
+ ReadonlyMatrix2Like,
+ ReadonlyMatrix3Like,
+ ReadonlyRotation2Like,
+ ReadonlyTransform2Like,
+ ReadonlyVector2Like,
+} from '../types';
 
 /**
  * Converts a fixed-precision number to a JSON-safe string.
@@ -144,7 +152,7 @@ export function parseVector2(string_: string, out = new Vector2()): Vector2 {
  * @since 0.7.0
  */
 export function formatVector2(
- v: ReadonlyVector2,
+ v: ReadonlyVector2Like,
  format: 'csv' | 'space' | 'json' | 'brackets' = 'csv',
  precision?: number,
 ): string {
@@ -382,7 +390,7 @@ export function parseMatrix2(string_: string, out = new Matrix2()): Matrix2 {
  * @since 0.7.0
  */
 export function formatMatrix2(
- m: ReadonlyMatrix2,
+ m: ReadonlyMatrix2Like,
  format: 'flat' | 'nested' | 'json' = 'flat',
  precision?: number,
 ): string {
@@ -517,7 +525,7 @@ export function parseMatrix3(string_: string, out = new Matrix3()): Matrix3 {
  * @since 0.7.0
  */
 export function formatMatrix3(
- m: ReadonlyMatrix3,
+ m: ReadonlyMatrix3Like,
  format: 'flat' | 'nested' | 'json' = 'flat',
  precision?: number,
 ): string {
@@ -667,7 +675,7 @@ export function parseTransform2(string_: string, out = new Transform2()): Transf
  * @since 0.7.0
  */
 export function formatTransform2(
- t: ReadonlyTransform2,
+ t: ReadonlyTransform2Like,
  format: 'flat' | 'json' = 'flat',
  precision?: number,
 ): string {
@@ -802,7 +810,7 @@ export function parseComplex(string_: string, out = new Complex()): Complex {
  * @since 0.7.0
  */
 export function formatComplex(
- c: ReadonlyComplex,
+ c: ReadonlyComplexLike,
  format: 'math' | 'csv' | 'json' = 'math',
  precision?: number,
 ): string {
@@ -921,7 +929,7 @@ export function parseInterval(string_: string, out = new Interval()): Interval {
  * @since 0.7.0
  */
 export function formatInterval(
- interval: ReadonlyInterval,
+ interval: ReadonlyIntervalLike,
  format: 'brackets' | 'csv' | 'json' = 'brackets',
  precision?: number,
 ): string {
