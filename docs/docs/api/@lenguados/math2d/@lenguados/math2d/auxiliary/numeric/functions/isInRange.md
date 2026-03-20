@@ -2,7 +2,7 @@
 
 > **isInRange**(`value`, `min`, `max`): `boolean`
 
-Defined in: [src/auxiliary/numeric/guards.ts:121](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/auxiliary/numeric/guards.ts#L121)
+Defined in: [src/auxiliary/numeric/guards.ts:122](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/numeric/guards.ts#L122)
 
 Tests if value is in range [min, max].
 
@@ -12,25 +12,25 @@ Tests if value is in range [min, max].
 
 `number`
 
-Value to test.
+Value to test
 
 ### min
 
 `number`
 
-Lower bound (inclusive).
+Lower bound (inclusive)
 
 ### max
 
 `number`
 
-Upper bound (inclusive).
+Upper bound (inclusive)
 
 ## Returns
 
 `boolean`
 
-True if value is within range.
+True if value is within range
 
 ## Example
 

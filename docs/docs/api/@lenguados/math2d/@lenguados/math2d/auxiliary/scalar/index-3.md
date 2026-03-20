@@ -6,24 +6,18 @@ auxiliary/scalar/index.ts
 
 ## Description
 
-Scalar mathematical operations for the Lenguados math2d library.
+Scalar mathematical operations for the Lenguados math2d library
 
 ## Remarks
 
 This module provides fundamental scalar operations including:
 
-- Arithmetic operations (clamp, sign, abs, min, max, etc.)
+- Arithmetic operations (clamp, sign, saturate, remap, mod, loop, pingPong, etc.)
 - Comparison operations (nearEquals, isNearZero, relativeEquals, etc.)
-- Interpolation operations (lerp, smoothStep, bezier, etc.)
+- Interpolation operations (lerp, inverseLerp, smoothStep, smootherStep, etc.)
 - Mathematical constants
 
 ## References
-
-### ANGLE_EPSILON
-
-Re-exports [ANGLE_EPSILON](variables/ANGLE_EPSILON.md)
-
----
 
 ### clamp
 
@@ -70,6 +64,18 @@ Re-exports [EPSILON_SQUARED](variables/EPSILON_SQUARED.md)
 ### floorDivide
 
 Re-exports [floorDivide](functions/floorDivide.md)
+
+---
+
+### floorDivideSafe
+
+Re-exports [floorDivideSafe](functions/floorDivideSafe.md)
+
+---
+
+### floorDivideUnchecked
+
+Re-exports [floorDivideUnchecked](functions/floorDivideUnchecked.md)
 
 ---
 

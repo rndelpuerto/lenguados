@@ -2,7 +2,7 @@
 
 > **acos**(`x`): `number`
 
-Defined in: [src/deterministic/deterministic-kernels.ts:676](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/deterministic/deterministic-kernels.ts#L676)
+Defined in: [src/deterministic/deterministic-kernels.ts:650](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/deterministic/deterministic-kernels.ts#L650)
 
 Deterministic arccosine using atan2.
 
@@ -19,6 +19,22 @@ Value in [-1, 1]
 `number`
 
 acos(x) in [0, π]
+
+## Remarks
+
+Returns NaN for inputs outside [-1, 1]. Use [acosSafe](acosSafe.md) for automatic clamping.
+
+## Example
+
+```typescript
+acos(1); // 0
+acos(0); // ~1.5708 (π/2)
+acos(-1); // ~3.1416 (π)
+```
+
+## See
+
+[acosSafe](acosSafe.md) — Clamps input to [-1, 1]
 
 ## Since
 

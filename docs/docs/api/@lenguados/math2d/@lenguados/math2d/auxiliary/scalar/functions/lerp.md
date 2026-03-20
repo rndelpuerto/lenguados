@@ -2,7 +2,7 @@
 
 > **lerp**(`a`, `b`, `t`): `number`
 
-Defined in: [src/auxiliary/scalar/interpolation.ts:35](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/auxiliary/scalar/interpolation.ts#L35)
+Defined in: [src/auxiliary/scalar/interpolation.ts:35](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/scalar/interpolation.ts#L35)
 
 Linear interpolation between two values.
 
@@ -12,25 +12,25 @@ Linear interpolation between two values.
 
 `number`
 
-Start value.
+Start value
 
 ### b
 
 `number`
 
-End value.
+End value
 
 ### t
 
 `number`
 
-Interpolation factor (usually 0-1).
+Interpolation factor (usually 0-1)
 
 ## Returns
 
 `number`
 
-Interpolated value.
+Interpolated value
 
 ## Remarks
 
@@ -50,7 +50,7 @@ lerp(0, 10, -0.5); // -5 (extrapolation)
 
 ## See
 
-[lerpClamped](lerpClamped.md) for clamped interpolation
+[lerpClamped](lerpClamped.md) — clamped interpolation
 
 ## Since
 

@@ -6,7 +6,7 @@ auxiliary/angle/conversion.ts
 
 ## Description
 
-Angular unit conversion operations.
+Angular unit conversion operations
 
 ## Conversion
 

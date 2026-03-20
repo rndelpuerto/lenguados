@@ -2,7 +2,7 @@
 
 > **inverseLerpSafe**(`a`, `b`, `value`): `number`
 
-Defined in: [src/auxiliary/scalar/interpolation.ts:107](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/auxiliary/scalar/interpolation.ts#L107)
+Defined in: [src/auxiliary/scalar/interpolation.ts:118](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/scalar/interpolation.ts#L118)
 
 Inverse linear interpolation (safe).
 
@@ -12,25 +12,36 @@ Inverse linear interpolation (safe).
 
 `number`
 
-Start value.
+Start value
 
 ### b
 
 `number`
 
-End value.
+End value
 
 ### value
 
 `number`
 
-Value to find t for.
+Value to find t for
 
 ## Returns
 
 `number`
 
-Interpolation factor t, or 0 if range is degenerate.
+Interpolation factor t, or 0 if range is degenerate
+
+## Example
+
+```typescript
+inverseLerpSafe(0, 10, 5); // 0.5
+inverseLerpSafe(5, 5, 3); // 0 (degenerate range)
+```
+
+## See
+
+[inverseLerp](inverseLerp.md) — Throws for degenerate range
 
 ## Since
 

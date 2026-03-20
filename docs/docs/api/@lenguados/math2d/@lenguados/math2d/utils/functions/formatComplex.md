@@ -2,7 +2,7 @@
 
 > **formatComplex**(`c`, `format`, `precision?`): `string`
 
-Defined in: [src/utils/parse.ts:764](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/utils/parse.ts#L764)
+Defined in: [src/utils/parse.ts:804](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/utils/parse.ts#L804)
 
 Formats a complex number as a string.
 
@@ -12,11 +12,11 @@ Formats a complex number as a string.
 
 [`ReadonlyComplex`](../../core/type-aliases/ReadonlyComplex.md)
 
-Complex number to format.
+Complex number to format
 
 ### format
 
-Output format. Defaults to `'math'`.
+Output format. Defaults to `'math'`
 
 `"json"` | `"csv"` | `"math"`
 
@@ -24,13 +24,13 @@ Output format. Defaults to `'math'`.
 
 `number`
 
-Number of decimal places. Defaults to full precision.
+Number of decimal places. Defaults to full precision
 
 ## Returns
 
 `string`
 
-Formatted string.
+Formatted string
 
 ## Remarks
 

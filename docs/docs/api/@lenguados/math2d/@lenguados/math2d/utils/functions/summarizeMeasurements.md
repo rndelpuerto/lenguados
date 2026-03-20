@@ -2,7 +2,7 @@
 
 > **summarizeMeasurements**\<`T`\>(`collector`): `Map`\<`string`, [`MeasurementSummary`](../interfaces/MeasurementSummary.md)\>
 
-Defined in: [src/utils/performance.ts:190](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/utils/performance.ts#L190)
+Defined in: [src/utils/performance.ts:190](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/utils/performance.ts#L190)
 
 Computes summary statistics for every label within a measurement collector.
 
@@ -18,13 +18,13 @@ Computes summary statistics for every label within a measurement collector.
 
 `Map`\<`string`, [`Measurement`](../interfaces/Measurement.md)\<`T`\>[]\>
 
-Map produced via [recordMeasurement](recordMeasurement.md).
+Map produced via [recordMeasurement](recordMeasurement.md)
 
 ## Returns
 
 `Map`\<`string`, [`MeasurementSummary`](../interfaces/MeasurementSummary.md)\>
 
-Map of label to summary statistics.
+Map of label to summary statistics
 
 ## Example
 

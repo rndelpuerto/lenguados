@@ -6,7 +6,7 @@ core/vector2.ts
 
 ## Description
 
-Two-dimensional vector implementation for the Lenguado 2-D physics-engine family.
+Two-dimensional vector implementation for the Lenguado 2-D physics-engine family
 
 ## Remarks
 

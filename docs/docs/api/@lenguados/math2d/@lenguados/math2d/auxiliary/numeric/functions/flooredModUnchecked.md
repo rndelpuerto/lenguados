@@ -2,7 +2,7 @@
 
 > **flooredModUnchecked**(`dividend`, `divisor`): `number`
 
-Defined in: [src/auxiliary/numeric/wrapping.ts:83](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/auxiliary/numeric/wrapping.ts#L83)
+Defined in: [src/auxiliary/numeric/wrapping.ts:88](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/numeric/wrapping.ts#L88)
 
 Floored modulo (unchecked).
 
@@ -12,23 +12,28 @@ Floored modulo (unchecked).
 
 `number`
 
-Value to divide.
+Value to divide
 
 ### divisor
 
 `number`
 
-Divisor (must not be zero).
+Divisor (must not be zero)
 
 ## Returns
 
 `number`
 
-Floored remainder.
+Floored remainder
 
 ## Remarks
 
-**⚠️ Precondition:** divisor !== 0. Zero divisor produces NaN.
+**Precondition:** divisor !== 0. Zero divisor produces NaN.
+
+## See
+
+- [flooredMod](flooredMod.md) — Throws if divisor is zero
+- [flooredModSafe](flooredModSafe.md) — Returns 0 if divisor is zero
 
 ## Since
 

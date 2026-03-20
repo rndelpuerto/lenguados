@@ -6,12 +6,14 @@ auxiliary/scalar/arithmetic.ts
 
 ## Description
 
-Fundamental scalar arithmetic operations.
+Fundamental scalar arithmetic operations
 
 ## Arithmetic
 
 - [clamp](functions/clamp.md)
 - [floorDivide](functions/floorDivide.md)
+- [floorDivideSafe](functions/floorDivideSafe.md)
+- [floorDivideUnchecked](functions/floorDivideUnchecked.md)
 - [loop](functions/loop.md)
 - [loopSafe](functions/loopSafe.md)
 - [loopUnchecked](functions/loopUnchecked.md)

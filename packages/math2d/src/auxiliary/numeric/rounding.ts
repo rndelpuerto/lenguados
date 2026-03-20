@@ -1,7 +1,7 @@
 /**
  * @file auxiliary/numeric/rounding.ts
  * @module @lenguados/math2d/auxiliary/numeric
- * @description Rounding and quantization operations.
+ * @description Rounding and quantization operations
  */
 
 import { log } from '../../deterministic/deterministic-kernels';
@@ -10,12 +10,13 @@ import { LN_2 } from '../scalar/constants';
 /**
  * Rounds to nearest integer.
  * Uses banker's rounding (round half to even).
- * @param value - Value to round.
- * @returns Rounded integer.
  *
  * @remarks
  * Banker's rounding reduces bias in repeated operations by
  * rounding 0.5 to the nearest even number.
+ *
+ * @param value - Value to round
+ * @returns Rounded integer
  *
  * @example
  * ```typescript
@@ -46,9 +47,9 @@ export function roundToInt(value: number): number {
 
 /**
  * Rounds to specific decimal places.
- * @param value - Value to round.
- * @param places - Number of decimal places.
- * @returns Rounded value.
+ * @param value - Value to round
+ * @param places - Number of decimal places
+ * @returns Rounded value
  *
  * @example
  * ```typescript
@@ -68,9 +69,9 @@ export function roundToPlaces(value: number, places: number): number {
 
 /**
  * Rounds to nearest multiple.
- * @param value - Value to round.
- * @param multiple - Multiple to round to.
- * @returns Rounded value.
+ * @param value - Value to round
+ * @param multiple - Multiple to round to
+ * @returns Rounded value
  *
  * @example
  * ```typescript
@@ -91,8 +92,10 @@ export function roundToMultiple(value: number, multiple: number): number {
 
 /**
  * Rounds to nearest power of two.
- * @param value - Value to round (must be positive).
- * @returns Nearest power of two.
+ * @remarks Uses deterministic math (`log` from deterministic-kernels).
+ *
+ * @param value - Value to round (must be positive)
+ * @returns Nearest power of two
  *
  * @example
  * ```typescript
@@ -102,8 +105,6 @@ export function roundToMultiple(value: number, multiple: number): number {
  * roundToPowerOfTwo(17);     // 16
  * roundToPowerOfTwo(24);     // 32
  * ```
- *
- * @remarks Uses deterministic math (`log` from deterministic-kernels).
  *
  * @category Arithmetic
  * @since 0.7.0
@@ -121,10 +122,10 @@ export function roundToPowerOfTwo(value: number): number {
 
 /**
  * Snaps to grid with offset.
- * @param value - Value to snap.
- * @param gridSize - Size of grid cells.
- * @param offset - Grid offset (default: 0).
- * @returns Snapped value.
+ * @param value - Value to snap
+ * @param gridSize - Size of grid cells
+ * @param offset - Grid offset (default: 0)
+ * @returns Snapped value
  *
  * @example
  * ```typescript
@@ -145,8 +146,8 @@ export function snapToGrid(value: number, gridSize: number, offset: number = 0):
 
 /**
  * Gets fractional part.
- * @param value - Value to get fraction from.
- * @returns Fractional part (always positive).
+ * @param value - Value to get fraction from
+ * @returns Fractional part (always positive)
  *
  * @example
  * ```typescript

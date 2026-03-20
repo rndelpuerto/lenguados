@@ -2,7 +2,7 @@
 
 > **step**(`edge`, `x`): `number`
 
-Defined in: [src/auxiliary/scalar/arithmetic.ts:328](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/auxiliary/scalar/arithmetic.ts#L328)
+Defined in: [src/auxiliary/scalar/arithmetic.ts:356](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/scalar/arithmetic.ts#L356)
 
 Step function (Heaviside function).
 Returns 0 if x < edge, else 1.
@@ -13,19 +13,23 @@ Returns 0 if x < edge, else 1.
 
 `number`
 
-Threshold value.
+Threshold value
 
 ### x
 
 `number`
 
-Input value.
+Input value
 
 ## Returns
 
 `number`
 
-0 or 1.
+0 or 1
+
+## Remarks
+
+NaN comparisons: `step(NaN, x)` returns 1 (x is not < NaN), `step(edge, NaN)` returns 1.
 
 ## Example
 

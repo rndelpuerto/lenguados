@@ -2,7 +2,7 @@
 
 > **randomTransform2**(`out`, `source`): [`Transform2`](../../core/classes/Transform2.md)
 
-Defined in: [src/utils/random.ts:281](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/utils/random.ts#L281)
+Defined in: [src/utils/random.ts:281](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/utils/random.ts#L281)
 
 Generates a random rigid transform (SE(2)).
 
@@ -12,19 +12,19 @@ Generates a random rigid transform (SE(2)).
 
 [`Transform2`](../../core/classes/Transform2.md) = `...`
 
-Optional output transform to avoid allocation. Defaults to `new Transform2()`.
+Optional output transform to avoid allocation. Defaults to `new Transform2()`
 
 ### source
 
-[`RandomSource`](../interfaces/RandomSource.md) = `defaultRandomSource`
+[`RandomSource`](../interfaces/RandomSource.md) = `...`
 
-Random source to sample from. Defaults to `defaultRandomSource`.
+Random source to sample from. Defaults to `defaultRandomSource`
 
 ## Returns
 
 [`Transform2`](../../core/classes/Transform2.md)
 
-The `out` transform set to a random rotation and translation.
+The `out` transform set to a random rotation and translation
 
 ## Remarks
 

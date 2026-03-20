@@ -1,12 +1,20 @@
 # Class: MathRandomSource
 
-Defined in: [src/utils/random-source.ts:81](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/utils/random-source.ts#L81)
+Defined in: [src/utils/random-source.ts:88](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/utils/random-source.ts#L88)
 
 Non-deterministic random source backed by `Math.random`.
 
 ## Remarks
 
 This source is not seedable and is not deterministic.
+
+## Example
+
+```typescript
+const rng = new MathRandomSource();
+const value = rng.next(); // random number in [0, 1)
+const index = rng.nextInt(10); // random integer in [0, 10)
+```
 
 ## Since
 
@@ -26,13 +34,13 @@ This source is not seedable and is not deterministic.
 
 `MathRandomSource`
 
-## Utility
+## Accessor
 
 ### next()
 
 > **next**(): `number`
 
-Defined in: [src/utils/random-source.ts:90](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/utils/random-source.ts#L90)
+Defined in: [src/utils/random-source.ts:97](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/utils/random-source.ts#L97)
 
 Generates a random number using Math.random().
 
@@ -40,7 +48,7 @@ Generates a random number using Math.random().
 
 `number`
 
-A random number in [0, 1).
+A random number in [0, 1)
 
 #### Since
 
@@ -56,7 +64,7 @@ A random number in [0, 1).
 
 > **nextInt**(`max`): `number`
 
-Defined in: [src/utils/random-source.ts:103](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/utils/random-source.ts#L103)
+Defined in: [src/utils/random-source.ts:110](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/utils/random-source.ts#L110)
 
 Generates a random integer using Math.random().
 
@@ -66,13 +74,13 @@ Generates a random integer using Math.random().
 
 `number`
 
-Exclusive upper bound.
+Exclusive upper bound
 
 #### Returns
 
 `number`
 
-A random integer in [0, max).
+A random integer in [0, max)
 
 #### Since
 

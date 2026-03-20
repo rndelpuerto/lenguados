@@ -6,7 +6,7 @@ auxiliary/angle/operations.ts
 
 ## Description
 
-Angular operations and comparisons.
+Angular operations and comparisons
 
 ## Arithmetic
 

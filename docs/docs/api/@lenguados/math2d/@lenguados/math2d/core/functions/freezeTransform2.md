@@ -2,7 +2,7 @@
 
 > **freezeTransform2**(`transform`): [`ReadonlyTransform2`](../type-aliases/ReadonlyTransform2.md)
 
-Defined in: [src/core/transform2.ts:76](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/transform2.ts#L76)
+Defined in: [src/core/transform2.ts:83](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L83)
 
 Permanently freezes a [Transform2](../classes/Transform2.md) instance so it can no longer be mutated.
 
@@ -12,13 +12,13 @@ Permanently freezes a [Transform2](../classes/Transform2.md) instance so it can 
 
 [`Transform2`](../classes/Transform2.md)
 
-The Transform2 object to freeze.
+The Transform2 object to freeze
 
 ## Returns
 
 [`ReadonlyTransform2`](../type-aliases/ReadonlyTransform2.md)
 
-The same instance, now typed as ReadonlyTransform2.
+The same instance, now typed as ReadonlyTransform2
 
 ## Remarks
 

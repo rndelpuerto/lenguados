@@ -2,7 +2,7 @@
 
 > **parseInterval**(`string_`, `out`): [`Interval`](../../core/classes/Interval.md)
 
-Defined in: [src/utils/parse.ts:812](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/utils/parse.ts#L812)
+Defined in: [src/utils/parse.ts:857](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/utils/parse.ts#L857)
 
 Parses a string representation of an interval.
 
@@ -12,23 +12,19 @@ Parses a string representation of an interval.
 
 `string`
 
-Input string to parse.
+Input string to parse
 
 ### out
 
 [`Interval`](../../core/classes/Interval.md) = `...`
 
-Optional output interval to avoid allocation. Defaults to `new Interval()`.
+Optional output interval to avoid allocation. Defaults to `new Interval()`
 
 ## Returns
 
 [`Interval`](../../core/classes/Interval.md)
 
-The `out` interval containing the parsed values.
-
-## Throws
-
-If the string cannot be parsed.
+The `out` interval containing the parsed values
 
 ## Remarks
 
@@ -38,6 +34,10 @@ Supported formats:
 - "(a,b)" (open interval notation, but creates closed)
 - "a,b" (comma-separated)
 - "{min:a, max:b}" (JSON-like)
+
+## Throws
+
+If the string cannot be parsed
 
 ## Example
 

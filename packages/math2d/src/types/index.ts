@@ -1,7 +1,7 @@
 /**
  * @file types/index.ts
  * @module @lenguados/math2d/types
- * @description Shared type definitions and type guards for math2d.
+ * @description Shared type definitions and type guards for math2d
  *
  * @remarks
  * This module centralizes structural types and runtime shape checks shared
@@ -110,24 +110,6 @@ export interface Matrix3Like {
 
 /**
  * Readonly interface for 2D rotation represented as cosine/sine components.
- *
- * @remarks
- * Represents a 2D rotation as the cosine and sine of the rotation angle.
- * This is mathematically equivalent to a unit complex number or a
- * rotation matrix R = [[cos, -sin], [sin, cos]].
- *
- * For a rotation of angle θ:
- * - `cos` = cos(θ)
- * - `sin` = sin(θ)
- *
- * @example
- * ```typescript
- * // 45-degree rotation
- * const rot: ReadonlyRotation2Like = {
- *   cos: Math.cos(Math.PI / 4),  // ≈ 0.707
- *   sin: Math.sin(Math.PI / 4),  // ≈ 0.707
- * };
- * ```
  *
  * @category Types
  * @since 0.7.0
@@ -254,9 +236,9 @@ export interface Transform2Like {
 /**
  * Internal helper to check if an object has numeric properties.
  *
- * @param object - Object to check.
- * @param keys - Property names to verify.
- * @returns True if all keys exist and are numbers.
+ * @param object - Object to check
+ * @param keys - Property names to verify
+ * @returns True if all keys exist and are numbers
  * @internal
  */
 function hasNumericProperties(object: Record<string, unknown>, keys: readonly string[]): boolean {
@@ -271,8 +253,8 @@ function hasNumericProperties(object: Record<string, unknown>, keys: readonly st
 /**
  * Type guard to check if value has x,y properties (Vector2Like).
  *
- * @param value - Value to check.
- * @returns True if value conforms to ReadonlyVector2Like.
+ * @param value - Value to check
+ * @returns True if value conforms to ReadonlyVector2Like
  *
  * @example
  * ```typescript
@@ -282,7 +264,7 @@ function hasNumericProperties(object: Record<string, unknown>, keys: readonly st
  * }
  * ```
  *
- * @category Type Guards
+ * @category Types
  * @since 0.7.0
  */
 export function isVector2Like(value: unknown): value is ReadonlyVector2Like {
@@ -293,8 +275,8 @@ export function isVector2Like(value: unknown): value is ReadonlyVector2Like {
 /**
  * Type guard to check if value has 2x2 matrix properties (Matrix2Like).
  *
- * @param value - Value to check.
- * @returns True if value conforms to ReadonlyMatrix2Like.
+ * @param value - Value to check
+ * @returns True if value conforms to ReadonlyMatrix2Like
  *
  * @example
  * ```typescript
@@ -304,7 +286,7 @@ export function isVector2Like(value: unknown): value is ReadonlyVector2Like {
  * }
  * ```
  *
- * @category Type Guards
+ * @category Types
  * @since 0.7.0
  */
 export function isMatrix2Like(value: unknown): value is ReadonlyMatrix2Like {
@@ -315,8 +297,8 @@ export function isMatrix2Like(value: unknown): value is ReadonlyMatrix2Like {
 /**
  * Type guard to check if value has rotation properties (Rotation2Like).
  *
- * @param value - Value to check.
- * @returns True if value conforms to ReadonlyRotation2Like.
+ * @param value - Value to check
+ * @returns True if value conforms to ReadonlyRotation2Like
  *
  * @example
  * ```typescript
@@ -326,7 +308,7 @@ export function isMatrix2Like(value: unknown): value is ReadonlyMatrix2Like {
  * }
  * ```
  *
- * @category Type Guards
+ * @category Types
  * @since 0.7.0
  */
 export function isRotation2Like(value: unknown): value is ReadonlyRotation2Like {
@@ -337,8 +319,8 @@ export function isRotation2Like(value: unknown): value is ReadonlyRotation2Like 
 /**
  * Type guard to check if value has 3x3 matrix properties (Matrix3Like).
  *
- * @param value - Value to check.
- * @returns True if value conforms to ReadonlyMatrix3Like.
+ * @param value - Value to check
+ * @returns True if value conforms to ReadonlyMatrix3Like
  *
  * @example
  * ```typescript
@@ -348,7 +330,7 @@ export function isRotation2Like(value: unknown): value is ReadonlyRotation2Like 
  * }
  * ```
  *
- * @category Type Guards
+ * @category Types
  * @since 0.7.0
  */
 export function isMatrix3Like(value: unknown): value is ReadonlyMatrix3Like {
@@ -369,8 +351,8 @@ export function isMatrix3Like(value: unknown): value is ReadonlyMatrix3Like {
 /**
  * Type guard to check if value has complex number properties (ComplexLike).
  *
- * @param value - Value to check.
- * @returns True if value conforms to ReadonlyComplexLike.
+ * @param value - Value to check
+ * @returns True if value conforms to ReadonlyComplexLike
  *
  * @example
  * ```typescript
@@ -380,7 +362,7 @@ export function isMatrix3Like(value: unknown): value is ReadonlyMatrix3Like {
  * }
  * ```
  *
- * @category Type Guards
+ * @category Types
  * @since 0.7.0
  */
 export function isComplexLike(value: unknown): value is ReadonlyComplexLike {
@@ -391,8 +373,8 @@ export function isComplexLike(value: unknown): value is ReadonlyComplexLike {
 /**
  * Type guard to check if value has interval properties (IntervalLike).
  *
- * @param value - Value to check.
- * @returns True if value conforms to ReadonlyIntervalLike.
+ * @param value - Value to check
+ * @returns True if value conforms to ReadonlyIntervalLike
  *
  * @example
  * ```typescript
@@ -402,7 +384,7 @@ export function isComplexLike(value: unknown): value is ReadonlyComplexLike {
  * }
  * ```
  *
- * @category Type Guards
+ * @category Types
  * @since 0.7.0
  */
 export function isIntervalLike(value: unknown): value is ReadonlyIntervalLike {
@@ -413,8 +395,8 @@ export function isIntervalLike(value: unknown): value is ReadonlyIntervalLike {
 /**
  * Type guard to check if value has transform2 properties (Transform2Like).
  *
- * @param value - Value to check.
- * @returns True if value conforms to ReadonlyTransform2Like.
+ * @param value - Value to check
+ * @returns True if value conforms to ReadonlyTransform2Like
  *
  * @example
  * ```typescript
@@ -428,7 +410,7 @@ export function isIntervalLike(value: unknown): value is ReadonlyIntervalLike {
  * }
  * ```
  *
- * @category Type Guards
+ * @category Types
  * @since 0.7.0
  */
 export function isTransform2Like(value: unknown): value is ReadonlyTransform2Like {

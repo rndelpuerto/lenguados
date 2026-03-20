@@ -1534,3 +1534,27 @@ describe('Transform2', () => {
   });
  });
 });
+
+describe('Transform2 batch vs individual parity', () => {
+ it('transformPoints batch matches individual transformPoint calls', () => {
+  const t = new Transform2({ x: 3, y: 5 }, Math.PI / 4, { x: 2, y: 3 });
+  const points = [new Vector2(1, 0), new Vector2(0, 1), new Vector2(2, 3)];
+  const batchResults = t.transformPoints(points);
+  for (let index = 0; index < points.length; index++) {
+   const individual = t.transformPoint(points[index]!);
+   expect(batchResults[index]!.x).toBeCloseTo(individual.x, DIGITS);
+   expect(batchResults[index]!.y).toBeCloseTo(individual.y, DIGITS);
+  }
+ });
+
+ it('transformVectors batch matches individual transformVector calls', () => {
+  const t = new Transform2({ x: 3, y: 5 }, Math.PI / 6, { x: 2, y: 4 });
+  const vectors = [new Vector2(1, 0), new Vector2(0, 1)];
+  const batchResults = t.transformVectors(vectors);
+  for (let index = 0; index < vectors.length; index++) {
+   const individual = t.transformVector(vectors[index]!);
+   expect(batchResults[index]!.x).toBeCloseTo(individual.x, DIGITS);
+   expect(batchResults[index]!.y).toBeCloseTo(individual.y, DIGITS);
+  }
+ });
+});

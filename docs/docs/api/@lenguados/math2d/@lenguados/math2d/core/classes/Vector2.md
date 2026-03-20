@@ -1,6 +1,6 @@
 # Class: Vector2
 
-Defined in: [src/core/vector2.ts:119](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L119)
+Defined in: [src/core/vector2.ts:119](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L119)
 
 Mutable, chainable two-dimensional vector with comprehensive operations for
 arithmetic, geometry, transforms, comparisons and conversions.
@@ -37,7 +37,7 @@ velocity.add(acceleration).scale(dt);
 
 > **new Vector2**(): `Vector2`
 
-Defined in: [src/core/vector2.ts:2530](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2530)
+Defined in: [src/core/vector2.ts:2609](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L2609)
 
 Creates a zero vector `(0, 0)`.
 
@@ -49,7 +49,7 @@ Creates a zero vector `(0, 0)`.
 
 > **new Vector2**(`x`, `y`): `Vector2`
 
-Defined in: [src/core/vector2.ts:2532](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2532)
+Defined in: [src/core/vector2.ts:2611](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L2611)
 
 Creates a vector from components `(x, y)`.
 
@@ -71,7 +71,7 @@ Creates a vector from components `(x, y)`.
 
 > **new Vector2**(`array`): `Vector2`
 
-Defined in: [src/core/vector2.ts:2534](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2534)
+Defined in: [src/core/vector2.ts:2613](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L2613)
 
 Creates a vector from a tuple `[x, y]`.
 
@@ -89,7 +89,7 @@ Creates a vector from a tuple `[x, y]`.
 
 > **new Vector2**(`object`): `Vector2`
 
-Defined in: [src/core/vector2.ts:2536](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2536)
+Defined in: [src/core/vector2.ts:2615](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L2615)
 
 Creates a vector from a plain object `{ x, y }`.
 
@@ -103,13 +103,285 @@ Creates a vector from a plain object `{ x, y }`.
 
 `Vector2`
 
+## Accessor
+
+### absolute
+
+#### Get Signature
+
+> **get** **absolute**(): `Vector2`
+
+Defined in: [src/core/vector2.ts:2689](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L2689)
+
+Returns an absolute-valued copy.
+
+##### Since
+
+0.7.0
+
+##### Returns
+
+`Vector2`
+
+New absolute-valued vector
+
+---
+
+### angle
+
+#### Get Signature
+
+> **get** **angle**(): `number`
+
+Defined in: [src/core/vector2.ts:3364](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3364)
+
+Heading angle from +X axis.
+
+##### Since
+
+0.7.0
+
+##### Returns
+
+`number`
+
+Angle in radians from +X axis
+
+#### Set Signature
+
+> **set** **angle**(`radians`): `void`
+
+Defined in: [src/core/vector2.ts:3375](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3375)
+
+Sets the direction angle while preserving magnitude.
+
+##### Since
+
+0.7.0
+
+##### Parameters
+
+###### radians
+
+`number`
+
+Angle in radians (CCW positive)
+
+##### Returns
+
+`void`
+
+---
+
+### flippedX
+
+#### Get Signature
+
+> **get** **flippedX**(): `Vector2`
+
+Defined in: [src/core/vector2.ts:4295](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L4295)
+
+Returns a copy with x negated.
+
+##### Since
+
+0.7.0
+
+##### Returns
+
+`Vector2`
+
+New Vector2(-x, y)
+
+---
+
+### flippedY
+
+#### Get Signature
+
+> **get** **flippedY**(): `Vector2`
+
+Defined in: [src/core/vector2.ts:4305](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L4305)
+
+Returns a copy with y negated.
+
+##### Since
+
+0.7.0
+
+##### Returns
+
+`Vector2`
+
+New Vector2(x, -y)
+
+---
+
+### negated
+
+#### Get Signature
+
+> **get** **negated**(): `Vector2`
+
+Defined in: [src/core/vector2.ts:2679](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L2679)
+
+Returns a negated copy.
+
+##### Since
+
+0.7.0
+
+##### Returns
+
+`Vector2`
+
+New negated vector
+
+---
+
+### normalized
+
+#### Get Signature
+
+> **get** **normalized**(): `Vector2`
+
+Defined in: [src/core/vector2.ts:2664](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L2664)
+
+Returns a normalized copy (or zero if this is zero).
+
+##### Since
+
+0.7.0
+
+##### Returns
+
+`Vector2`
+
+New unit vector
+
+---
+
+### xx
+
+#### Get Signature
+
+> **get** **xx**(): `Vector2`
+
+Defined in: [src/core/vector2.ts:2723](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L2723)
+
+Returns a vector with both components set to x.
+
+##### Since
+
+0.7.0
+
+##### Returns
+
+`Vector2`
+
+New Vector2(x, x)
+
+---
+
+### xy
+
+#### Get Signature
+
+> **get** **xy**(): `Vector2`
+
+Defined in: [src/core/vector2.ts:2703](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L2703)
+
+Returns a copy of this vector (identity swizzle).
+
+##### Since
+
+0.7.0
+
+##### Returns
+
+`Vector2`
+
+New Vector2(x, y)
+
+---
+
+### yx
+
+#### Get Signature
+
+> **get** **yx**(): `Vector2`
+
+Defined in: [src/core/vector2.ts:2713](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L2713)
+
+Returns a copy with swapped components.
+
+##### Since
+
+0.7.0
+
+##### Returns
+
+`Vector2`
+
+New Vector2(y, x)
+
+---
+
+### yy
+
+#### Get Signature
+
+> **get** **yy**(): `Vector2`
+
+Defined in: [src/core/vector2.ts:2733](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L2733)
+
+Returns a vector with both components set to y.
+
+##### Since
+
+0.7.0
+
+##### Returns
+
+`Vector2`
+
+New Vector2(y, y)
+
+---
+
+### getComponent()
+
+> **getComponent**(`index`): `number`
+
+Defined in: [src/core/vector2.ts:2862](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L2862)
+
+Returns a component by index.
+
+#### Parameters
+
+##### index
+
+0 for x, 1 for y
+
+`0` | `1`
+
+#### Returns
+
+`number`
+
+The component value
+
+#### Since
+
+0.7.0
+
 ## Arithmetic
 
 ### add()
 
 > **add**(`v`): `this`
 
-Defined in: [src/core/vector2.ts:2782](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2782)
+Defined in: [src/core/vector2.ts:2896](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L2896)
 
 Adds v component-wise.
 
@@ -119,13 +391,13 @@ Adds v component-wise.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Vector to add.
+Vector to add
 
 #### Returns
 
 `this`
 
-This for chaining.
+This for chaining
 
 #### Since
 
@@ -137,7 +409,7 @@ This for chaining.
 
 > **addScalar**(`s`): `this`
 
-Defined in: [src/core/vector2.ts:2797](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2797)
+Defined in: [src/core/vector2.ts:2911](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L2911)
 
 Adds scalar to both components.
 
@@ -147,13 +419,47 @@ Adds scalar to both components.
 
 `number`
 
-Scalar to add.
+Scalar to add
 
 #### Returns
 
 `this`
 
-This for chaining.
+This for chaining
+
+#### Since
+
+0.7.0
+
+---
+
+### addScaledVector()
+
+> **addScaledVector**(`v`, `scale`): `this`
+
+Defined in: [src/core/vector2.ts:3132](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3132)
+
+Adds a scaled vector: this += scale \* v.
+
+#### Parameters
+
+##### v
+
+[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
+
+Vector to scale and add
+
+##### scale
+
+`number`
+
+Scale factor
+
+#### Returns
+
+`this`
+
+This for chaining
 
 #### Since
 
@@ -165,7 +471,7 @@ This for chaining.
 
 > **divide**(`v`): `this`
 
-Defined in: [src/core/vector2.ts:2876](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2876)
+Defined in: [src/core/vector2.ts:2990](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L2990)
 
 Divides by v component-wise (strict).
 
@@ -175,21 +481,21 @@ Divides by v component-wise (strict).
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Divisor vector.
+Divisor vector
 
 #### Returns
 
 `this`
 
-This for chaining.
+This for chaining
 
 #### Throws
 
-If any component of v is near zero.
+If any component of v is near zero
 
 #### See
 
-- [divideSafe](#dividesafe-2) - Sets to 0 per component instead of throwing
+- [divideSafe](../../auxiliary/numeric/functions/divideSafe.md) - Sets to 0 per component instead of throwing
 - [divideUnchecked](#divideunchecked-2) - No validation
 
 #### Since
@@ -202,7 +508,7 @@ If any component of v is near zero.
 
 > **divideSafe**(`v`): `this`
 
-Defined in: [src/core/vector2.ts:2894](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2894)
+Defined in: [src/core/vector2.ts:3010](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3010)
 
 Divides by v component-wise (safe).
 
@@ -212,13 +518,17 @@ Divides by v component-wise (safe).
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Divisor vector.
+Divisor vector
 
 #### Returns
 
 `this`
 
-This for chaining (0 if divisor near zero).
+This for chaining (0 if divisor near zero)
+
+#### See
+
+[divide](#divide-2) - Throws on near-zero component
 
 #### Since
 
@@ -230,7 +540,7 @@ This for chaining (0 if divisor near zero).
 
 > **divideScalar**(`s`): `this`
 
-Defined in: [src/core/vector2.ts:2932](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2932)
+Defined in: [src/core/vector2.ts:3054](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3054)
 
 Divides by scalar (strict).
 
@@ -240,22 +550,27 @@ Divides by scalar (strict).
 
 `number`
 
-Scalar divisor.
+Scalar divisor
 
 #### Returns
 
 `this`
 
-This for chaining.
-
-#### Throws
-
-If scalar is near zero.
+This for chaining
 
 #### Remarks
 
 For safe division that returns zeros, use [divideScalarSafe](#dividescalarsafe-2).
 For hot paths, use [divideScalarUnchecked](#dividescalarunchecked-2).
+
+#### Throws
+
+If scalar is near zero
+
+#### See
+
+- [divideScalarSafe](#dividescalarsafe-2) - Returns zero vector on near-zero divisor
+- [divideScalarUnchecked](#dividescalarunchecked-2) - No validation
 
 #### Since
 
@@ -267,7 +582,7 @@ For hot paths, use [divideScalarUnchecked](#dividescalarunchecked-2).
 
 > **divideScalarSafe**(`s`): `this`
 
-Defined in: [src/core/vector2.ts:2950](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2950)
+Defined in: [src/core/vector2.ts:3074](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3074)
 
 Safe scalar division. If |s| ≤ EPSILON, sets to (0, 0).
 
@@ -277,13 +592,17 @@ Safe scalar division. If |s| ≤ EPSILON, sets to (0, 0).
 
 `number`
 
-Scalar divisor.
+Scalar divisor
 
 #### Returns
 
 `this`
 
-This for chaining.
+This for chaining
+
+#### See
+
+[divideScalar](#dividescalar-2) - Throws for zero divisor
 
 #### Since
 
@@ -295,7 +614,7 @@ This for chaining.
 
 > **divideScalarUnchecked**(`s`): `this`
 
-Defined in: [src/core/vector2.ts:2984](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2984)
+Defined in: [src/core/vector2.ts:3103](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3103)
 
 Unchecked scalar division for hot paths.
 
@@ -305,30 +624,26 @@ Unchecked scalar division for hot paths.
 
 `number`
 
-Scalar divisor (must be non-zero).
+Scalar divisor (must be non-zero)
 
 #### Returns
 
 `this`
 
-This for chaining.
+This for chaining
 
 #### Remarks
 
-⚠️ **Precondition:** Scalar must be non-zero.
+**Precondition:** Scalar must be non-zero.
 Calling with zero scalar produces Infinity/NaN components.
 
 Use only when you can guarantee valid input (e.g., after explicit check).
 For safe division, use [divideScalarSafe](#dividescalarsafe-2).
 
-#### Example
+#### See
 
-```typescript
-// Only use when you know s is non-zero
-if (s !== 0) {
- v.divideScalarUnchecked(s);
-}
-```
+- [divideScalar](#dividescalar-2) - Throws for zero divisor
+- [divideScalarSafe](#dividescalarsafe-2) - Returns zero vector for zero divisor
 
 #### Since
 
@@ -340,7 +655,7 @@ if (s !== 0) {
 
 > **divideUnchecked**(`v`): `this`
 
-Defined in: [src/core/vector2.ts:2912](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2912)
+Defined in: [src/core/vector2.ts:3031](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3031)
 
 Divides by v component-wise (unchecked).
 
@@ -350,17 +665,112 @@ Divides by v component-wise (unchecked).
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Divisor vector (must have non-zero components).
+Divisor vector (must have non-zero components)
 
 #### Returns
 
 `this`
 
-This for chaining.
+This for chaining
 
 #### Remarks
 
-**⚠️ Precondition:** `v.x ≠ 0` and `v.y ≠ 0`.
+**Precondition:** `v.x ≠ 0` and `v.y ≠ 0`.
+
+#### See
+
+- [divide](#divide-2) - Throws on near-zero component
+- [divideSafe](../../auxiliary/numeric/functions/divideSafe.md) - Returns 0 per component on near-zero divisor
+
+#### Since
+
+0.7.0
+
+---
+
+### fma()
+
+> **fma**(`scale`, `v`): `this`
+
+Defined in: [src/core/vector2.ts:3146](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3146)
+
+Fused multiply-add: this = this \* scale + v.
+
+#### Parameters
+
+##### scale
+
+`number`
+
+Scale factor
+
+##### v
+
+[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
+
+Vector to add
+
+#### Returns
+
+`this`
+
+This for chaining
+
+#### Since
+
+0.7.0
+
+---
+
+### mod()
+
+> **mod**(`v`): `this`
+
+Defined in: [src/core/vector2.ts:3159](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3159)
+
+Component-wise modulo.
+
+#### Parameters
+
+##### v
+
+[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
+
+Divisor vector
+
+#### Returns
+
+`this`
+
+This for chaining
+
+#### Since
+
+0.7.0
+
+---
+
+### modScalar()
+
+> **modScalar**(`s`): `this`
+
+Defined in: [src/core/vector2.ts:3172](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3172)
+
+Scalar modulo on both components.
+
+#### Parameters
+
+##### s
+
+`number`
+
+Scalar divisor
+
+#### Returns
+
+`this`
+
+This for chaining
 
 #### Since
 
@@ -372,7 +782,7 @@ This for chaining.
 
 > **multiply**(`v`): `this`
 
-Defined in: [src/core/vector2.ts:2842](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2842)
+Defined in: [src/core/vector2.ts:2956](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L2956)
 
 Multiplies by v component-wise (Hadamard product).
 
@@ -382,13 +792,13 @@ Multiplies by v component-wise (Hadamard product).
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Vector multiplier.
+Vector multiplier
 
 #### Returns
 
 `this`
 
-This for chaining.
+This for chaining
 
 #### Since
 
@@ -400,7 +810,7 @@ This for chaining.
 
 > **negate**(): `this`
 
-Defined in: [src/core/vector2.ts:2999](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2999)
+Defined in: [src/core/vector2.ts:3118](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3118)
 
 Negates both components.
 
@@ -408,7 +818,7 @@ Negates both components.
 
 `this`
 
-This for chaining.
+This for chaining
 
 #### Since
 
@@ -420,7 +830,7 @@ This for chaining.
 
 > **scale**(`s`): `this`
 
-Defined in: [src/core/vector2.ts:2857](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2857)
+Defined in: [src/core/vector2.ts:2971](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L2971)
 
 Scales by scalar.
 
@@ -430,13 +840,13 @@ Scales by scalar.
 
 `number`
 
-Scale factor.
+Scale factor
 
 #### Returns
 
 `this`
 
-This for chaining.
+This for chaining
 
 #### Since
 
@@ -448,7 +858,7 @@ This for chaining.
 
 > **subtract**(`v`): `this`
 
-Defined in: [src/core/vector2.ts:2812](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2812)
+Defined in: [src/core/vector2.ts:2926](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L2926)
 
 Subtracts v component-wise.
 
@@ -458,13 +868,13 @@ Subtracts v component-wise.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Vector to subtract.
+Vector to subtract
 
 #### Returns
 
 `this`
 
-This for chaining.
+This for chaining
 
 #### Since
 
@@ -476,7 +886,7 @@ This for chaining.
 
 > **subtractScalar**(`s`): `this`
 
-Defined in: [src/core/vector2.ts:2827](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2827)
+Defined in: [src/core/vector2.ts:2941](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L2941)
 
 Subtracts scalar from both components.
 
@@ -486,13 +896,33 @@ Subtracts scalar from both components.
 
 `number`
 
-Scalar to subtract.
+Scalar to subtract
 
 #### Returns
 
 `this`
 
-This for chaining.
+This for chaining
+
+#### Since
+
+0.7.0
+
+---
+
+### sumComponents()
+
+> **sumComponents**(): `number`
+
+Defined in: [src/core/vector2.ts:3343](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3343)
+
+Returns the sum of components x + y.
+
+#### Returns
+
+`number`
+
+Scalar sum
 
 #### Since
 
@@ -504,7 +934,7 @@ This for chaining.
 
 > `static` **add**(`a`, `b`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:383](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L383)
+Defined in: [src/core/vector2.ts:414](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L414)
 
 Component-wise addition `a + b`.
 
@@ -514,25 +944,25 @@ Component-wise addition `a + b`.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-First addend.
+First addend
 
 ##### b
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Second addend.
+Second addend
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Vector equal to `(a.x + b.x, a.y + b.y)`.
+Vector equal to `(a.x + b.x, a.y + b.y)`
 
 #### Since
 
@@ -544,7 +974,7 @@ Vector equal to `(a.x + b.x, a.y + b.y)`.
 
 > `static` **addScalar**(`v`, `s`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:398](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L398)
+Defined in: [src/core/vector2.ts:429](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L429)
 
 Adds a scalar to both components `v + s`.
 
@@ -554,25 +984,25 @@ Adds a scalar to both components `v + s`.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Source vector.
+Source vector
 
 ##### s
 
 `number`
 
-Scalar addend.
+Scalar addend
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Vector equal to `(v.x + s, v.y + s)`.
+Vector equal to `(v.x + s, v.y + s)`
 
 #### Since
 
@@ -584,7 +1014,7 @@ Vector equal to `(v.x + s, v.y + s)`.
 
 > `static` **addScaledVector**(`base`, `scaled`, `scale`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:620](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L620)
+Defined in: [src/core/vector2.ts:662](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L662)
 
 Adds a scaled vector: `base + scale * scaled`.
 
@@ -594,31 +1024,31 @@ Adds a scaled vector: `base + scale * scaled`.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Base vector.
+Base vector
 
 ##### scaled
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Vector to scale and add.
+Vector to scale and add
 
 ##### scale
 
 `number`
 
-Scale factor.
+Scale factor
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Vector equal to `base + scaled * scale`.
+Vector equal to `base + scaled * scale`
 
 #### Remarks
 
@@ -640,7 +1070,7 @@ velocity = Vector2.addScaledVector(velocity, acceleration, dt);
 
 > `static` **divide**(`a`, `b`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:477](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L477)
+Defined in: [src/core/vector2.ts:508](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L508)
 
 Component-wise division `a / b` (strict).
 
@@ -650,33 +1080,33 @@ Component-wise division `a / b` (strict).
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Numerator vector.
+Numerator vector
 
 ##### b
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Divisor vector.
+Divisor vector
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Vector equal to `(a.x / b.x, a.y / b.y)`.
+Vector equal to `(a.x / b.x, a.y / b.y)`
 
 #### Throws
 
-If any component of b is near zero.
+If any component of b is near zero
 
 #### See
 
-- [divideSafe](#dividesafe-2) - Returns 0 per component instead of throwing
+- [divideSafe](../../auxiliary/numeric/functions/divideSafe.md) - Returns 0 per component instead of throwing
 - [divideUnchecked](#divideunchecked-2) - No validation, for hot paths
 
 #### Since
@@ -689,7 +1119,7 @@ If any component of b is near zero.
 
 > `static` **divideSafe**(`a`, `b`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:497](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L497)
+Defined in: [src/core/vector2.ts:528](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L528)
 
 Component-wise division `a / b` (safe).
 
@@ -699,25 +1129,25 @@ Component-wise division `a / b` (safe).
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Numerator vector.
+Numerator vector
 
 ##### b
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Divisor vector.
+Divisor vector
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Vector with safe division per component (0 if divisor near zero).
+Vector with safe division per component (0 if divisor near zero)
 
 #### See
 
@@ -733,7 +1163,7 @@ Vector with safe division per component (0 if divisor near zero).
 
 > `static` **divideScalar**(`v`, `s`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:539](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L539)
+Defined in: [src/core/vector2.ts:576](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L576)
 
 Scalar division `v / s` (strict).
 
@@ -743,34 +1173,39 @@ Scalar division `v / s` (strict).
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Vector to divide.
+Vector to divide
 
 ##### s
 
 `number`
 
-Scalar divisor.
+Scalar divisor
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Vector equal to `(v.x / s, v.y / s)`.
-
-#### Throws
-
-If scalar is near zero.
+Vector equal to `(v.x / s, v.y / s)`
 
 #### Remarks
 
 For safe division that returns zeros instead of throwing, use [divideScalarSafe](#dividescalarsafe-2).
 For hot paths where you've already validated the input, use [divideScalarUnchecked](#dividescalarunchecked-2).
+
+#### Throws
+
+If scalar is near zero
+
+#### See
+
+- [divideScalarSafe](#dividescalarsafe-2) - Returns zero vector on near-zero divisor
+- [divideScalarUnchecked](#dividescalarunchecked-2) - No validation
 
 #### Since
 
@@ -782,7 +1217,7 @@ For hot paths where you've already validated the input, use [divideScalarUncheck
 
 > `static` **divideScalarSafe**(`v`, `s`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:558](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L558)
+Defined in: [src/core/vector2.ts:597](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L597)
 
 Scalar division `v / s` (safe).
 
@@ -792,25 +1227,29 @@ Scalar division `v / s` (safe).
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Vector to divide.
+Vector to divide
 
 ##### s
 
 `number`
 
-Scalar divisor (if near zero, returns (0, 0)).
+Scalar divisor (if near zero, returns (0, 0))
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Vector equal to `(v.x / s, v.y / s)` or (0, 0) if s is near zero.
+Vector equal to `(v.x / s, v.y / s)` or (0, 0) if s is near zero
+
+#### See
+
+[divideScalar](#dividescalar-2) - Throws for zero divisor
 
 #### Since
 
@@ -822,7 +1261,7 @@ Vector equal to `(v.x / s, v.y / s)` or (0, 0) if s is near zero.
 
 > `static` **divideScalarUnchecked**(`v`, `s`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:581](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L581)
+Defined in: [src/core/vector2.ts:623](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L623)
 
 Scalar division `v / s` (unchecked for hot paths).
 
@@ -832,30 +1271,35 @@ Scalar division `v / s` (unchecked for hot paths).
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Vector to divide.
+Vector to divide
 
 ##### s
 
 `number`
 
-Scalar divisor (must be non-zero).
+Scalar divisor (must be non-zero)
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Vector equal to `(v.x / s, v.y / s)`.
+Vector equal to `(v.x / s, v.y / s)`
 
 #### Remarks
 
-⚠️ **Precondition:** Scalar must be non-zero.
+**Precondition:** Scalar must be non-zero.
 Calling with zero scalar produces Infinity/NaN components.
+
+#### See
+
+- [divideScalar](#dividescalar-2) - Throws for zero divisor
+- [divideScalarSafe](#dividescalarsafe-2) - Returns zero vector for zero divisor
 
 #### Since
 
@@ -867,7 +1311,7 @@ Calling with zero scalar produces Infinity/NaN components.
 
 > `static` **divideUnchecked**(`a`, `b`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:515](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L515)
+Defined in: [src/core/vector2.ts:549](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L549)
 
 Component-wise division `a / b` (unchecked for hot paths).
 
@@ -877,29 +1321,34 @@ Component-wise division `a / b` (unchecked for hot paths).
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Numerator vector.
+Numerator vector
 
 ##### b
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Divisor vector (must have non-zero components).
+Divisor vector (must have non-zero components)
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Vector equal to `(a.x / b.x, a.y / b.y)`.
+Vector equal to `(a.x / b.x, a.y / b.y)`
 
 #### Remarks
 
-**⚠️ Precondition:** `b.x ≠ 0` and `b.y ≠ 0`. Calling with zero produces Infinity/NaN.
+**Precondition:** `b.x ≠ 0` and `b.y ≠ 0`. Calling with zero produces Infinity/NaN.
+
+#### See
+
+- [divide](#divide-2) - Throws on near-zero component
+- [divideSafe](../../auxiliary/numeric/functions/divideSafe.md) - Returns 0 per component on near-zero divisor
 
 #### Since
 
@@ -911,7 +1360,7 @@ Vector equal to `(a.x / b.x, a.y / b.y)`.
 
 > `static` **fma**(`a`, `scale`, `b`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:644](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L644)
+Defined in: [src/core/vector2.ts:686](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L686)
 
 Fused multiply-add: `a * scale + b`.
 
@@ -921,31 +1370,31 @@ Fused multiply-add: `a * scale + b`.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Vector to scale.
+Vector to scale
 
 ##### scale
 
 `number`
 
-Scale factor.
+Scale factor
 
 ##### b
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Vector to add.
+Vector to add
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Vector equal to `a * scale + b`.
+Vector equal to `a * scale + b`
 
 #### Remarks
 
@@ -961,7 +1410,7 @@ More efficient than separate multiply and add operations.
 
 > `static` **mod**(`a`, `b`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:668](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L668)
+Defined in: [src/core/vector2.ts:710](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L710)
 
 Component-wise modulo operation `a % b`.
 
@@ -971,25 +1420,25 @@ Component-wise modulo operation `a % b`.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Dividend vector.
+Dividend vector
 
 ##### b
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Divisor vector.
+Divisor vector
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Vector with positive modulo per component.
+Vector with positive modulo per component
 
 #### Remarks
 
@@ -1006,7 +1455,7 @@ which handles negative values correctly (always returns positive).
 
 > `static` **modScalar**(`v`, `s`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:683](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L683)
+Defined in: [src/core/vector2.ts:725](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L725)
 
 Scalar modulo operation `v % s`.
 
@@ -1016,25 +1465,25 @@ Scalar modulo operation `v % s`.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Vector dividend.
+Vector dividend
 
 ##### s
 
 `number`
 
-Scalar divisor.
+Scalar divisor
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Vector with modulo applied to both components.
+Vector with modulo applied to both components
 
 #### Since
 
@@ -1046,7 +1495,7 @@ Vector with modulo applied to both components.
 
 > `static` **multiply**(`a`, `b`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:443](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L443)
+Defined in: [src/core/vector2.ts:474](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L474)
 
 Component-wise multiplication `a * b` (Hadamard product).
 
@@ -1056,25 +1505,25 @@ Component-wise multiplication `a * b` (Hadamard product).
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-First factor.
+First factor
 
 ##### b
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Second factor.
+Second factor
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Vector equal to `(a.x * b.x, a.y * b.y)`.
+Vector equal to `(a.x * b.x, a.y * b.y)`
 
 #### Since
 
@@ -1086,7 +1535,7 @@ Vector equal to `(a.x * b.x, a.y * b.y)`.
 
 > `static` **negate**(`v`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:596](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L596)
+Defined in: [src/core/vector2.ts:638](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L638)
 
 Unary negation `(-x, -y)`.
 
@@ -1096,19 +1545,19 @@ Unary negation `(-x, -y)`.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Source vector.
+Source vector
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Negated vector.
+Negated vector
 
 #### Since
 
@@ -1120,7 +1569,7 @@ Negated vector.
 
 > `static` **scale**(`v`, `s`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:458](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L458)
+Defined in: [src/core/vector2.ts:489](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L489)
 
 Scales a vector by a scalar `v * s`.
 
@@ -1130,25 +1579,25 @@ Scales a vector by a scalar `v * s`.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Vector to scale.
+Vector to scale
 
 ##### s
 
 `number`
 
-Scale factor.
+Scale factor
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Vector equal to `(v.x * s, v.y * s)`.
+Vector equal to `(v.x * s, v.y * s)`
 
 #### Since
 
@@ -1160,7 +1609,7 @@ Vector equal to `(v.x * s, v.y * s)`.
 
 > `static` **subtract**(`a`, `b`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:413](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L413)
+Defined in: [src/core/vector2.ts:444](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L444)
 
 Component-wise subtraction `a - b`.
 
@@ -1170,25 +1619,25 @@ Component-wise subtraction `a - b`.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Minuend.
+Minuend
 
 ##### b
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Subtrahend.
+Subtrahend
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Vector equal to `(a.x - b.x, a.y - b.y)`.
+Vector equal to `(a.x - b.x, a.y - b.y)`
 
 #### Since
 
@@ -1200,7 +1649,7 @@ Vector equal to `(a.x - b.x, a.y - b.y)`.
 
 > `static` **subtractScalar**(`v`, `s`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:428](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L428)
+Defined in: [src/core/vector2.ts:459](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L459)
 
 Subtracts a scalar from both components `v - s`.
 
@@ -1210,25 +1659,25 @@ Subtracts a scalar from both components `v - s`.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Source vector.
+Source vector
 
 ##### s
 
 `number`
 
-Scalar to subtract.
+Scalar to subtract
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Vector equal to `(v.x - s, v.y - s)`.
+Vector equal to `(v.x - s, v.y - s)`
 
 #### Since
 
@@ -1240,7 +1689,7 @@ Vector equal to `(v.x - s, v.y - s)`.
 
 > `static` **sumComponents**(`vector`): `number`
 
-Defined in: [src/core/vector2.ts:368](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L368)
+Defined in: [src/core/vector2.ts:399](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L399)
 
 Computes the sum of components `x + y`.
 
@@ -1250,13 +1699,13 @@ Computes the sum of components `x + y`.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Vector to read.
+Vector to read
 
 #### Returns
 
 `number`
 
-The scalar sum `vector.x + vector.y`.
+The scalar sum `vector.x + vector.y`
 
 #### Since
 
@@ -1268,7 +1717,7 @@ The scalar sum `vector.x + vector.y`.
 
 > **exactEquals**(`v`): `boolean`
 
-Defined in: [src/core/vector2.ts:3757](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3757)
+Defined in: [src/core/vector2.ts:4094](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L4094)
 
 Exact equality with v (bit-identical).
 
@@ -1278,13 +1727,13 @@ Exact equality with v (bit-identical).
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Vector to compare.
+Vector to compare
 
 #### Returns
 
 `boolean`
 
-True if exactly identical.
+True if exactly identical
 
 #### Remarks
 
@@ -1296,11 +1745,71 @@ Use [nearEquals](#nearequals-2) for comparing results of floating-point operatio
 
 ---
 
+### hasInfinity()
+
+> **hasInfinity**(): `boolean`
+
+Defined in: [src/core/vector2.ts:4164](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L4164)
+
+Tests if any component is infinite (±Infinity).
+
+#### Returns
+
+`boolean`
+
+True if any component is ±Infinity
+
+#### Since
+
+0.7.0
+
+---
+
+### hasNaN()
+
+> **hasNaN**(): `boolean`
+
+Defined in: [src/core/vector2.ts:4154](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L4154)
+
+Tests if any component is NaN.
+
+#### Returns
+
+`boolean`
+
+True if any component is NaN
+
+#### Since
+
+0.7.0
+
+---
+
+### isFinite()
+
+> **isFinite**(): `boolean`
+
+Defined in: [src/core/vector2.ts:4144](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L4144)
+
+Tests if both components are finite.
+
+#### Returns
+
+`boolean`
+
+True if finite
+
+#### Since
+
+0.7.0
+
+---
+
 ### isNearZero()
 
 > **isNearZero**(`epsilon`): `boolean`
 
-Defined in: [src/core/vector2.ts:3786](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3786)
+Defined in: [src/core/vector2.ts:4124](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L4124)
 
 Tests if this vector is near zero (both components within epsilon).
 
@@ -1310,13 +1819,101 @@ Tests if this vector is near zero (both components within epsilon).
 
 `number` = `EPSILON`
 
-Tolerance for comparison.
+Tolerance for comparison
 
 #### Returns
 
 `boolean`
 
-True if both components are within epsilon of zero.
+True if both components are within epsilon of zero
+
+#### Since
+
+0.7.0
+
+---
+
+### isParallelTo()
+
+> **isParallelTo**(`v`, `epsilon`): `boolean`
+
+Defined in: [src/core/vector2.ts:4176](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L4176)
+
+Tests parallelism with v.
+
+#### Parameters
+
+##### v
+
+[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
+
+Vector to compare
+
+##### epsilon
+
+`number` = `EPSILON`
+
+Tolerance
+
+#### Returns
+
+`boolean`
+
+True if parallel
+
+#### Since
+
+0.7.0
+
+---
+
+### isPerpendicularTo()
+
+> **isPerpendicularTo**(`v`, `epsilon`): `boolean`
+
+Defined in: [src/core/vector2.ts:4188](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L4188)
+
+Tests perpendicularity with v.
+
+#### Parameters
+
+##### v
+
+[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
+
+Vector to compare
+
+##### epsilon
+
+`number` = `EPSILON`
+
+Tolerance
+
+#### Returns
+
+`boolean`
+
+True if perpendicular
+
+#### Since
+
+0.7.0
+
+---
+
+### isUnit()
+
+> **isUnit**(): `boolean`
+
+Defined in: [src/core/vector2.ts:4134](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L4134)
+
+Tests if unit length.
+
+#### Returns
+
+`boolean`
+
+True if |magnitudeSq - 1| ≤ EPSILON
 
 #### Since
 
@@ -1328,7 +1925,7 @@ True if both components are within epsilon of zero.
 
 > **isZero**(): `boolean`
 
-Defined in: [src/core/vector2.ts:3742](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3742)
+Defined in: [src/core/vector2.ts:4078](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L4078)
 
 Tests if exactly zero.
 
@@ -1336,7 +1933,7 @@ Tests if exactly zero.
 
 `boolean`
 
-True if both components are zero.
+True if both components are zero
 
 #### See
 
@@ -1352,7 +1949,7 @@ True if both components are zero.
 
 > **nearEquals**(`v`, `epsilon`): `boolean`
 
-Defined in: [src/core/vector2.ts:3773](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3773)
+Defined in: [src/core/vector2.ts:4111](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L4111)
 
 Approximate equality with v using relative tolerance.
 
@@ -1362,7 +1959,7 @@ Approximate equality with v using relative tolerance.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Vector to compare.
+Vector to compare
 
 ##### epsilon
 
@@ -1374,15 +1971,15 @@ Relative tolerance.
 
 `boolean`
 
-True if within scaled epsilon.
-
-#### Default Value
-
-`EPSILON`
+True if within scaled epsilon
 
 #### Remarks
 
 Uses relative tolerance: `|a - b| <= epsilon * max(1, |a|, |b|)` per component.
+
+#### Default Value
+
+`EPSILON`
 
 #### Since
 
@@ -1394,7 +1991,7 @@ Uses relative tolerance: `|a - b| <= epsilon * max(1, |a|, |b|)` per component.
 
 > `static` **exactEquals**(`a`, `b`): `boolean`
 
-Defined in: [src/core/vector2.ts:2393](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2393)
+Defined in: [src/core/vector2.ts:2468](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L2468)
 
 Exact component-wise equality (bit-identical).
 
@@ -1404,19 +2001,19 @@ Exact component-wise equality (bit-identical).
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-First vector.
+First vector
 
 ##### b
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Second vector.
+Second vector
 
 #### Returns
 
 `boolean`
 
-True if components are exactly identical.
+True if components are exactly identical
 
 #### Remarks
 
@@ -1432,7 +2029,7 @@ Use [nearEquals](#nearequals-2) for comparing results of floating-point operatio
 
 > `static` **hasInfinity**(`v`): `boolean`
 
-Defined in: [src/core/vector2.ts:2471](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2471)
+Defined in: [src/core/vector2.ts:2548](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L2548)
 
 Tests if any component is infinite (±Infinity).
 
@@ -1442,13 +2039,13 @@ Tests if any component is infinite (±Infinity).
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Vector to test.
+Vector to test
 
 #### Returns
 
 `boolean`
 
-True if any component is ±Infinity.
+True if any component is ±Infinity
 
 #### Remarks
 
@@ -1464,7 +2061,7 @@ Distinguishes infinity from NaN. Use [isFinite](#isfinite-2) to check for both.
 
 > `static` **hasNaN**(`v`): `boolean`
 
-Defined in: [src/core/vector2.ts:2455](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2455)
+Defined in: [src/core/vector2.ts:2532](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L2532)
 
 Tests if any component is NaN.
 
@@ -1474,13 +2071,13 @@ Tests if any component is NaN.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Vector to test.
+Vector to test
 
 #### Returns
 
 `boolean`
 
-True if any component is NaN.
+True if any component is NaN
 
 #### Since
 
@@ -1492,7 +2089,7 @@ True if any component is NaN.
 
 > `static` **isFinite**(`v`): `boolean`
 
-Defined in: [src/core/vector2.ts:2442](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2442)
+Defined in: [src/core/vector2.ts:2519](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L2519)
 
 Tests whether both components are finite numbers.
 
@@ -1502,13 +2099,13 @@ Tests whether both components are finite numbers.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Vector to test.
+Vector to test
 
 #### Returns
 
 `boolean`
 
-True if both components are finite.
+True if both components are finite
 
 #### Since
 
@@ -1520,7 +2117,7 @@ True if both components are finite.
 
 > `static` **isNearZero**(`v`, `epsilon`): `boolean`
 
-Defined in: [src/core/vector2.ts:2376](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2376)
+Defined in: [src/core/vector2.ts:2451](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L2451)
 
 Tests whether both components are within epsilon of 0.
 
@@ -1530,7 +2127,7 @@ Tests whether both components are within epsilon of 0.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Vector to test.
+Vector to test
 
 ##### epsilon
 
@@ -1542,7 +2139,7 @@ Tolerance.
 
 `boolean`
 
-True if |x| ≤ epsilon and |y| ≤ epsilon.
+True if |x| ≤ epsilon and |y| ≤ epsilon
 
 #### Default Value
 
@@ -1558,7 +2155,7 @@ True if |x| ≤ epsilon and |y| ≤ epsilon.
 
 > `static` **isParallel**(`a`, `b`, `epsilon`): `boolean`
 
-Defined in: [src/core/vector2.ts:2488](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2488)
+Defined in: [src/core/vector2.ts:2565](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L2565)
 
 Tests parallelism: |cross(a, b)| ≤ epsilon.
 
@@ -1568,13 +2165,13 @@ Tests parallelism: |cross(a, b)| ≤ epsilon.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-First vector.
+First vector
 
 ##### b
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Second vector.
+Second vector
 
 ##### epsilon
 
@@ -1586,7 +2183,7 @@ Tolerance.
 
 `boolean`
 
-True if vectors are parallel.
+True if vectors are parallel
 
 #### Default Value
 
@@ -1602,7 +2199,7 @@ True if vectors are parallel.
 
 > `static` **isPerpendicular**(`a`, `b`, `epsilon`): `boolean`
 
-Defined in: [src/core/vector2.ts:2507](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2507)
+Defined in: [src/core/vector2.ts:2585](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L2585)
 
 Tests perpendicularity: |dot(a, b)| ≤ epsilon.
 
@@ -1612,13 +2209,13 @@ Tests perpendicularity: |dot(a, b)| ≤ epsilon.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-First vector.
+First vector
 
 ##### b
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Second vector.
+Second vector
 
 ##### epsilon
 
@@ -1630,7 +2227,7 @@ Tolerance.
 
 `boolean`
 
-True if vectors are perpendicular.
+True if vectors are perpendicular
 
 #### Default Value
 
@@ -1644,9 +2241,9 @@ True if vectors are perpendicular.
 
 ### isUnit()
 
-> `static` **isUnit**(`v`): `boolean`
+> `static` **isUnit**(`v`, `epsilon`): `boolean`
 
-Defined in: [src/core/vector2.ts:2429](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2429)
+Defined in: [src/core/vector2.ts:2505](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L2505)
 
 Tests whether |length(v) - 1| ≤ EPSILON.
 
@@ -1656,13 +2253,23 @@ Tests whether |length(v) - 1| ≤ EPSILON.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Vector to test.
+Vector to test
+
+##### epsilon
+
+`number` = `EPSILON`
+
+Tolerance for comparison.
 
 #### Returns
 
 `boolean`
 
-True if v is unit length.
+True if v is unit length
+
+#### Default Value
+
+`EPSILON`
 
 #### Since
 
@@ -1674,7 +2281,7 @@ True if v is unit length.
 
 > `static` **isZero**(`v`): `boolean`
 
-Defined in: [src/core/vector2.ts:2362](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2362)
+Defined in: [src/core/vector2.ts:2437](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L2437)
 
 Tests whether v is exactly (0, 0).
 
@@ -1684,13 +2291,13 @@ Tests whether v is exactly (0, 0).
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Vector to test.
+Vector to test
 
 #### Returns
 
 `boolean`
 
-True if both components are zero.
+True if both components are zero
 
 #### Since
 
@@ -1702,7 +2309,7 @@ True if both components are zero.
 
 > `static` **nearEquals**(`a`, `b`, `epsilon`): `boolean`
 
-Defined in: [src/core/vector2.ts:2412](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2412)
+Defined in: [src/core/vector2.ts:2487](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L2487)
 
 Approximate component-wise equality using relative tolerance.
 
@@ -1712,13 +2319,13 @@ Approximate component-wise equality using relative tolerance.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-First vector.
+First vector
 
 ##### b
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Second vector.
+Second vector
 
 ##### epsilon
 
@@ -1730,16 +2337,16 @@ Relative tolerance.
 
 `boolean`
 
-True if both component differences are within scaled epsilon.
-
-#### Default Value
-
-`EPSILON`
+True if both component differences are within scaled epsilon
 
 #### Remarks
 
 Uses relative tolerance: `|a - b| <= epsilon * max(1, |a|, |b|)` per component.
 This scales with value magnitude, making it robust for both small and large values.
+
+#### Default Value
+
+`EPSILON`
 
 #### Since
 
@@ -1751,7 +2358,7 @@ This scales with value magnitude, making it robust for both small and large valu
 
 > `readonly` `static` **ELEMENT_COUNT**: `2` = `2`
 
-Defined in: [src/core/vector2.ts:144](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L144)
+Defined in: [src/core/vector2.ts:144](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L144)
 
 Number of elements when serialized to an array.
 
@@ -1765,7 +2372,7 @@ Number of elements when serialized to an array.
 
 > `readonly` `static` **EPSILON_VECTOR**: `Readonly`\<`Vector2`\>
 
-Defined in: [src/core/vector2.ts:151](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L151)
+Defined in: [src/core/vector2.ts:151](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L151)
 
 Epsilon vector `(ε, ε)`.
 
@@ -1779,7 +2386,7 @@ Epsilon vector `(ε, ε)`.
 
 > `readonly` `static` **NEGATIVE_INFINITY**: `Readonly`\<`Vector2`\>
 
-Defined in: [src/core/vector2.ts:223](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L223)
+Defined in: [src/core/vector2.ts:223](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L223)
 
 The `(-∞, -∞)` vector.
 
@@ -1793,7 +2400,7 @@ The `(-∞, -∞)` vector.
 
 > `readonly` `static` **NEGATIVE_ONE**: `Readonly`\<`Vector2`\>
 
-Defined in: [src/core/vector2.ts:165](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L165)
+Defined in: [src/core/vector2.ts:165](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L165)
 
 The all-negative-ones vector `(-1, -1)`.
 
@@ -1807,7 +2414,7 @@ The all-negative-ones vector `(-1, -1)`.
 
 > `readonly` `static` **NEGATIVE_UNIT_DIAGONAL**: `Readonly`\<`Vector2`\>
 
-Defined in: [src/core/vector2.ts:207](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L207)
+Defined in: [src/core/vector2.ts:207](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L207)
 
 225° diagonal unit `(-1/√2, -1/√2)` - direction from origin at 225° from +X.
 
@@ -1821,7 +2428,7 @@ Defined in: [src/core/vector2.ts:207](https://github.com/rndelpuerto/lenguados/b
 
 > `readonly` `static` **NEGATIVE_UNIT_X**: `Readonly`\<`Vector2`\>
 
-Defined in: [src/core/vector2.ts:186](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L186)
+Defined in: [src/core/vector2.ts:186](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L186)
 
 Unit vector along -X `(-1, 0)`.
 
@@ -1835,7 +2442,7 @@ Unit vector along -X `(-1, 0)`.
 
 > `readonly` `static` **NEGATIVE_UNIT_Y**: `Readonly`\<`Vector2`\>
 
-Defined in: [src/core/vector2.ts:193](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L193)
+Defined in: [src/core/vector2.ts:193](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L193)
 
 Unit vector along -Y `(0, -1)`.
 
@@ -1849,7 +2456,7 @@ Unit vector along -Y `(0, -1)`.
 
 > `readonly` `static` **ONE**: `Readonly`\<`Vector2`\>
 
-Defined in: [src/core/vector2.ts:158](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L158)
+Defined in: [src/core/vector2.ts:158](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L158)
 
 The all-ones vector `(1, 1)`.
 
@@ -1863,7 +2470,7 @@ The all-ones vector `(1, 1)`.
 
 > `readonly` `static` **POSITIVE_INFINITY**: `Readonly`\<`Vector2`\>
 
-Defined in: [src/core/vector2.ts:214](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L214)
+Defined in: [src/core/vector2.ts:214](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L214)
 
 The `(+∞, +∞)` vector.
 
@@ -1877,7 +2484,7 @@ The `(+∞, +∞)` vector.
 
 > `readonly` `static` **UNIT_DIAGONAL**: `Readonly`\<`Vector2`\>
 
-Defined in: [src/core/vector2.ts:200](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L200)
+Defined in: [src/core/vector2.ts:200](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L200)
 
 45° diagonal unit `(1/√2, 1/√2)` - direction from origin at 45° from +X.
 
@@ -1891,7 +2498,7 @@ Defined in: [src/core/vector2.ts:200](https://github.com/rndelpuerto/lenguados/b
 
 > `readonly` `static` **UNIT_X**: `Readonly`\<`Vector2`\>
 
-Defined in: [src/core/vector2.ts:172](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L172)
+Defined in: [src/core/vector2.ts:172](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L172)
 
 Unit vector along +X `(1, 0)`.
 
@@ -1905,7 +2512,7 @@ Unit vector along +X `(1, 0)`.
 
 > `readonly` `static` **UNIT_Y**: `Readonly`\<`Vector2`\>
 
-Defined in: [src/core/vector2.ts:179](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L179)
+Defined in: [src/core/vector2.ts:179](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L179)
 
 Unit vector along +Y `(0, 1)`.
 
@@ -1919,7 +2526,7 @@ Unit vector along +Y `(0, 1)`.
 
 > `readonly` `static` **ZERO**: `Readonly`\<`Vector2`\>
 
-Defined in: [src/core/vector2.ts:137](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L137)
+Defined in: [src/core/vector2.ts:137](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L137)
 
 The zero/origin vector `(0, 0)`.
 
@@ -1929,11 +2536,169 @@ The zero/origin vector `(0, 0)`.
 
 ## Constraint
 
+### clamp()
+
+> **clamp**(`minV`, `maxV`): `this`
+
+Defined in: [src/core/vector2.ts:3530](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3530)
+
+Clamps components between min and max vectors.
+
+#### Parameters
+
+##### minV
+
+[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
+
+Per-component minima
+
+##### maxV
+
+[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
+
+Per-component maxima
+
+#### Returns
+
+`this`
+
+This for chaining
+
+#### Since
+
+0.7.0
+
+---
+
+### clampMagnitude()
+
+> **clampMagnitude**(`minLength`, `maxLength`): `this`
+
+Defined in: [src/core/vector2.ts:3558](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3558)
+
+Clamps length to range.
+
+#### Parameters
+
+##### minLength
+
+`number`
+
+Minimum magnitude
+
+##### maxLength
+
+`number`
+
+Maximum magnitude
+
+#### Returns
+
+`this`
+
+This for chaining
+
+#### Since
+
+0.7.0
+
+---
+
+### clampScalar()
+
+> **clampScalar**(`min`, `max`): `this`
+
+Defined in: [src/core/vector2.ts:3544](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3544)
+
+Clamps components between scalar bounds.
+
+#### Parameters
+
+##### min
+
+`number`
+
+Minimum scalar
+
+##### max
+
+`number`
+
+Maximum scalar
+
+#### Returns
+
+`this`
+
+This for chaining
+
+#### Since
+
+0.7.0
+
+---
+
+### limit()
+
+> **limit**(`maxLength`): `this`
+
+Defined in: [src/core/vector2.ts:3572](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3572)
+
+Limits length to maximum.
+
+#### Parameters
+
+##### maxLength
+
+`number`
+
+Maximum allowed magnitude
+
+#### Returns
+
+`this`
+
+This for chaining
+
+#### Since
+
+0.7.0
+
+---
+
+### max()
+
+> **max**(`v`): `this`
+
+Defined in: [src/core/vector2.ts:3601](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3601)
+
+Component-wise maximum with v.
+
+#### Parameters
+
+##### v
+
+[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
+
+Other vector
+
+#### Returns
+
+`this`
+
+This for chaining
+
+#### Since
+
+0.7.0
+
+---
+
 ### maxScalar()
 
 > **maxScalar**(`s`): `this`
 
-Defined in: [src/core/vector2.ts:3422](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3422)
+Defined in: [src/core/vector2.ts:3629](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3629)
 
 Component-wise maximum with scalar.
 
@@ -1943,13 +2708,41 @@ Component-wise maximum with scalar.
 
 `number`
 
-Scalar bound.
+Scalar bound
 
 #### Returns
 
 `this`
 
-This for chaining.
+This for chaining
+
+#### Since
+
+0.7.0
+
+---
+
+### min()
+
+> **min**(`v`): `this`
+
+Defined in: [src/core/vector2.ts:3588](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3588)
+
+Component-wise minimum with v.
+
+#### Parameters
+
+##### v
+
+[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
+
+Other vector
+
+#### Returns
+
+`this`
+
+This for chaining
 
 #### Since
 
@@ -1961,7 +2754,7 @@ This for chaining.
 
 > **minScalar**(`s`): `this`
 
-Defined in: [src/core/vector2.ts:3408](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3408)
+Defined in: [src/core/vector2.ts:3615](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3615)
 
 Component-wise minimum with scalar.
 
@@ -1971,13 +2764,13 @@ Component-wise minimum with scalar.
 
 `number`
 
-Scalar bound.
+Scalar bound
 
 #### Returns
 
 `this`
 
-This for chaining.
+This for chaining
 
 #### Since
 
@@ -1989,7 +2782,7 @@ This for chaining.
 
 > `static` **clamp**(`v`, `minV`, `maxV`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:1343](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L1343)
+Defined in: [src/core/vector2.ts:1398](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L1398)
 
 Component-wise clamp between min and max vectors.
 
@@ -1999,31 +2792,31 @@ Component-wise clamp between min and max vectors.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Vector to clamp.
+Vector to clamp
 
 ##### minV
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Per-component minima.
+Per-component minima
 
 ##### maxV
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Per-component maxima.
+Per-component maxima
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Clamped vector.
+Clamped vector
 
 #### Since
 
@@ -2035,7 +2828,7 @@ Clamped vector.
 
 > `static` **clampMagnitude**(`v`, `minLength`, `maxLength`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:1385](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L1385)
+Defined in: [src/core/vector2.ts:1440](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L1440)
 
 Clamps vector length to [minLength, maxLength].
 
@@ -2045,31 +2838,31 @@ Clamps vector length to [minLength, maxLength].
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Vector to clamp.
+Vector to clamp
 
 ##### minLength
 
 `number`
 
-Minimum magnitude.
+Minimum magnitude
 
 ##### maxLength
 
 `number`
 
-Maximum magnitude.
+Maximum magnitude
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Vector with clamped magnitude.
+Vector with clamped magnitude
 
 #### Since
 
@@ -2081,7 +2874,7 @@ Vector with clamped magnitude.
 
 > `static` **clampScalar**(`v`, `min`, `max`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:1364](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L1364)
+Defined in: [src/core/vector2.ts:1419](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L1419)
 
 Clamps both components between scalar min and max.
 
@@ -2091,31 +2884,31 @@ Clamps both components between scalar min and max.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Vector to clamp.
+Vector to clamp
 
 ##### min
 
 `number`
 
-Minimum scalar.
+Minimum scalar
 
 ##### max
 
 `number`
 
-Maximum scalar.
+Maximum scalar
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Clamped vector.
+Clamped vector
 
 #### Since
 
@@ -2127,7 +2920,7 @@ Clamped vector.
 
 > `static` **limit**(`v`, `maxLength`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:1413](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L1413)
+Defined in: [src/core/vector2.ts:1468](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L1468)
 
 Limits vector length to maxLength.
 
@@ -2137,25 +2930,25 @@ Limits vector length to maxLength.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Vector to limit.
+Vector to limit
 
 ##### maxLength
 
 `number`
 
-Maximum allowed magnitude.
+Maximum allowed magnitude
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Vector with limited magnitude.
+Vector with limited magnitude
 
 #### Remarks
 
@@ -2171,7 +2964,7 @@ Equivalent to `clampMagnitude(v, 0, maxLength)`.
 
 > `static` **max**(`a`, `b`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:1448](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L1448)
+Defined in: [src/core/vector2.ts:1503](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L1503)
 
 Component-wise maximum of a and b.
 
@@ -2181,25 +2974,25 @@ Component-wise maximum of a and b.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-First vector.
+First vector
 
 ##### b
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Second vector.
+Second vector
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Vector with per-component maxima.
+Vector with per-component maxima
 
 #### Since
 
@@ -2211,7 +3004,7 @@ Vector with per-component maxima.
 
 > `static` **maxScalar**(`v`, `s`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:1478](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L1478)
+Defined in: [src/core/vector2.ts:1533](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L1533)
 
 Component-wise maximum of v and scalar s.
 
@@ -2221,25 +3014,25 @@ Component-wise maximum of v and scalar s.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Vector.
+Vector
 
 ##### s
 
 `number`
 
-Scalar bound.
+Scalar bound
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Vector with each component ≥ s.
+Vector with each component ≥ s
 
 #### Since
 
@@ -2251,7 +3044,7 @@ Vector with each component ≥ s.
 
 > `static` **min**(`a`, `b`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:1433](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L1433)
+Defined in: [src/core/vector2.ts:1488](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L1488)
 
 Component-wise minimum of a and b.
 
@@ -2261,25 +3054,25 @@ Component-wise minimum of a and b.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-First vector.
+First vector
 
 ##### b
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Second vector.
+Second vector
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Vector with per-component minima.
+Vector with per-component minima
 
 #### Since
 
@@ -2291,7 +3084,7 @@ Vector with per-component minima.
 
 > `static` **minScalar**(`v`, `s`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:1463](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L1463)
+Defined in: [src/core/vector2.ts:1518](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L1518)
 
 Component-wise minimum of v and scalar s.
 
@@ -2301,25 +3094,25 @@ Component-wise minimum of v and scalar s.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Vector.
+Vector
 
 ##### s
 
 `number`
 
-Scalar bound.
+Scalar bound
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Vector with each component ≤ s.
+Vector with each component ≤ s
 
 #### Since
 
@@ -2327,11 +3120,91 @@ Vector with each component ≤ s.
 
 ## Conversion
 
+### \[iterator\]()
+
+> **\[iterator\]**(): `IterableIterator`\<`number`\>
+
+Defined in: [src/core/vector2.ts:4264](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L4264)
+
+Iterator for array destructuring.
+
+#### Returns
+
+`IterableIterator`\<`number`\>
+
+Iterator yielding x then y
+
+#### Since
+
+0.7.0
+
+---
+
+### clone()
+
+> **clone**(): `Vector2`
+
+Defined in: [src/core/vector2.ts:4202](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L4202)
+
+Returns a shallow clone.
+
+#### Returns
+
+`Vector2`
+
+New Vector2 with same components
+
+#### Since
+
+0.7.0
+
+---
+
+### toArray()
+
+> **toArray**\<`T`\>(`out?`, `offset?`): \[`number`, `number`\] \| `T`
+
+Defined in: [src/core/vector2.ts:4214](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L4214)
+
+Writes to array or typed array.
+
+#### Type Parameters
+
+##### T
+
+`T` _extends_ `ArrayLike`\<`number`\> & `object`
+
+#### Parameters
+
+##### out?
+
+`T`
+
+Destination array
+
+##### offset?
+
+`number` = `0`
+
+Write offset
+
+#### Returns
+
+\[`number`, `number`\] \| `T`
+
+The output array
+
+#### Since
+
+0.7.0
+
+---
+
 ### toComplexLike()
 
 > **toComplexLike**(): `object`
 
-Defined in: [src/core/vector2.ts:3920](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3920)
+Defined in: [src/core/vector2.ts:4281](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L4281)
 
 Converts this vector to a complex-like object.
 
@@ -2339,7 +3212,7 @@ Converts this vector to a complex-like object.
 
 `object`
 
-Object with real (x) and imag (y) properties.
+Object with real (x) and imag (y) properties
 
 ##### imag
 
@@ -2360,11 +3233,67 @@ Does not create a Complex instance to avoid circular dependencies.
 
 ---
 
+### toJSON()
+
+> **toJSON**(): `object`
+
+Defined in: [src/core/vector2.ts:4242](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L4242)
+
+Alias for toObject (JSON serialization).
+
+#### Returns
+
+`object`
+
+Object with x and y properties
+
+##### x
+
+> **x**: `number`
+
+##### y
+
+> **y**: `number`
+
+#### Since
+
+0.7.0
+
+---
+
+### toObject()
+
+> **toObject**(): `object`
+
+Defined in: [src/core/vector2.ts:4232](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L4232)
+
+Returns plain object { x, y }.
+
+#### Returns
+
+`object`
+
+Object with x and y properties
+
+##### x
+
+> **x**: `number`
+
+##### y
+
+> **y**: `number`
+
+#### Since
+
+0.7.0
+
+---
+
 ### toString()
 
 > **toString**(`precision`): `string`
 
-Defined in: [src/core/vector2.ts:3896](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3896)
+Defined in: [src/core/vector2.ts:4254](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L4254)
 
 Returns string representation.
 
@@ -2380,7 +3309,7 @@ Decimal places.
 
 `string`
 
-Formatted string.
+Formatted string
 
 #### Default Value
 
@@ -2392,11 +3321,95 @@ Formatted string.
 
 ## Direction
 
+### angleBetween()
+
+> **angleBetween**(`v`): `number`
+
+Defined in: [src/core/vector2.ts:3397](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3397)
+
+Unsigned angle between this and v.
+
+#### Parameters
+
+##### v
+
+[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
+
+Target vector
+
+#### Returns
+
+`number`
+
+Unsigned angle in radians
+
+#### Since
+
+0.7.0
+
+---
+
+### angleTo()
+
+> **angleTo**(`v`): `number`
+
+Defined in: [src/core/vector2.ts:3386](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3386)
+
+Signed angle to v.
+
+#### Parameters
+
+##### v
+
+[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
+
+Target vector
+
+#### Returns
+
+`number`
+
+Signed angle in radians
+
+#### Since
+
+0.7.0
+
+---
+
+### directionTo()
+
+> **directionTo**(`target`): `Vector2`
+
+Defined in: [src/core/vector2.ts:3354](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3354)
+
+Unit direction from this to target.
+
+#### Parameters
+
+##### target
+
+[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
+
+Target vector
+
+#### Returns
+
+`Vector2`
+
+New unit direction vector
+
+#### Since
+
+0.7.0
+
+---
+
 ### angle()
 
 > `static` **angle**(`v`): `number`
 
-Defined in: [src/core/vector2.ts:1286](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L1286)
+Defined in: [src/core/vector2.ts:1341](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L1341)
 
 Heading (angle) of v from +X axis in radians ∈ [-π, π].
 
@@ -2406,13 +3419,13 @@ Heading (angle) of v from +X axis in radians ∈ [-π, π].
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Vector to measure.
+Vector to measure
 
 #### Returns
 
 `number`
 
-Angle in radians (CCW positive).
+Angle in radians (CCW positive)
 
 #### Since
 
@@ -2424,7 +3437,7 @@ Angle in radians (CCW positive).
 
 > `static` **angleBetween**(`a`, `b`): `number`
 
-Defined in: [src/core/vector2.ts:1317](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L1317)
+Defined in: [src/core/vector2.ts:1372](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L1372)
 
 Smallest unsigned angle between a and b in radians ∈ [0, π].
 
@@ -2434,19 +3447,19 @@ Smallest unsigned angle between a and b in radians ∈ [0, π].
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-First vector.
+First vector
 
 ##### b
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Second vector.
+Second vector
 
 #### Returns
 
 `number`
 
-Unsigned angle in radians.
+Unsigned angle in radians
 
 #### Since
 
@@ -2458,7 +3471,7 @@ Unsigned angle in radians.
 
 > `static` **angleTo**(`a`, `b`): `number`
 
-Defined in: [src/core/vector2.ts:1303](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L1303)
+Defined in: [src/core/vector2.ts:1358](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L1358)
 
 Signed angle from a to b (positive if b is CCW from a).
 
@@ -2468,19 +3481,19 @@ Signed angle from a to b (positive if b is CCW from a).
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Start vector.
+Start vector
 
 ##### b
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-End vector.
+End vector
 
 #### Returns
 
 `number`
 
-Signed angle in radians.
+Signed angle in radians
 
 #### Remarks
 
@@ -2496,7 +3509,7 @@ Uses `atan2(cross(a,b), dot(a,b))` for robust behavior.
 
 > `static` **direction**(`from`, `to`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:1207](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L1207)
+Defined in: [src/core/vector2.ts:1262](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L1262)
 
 Unit direction from `from` to `to`.
 
@@ -2506,29 +3519,29 @@ Unit direction from `from` to `to`.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Start point.
+Start point
 
 ##### to
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-End point.
+End point
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Unit direction vector.
+Unit direction vector
 
 #### Throws
 
-If from and to are coincident.
+If from and to are coincident
 
 #### See
 
@@ -2545,7 +3558,7 @@ If from and to are coincident.
 
 > `static` **directionSafe**(`from`, `to`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:1235](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L1235)
+Defined in: [src/core/vector2.ts:1289](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L1289)
 
 Unit direction from `from` to `to`, returning (0,0) if coincident.
 
@@ -2555,30 +3568,29 @@ Unit direction from `from` to `to`, returning (0,0) if coincident.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Start point.
+Start point
 
 ##### to
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-End point.
+End point
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Unit direction vector, or (0,0) if coincident.
+Unit direction vector, or (0,0) if coincident
 
 #### See
 
-- [direction](#direction) - Throws on coincident points
-- [directionUnchecked](#directionunchecked) - No validation, for hot paths
+[direction](#direction) - Throws on coincident points
 
 #### Since
 
@@ -2590,7 +3602,7 @@ Unit direction vector, or (0,0) if coincident.
 
 > `static` **directionUnchecked**(`from`, `to`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:1266](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L1266)
+Defined in: [src/core/vector2.ts:1321](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L1321)
 
 Unit direction without validation (hot path).
 
@@ -2600,34 +3612,35 @@ Unit direction without validation (hot path).
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Start point.
+Start point
 
 ##### to
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-End point (must be different from `from`).
+End point (must be different from `from`)
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Unit direction vector.
+Unit direction vector
 
 #### Remarks
 
-⚠️ **Precondition:** `from ≠ to`.
+**Precondition:** `from ≠ to`.
 Calling with identical points produces NaN/Infinity.
 
 #### See
 
-[direction](#direction) - Handles identical points gracefully
+- [direction](#direction) - Throws on coincident points
+- [directionSafe](#directionsafe) - Returns (0,0) on coincident points
 
 #### Since
 
@@ -2639,7 +3652,7 @@ Calling with identical points produces NaN/Infinity.
 
 > `static` **clone**(`source`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:256](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L256)
+Defined in: [src/core/vector2.ts:269](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L269)
 
 Creates a deep copy of a vector.
 
@@ -2649,19 +3662,26 @@ Creates a deep copy of a vector.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Vector to clone.
+Vector to clone
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-A Vector2 with identical components.
+A Vector2 with identical components
+
+#### Example
+
+```typescript
+const v = Vector2.fromValues(1, 2);
+const w = Vector2.clone(v); // → (1, 2), new instance
+```
 
 #### Since
 
@@ -2673,7 +3693,7 @@ A Vector2 with identical components.
 
 > `static` **copy**(`source`, `destination`): `Vector2`
 
-Defined in: [src/core/vector2.ts:270](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L270)
+Defined in: [src/core/vector2.ts:290](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L290)
 
 Copies component values from source into destination (alloc-free).
 
@@ -2683,19 +3703,27 @@ Copies component values from source into destination (alloc-free).
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Source vector.
+Source vector
 
 ##### destination
 
 `Vector2`
 
-Target vector to receive the copy.
+Target vector to receive the copy
 
 #### Returns
 
 `Vector2`
 
-The destination vector.
+The destination vector
+
+#### Example
+
+```typescript
+const src = Vector2.fromValues(5, 10);
+const dst = new Vector2();
+Vector2.copy(src, dst); // dst → (5, 10)
+```
 
 #### Since
 
@@ -2707,7 +3735,7 @@ The destination vector.
 
 > `static` **fromAngle**(`angle`, `radius`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:290](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L290)
+Defined in: [src/core/vector2.ts:310](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L310)
 
 Creates a vector from polar coordinates.
 
@@ -2717,7 +3745,7 @@ Creates a vector from polar coordinates.
 
 `number`
 
-Angle in radians (from +X, CCW positive).
+Angle in radians (from +X, CCW positive)
 
 ##### radius
 
@@ -2729,13 +3757,13 @@ Magnitude.
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-A Vector2 positioned at the given angle and radius.
+A Vector2 positioned at the given angle and radius
 
 #### Default Value
 
@@ -2757,7 +3785,7 @@ Vector2.fromAngle(Math.PI / 2, 2); // → (0, 2)
 
 > `static` **fromArray**(`array`, `offset`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:329](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L329)
+Defined in: [src/core/vector2.ts:355](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L355)
 
 Creates a vector from a flat numeric array.
 
@@ -2767,7 +3795,7 @@ Creates a vector from a flat numeric array.
 
 `ArrayLike`\<`number`\>
 
-Numeric array with at least two elements.
+Numeric array with at least two elements
 
 ##### offset
 
@@ -2779,13 +3807,13 @@ Index of the x component.
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-A Vector2 initialized from the array.
+A Vector2 initialized from the array
 
 #### Default Value
 
@@ -2793,7 +3821,7 @@ A Vector2 initialized from the array.
 
 #### Throws
 
-If offset is out of bounds.
+If offset is out of bounds
 
 #### Example
 
@@ -2812,7 +3840,7 @@ Vector2.fromArray([10, 20, 30], 1); // → (20, 30)
 
 > `static` **fromComplex**(`complex`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:351](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L351)
+Defined in: [src/core/vector2.ts:382](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L382)
 
 Creates a vector from a complex number.
 
@@ -2822,23 +3850,29 @@ Creates a vector from a complex number.
 
 [`ReadonlyComplexLike`](../../types/interfaces/ReadonlyComplexLike.md)
 
-Complex number with real and imag components.
+Complex number with real and imag components
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Vector with x=real, y=imag.
+Vector with x=real, y=imag
 
 #### Remarks
 
 Uses interface for loose coupling with Complex class.
+
+#### Example
+
+```typescript
+Vector2.fromComplex({ real: 3, imag: 4 }); // → (3, 4)
+```
 
 #### Since
 
@@ -2850,7 +3884,7 @@ Uses interface for loose coupling with Complex class.
 
 > `static` **fromObject**(`object`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:307](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L307)
+Defined in: [src/core/vector2.ts:333](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L333)
 
 Creates a vector from a plain object `{ x, y }`.
 
@@ -2860,23 +3894,29 @@ Creates a vector from a plain object `{ x, y }`.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Plain object with numeric x and y.
+Plain object with numeric x and y
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-A Vector2 with the object's components.
+A Vector2 with the object's components
 
 #### Throws
 
-If x or y is not finite.
+If x or y is not finite
+
+#### Example
+
+```typescript
+Vector2.fromObject({ x: 7, y: -3 }); // → (7, -3)
+```
 
 #### Since
 
@@ -2888,7 +3928,7 @@ If x or y is not finite.
 
 > `static` **fromValues**(`x`, `y`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:242](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L242)
+Defined in: [src/core/vector2.ts:249](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L249)
 
 Creates a vector from explicit components.
 
@@ -2898,25 +3938,33 @@ Creates a vector from explicit components.
 
 `number`
 
-X component.
+X component
 
 ##### y
 
 `number`
 
-Y component.
+Y component
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-A Vector2 with components `(x, y)`.
+A Vector2 with components `(x, y)`
+
+#### Example
+
+```typescript
+Vector2.fromValues(3, 4); // → (3, 4)
+const out = new Vector2();
+Vector2.fromValues(3, 4, out); // reuses `out` → (3, 4)
+```
 
 #### Since
 
@@ -2924,11 +3972,123 @@ A Vector2 with components `(x, y)`.
 
 ## Geometry
 
+### cross()
+
+> **cross**(`v`): `number`
+
+Defined in: [src/core/vector2.ts:3269](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3269)
+
+2D scalar cross product with v.
+
+#### Parameters
+
+##### v
+
+[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
+
+Second operand
+
+#### Returns
+
+`number`
+
+Scalar cross product
+
+#### Since
+
+0.7.0
+
+---
+
+### distanceSquaredTo()
+
+> **distanceSquaredTo**(`v`): `number`
+
+Defined in: [src/core/vector2.ts:3322](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3322)
+
+Squared distance to v.
+
+#### Parameters
+
+##### v
+
+[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
+
+Target vector
+
+#### Returns
+
+`number`
+
+The squared distance
+
+#### Since
+
+0.7.0
+
+---
+
+### distanceTo()
+
+> **distanceTo**(`v`): `number`
+
+Defined in: [src/core/vector2.ts:3311](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3311)
+
+Euclidean distance to v.
+
+#### Parameters
+
+##### v
+
+[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
+
+Target vector
+
+#### Returns
+
+`number`
+
+The Euclidean distance
+
+#### Since
+
+0.7.0
+
+---
+
+### dot()
+
+> **dot**(`v`): `number`
+
+Defined in: [src/core/vector2.ts:3258](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3258)
+
+Dot product with v.
+
+#### Parameters
+
+##### v
+
+[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
+
+Second operand
+
+#### Returns
+
+`number`
+
+Scalar dot product
+
+#### Since
+
+0.7.0
+
+---
+
 ### magnitude()
 
 > **magnitude**(): `number`
 
-Defined in: [src/core/vector2.ts:3133](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3133)
+Defined in: [src/core/vector2.ts:3280](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3280)
 
 Euclidean magnitude (length).
 
@@ -2936,7 +4096,75 @@ Euclidean magnitude (length).
 
 `number`
 
-The Euclidean norm.
+The Euclidean norm
+
+#### Since
+
+0.7.0
+
+---
+
+### magnitudeSq()
+
+> **magnitudeSq**(): `number`
+
+Defined in: [src/core/vector2.ts:3290](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3290)
+
+Squared length.
+
+#### Returns
+
+`number`
+
+The squared length
+
+#### Since
+
+0.7.0
+
+---
+
+### manhattanDistanceTo()
+
+> **manhattanDistanceTo**(`v`): `number`
+
+Defined in: [src/core/vector2.ts:3333](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3333)
+
+Manhattan (L1) distance to v.
+
+#### Parameters
+
+##### v
+
+[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
+
+Target vector
+
+#### Returns
+
+`number`
+
+The Manhattan distance
+
+#### Since
+
+0.7.0
+
+---
+
+### manhattanLength()
+
+> **manhattanLength**(): `number`
+
+Defined in: [src/core/vector2.ts:3300](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3300)
+
+Manhattan length.
+
+#### Returns
+
+`number`
+
+The Manhattan norm
 
 #### Since
 
@@ -2948,7 +4176,7 @@ The Euclidean norm.
 
 > `static` **cross**(`a`, `b`): `number`
 
-Defined in: [src/core/vector2.ts:1073](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L1073)
+Defined in: [src/core/vector2.ts:1128](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L1128)
 
 2D scalar cross product (z-component): `a.x*b.y - a.y*b.x`.
 
@@ -2958,19 +4186,19 @@ Defined in: [src/core/vector2.ts:1073](https://github.com/rndelpuerto/lenguados/
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-First operand.
+First operand
 
 ##### b
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Second operand.
+Second operand
 
 #### Returns
 
 `number`
 
-Scalar cross product (signed area magnitude).
+Scalar cross product (signed area magnitude)
 
 #### Remarks
 
@@ -2995,7 +4223,7 @@ Vector2.cross(b, a); // -1 - a is CW from b
 
 > `static` **cross3**(`a`, `b`, `c`): `number`
 
-Defined in: [src/core/vector2.ts:1088](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L1088)
+Defined in: [src/core/vector2.ts:1143](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L1143)
 
 Twice the signed area of triangle (a, b, c).
 
@@ -3005,25 +4233,25 @@ Twice the signed area of triangle (a, b, c).
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-First vertex.
+First vertex
 
 ##### b
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Second vertex.
+Second vertex
 
 ##### c
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Third vertex.
+Third vertex
 
 #### Returns
 
 `number`
 
-Twice the signed area (positive if CCW winding).
+Twice the signed area (positive if CCW winding)
 
 #### Since
 
@@ -3035,7 +4263,7 @@ Twice the signed area (positive if CCW winding).
 
 > `static` **distance**(`a`, `b`): `number`
 
-Defined in: [src/core/vector2.ts:1152](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L1152)
+Defined in: [src/core/vector2.ts:1207](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L1207)
 
 Euclidean distance between a and b.
 
@@ -3045,19 +4273,19 @@ Euclidean distance between a and b.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-First point.
+First point
 
 ##### b
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Second point.
+Second point
 
 #### Returns
 
 `number`
 
-The Euclidean distance.
+The Euclidean distance
 
 #### Example
 
@@ -3077,7 +4305,7 @@ Vector2.distance(a, b); // 5 - the 3-4-5 triangle
 
 > `static` **distanceSquared**(`a`, `b`): `number`
 
-Defined in: [src/core/vector2.ts:1168](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L1168)
+Defined in: [src/core/vector2.ts:1223](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L1223)
 
 Squared Euclidean distance between a and b.
 
@@ -3087,19 +4315,19 @@ Squared Euclidean distance between a and b.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-First point.
+First point
 
 ##### b
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Second point.
+Second point
 
 #### Returns
 
 `number`
 
-The squared distance.
+The squared distance
 
 #### Since
 
@@ -3111,7 +4339,7 @@ The squared distance.
 
 > `static` **dot**(`a`, `b`): `number`
 
-Defined in: [src/core/vector2.ts:1048](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L1048)
+Defined in: [src/core/vector2.ts:1103](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L1103)
 
 Dot product `a·b = a.x*b.x + a.y*b.y`.
 
@@ -3121,19 +4349,19 @@ Dot product `a·b = a.x*b.x + a.y*b.y`.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-First operand.
+First operand
 
 ##### b
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Second operand.
+Second operand
 
 #### Returns
 
 `number`
 
-Scalar dot product.
+Scalar dot product
 
 #### Example
 
@@ -3154,7 +4382,7 @@ Vector2.dot(a, a); // 1 - parallel vectors (self dot = magnitude²)
 
 > `static` **magnitude**(`v`): `number`
 
-Defined in: [src/core/vector2.ts:1105](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L1105)
+Defined in: [src/core/vector2.ts:1160](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L1160)
 
 Euclidean length `||v||`.
 
@@ -3164,13 +4392,13 @@ Euclidean length `||v||`.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Vector to measure.
+Vector to measure
 
 #### Returns
 
 `number`
 
-The Euclidean norm.
+The Euclidean norm
 
 #### Since
 
@@ -3178,11 +4406,11 @@ The Euclidean norm.
 
 ---
 
-### magnitudeSquared()
+### magnitudeSq()
 
-> `static` **magnitudeSquared**(`v`): `number`
+> `static` **magnitudeSq**(`v`): `number`
 
-Defined in: [src/core/vector2.ts:1118](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L1118)
+Defined in: [src/core/vector2.ts:1173](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L1173)
 
 Squared length `||v||²` (avoids square root).
 
@@ -3192,13 +4420,13 @@ Squared length `||v||²` (avoids square root).
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Vector to measure.
+Vector to measure
 
 #### Returns
 
 `number`
 
-The squared length.
+The squared length
 
 #### Since
 
@@ -3210,7 +4438,7 @@ The squared length.
 
 > `static` **manhattanDistance**(`a`, `b`): `number`
 
-Defined in: [src/core/vector2.ts:1184](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L1184)
+Defined in: [src/core/vector2.ts:1239](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L1239)
 
 Manhattan (L1) distance between a and b.
 
@@ -3220,19 +4448,19 @@ Manhattan (L1) distance between a and b.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-First point.
+First point
 
 ##### b
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Second point.
+Second point
 
 #### Returns
 
 `number`
 
-The Manhattan distance.
+The Manhattan distance
 
 #### Since
 
@@ -3244,7 +4472,7 @@ The Manhattan distance.
 
 > `static` **manhattanLength**(`v`): `number`
 
-Defined in: [src/core/vector2.ts:1131](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L1131)
+Defined in: [src/core/vector2.ts:1186](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L1186)
 
 Manhattan length `|x| + |y|`.
 
@@ -3254,109 +4482,13 @@ Manhattan length `|x| + |y|`.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Vector to measure.
+Vector to measure
 
 #### Returns
 
 `number`
 
-The Manhattan (L1) norm.
-
-#### Since
-
-0.7.0
-
-## Initialization
-
-### setFromAngle()
-
-> **setFromAngle**(`angle`, `radius`): `this`
-
-Defined in: [src/core/vector2.ts:2678](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2678)
-
-Sets this vector from polar coordinates.
-
-#### Parameters
-
-##### angle
-
-`number`
-
-Angle in radians (CCW from +X).
-
-##### radius
-
-`number` = `1`
-
-Distance from origin (default 1).
-
-#### Returns
-
-`this`
-
-This for chaining.
-
-#### Since
-
-0.7.0
-
----
-
-### setFromArray()
-
-> **setFromArray**(`array`, `offset`): `this`
-
-Defined in: [src/core/vector2.ts:2692](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2692)
-
-Sets this vector from array values.
-
-#### Parameters
-
-##### array
-
-`ArrayLike`\<`number`\>
-
-Source array.
-
-##### offset
-
-`number` = `0`
-
-Starting index (default 0).
-
-#### Returns
-
-`this`
-
-This for chaining.
-
-#### Since
-
-0.7.0
-
----
-
-### setFromComplex()
-
-> **setFromComplex**(`complex`): `this`
-
-Defined in: [src/core/vector2.ts:2704](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2704)
-
-Sets this vector from a complex number.
-
-#### Parameters
-
-##### complex
-
-[`ReadonlyComplexLike`](../../types/interfaces/ReadonlyComplexLike.md)
-
-Source complex (real→x, imag→y).
-
-#### Returns
-
-`this`
-
-This for chaining.
+The Manhattan (L1) norm
 
 #### Since
 
@@ -3368,7 +4500,7 @@ This for chaining.
 
 > **lerp**(`end`, `t`): `this`
 
-Defined in: [src/core/vector2.ts:3669](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3669)
+Defined in: [src/core/vector2.ts:4005](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L4005)
 
 Linear interpolation towards end.
 
@@ -3378,19 +4510,19 @@ Linear interpolation towards end.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Target vector.
+Target vector
 
 ##### t
 
 `number`
 
-Interpolation factor.
+Interpolation factor
 
 #### Returns
 
 `this`
 
-This for chaining.
+This for chaining
 
 #### Since
 
@@ -3402,7 +4534,7 @@ This for chaining.
 
 > **lerpClamped**(`end`, `t`): `this`
 
-Defined in: [src/core/vector2.ts:3684](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3684)
+Defined in: [src/core/vector2.ts:4020](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L4020)
 
 Clamped linear interpolation.
 
@@ -3412,19 +4544,19 @@ Clamped linear interpolation.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Target vector.
+Target vector
 
 ##### t
 
 `number`
 
-Interpolation factor (clamped).
+Interpolation factor (clamped)
 
 #### Returns
 
 `this`
 
-This for chaining.
+This for chaining
 
 #### Since
 
@@ -3436,7 +4568,7 @@ This for chaining.
 
 > **slerp**(`end`, `t`): `this`
 
-Defined in: [src/core/vector2.ts:3697](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3697)
+Defined in: [src/core/vector2.ts:4033](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L4033)
 
 Spherical linear interpolation.
 
@@ -3446,19 +4578,19 @@ Spherical linear interpolation.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Target vector.
+Target vector
 
 ##### t
 
 `number`
 
-Interpolation factor.
+Interpolation factor
 
 #### Returns
 
 `this`
 
-This for chaining.
+This for chaining
 
 #### Since
 
@@ -3470,7 +4602,7 @@ This for chaining.
 
 > **slerpClamped**(`end`, `t`): `this`
 
-Defined in: [src/core/vector2.ts:3711](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3711)
+Defined in: [src/core/vector2.ts:4047](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L4047)
 
 Spherical linear interpolation with t clamped to [0, 1].
 
@@ -3480,19 +4612,19 @@ Spherical linear interpolation with t clamped to [0, 1].
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Target vector.
+Target vector
 
 ##### t
 
 `number`
 
-Interpolation factor (clamped to [0, 1]).
+Interpolation factor (clamped to [0, 1])
 
 #### Returns
 
 `this`
 
-This for chaining.
+This for chaining
 
 #### Since
 
@@ -3504,7 +4636,7 @@ This for chaining.
 
 > **smoothStep**(`end`, `t`): `this`
 
-Defined in: [src/core/vector2.ts:3724](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3724)
+Defined in: [src/core/vector2.ts:4060](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L4060)
 
 Smooth step interpolation.
 
@@ -3514,19 +4646,19 @@ Smooth step interpolation.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Target vector.
+Target vector
 
 ##### t
 
 `number`
 
-Interpolation factor.
+Interpolation factor
 
 #### Returns
 
 `this`
 
-This for chaining.
+This for chaining
 
 #### Since
 
@@ -3538,7 +4670,7 @@ This for chaining.
 
 > `static` **lerp**(`a`, `b`, `t`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:873](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L873)
+Defined in: [src/core/vector2.ts:927](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L927)
 
 Linear interpolation: `a + t * (b - a)`. Factor t is not clamped.
 
@@ -3548,31 +4680,31 @@ Linear interpolation: `a + t * (b - a)`. Factor t is not clamped.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Start vector.
+Start vector
 
 ##### b
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-End vector.
+End vector
 
 ##### t
 
 `number`
 
-Interpolation factor.
+Interpolation factor
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Interpolated vector.
+Interpolated vector
 
 #### Since
 
@@ -3584,7 +4716,7 @@ Interpolated vector.
 
 > `static` **lerpClamped**(`a`, `b`, `t`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:894](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L894)
+Defined in: [src/core/vector2.ts:948](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L948)
 
 Linear interpolation with t clamped to [0, 1].
 
@@ -3594,31 +4726,31 @@ Linear interpolation with t clamped to [0, 1].
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Start vector.
+Start vector
 
 ##### b
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-End vector.
+End vector
 
 ##### t
 
 `number`
 
-Interpolation factor (clamped).
+Interpolation factor (clamped)
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Clamped interpolated vector.
+Clamped interpolated vector
 
 #### Since
 
@@ -3630,7 +4762,7 @@ Clamped interpolated vector.
 
 > `static` **slerp**(`a`, `b`, `t`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:927](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L927)
+Defined in: [src/core/vector2.ts:981](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L981)
 
 Spherical linear interpolation between two vectors.
 
@@ -3640,31 +4772,31 @@ Spherical linear interpolation between two vectors.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Start vector.
+Start vector
 
 ##### b
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-End vector.
+End vector
 
 ##### t
 
 `number`
 
-Interpolation factor (0 to 1).
+Interpolation factor (0 to 1)
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Spherically interpolated vector.
+Spherically interpolated vector
 
 #### Remarks
 
@@ -3689,7 +4821,7 @@ const mid = Vector2.slerp(a, b, 0.5); // ~(0.707, 0.707) - 45° between
 
 > `static` **slerpClamped**(`a`, `b`, `t`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:985](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L985)
+Defined in: [src/core/vector2.ts:1039](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L1039)
 
 Spherical linear interpolation with t clamped to [0, 1].
 
@@ -3699,31 +4831,31 @@ Spherical linear interpolation with t clamped to [0, 1].
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Start vector.
+Start vector
 
 ##### b
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-End vector.
+End vector
 
 ##### t
 
 `number`
 
-Interpolation factor (clamped to [0, 1]).
+Interpolation factor (clamped to [0, 1])
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Interpolated vector.
+Interpolated vector
 
 #### Since
 
@@ -3735,7 +4867,7 @@ Interpolated vector.
 
 > `static` **smoothStep**(`a`, `b`, `t`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:1016](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L1016)
+Defined in: [src/core/vector2.ts:1071](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L1071)
 
 Smooth Hermite interpolation between two vectors.
 
@@ -3788,26 +4920,29 @@ const smooth = Vector2.smoothStep(a, b, 0.5); // Smooth interpolation
 
 0.7.0
 
-## Numeric Transform
+## Mutator
 
-### inverseUnchecked()
+### copy()
 
-> **inverseUnchecked**(): `this`
+> **copy**(`v`): `this`
 
-Defined in: [src/core/vector2.ts:3087](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3087)
+Defined in: [src/core/vector2.ts:2762](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L2762)
 
-Unchecked reciprocal for hot paths.
+Copies from another vector.
+
+#### Parameters
+
+##### v
+
+[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
+
+Source vector
 
 #### Returns
 
 `this`
 
-This for chaining.
-
-#### Remarks
-
-**⚠️ Precondition:** Both components must be non-zero.
-Calling with zero produces Infinity.
+This for chaining
 
 #### Since
 
@@ -3815,33 +4950,33 @@ Calling with zero produces Infinity.
 
 ---
 
-### abs()
+### set()
 
-> `static` **abs**(`v`, `out?`): `Vector2`
+> **set**(`x`, `y`): `this`
 
-Defined in: [src/core/vector2.ts:757](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L757)
+Defined in: [src/core/vector2.ts:2749](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L2749)
 
-Applies Math.abs to both components.
+Assigns both components.
 
 #### Parameters
 
-##### v
+##### x
 
-[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
+`number`
 
-Source vector.
+New x component
 
-##### out?
+##### y
 
-`Vector2`
+`number`
 
-Optional output vector.
+New y component
 
 #### Returns
 
-`Vector2`
+`this`
 
-Absolute-valued vector.
+This for chaining
 
 #### Since
 
@@ -3849,33 +4984,33 @@ Absolute-valued vector.
 
 ---
 
-### ceil()
+### setComponent()
 
-> `static` **ceil**(`v`, `out?`): `Vector2`
+> **setComponent**(`index`, `value`): `this`
 
-Defined in: [src/core/vector2.ts:715](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L715)
+Defined in: [src/core/vector2.ts:2874](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L2874)
 
-Applies Math.ceil to both components.
+Sets a component by index.
 
 #### Parameters
 
-##### v
+##### index
 
-[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
+0 for x, 1 for y
 
-Source vector.
+`0` | `1`
 
-##### out?
+##### value
 
-`Vector2`
+`number`
 
-Optional output vector.
+New value
 
 #### Returns
 
-`Vector2`
+`this`
 
-Ceiled vector.
+This for chaining
 
 #### Since
 
@@ -3883,33 +5018,33 @@ Ceiled vector.
 
 ---
 
-### floor()
+### setFromAngle()
 
-> `static` **floor**(`v`, `out?`): `Vector2`
+> **setFromAngle**(`angle`, `radius`): `this`
 
-Defined in: [src/core/vector2.ts:701](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L701)
+Defined in: [src/core/vector2.ts:2775](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L2775)
 
-Applies Math.floor to both components.
+Sets this vector from polar coordinates.
 
 #### Parameters
 
-##### v
+##### angle
 
-[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
+`number`
 
-Source vector.
+Angle in radians (CCW from +X)
 
-##### out?
+##### radius
 
-`Vector2`
+`number` = `1`
 
-Optional output vector.
+Distance from origin (default 1)
 
 #### Returns
 
-`Vector2`
+`this`
 
-Floored vector.
+This for chaining
 
 #### Since
 
@@ -3917,37 +5052,33 @@ Floored vector.
 
 ---
 
-### inverse()
+### setFromArray()
 
-> `static` **inverse**(`v`, `out?`): `Vector2`
+> **setFromArray**(`array`, `offset`): `this`
 
-Defined in: [src/core/vector2.ts:786](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L786)
+Defined in: [src/core/vector2.ts:2789](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L2789)
 
-Component-wise reciprocal (1/x, 1/y).
+Sets this vector from array values.
 
 #### Parameters
 
-##### v
+##### array
 
-[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
+`ArrayLike`\<`number`\>
 
-Source vector.
+Source array
 
-##### out?
+##### offset
 
-`Vector2`
+`number` = `0`
 
-Optional output vector.
+Starting index (default 0)
 
 #### Returns
 
-`Vector2`
+`this`
 
-Inverted vector.
-
-#### Throws
-
-If any component is zero.
+This for chaining
 
 #### Since
 
@@ -3955,33 +5086,27 @@ If any component is zero.
 
 ---
 
-### inverseSafe()
+### setFromComplex()
 
-> `static` **inverseSafe**(`v`, `out?`): `Vector2`
+> **setFromComplex**(`complex`): `this`
 
-Defined in: [src/core/vector2.ts:803](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L803)
+Defined in: [src/core/vector2.ts:2806](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L2806)
 
-Safe reciprocal. Components near zero become 0.
+Sets this vector from a complex number.
 
 #### Parameters
 
-##### v
+##### complex
 
-[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
+[`ReadonlyComplexLike`](../../types/interfaces/ReadonlyComplexLike.md)
 
-Source vector.
-
-##### out?
-
-`Vector2`
-
-Optional output vector.
+Source complex (real→x, imag→y)
 
 #### Returns
 
-`Vector2`
+`this`
 
-Safe inverted vector.
+This for chaining
 
 #### Since
 
@@ -3989,38 +5114,27 @@ Safe inverted vector.
 
 ---
 
-### inverseUnchecked()
+### setScalar()
 
-> `static` **inverseUnchecked**(`v`, `out?`): `Vector2`
+> **setScalar**(`s`): `this`
 
-Defined in: [src/core/vector2.ts:821](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L821)
+Defined in: [src/core/vector2.ts:2827](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L2827)
 
-Unchecked reciprocal for hot paths.
+Sets both components to the same scalar.
 
 #### Parameters
 
-##### v
+##### s
 
-[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
+`number`
 
-Source vector (must have non-zero components).
-
-##### out?
-
-`Vector2`
-
-Optional output vector.
+Scalar value
 
 #### Returns
 
-`Vector2`
+`this`
 
-Inverted vector.
-
-#### Remarks
-
-**⚠️ Precondition:** Both components must be non-zero.
-Calling with zero produces Infinity.
+This for chaining
 
 #### Since
 
@@ -4028,33 +5142,27 @@ Calling with zero produces Infinity.
 
 ---
 
-### round()
+### setX()
 
-> `static` **round**(`v`, `out?`): `Vector2`
+> **setX**(`x`): `this`
 
-Defined in: [src/core/vector2.ts:729](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L729)
+Defined in: [src/core/vector2.ts:2838](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L2838)
 
-Applies Math.round to both components.
+Sets the x component.
 
 #### Parameters
 
-##### v
+##### x
 
-[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
+`number`
 
-Source vector.
-
-##### out?
-
-`Vector2`
-
-Optional output vector.
+New x value
 
 #### Returns
 
-`Vector2`
+`this`
 
-Rounded vector.
+This for chaining
 
 #### Since
 
@@ -4062,33 +5170,27 @@ Rounded vector.
 
 ---
 
-### sign()
+### setY()
 
-> `static` **sign**(`v`, `out?`): `Vector2`
+> **setY**(`y`): `this`
 
-Defined in: [src/core/vector2.ts:771](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L771)
+Defined in: [src/core/vector2.ts:2850](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L2850)
 
-Component-wise sign extraction: (sign(x), sign(y)).
+Sets the y component.
 
 #### Parameters
 
-##### v
+##### y
 
-[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
+`number`
 
-Source vector.
-
-##### out?
-
-`Vector2`
-
-Optional output vector.
+New y value
 
 #### Returns
 
-`Vector2`
+`this`
 
-Vector with components -1, 0, or 1.
+This for chaining
 
 #### Since
 
@@ -4096,111 +5198,19 @@ Vector with components -1, 0, or 1.
 
 ---
 
-### step()
+### zero()
 
-> `static` **step**(`edge`, `v`, `out?`): `Vector2`
+> **zero**(): `this`
 
-Defined in: [src/core/vector2.ts:853](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L853)
+Defined in: [src/core/vector2.ts:2816](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L2816)
 
-Component-wise step function (GLSL-style).
-
-#### Parameters
-
-##### edge
-
-[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
-
-Threshold vector.
-
-##### v
-
-[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
-
-Input vector.
-
-##### out?
-
-`Vector2`
-
-Optional output vector.
+Resets both components to zero.
 
 #### Returns
 
-`Vector2`
+`this`
 
-Vector with 0 where `v < edge`, 1 otherwise.
-
-#### Remarks
-
-Useful for shader-like operations and conditional masking.
-
-#### Since
-
-0.7.0
-
----
-
-### swap()
-
-> `static` **swap**(`v`, `out?`): `Vector2`
-
-Defined in: [src/core/vector2.ts:835](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L835)
-
-Swaps x and y components.
-
-#### Parameters
-
-##### v
-
-[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
-
-Source vector.
-
-##### out?
-
-`Vector2`
-
-Optional output vector.
-
-#### Returns
-
-`Vector2`
-
-Vector with swapped components `(y, x)`.
-
-#### Since
-
-0.7.0
-
----
-
-### trunc()
-
-> `static` **trunc**(`v`, `out?`): `Vector2`
-
-Defined in: [src/core/vector2.ts:743](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L743)
-
-Applies Math.trunc to both components (rounds towards zero).
-
-#### Parameters
-
-##### v
-
-[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
-
-Source vector.
-
-##### out?
-
-`Vector2`
-
-Optional output vector.
-
-#### Returns
-
-`Vector2`
-
-Truncated vector.
+This for chaining
 
 #### Since
 
@@ -4212,7 +5222,7 @@ Truncated vector.
 
 > **x**: `number`
 
-Defined in: [src/core/vector2.ts:2520](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2520)
+Defined in: [src/core/vector2.ts:2599](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L2599)
 
 X component.
 
@@ -4226,7 +5236,7 @@ X component.
 
 > **y**: `number`
 
-Defined in: [src/core/vector2.ts:2523](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2523)
+Defined in: [src/core/vector2.ts:2602](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L2602)
 
 Y component.
 
@@ -4234,191 +5244,13 @@ Y component.
 
 [`Vector2Like`](../../types/interfaces/Vector2Like.md).[`y`](../../types/interfaces/Vector2Like.md#y)
 
----
-
-### absolute
-
-#### Get Signature
-
-> **get** **absolute**(): `Vector2`
-
-Defined in: [src/core/vector2.ts:2604](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2604)
-
-Returns an absolute-valued copy.
-
-##### Returns
-
-`Vector2`
-
-New absolute-valued vector.
-
----
-
-### flippedX
-
-#### Get Signature
-
-> **get** **flippedX**(): `Vector2`
-
-Defined in: [src/core/vector2.ts:3932](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3932)
-
-Returns a copy with x negated.
-
-##### Returns
-
-`Vector2`
-
-New Vector2(-x, y).
-
----
-
-### flippedY
-
-#### Get Signature
-
-> **get** **flippedY**(): `Vector2`
-
-Defined in: [src/core/vector2.ts:3940](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3940)
-
-Returns a copy with y negated.
-
-##### Returns
-
-`Vector2`
-
-New Vector2(x, -y).
-
----
-
-### negated
-
-#### Get Signature
-
-> **get** **negated**(): `Vector2`
-
-Defined in: [src/core/vector2.ts:2596](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2596)
-
-Returns a negated copy.
-
-##### Returns
-
-`Vector2`
-
-New negated vector.
-
----
-
-### normalized
-
-#### Get Signature
-
-> **get** **normalized**(): `Vector2`
-
-Defined in: [src/core/vector2.ts:2583](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2583)
-
-Returns a normalized copy (or zero if this is zero).
-
-##### Returns
-
-`Vector2`
-
-New unit vector.
-
----
-
-### xx
-
-#### Get Signature
-
-> **get** **xx**(): `Vector2`
-
-Defined in: [src/core/vector2.ts:2632](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2632)
-
-Returns a vector with both components set to x.
-
-##### Returns
-
-`Vector2`
-
-New Vector2(x, x).
-
----
-
-### xy
-
-#### Get Signature
-
-> **get** **xy**(): `Vector2`
-
-Defined in: [src/core/vector2.ts:2616](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2616)
-
-Returns a copy of this vector (identity swizzle).
-
-##### Returns
-
-`Vector2`
-
-New Vector2(x, y).
-
----
-
-### yx
-
-#### Get Signature
-
-> **get** **yx**(): `Vector2`
-
-Defined in: [src/core/vector2.ts:2624](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2624)
-
-Returns a copy with swapped components.
-
-##### Returns
-
-`Vector2`
-
-New Vector2(y, x).
-
----
-
-### yy
-
-#### Get Signature
-
-> **get** **yy**(): `Vector2`
-
-Defined in: [src/core/vector2.ts:2640](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2640)
-
-Returns a vector with both components set to y.
-
-##### Returns
-
-`Vector2`
-
-New Vector2(y, y).
-
----
-
-### \[iterator\]()
-
-> **\[iterator\]**(): `IterableIterator`\<`number`\>
-
-Defined in: [src/core/vector2.ts:3904](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3904)
-
-Iterator for array destructuring.
-
-#### Returns
-
-`IterableIterator`\<`number`\>
-
-Iterator yielding x then y.
-
----
+## Transform
 
 ### abs()
 
 > **abs**(): `this`
 
-Defined in: [src/core/vector2.ts:3432](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3432)
+Defined in: [src/core/vector2.ts:3641](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3641)
 
 Applies Math.abs to both components.
 
@@ -4426,101 +5258,11 @@ Applies Math.abs to both components.
 
 `this`
 
-This for chaining.
+This for chaining
 
----
+#### Since
 
-### addScaledVector()
-
-> **addScaledVector**(`v`, `scale`): `this`
-
-Defined in: [src/core/vector2.ts:3011](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3011)
-
-Adds a scaled vector: this += scale \* v.
-
-#### Parameters
-
-##### v
-
-[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
-
-Vector to scale and add.
-
-##### scale
-
-`number`
-
-Scale factor.
-
-#### Returns
-
-`this`
-
-This for chaining.
-
----
-
-### angle()
-
-> **angle**(): `number`
-
-Defined in: [src/core/vector2.ts:3201](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3201)
-
-Heading angle from +X axis.
-
-#### Returns
-
-`number`
-
-Angle in radians.
-
----
-
-### angleBetween()
-
-> **angleBetween**(`v`): `number`
-
-Defined in: [src/core/vector2.ts:3219](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3219)
-
-Unsigned angle between this and v.
-
-#### Parameters
-
-##### v
-
-[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
-
-Target vector.
-
-#### Returns
-
-`number`
-
-Unsigned angle in radians.
-
----
-
-### angleTo()
-
-> **angleTo**(`v`): `number`
-
-Defined in: [src/core/vector2.ts:3210](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3210)
-
-Signed angle to v.
-
-#### Parameters
-
-##### v
-
-[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
-
-Target vector.
-
-#### Returns
-
-`number`
-
-Signed angle in radians.
+0.7.0
 
 ---
 
@@ -4528,7 +5270,7 @@ Signed angle in radians.
 
 > **ceil**(): `this`
 
-Defined in: [src/core/vector2.ts:3462](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3462)
+Defined in: [src/core/vector2.ts:3677](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3677)
 
 Applies Math.ceil to both components.
 
@@ -4536,161 +5278,11 @@ Applies Math.ceil to both components.
 
 `this`
 
-This for chaining.
+This for chaining
 
----
+#### Since
 
-### clamp()
-
-> **clamp**(`minV`, `maxV`): `this`
-
-Defined in: [src/core/vector2.ts:3333](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3333)
-
-Clamps components between min and max vectors.
-
-#### Parameters
-
-##### minV
-
-[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
-
-Per-component minima.
-
-##### maxV
-
-[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
-
-Per-component maxima.
-
-#### Returns
-
-`this`
-
-This for chaining.
-
----
-
-### clampMagnitude()
-
-> **clampMagnitude**(`minLength`, `maxLength`): `this`
-
-Defined in: [src/core/vector2.ts:3357](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3357)
-
-Clamps length to range.
-
-#### Parameters
-
-##### minLength
-
-`number`
-
-Minimum magnitude.
-
-##### maxLength
-
-`number`
-
-Maximum magnitude.
-
-#### Returns
-
-`this`
-
-This for chaining.
-
----
-
-### clampScalar()
-
-> **clampScalar**(`min`, `max`): `this`
-
-Defined in: [src/core/vector2.ts:3345](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3345)
-
-Clamps components between scalar bounds.
-
-#### Parameters
-
-##### min
-
-`number`
-
-Minimum scalar.
-
-##### max
-
-`number`
-
-Maximum scalar.
-
-#### Returns
-
-`this`
-
-This for chaining.
-
----
-
-### clone()
-
-> **clone**(): `Vector2`
-
-Defined in: [src/core/vector2.ts:3850](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3850)
-
-Returns a shallow clone.
-
-#### Returns
-
-`Vector2`
-
-New Vector2 with same components.
-
----
-
-### copy()
-
-> **copy**(`v`): `this`
-
-Defined in: [src/core/vector2.ts:2665](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2665)
-
-Copies from another vector.
-
-#### Parameters
-
-##### v
-
-[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
-
-Source vector.
-
-#### Returns
-
-`this`
-
-This for chaining.
-
----
-
-### cross()
-
-> **cross**(`v`): `number`
-
-Defined in: [src/core/vector2.ts:3122](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3122)
-
-2D scalar cross product with v.
-
-#### Parameters
-
-##### v
-
-[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
-
-Second operand.
-
-#### Returns
-
-`number`
-
-Scalar cross product.
+0.7.0
 
 ---
 
@@ -4698,7 +5290,7 @@ Scalar cross product.
 
 > **crossScalarLeft**(`s`): `this`
 
-Defined in: [src/core/vector2.ts:3650](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3650)
+Defined in: [src/core/vector2.ts:3986](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3986)
 
 Cross product: scalar × vector = (-s*y, s*x).
 
@@ -4708,13 +5300,17 @@ Cross product: scalar × vector = (-s*y, s*x).
 
 `number`
 
-Scalar factor.
+Scalar factor
 
 #### Returns
 
 `this`
 
-This for chaining.
+This for chaining
+
+#### Since
+
+0.7.0
 
 ---
 
@@ -4722,7 +5318,7 @@ This for chaining.
 
 > **crossScalarRight**(`s`): `this`
 
-Defined in: [src/core/vector2.ts:3639](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3639)
+Defined in: [src/core/vector2.ts:3973](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3973)
 
 Cross product: vector × scalar = (s*y, -s*x).
 
@@ -4732,109 +5328,17 @@ Cross product: vector × scalar = (s*y, -s*x).
 
 `number`
 
-Scalar factor.
+Scalar factor
 
 #### Returns
 
 `this`
 
-This for chaining.
+This for chaining
 
----
+#### Since
 
-### directionTo()
-
-> **directionTo**(`target`): `Vector2`
-
-Defined in: [src/core/vector2.ts:3193](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3193)
-
-Unit direction from this to target.
-
-#### Parameters
-
-##### target
-
-[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
-
-Target vector.
-
-#### Returns
-
-`Vector2`
-
-New unit direction vector.
-
----
-
-### distanceSquaredTo()
-
-> **distanceSquaredTo**(`v`): `number`
-
-Defined in: [src/core/vector2.ts:3167](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3167)
-
-Squared distance to v.
-
-#### Parameters
-
-##### v
-
-[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
-
-Target vector.
-
-#### Returns
-
-`number`
-
-The squared distance.
-
----
-
-### distanceTo()
-
-> **distanceTo**(`v`): `number`
-
-Defined in: [src/core/vector2.ts:3158](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3158)
-
-Euclidean distance to v.
-
-#### Parameters
-
-##### v
-
-[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
-
-Target vector.
-
-#### Returns
-
-`number`
-
-The Euclidean distance.
-
----
-
-### dot()
-
-> **dot**(`v`): `number`
-
-Defined in: [src/core/vector2.ts:3113](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3113)
-
-Dot product with v.
-
-#### Parameters
-
-##### v
-
-[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
-
-Second operand.
-
-#### Returns
-
-`number`
-
-Scalar dot product.
+0.7.0
 
 ---
 
@@ -4842,7 +5346,7 @@ Scalar dot product.
 
 > **floor**(): `this`
 
-Defined in: [src/core/vector2.ts:3452](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3452)
+Defined in: [src/core/vector2.ts:3665](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3665)
 
 Applies Math.floor to both components.
 
@@ -4850,93 +5354,11 @@ Applies Math.floor to both components.
 
 `this`
 
-This for chaining.
+This for chaining
 
----
+#### Since
 
-### fma()
-
-> **fma**(`scale`, `v`): `this`
-
-Defined in: [src/core/vector2.ts:3023](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3023)
-
-Fused multiply-add: this = this \* scale + v.
-
-#### Parameters
-
-##### scale
-
-`number`
-
-Scale factor.
-
-##### v
-
-[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
-
-Vector to add.
-
-#### Returns
-
-`this`
-
-This for chaining.
-
----
-
-### getComponent()
-
-> **getComponent**(`index`): `number`
-
-Defined in: [src/core/vector2.ts:2750](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2750)
-
-Returns a component by index.
-
-#### Parameters
-
-##### index
-
-0 for x, 1 for y.
-
-`0` | `1`
-
-#### Returns
-
-`number`
-
-The component value.
-
----
-
-### hasInfinity()
-
-> **hasInfinity**(): `boolean`
-
-Defined in: [src/core/vector2.ts:3818](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3818)
-
-Tests if any component is infinite (±Infinity).
-
-#### Returns
-
-`boolean`
-
-True if any component is ±Infinity.
-
----
-
-### hasNaN()
-
-> **hasNaN**(): `boolean`
-
-Defined in: [src/core/vector2.ts:3810](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3810)
-
-Tests if any component is NaN.
-
-#### Returns
-
-`boolean`
-
-True if any component is NaN.
+0.7.0
 
 ---
 
@@ -4944,7 +5366,7 @@ True if any component is NaN.
 
 > **inverse**(): `this`
 
-Defined in: [src/core/vector2.ts:3056](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3056)
+Defined in: [src/core/vector2.ts:3189](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3189)
 
 Component-wise reciprocal.
 
@@ -4952,11 +5374,20 @@ Component-wise reciprocal.
 
 `this`
 
-This for chaining.
+This for chaining
 
 #### Throws
 
-If any component is zero.
+If any component is zero
+
+#### See
+
+- [inverseSafe](#inversesafe-2) - Returns 0 per component on near-zero value
+- [inverseUnchecked](#inverseunchecked-2) - No validation
+
+#### Since
+
+0.7.0
 
 ---
 
@@ -4964,7 +5395,7 @@ If any component is zero.
 
 > **inverseSafe**(): `this`
 
-Defined in: [src/core/vector2.ts:3069](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3069)
+Defined in: [src/core/vector2.ts:3207](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3207)
 
 Safe reciprocal. Components near zero become 0.
 
@@ -4972,275 +5403,45 @@ Safe reciprocal. Components near zero become 0.
 
 `this`
 
-This for chaining.
+This for chaining
+
+#### See
+
+[inverse](#inverse-2) - Throws on near-zero component
+
+#### Since
+
+0.7.0
 
 ---
 
-### isFinite()
+### inverseUnchecked()
 
-> **isFinite**(): `boolean`
+> **inverseUnchecked**(): `this`
 
-Defined in: [src/core/vector2.ts:3802](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3802)
+Defined in: [src/core/vector2.ts:3228](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3228)
 
-Tests if both components are finite.
-
-#### Returns
-
-`boolean`
-
-True if finite.
-
----
-
-### isParallelTo()
-
-> **isParallelTo**(`v`, `epsilon`): `boolean`
-
-Defined in: [src/core/vector2.ts:3828](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3828)
-
-Tests parallelism with v.
-
-#### Parameters
-
-##### v
-
-[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
-
-Vector to compare.
-
-##### epsilon
-
-`number` = `EPSILON`
-
-Tolerance.
-
-#### Returns
-
-`boolean`
-
-True if parallel.
-
----
-
-### isPerpendicularTo()
-
-> **isPerpendicularTo**(`v`, `epsilon`): `boolean`
-
-Defined in: [src/core/vector2.ts:3838](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3838)
-
-Tests perpendicularity with v.
-
-#### Parameters
-
-##### v
-
-[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
-
-Vector to compare.
-
-##### epsilon
-
-`number` = `EPSILON`
-
-Tolerance.
-
-#### Returns
-
-`boolean`
-
-True if perpendicular.
-
----
-
-### isUnit()
-
-> **isUnit**(): `boolean`
-
-Defined in: [src/core/vector2.ts:3794](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3794)
-
-Tests if unit length.
-
-#### Returns
-
-`boolean`
-
-True if |length - 1| ≤ EPSILON.
-
----
-
-### limit()
-
-> **limit**(`maxLength`): `this`
-
-Defined in: [src/core/vector2.ts:3369](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3369)
-
-Limits length to maximum.
-
-#### Parameters
-
-##### maxLength
-
-`number`
-
-Maximum allowed magnitude.
+Unchecked reciprocal for hot paths.
 
 #### Returns
 
 `this`
 
-This for chaining.
+This for chaining
 
----
+#### Remarks
 
-### magnitudeSquared()
+**Precondition:** Both components must be non-zero.
+Calling with zero produces Infinity.
 
-> **magnitudeSquared**(): `number`
+#### See
 
-Defined in: [src/core/vector2.ts:3141](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3141)
+- [inverse](#inverse-2) - Throws on near-zero component
+- [inverseSafe](#inversesafe-2) - Returns 0 per component on near-zero value
 
-Squared length.
+#### Since
 
-#### Returns
-
-`number`
-
-The squared length.
-
----
-
-### manhattanDistanceTo()
-
-> **manhattanDistanceTo**(`v`): `number`
-
-Defined in: [src/core/vector2.ts:3176](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3176)
-
-Manhattan (L1) distance to v.
-
-#### Parameters
-
-##### v
-
-[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
-
-Target vector.
-
-#### Returns
-
-`number`
-
-The Manhattan distance.
-
----
-
-### manhattanLength()
-
-> **manhattanLength**(): `number`
-
-Defined in: [src/core/vector2.ts:3149](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3149)
-
-Manhattan length.
-
-#### Returns
-
-`number`
-
-The Manhattan norm.
-
----
-
-### max()
-
-> **max**(`v`): `this`
-
-Defined in: [src/core/vector2.ts:3394](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3394)
-
-Component-wise maximum with v.
-
-#### Parameters
-
-##### v
-
-[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
-
-Other vector.
-
-#### Returns
-
-`this`
-
-This for chaining.
-
----
-
-### min()
-
-> **min**(`v`): `this`
-
-Defined in: [src/core/vector2.ts:3383](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3383)
-
-Component-wise minimum with v.
-
-#### Parameters
-
-##### v
-
-[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
-
-Other vector.
-
-#### Returns
-
-`this`
-
-This for chaining.
-
----
-
-### mod()
-
-> **mod**(`v`): `this`
-
-Defined in: [src/core/vector2.ts:3034](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3034)
-
-Component-wise modulo.
-
-#### Parameters
-
-##### v
-
-[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
-
-Divisor vector.
-
-#### Returns
-
-`this`
-
-This for chaining.
-
----
-
-### modScalar()
-
-> **modScalar**(`s`): `this`
-
-Defined in: [src/core/vector2.ts:3045](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3045)
-
-Scalar modulo on both components.
-
-#### Parameters
-
-##### s
-
-`number`
-
-Scalar divisor.
-
-#### Returns
-
-`this`
-
-This for chaining.
+0.7.0
 
 ---
 
@@ -5248,7 +5449,7 @@ This for chaining.
 
 > **normalize**(): `this`
 
-Defined in: [src/core/vector2.ts:3232](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3232)
+Defined in: [src/core/vector2.ts:3416](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3416)
 
 Normalizes to unit length.
 
@@ -5256,11 +5457,20 @@ Normalizes to unit length.
 
 `this`
 
-This for chaining.
+This for chaining
 
 #### Throws
 
-If zero length.
+If zero length
+
+#### See
+
+- [normalizeSafe](#normalizesafe-2) - Returns (0,0) on zero-length vector
+- [normalizeUnchecked](#normalizeunchecked-2) - No validation
+
+#### Since
+
+0.7.0
 
 ---
 
@@ -5268,7 +5478,7 @@ If zero length.
 
 > **normalizeSafe**(): `this`
 
-Defined in: [src/core/vector2.ts:3244](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3244)
+Defined in: [src/core/vector2.ts:3433](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3433)
 
 Safe normalization. Sets to (0, 0) if zero length.
 
@@ -5276,7 +5486,49 @@ Safe normalization. Sets to (0, 0) if zero length.
 
 `this`
 
-This for chaining.
+This for chaining
+
+#### See
+
+[normalize](#normalize-2) - Throws on zero-length vector
+
+#### Since
+
+0.7.0
+
+---
+
+### normalizeUnchecked()
+
+> **normalizeUnchecked**(): `this`
+
+Defined in: [src/core/vector2.ts:3460](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3460)
+
+Unchecked normalization for hot paths.
+
+#### Returns
+
+`this`
+
+This for chaining
+
+#### Remarks
+
+**Precondition:** Vector must have non-zero length.
+Calling with zero-length vector produces NaN/Infinity components.
+
+Use only when you can guarantee valid input (e.g., after explicit check).
+For safe normalization, use [normalizeSafe](#normalizesafe-2).
+For normalization with error throwing, use [normalize](#normalize-2).
+
+#### See
+
+- [normalize](#normalize-2) - Throws on zero-length vector
+- [normalizeSafe](#normalizesafe-2) - Returns (0,0) on zero-length vector
+
+#### Since
+
+0.7.0
 
 ---
 
@@ -5284,7 +5536,7 @@ This for chaining.
 
 > **perpendicular**(`clockwise`): `this`
 
-Defined in: [src/core/vector2.ts:3544](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3544)
+Defined in: [src/core/vector2.ts:3825](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3825)
 
 Rotates by ±90°.
 
@@ -5294,13 +5546,17 @@ Rotates by ±90°.
 
 `boolean` = `false`
 
-CW if true, CCW if false.
+CW if true, CCW if false
 
 #### Returns
 
 `this`
 
-This for chaining.
+This for chaining
+
+#### Since
+
+0.7.0
 
 ---
 
@@ -5308,7 +5564,7 @@ This for chaining.
 
 > **project**(`axis`): `this`
 
-Defined in: [src/core/vector2.ts:3493](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3493)
+Defined in: [src/core/vector2.ts:3719](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3719)
 
 Projects onto axis.
 
@@ -5318,13 +5574,26 @@ Projects onto axis.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Projection axis.
+Projection axis
 
 #### Returns
 
 `this`
 
-This for chaining.
+This for chaining
+
+#### Throws
+
+If axis has zero length
+
+#### See
+
+- [projectSafe](#projectsafe-2) - Returns (0,0) on zero-length axis
+- [projectUnchecked](#projectunchecked-2) - No validation
+
+#### Since
+
+0.7.0
 
 ---
 
@@ -5332,7 +5601,7 @@ This for chaining.
 
 > **projectOnUnit**(`unitAxis`): `this`
 
-Defined in: [src/core/vector2.ts:3507](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3507)
+Defined in: [src/core/vector2.ts:3771](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3771)
 
 Projects onto unit axis.
 
@@ -5342,13 +5611,82 @@ Projects onto unit axis.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Unit-length axis.
+Unit-length axis
 
 #### Returns
 
 `this`
 
-This for chaining.
+This for chaining
+
+#### Since
+
+0.7.0
+
+---
+
+### projectSafe()
+
+> **projectSafe**(`axis`): `this`
+
+Defined in: [src/core/vector2.ts:3738](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3738)
+
+Safe projection onto axis. Returns (0,0) if axis has zero length.
+
+#### Parameters
+
+##### axis
+
+[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
+
+Projection axis
+
+#### Returns
+
+`this`
+
+This for chaining
+
+#### See
+
+[project](#project-2) - Throws on zero-length axis
+
+#### Since
+
+0.7.0
+
+---
+
+### projectUnchecked()
+
+> **projectUnchecked**(`axis`): `this`
+
+Defined in: [src/core/vector2.ts:3758](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3758)
+
+Unchecked projection onto axis (hot path).
+
+#### Parameters
+
+##### axis
+
+[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
+
+Projection axis (must have non-zero length)
+
+#### Returns
+
+`this`
+
+This for chaining
+
+#### See
+
+- [project](#project-2) - Throws on zero-length axis
+- [projectSafe](#projectsafe-2) - Returns (0,0) on zero-length axis
+
+#### Since
+
+0.7.0
 
 ---
 
@@ -5356,7 +5694,7 @@ This for chaining.
 
 > **reflect**(`unitNormal`): `this`
 
-Defined in: [src/core/vector2.ts:3517](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3517)
+Defined in: [src/core/vector2.ts:3787](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3787)
 
 Reflects about unit normal.
 
@@ -5366,13 +5704,25 @@ Reflects about unit normal.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Unit-length normal.
+Unit-length normal
 
 #### Returns
 
 `this`
 
-This for chaining.
+This for chaining
+
+#### Throws
+
+If unitNormal is not unit length
+
+#### See
+
+[reflectSafe](#reflectsafe-2) - Normalizes normal first
+
+#### Since
+
+0.7.0
 
 ---
 
@@ -5380,7 +5730,7 @@ This for chaining.
 
 > **reflectSafe**(`normal`): `this`
 
-Defined in: [src/core/vector2.ts:3527](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3527)
+Defined in: [src/core/vector2.ts:3806](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3806)
 
 Safe reflection.
 
@@ -5390,13 +5740,21 @@ Safe reflection.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Normal (need not be unit).
+Normal (need not be unit)
 
 #### Returns
 
 `this`
 
-This for chaining.
+This for chaining
+
+#### See
+
+[reflect](#reflect-2) - Throws if normal is not unit length
+
+#### Since
+
+0.7.0
 
 ---
 
@@ -5404,7 +5762,7 @@ This for chaining.
 
 > **reject**(`onto`): `this`
 
-Defined in: [src/core/vector2.ts:3608](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3608)
+Defined in: [src/core/vector2.ts:3904](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3904)
 
 Vector rejection: removes projection onto axis.
 
@@ -5414,579 +5772,22 @@ Vector rejection: removes projection onto axis.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Axis to reject from.
+Axis to reject from
 
 #### Returns
 
 `this`
 
-This for chaining.
-
----
-
-### rotate()
-
-> **rotate**(`angle`): `this`
-
-Defined in: [src/core/vector2.ts:3561](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3561)
-
-Rotates by angle.
-
-#### Parameters
-
-##### angle
-
-`number`
-
-Rotation angle.
-
-#### Returns
-
-`this`
-
-This for chaining.
-
----
-
-### rotateAround()
-
-> **rotateAround**(`center`, `angle`): `this`
-
-Defined in: [src/core/vector2.ts:3584](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3584)
-
-Rotates around center.
-
-#### Parameters
-
-##### center
-
-[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
-
-Pivot point.
-
-##### angle
-
-`number`
-
-Rotation angle.
-
-#### Returns
-
-`this`
-
-This for chaining.
-
----
-
-### rotateAroundCS()
-
-> **rotateAroundCS**(`center`, `c`, `s`): `this`
-
-Defined in: [src/core/vector2.ts:3595](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3595)
-
-Rotates around center using precomputed cos/sin.
-
-#### Parameters
-
-##### center
-
-[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
-
-Pivot point.
-
-##### c
-
-`number`
-
-Cosine of angle.
-
-##### s
-
-`number`
-
-Sine of angle.
-
-#### Returns
-
-`this`
-
-This for chaining.
-
----
-
-### rotateCS()
-
-> **rotateCS**(`c`, `s`): `this`
-
-Defined in: [src/core/vector2.ts:3572](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3572)
-
-Rotates using precomputed cos/sin.
-
-#### Parameters
-
-##### c
-
-`number`
-
-Cosine.
-
-##### s
-
-`number`
-
-Sine.
-
-#### Returns
-
-`this`
-
-This for chaining.
-
----
-
-### round()
-
-> **round**(): `this`
-
-Defined in: [src/core/vector2.ts:3472](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3472)
-
-Applies Math.round to both components.
-
-#### Returns
-
-`this`
-
-This for chaining.
-
----
-
-### set()
-
-> **set**(`x`, `y`): `this`
-
-Defined in: [src/core/vector2.ts:2654](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2654)
-
-Assigns both components.
-
-#### Parameters
-
-##### x
-
-`number`
-
-New x component.
-
-##### y
-
-`number`
-
-New y component.
-
-#### Returns
-
-`this`
-
-This for chaining.
-
----
-
-### setAngle()
-
-> **setAngle**(`angle`): `this`
-
-Defined in: [src/core/vector2.ts:3321](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3321)
-
-Sets angle (direction) while preserving length.
-
-#### Parameters
-
-##### angle
-
-`number`
-
-New heading in radians.
-
-#### Returns
-
-`this`
-
-This for chaining.
-
----
-
-### setComponent()
-
-> **setComponent**(`index`, `value`): `this`
-
-Defined in: [src/core/vector2.ts:2760](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2760)
-
-Sets a component by index.
-
-#### Parameters
-
-##### index
-
-0 for x, 1 for y.
-
-`0` | `1`
-
-##### value
-
-`number`
-
-New value.
-
-#### Returns
-
-`this`
-
-This for chaining.
-
----
-
-### setMagnitude()
-
-> **setMagnitude**(`newMagnitude`): `this`
-
-Defined in: [src/core/vector2.ts:3291](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3291)
-
-Sets the length.
-
-#### Parameters
-
-##### newMagnitude
-
-`number`
-
-Desired magnitude.
-
-#### Returns
-
-`this`
-
-This for chaining.
+This for chaining
 
 #### Throws
 
-If zero length or negative.
+If onto has zero length
 
----
+#### See
 
-### setMagnitudeSafe()
-
-> **setMagnitudeSafe**(`newMagnitude`): `this`
-
-Defined in: [src/core/vector2.ts:3307](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3307)
-
-Safe setMagnitude. Zero vectors become (newMagnitude, 0).
-
-#### Parameters
-
-##### newMagnitude
-
-`number`
-
-Desired magnitude.
-
-#### Returns
-
-`this`
-
-This for chaining.
-
----
-
-### setScalar()
-
-> **setScalar**(`s`): `this`
-
-Defined in: [src/core/vector2.ts:2721](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2721)
-
-Sets both components to the same scalar.
-
-#### Parameters
-
-##### s
-
-`number`
-
-Scalar value.
-
-#### Returns
-
-`this`
-
-This for chaining.
-
----
-
-### setX()
-
-> **setX**(`x`): `this`
-
-Defined in: [src/core/vector2.ts:2730](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2730)
-
-Sets the x component.
-
-#### Parameters
-
-##### x
-
-`number`
-
-New x value.
-
-#### Returns
-
-`this`
-
-This for chaining.
-
----
-
-### setY()
-
-> **setY**(`y`): `this`
-
-Defined in: [src/core/vector2.ts:2740](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2740)
-
-Sets the y component.
-
-#### Parameters
-
-##### y
-
-`number`
-
-New y value.
-
-#### Returns
-
-`this`
-
-This for chaining.
-
----
-
-### sign()
-
-> **sign**(): `this`
-
-Defined in: [src/core/vector2.ts:3442](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3442)
-
-Component-wise sign.
-
-#### Returns
-
-`this`
-
-This for chaining.
-
----
-
-### step()
-
-> **step**(`edge`): `this`
-
-Defined in: [src/core/vector2.ts:3953](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3953)
-
-Applies step function: sets components to 0 where < edge, else 1.
-
-#### Parameters
-
-##### edge
-
-[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
-
-Threshold vector.
-
-#### Returns
-
-`this`
-
-This for chaining.
-
----
-
-### sumComponents()
-
-> **sumComponents**(): `number`
-
-Defined in: [src/core/vector2.ts:3184](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3184)
-
-Returns the sum of components x + y.
-
-#### Returns
-
-`number`
-
-Scalar sum.
-
----
-
-### swap()
-
-> **swap**(): `this`
-
-Defined in: [src/core/vector2.ts:3097](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3097)
-
-Swaps x and y components.
-
-#### Returns
-
-`this`
-
-This for chaining.
-
----
-
-### toArray()
-
-> **toArray**\<`T`\>(`out?`, `offset?`): \[`number`, `number`\] \| `T`
-
-Defined in: [src/core/vector2.ts:3860](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3860)
-
-Writes to array or typed array.
-
-#### Type Parameters
-
-##### T
-
-`T` _extends_ `ArrayLike`\<`number`\> & `object`
-
-#### Parameters
-
-##### out?
-
-`T`
-
-Destination array.
-
-##### offset?
-
-`number` = `0`
-
-Write offset.
-
-#### Returns
-
-\[`number`, `number`\] \| `T`
-
-The output array.
-
----
-
-### toJSON()
-
-> **toJSON**(): `object`
-
-Defined in: [src/core/vector2.ts:3884](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3884)
-
-Alias for toObject (JSON serialization).
-
-#### Returns
-
-`object`
-
-Object with x and y properties.
-
-##### x
-
-> **x**: `number`
-
-##### y
-
-> **y**: `number`
-
----
-
-### toObject()
-
-> **toObject**(): `object`
-
-Defined in: [src/core/vector2.ts:3876](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3876)
-
-Returns plain object { x, y }.
-
-#### Returns
-
-`object`
-
-Object with x and y properties.
-
-##### x
-
-> **x**: `number`
-
-##### y
-
-> **y**: `number`
-
----
-
-### trunc()
-
-> **trunc**(): `this`
-
-Defined in: [src/core/vector2.ts:3482](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3482)
-
-Applies Math.trunc to both components (rounds towards zero).
-
-#### Returns
-
-`this`
-
-This for chaining.
-
----
-
-### zero()
-
-> **zero**(): `this`
-
-Defined in: [src/core/vector2.ts:2712](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2712)
-
-Resets both components to zero.
-
-#### Returns
-
-`this`
-
-This for chaining.
-
-## Transform
-
-### normalizeUnchecked()
-
-> **normalizeUnchecked**(): `this`
-
-Defined in: [src/core/vector2.ts:3277](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3277)
-
-Unchecked normalization for hot paths.
-
-#### Returns
-
-`this`
-
-This for chaining.
-
-#### Remarks
-
-⚠️ **Precondition:** Vector must have non-zero length.
-Calling with zero-length vector produces NaN/Infinity components.
-
-Use only when you can guarantee valid input (e.g., after explicit check).
-For safe normalization, use [normalizeSafe](#normalizesafe-2).
-For normalization with error throwing, use [normalize](#normalize-2).
-
-#### Example
-
-```typescript
-// Only use when you know the vector is non-zero
-if (v.magnitudeSquared() > 0) {
- v.normalizeUnchecked();
-}
-```
+- [rejectSafe](#rejectsafe-2) - Returns copy of this on zero-length axis
+- [rejectUnchecked](#rejectunchecked-2) - No validation
 
 #### Since
 
@@ -5998,7 +5799,7 @@ if (v.magnitudeSquared() > 0) {
 
 > **rejectOnUnit**(`unitAxis`): `this`
 
-Defined in: [src/core/vector2.ts:3629](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3629)
+Defined in: [src/core/vector2.ts:3961](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3961)
 
 Rejection onto a unit axis (hot path).
 
@@ -6008,13 +5809,13 @@ Rejection onto a unit axis (hot path).
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Unit-length axis.
+Unit-length axis
 
 #### Returns
 
 `this`
 
-This for chaining.
+This for chaining
 
 #### Remarks
 
@@ -6026,11 +5827,484 @@ Use when you know the axis is already normalized.
 
 ---
 
+### rejectSafe()
+
+> **rejectSafe**(`onto`): `this`
+
+Defined in: [src/core/vector2.ts:3923](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3923)
+
+Safe rejection. Returns copy of this if onto has zero length.
+
+#### Parameters
+
+##### onto
+
+[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
+
+Axis to reject from
+
+#### Returns
+
+`this`
+
+This for chaining
+
+#### See
+
+[reject](#reject-2) - Throws on zero-length axis
+
+#### Since
+
+0.7.0
+
+---
+
+### rejectUnchecked()
+
+> **rejectUnchecked**(`onto`): `this`
+
+Defined in: [src/core/vector2.ts:3943](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3943)
+
+Unchecked rejection (hot path).
+
+#### Parameters
+
+##### onto
+
+[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
+
+Axis to reject from (must have non-zero length)
+
+#### Returns
+
+`this`
+
+This for chaining
+
+#### See
+
+- [reject](#reject-2) - Throws on zero-length axis
+- [rejectSafe](#rejectsafe-2) - Returns copy of this on zero-length axis
+
+#### Since
+
+0.7.0
+
+---
+
+### rotate()
+
+> **rotate**(`angle`): `this`
+
+Defined in: [src/core/vector2.ts:3844](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3844)
+
+Rotates by angle.
+
+#### Parameters
+
+##### angle
+
+`number`
+
+Rotation angle
+
+#### Returns
+
+`this`
+
+This for chaining
+
+#### Since
+
+0.7.0
+
+---
+
+### rotateAround()
+
+> **rotateAround**(`center`, `angle`): `this`
+
+Defined in: [src/core/vector2.ts:3871](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3871)
+
+Rotates around center.
+
+#### Parameters
+
+##### center
+
+[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
+
+Pivot point
+
+##### angle
+
+`number`
+
+Rotation angle
+
+#### Returns
+
+`this`
+
+This for chaining
+
+#### Since
+
+0.7.0
+
+---
+
+### rotateAroundCS()
+
+> **rotateAroundCS**(`center`, `c`, `s`): `this`
+
+Defined in: [src/core/vector2.ts:3884](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3884)
+
+Rotates around center using precomputed cos/sin.
+
+#### Parameters
+
+##### center
+
+[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
+
+Pivot point
+
+##### c
+
+`number`
+
+Cosine of angle
+
+##### s
+
+`number`
+
+Sine of angle
+
+#### Returns
+
+`this`
+
+This for chaining
+
+#### Since
+
+0.7.0
+
+---
+
+### rotateCS()
+
+> **rotateCS**(`c`, `s`): `this`
+
+Defined in: [src/core/vector2.ts:3857](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3857)
+
+Rotates using precomputed cos/sin.
+
+#### Parameters
+
+##### c
+
+`number`
+
+Cosine
+
+##### s
+
+`number`
+
+Sine
+
+#### Returns
+
+`this`
+
+This for chaining
+
+#### Since
+
+0.7.0
+
+---
+
+### round()
+
+> **round**(): `this`
+
+Defined in: [src/core/vector2.ts:3689](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3689)
+
+Applies Math.round to both components.
+
+#### Returns
+
+`this`
+
+This for chaining
+
+#### Since
+
+0.7.0
+
+---
+
+### setAngle()
+
+> **setAngle**(`angle`): `this`
+
+Defined in: [src/core/vector2.ts:3516](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3516)
+
+Sets angle (direction) while preserving length.
+
+#### Parameters
+
+##### angle
+
+`number`
+
+New heading in radians
+
+#### Returns
+
+`this`
+
+This for chaining
+
+#### Since
+
+0.7.0
+
+---
+
+### setMagnitude()
+
+> **setMagnitude**(`newMagnitude`): `this`
+
+Defined in: [src/core/vector2.ts:3479](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3479)
+
+Sets the length.
+
+#### Parameters
+
+##### newMagnitude
+
+`number`
+
+Desired magnitude
+
+#### Returns
+
+`this`
+
+This for chaining
+
+#### Throws
+
+If zero length or negative
+
+#### See
+
+[setMagnitudeSafe](#setmagnitudesafe-2) - Returns fallback on zero-length vector
+
+#### Since
+
+0.7.0
+
+---
+
+### setMagnitudeSafe()
+
+> **setMagnitudeSafe**(`newMagnitude`): `this`
+
+Defined in: [src/core/vector2.ts:3500](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3500)
+
+Safe setMagnitude. Zero vectors become (newMagnitude, 0).
+
+#### Parameters
+
+##### newMagnitude
+
+`number`
+
+Desired magnitude
+
+#### Returns
+
+`this`
+
+This for chaining
+
+#### See
+
+[setMagnitude](#setmagnitude-2) - Throws on zero-length vector or negative magnitude
+
+#### Since
+
+0.7.0
+
+---
+
+### sign()
+
+> **sign**(): `this`
+
+Defined in: [src/core/vector2.ts:3653](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3653)
+
+Component-wise sign.
+
+#### Returns
+
+`this`
+
+This for chaining
+
+#### Since
+
+0.7.0
+
+---
+
+### step()
+
+> **step**(`edge`): `this`
+
+Defined in: [src/core/vector2.ts:4320](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L4320)
+
+Applies step function: sets components to 0 where < edge, else 1.
+
+#### Parameters
+
+##### edge
+
+[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
+
+Threshold vector
+
+#### Returns
+
+`this`
+
+This for chaining
+
+#### Since
+
+0.7.0
+
+---
+
+### swap()
+
+> **swap**(): `this`
+
+Defined in: [src/core/vector2.ts:3240](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3240)
+
+Swaps x and y components.
+
+#### Returns
+
+`this`
+
+This for chaining
+
+#### Since
+
+0.7.0
+
+---
+
+### trunc()
+
+> **trunc**(): `this`
+
+Defined in: [src/core/vector2.ts:3701](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L3701)
+
+Applies Math.trunc to both components (rounds towards zero).
+
+#### Returns
+
+`this`
+
+This for chaining
+
+#### Since
+
+0.7.0
+
+---
+
+### abs()
+
+> `static` **abs**(`v`, `out?`): `Vector2`
+
+Defined in: [src/core/vector2.ts:799](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L799)
+
+Applies Math.abs to both components.
+
+#### Parameters
+
+##### v
+
+[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
+
+Source vector
+
+##### out?
+
+`Vector2`
+
+Optional output vector
+
+#### Returns
+
+`Vector2`
+
+Absolute-valued vector
+
+#### Since
+
+0.7.0
+
+---
+
+### ceil()
+
+> `static` **ceil**(`v`, `out?`): `Vector2`
+
+Defined in: [src/core/vector2.ts:757](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L757)
+
+Applies Math.ceil to both components.
+
+#### Parameters
+
+##### v
+
+[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
+
+Source vector
+
+##### out?
+
+`Vector2`
+
+Optional output vector
+
+#### Returns
+
+`Vector2`
+
+Ceiled vector
+
+#### Since
+
+0.7.0
+
+---
+
 ### crossScalarLeft()
 
 > `static` **crossScalarLeft**(`s`, `v`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:2156](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2156)
+Defined in: [src/core/vector2.ts:2230](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L2230)
 
 Box2D-style cross: scalar × vector = (-s*y, s*x).
 Scalar is on the LEFT side of the cross product.
@@ -6041,29 +6315,25 @@ Scalar is on the LEFT side of the cross product.
 
 `number`
 
-Scalar factor (on left).
+Scalar factor (on left)
 
 ##### v
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Source vector.
+Source vector
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Perpendicular scaled vector (CCW rotation).
-
-#### See
-
-[crossScalarRight](#crossscalarright-2) - For scalar on right side
+Perpendicular scaled vector (CCW rotation)
 
 #### Example
 
@@ -6071,6 +6341,10 @@ Perpendicular scaled vector (CCW rotation).
 const v = new Vector2(1, 0);
 const perp = Vector2.crossScalarLeft(1, v); // (0, 1) - CCW perpendicular
 ```
+
+#### See
+
+[crossScalarRight](#crossscalarright-2) - For scalar on right side
 
 #### Since
 
@@ -6082,7 +6356,7 @@ const perp = Vector2.crossScalarLeft(1, v); // (0, 1) - CCW perpendicular
 
 > `static` **crossScalarRight**(`v`, `s`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:2132](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2132)
+Defined in: [src/core/vector2.ts:2206](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L2206)
 
 Box2D-style cross: vector × scalar = (s*y, -s*x).
 Scalar is on the RIGHT side of the cross product.
@@ -6093,25 +6367,25 @@ Scalar is on the RIGHT side of the cross product.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Source vector.
+Source vector
 
 ##### s
 
 `number`
 
-Scalar factor (on right).
+Scalar factor (on right)
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Perpendicular scaled vector (CW rotation).
+Perpendicular scaled vector (CW rotation)
 
 #### See
 
@@ -6123,11 +6397,45 @@ Perpendicular scaled vector (CW rotation).
 
 ---
 
+### floor()
+
+> `static` **floor**(`v`, `out?`): `Vector2`
+
+Defined in: [src/core/vector2.ts:743](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L743)
+
+Applies Math.floor to both components.
+
+#### Parameters
+
+##### v
+
+[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
+
+Source vector
+
+##### out?
+
+`Vector2`
+
+Optional output vector
+
+#### Returns
+
+`Vector2`
+
+Floored vector
+
+#### Since
+
+0.7.0
+
+---
+
 ### getLengthAndNormalize()
 
 > `static` **getLengthAndNormalize**(`v`, `out?`): `object`
 
-Defined in: [src/core/vector2.ts:1576](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L1576)
+Defined in: [src/core/vector2.ts:1642](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L1642)
 
 Computes length and unit vector in a single operation.
 
@@ -6137,19 +6445,19 @@ Computes length and unit vector in a single operation.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Vector to process.
+Vector to process
 
 ##### out?
 
 `Vector2`
 
-Optional output vector for the unit vector.
+Optional output vector for the unit vector
 
 #### Returns
 
 `object`
 
-Object with length and unit vector.
+Object with length and unit vector
 
 ##### length
 
@@ -6170,11 +6478,141 @@ when both values are needed, as it avoids computing sqrt twice.
 
 ---
 
+### inverse()
+
+> `static` **inverse**(`v`, `out?`): `Vector2`
+
+Defined in: [src/core/vector2.ts:831](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L831)
+
+Component-wise reciprocal (1/x, 1/y).
+
+#### Parameters
+
+##### v
+
+[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
+
+Source vector
+
+##### out?
+
+`Vector2`
+
+Optional output vector
+
+#### Returns
+
+`Vector2`
+
+Inverted vector
+
+#### Throws
+
+If any component is zero
+
+#### See
+
+- [inverseSafe](#inversesafe-2) - Returns 0 per component on near-zero value
+- [inverseUnchecked](#inverseunchecked-2) - No validation
+
+#### Since
+
+0.7.0
+
+---
+
+### inverseSafe()
+
+> `static` **inverseSafe**(`v`, `out?`): `Vector2`
+
+Defined in: [src/core/vector2.ts:854](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L854)
+
+Safe reciprocal. Components near zero become 0.
+
+#### Parameters
+
+##### v
+
+[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
+
+Source vector
+
+##### out?
+
+`Vector2`
+
+Optional output vector
+
+#### Returns
+
+`Vector2`
+
+Safe inverted vector
+
+#### Remarks
+
+Uses [isNearZero](../../auxiliary/scalar/functions/isNearZero.md) with default [EPSILON](../../auxiliary/scalar/variables/EPSILON.md) (1e-10) per component.
+Components with |value| ≤ EPSILON become 0 instead of Infinity.
+
+#### See
+
+[inverse](#inverse-2) - Throws on near-zero component
+
+#### Since
+
+0.7.0
+
+---
+
+### inverseUnchecked()
+
+> `static` **inverseUnchecked**(`v`, `out?`): `Vector2`
+
+Defined in: [src/core/vector2.ts:875](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L875)
+
+Unchecked reciprocal for hot paths.
+
+#### Parameters
+
+##### v
+
+[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
+
+Source vector (must have non-zero components)
+
+##### out?
+
+`Vector2`
+
+Optional output vector
+
+#### Returns
+
+`Vector2`
+
+Inverted vector
+
+#### Remarks
+
+**Precondition:** Both components must be non-zero.
+Calling with zero produces Infinity.
+
+#### See
+
+- [inverse](#inverse-2) - Throws on near-zero component
+- [inverseSafe](#inversesafe-2) - Returns 0 per component on near-zero value
+
+#### Since
+
+0.7.0
+
+---
+
 ### normalize()
 
 > `static` **normalize**(`v`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:1510](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L1510)
+Defined in: [src/core/vector2.ts:1568](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L1568)
 
 Normalizes v to unit length.
 
@@ -6184,23 +6622,19 @@ Normalizes v to unit length.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Vector to normalize.
+Vector to normalize
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Unit vector.
-
-#### Throws
-
-If v has zero length.
+Unit vector
 
 #### Remarks
 
@@ -6210,12 +6644,21 @@ due to IEEE 754 double precision limits, causing a RangeError even if
 the vector is technically non-zero. Use [normalizeSafe](#normalizesafe-2) for
 graceful handling of such edge cases.
 
+#### Throws
+
+If v has zero length
+
 #### Example
 
 ```typescript
 const v = new Vector2(3, 4);
 const unit = Vector2.normalize(v); // (0.6, 0.8) - unit vector
 ```
+
+#### See
+
+- [normalizeSafe](#normalizesafe-2) - Returns (0,0) on zero-length vector
+- [normalizeUnchecked](#normalizeunchecked-2) - No validation
 
 #### Since
 
@@ -6227,7 +6670,7 @@ const unit = Vector2.normalize(v); // (0.6, 0.8) - unit vector
 
 > `static` **normalizeSafe**(`v`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:1529](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L1529)
+Defined in: [src/core/vector2.ts:1595](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L1595)
 
 Safe normalization. Returns (0,0) if v has zero length.
 
@@ -6237,19 +6680,30 @@ Safe normalization. Returns (0,0) if v has zero length.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Vector to normalize.
+Vector to normalize
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Normalized vector or zero vector.
+Normalized vector or zero vector
+
+#### Remarks
+
+Returns `(0,0)` for zero-length vectors because there is no meaningful
+unit direction to preserve. Unlike Complex and Rotation2 which use `(1,0)`
+as their identity element, vectors have no algebraic identity for
+normalization — the zero vector is the least surprising fallback.
+
+#### See
+
+[normalize](#normalize-2) - Throws on zero-length vector
 
 #### Since
 
@@ -6261,7 +6715,7 @@ Normalized vector or zero vector.
 
 > `static` **normalizeUnchecked**(`v`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:1556](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L1556)
+Defined in: [src/core/vector2.ts:1622](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L1622)
 
 Normalizes a vector without validation (for hot paths).
 
@@ -6271,19 +6725,19 @@ Normalizes a vector without validation (for hot paths).
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Vector to normalize (must have non-zero length).
+Vector to normalize (must have non-zero length)
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Normalized vector.
+Normalized vector
 
 #### Remarks
 
@@ -6307,7 +6761,7 @@ Normalized vector.
 
 > `static` **perpendicular**(`v`, `clockwise`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:2017](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2017)
+Defined in: [src/core/vector2.ts:2091](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L2091)
 
 Perpendicular vector (±90°) with unchanged length.
 
@@ -6317,7 +6771,7 @@ Perpendicular vector (±90°) with unchanged length.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Source vector.
+Source vector
 
 ##### clockwise
 
@@ -6329,22 +6783,22 @@ CW (-90°) if true, CCW (+90°) if false.
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Perpendicular vector.
-
-#### Default Value
-
-`false`
+Perpendicular vector
 
 #### Remarks
 
 - CCW (+90°): `(-y, x)`
 - CW (-90°): `(y, -x)`
+
+#### Default Value
+
+`false`
 
 #### Since
 
@@ -6356,7 +6810,7 @@ Perpendicular vector.
 
 > `static` **project**(`v`, `axis`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:1709](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L1709)
+Defined in: [src/core/vector2.ts:1779](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L1779)
 
 Projects v onto axis.
 
@@ -6366,33 +6820,33 @@ Projects v onto axis.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Vector to project.
+Vector to project
 
 ##### axis
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Projection axis.
+Projection axis
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Projection of v onto axis.
-
-#### Throws
-
-If axis has zero length.
+Projection of v onto axis
 
 #### Remarks
 
-Mathematically equivalent to `axis * (dot(v, axis) / magnitudeSquared(axis))`.
+Mathematically equivalent to `axis * (dot(v, axis) / magnitudeSq(axis))`.
+
+#### Throws
+
+If axis has zero length
 
 #### Example
 
@@ -6404,8 +6858,8 @@ const proj = Vector2.project(v, axis); // (3, 0) - projection onto X axis
 
 #### See
 
-- [projectSafe](#projectsafe) - Returns (0,0) instead of throwing
-- [projectUnchecked](#projectunchecked) - No validation, for hot paths
+- [projectSafe](#projectsafe-2) - Returns (0,0) instead of throwing
+- [projectUnchecked](#projectunchecked-2) - No validation, for hot paths
 - [projectOnUnit](#projectonunit-2) - Optimized for unit vectors
 
 #### Since
@@ -6418,7 +6872,7 @@ const proj = Vector2.project(v, axis); // (3, 0) - projection onto X axis
 
 > `static` **projectOnUnit**(`v`, `unitAxis`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:1785](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L1785)
+Defined in: [src/core/vector2.ts:1855](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L1855)
 
 Projects v onto a unit axis (optimized).
 
@@ -6428,25 +6882,25 @@ Projects v onto a unit axis (optimized).
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Vector to project.
+Vector to project
 
 ##### unitAxis
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Unit-length axis.
+Unit-length axis
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Projection of v onto unitAxis.
+Projection of v onto unitAxis
 
 #### Since
 
@@ -6458,7 +6912,7 @@ Projection of v onto unitAxis.
 
 > `static` **projectSafe**(`v`, `axis`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:1733](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L1733)
+Defined in: [src/core/vector2.ts:1802](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L1802)
 
 Projects v onto axis, returning (0,0) if axis has zero length.
 
@@ -6468,30 +6922,29 @@ Projects v onto axis, returning (0,0) if axis has zero length.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Vector to project.
+Vector to project
 
 ##### axis
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Projection axis.
+Projection axis
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Projection of v onto axis, or (0,0) if axis is zero.
+Projection of v onto axis, or (0,0) if axis is zero
 
 #### See
 
-- [project](#project-2) - Throws on zero axis
-- [projectUnchecked](#projectunchecked) - No validation, for hot paths
+- [project](#project-2) - Throws on zero-length axis
 - [projectOnUnit](#projectonunit-2) - Optimized for unit vectors
 
 #### Since
@@ -6504,7 +6957,7 @@ Projection of v onto axis, or (0,0) if axis is zero.
 
 > `static` **projectUnchecked**(`v`, `axis`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:1764](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L1764)
+Defined in: [src/core/vector2.ts:1834](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L1834)
 
 Projects v onto axis without validation (hot path).
 
@@ -6514,34 +6967,35 @@ Projects v onto axis without validation (hot path).
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Vector to project.
+Vector to project
 
 ##### axis
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Projection axis (must have non-zero length).
+Projection axis (must have non-zero length)
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Projection of v onto axis.
+Projection of v onto axis
 
 #### Remarks
 
-**⚠️ Precondition:** `axis` must have non-zero length.
+**Precondition:** `axis` must have non-zero length.
 If axis is zero, result will be (NaN, NaN).
 
 #### See
 
-- [project](#project-2) - Safe version with zero check
+- [project](#project-2) - Throws on zero-length axis
+- [projectSafe](#projectsafe-2) - Returns (0,0) on zero-length axis
 - [projectOnUnit](#projectonunit-2) - Optimized for unit vectors
 
 #### Since
@@ -6554,7 +7008,7 @@ If axis is zero, result will be (NaN, NaN).
 
 > `static` **reflect**(`v`, `unitNormal`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:1932](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L1932)
+Defined in: [src/core/vector2.ts:2007](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L2007)
 
 Reflection of v about a unit normal: `r = v - 2(v·n)n`.
 
@@ -6564,31 +7018,35 @@ Reflection of v about a unit normal: `r = v - 2(v·n)n`.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Incident vector.
+Incident vector
 
 ##### unitNormal
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Unit-length normal.
+Unit-length normal
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Reflected vector.
+Reflected vector
 
 #### Remarks
 
 Implements the reflection formula: `r = v - 2 * dot(v, n) * n`.
 Uses [Vector2.dot](#dot-2) internally.
 For physics bounces, the incident velocity reflects off surfaces using this formula.
+
+#### Throws
+
+If unitNormal is not unit length
 
 #### Example
 
@@ -6603,10 +7061,6 @@ const r = Vector2.reflect(v, normal); // (1, 1) - bounces off
 - [reflectSafe](#reflectsafe-2) - Normalizes normal first
 - [reflectUnchecked](#reflectunchecked) - No validation, for hot paths
 
-#### Throws
-
-If unitNormal is not unit length
-
 #### Since
 
 0.7.0
@@ -6617,7 +7071,7 @@ If unitNormal is not unit length
 
 > `static` **reflectSafe**(`v`, `normal`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:1959](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L1959)
+Defined in: [src/core/vector2.ts:2033](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L2033)
 
 Safe reflection. Normalizes the normal; near-zero normal returns v.
 
@@ -6627,30 +7081,29 @@ Safe reflection. Normalizes the normal; near-zero normal returns v.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Incident vector.
+Incident vector
 
 ##### normal
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Normal (need not be unit).
+Normal (need not be unit)
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Reflected vector.
+Reflected vector
 
 #### See
 
-- [reflect](#reflect-2) - Throws if normal is not unit
-- [reflectUnchecked](#reflectunchecked) - No validation, for hot paths
+[reflect](#reflect-2) - Throws if normal is not unit length
 
 #### Since
 
@@ -6662,7 +7115,7 @@ Reflected vector.
 
 > `static` **reflectUnchecked**(`v`, `unitNormal`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:1993](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L1993)
+Defined in: [src/core/vector2.ts:2067](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L2067)
 
 Reflection without validation (hot path).
 
@@ -6672,29 +7125,29 @@ Reflection without validation (hot path).
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Incident vector.
+Incident vector
 
 ##### unitNormal
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Unit-length normal (must be unit).
+Unit-length normal (must be unit)
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Reflected vector.
+Reflected vector
 
 #### Remarks
 
-**⚠️ Precondition:** `unitNormal` must have unit length.
+**Precondition:** `unitNormal` must have unit length.
 If not unit, result will be incorrect but not NaN.
 
 #### See
@@ -6712,7 +7165,7 @@ If not unit, result will be incorrect but not NaN.
 
 > `static` **reject**(`a`, `b`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:1820](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L1820)
+Defined in: [src/core/vector2.ts:1894](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L1894)
 
 Vector rejection: component of a perpendicular to b.
 
@@ -6722,33 +7175,33 @@ Vector rejection: component of a perpendicular to b.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Vector to decompose.
+Vector to decompose
 
 ##### b
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Axis of projection.
+Axis of projection
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Rejection of a from b.
-
-#### Throws
-
-If b has zero length.
+Rejection of a from b
 
 #### Remarks
 
 `reject(a, b) = a - project(a, b)`
+
+#### Throws
+
+If b has zero length
 
 #### Example
 
@@ -6760,8 +7213,8 @@ const rej = Vector2.reject(v, axis); // (0, 4) - the perpendicular component
 
 #### See
 
-- [rejectSafe](#rejectsafe) - Returns copy of a instead of throwing
-- [rejectUnchecked](#rejectunchecked) - No validation, for hot paths
+- [rejectSafe](#rejectsafe-2) - Returns copy of a instead of throwing
+- [rejectUnchecked](#rejectunchecked-2) - No validation, for hot paths
 - [rejectOnUnit](#rejectonunit-2) - Optimized for unit vectors
 
 #### Since
@@ -6774,7 +7227,7 @@ const rej = Vector2.reject(v, axis); // (0, 4) - the perpendicular component
 
 > `static` **rejectOnUnit**(`a`, `unitAxis`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:1896](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L1896)
+Defined in: [src/core/vector2.ts:1970](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L1970)
 
 Vector rejection onto a unit axis (optimized hot path).
 
@@ -6784,25 +7237,25 @@ Vector rejection onto a unit axis (optimized hot path).
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Vector to decompose.
+Vector to decompose
 
 ##### unitAxis
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Unit-length axis.
+Unit-length axis
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Rejection of a from unitAxis.
+Rejection of a from unitAxis
 
 #### Remarks
 
@@ -6819,7 +7272,7 @@ Use when you know the axis is already normalized.
 
 > `static` **rejectSafe**(`a`, `b`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:1844](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L1844)
+Defined in: [src/core/vector2.ts:1917](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L1917)
 
 Vector rejection, returning copy of a if b has zero length.
 
@@ -6829,30 +7282,29 @@ Vector rejection, returning copy of a if b has zero length.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Vector to decompose.
+Vector to decompose
 
 ##### b
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Axis of projection.
+Axis of projection
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Rejection of a from b, or copy of a if b is zero.
+Rejection of a from b, or copy of a if b is zero
 
 #### See
 
-- [reject](#reject-2) - Throws on zero b
-- [rejectUnchecked](#rejectunchecked) - No validation, for hot paths
+- [reject](#reject-2) - Throws on zero-length axis
 - [rejectOnUnit](#rejectonunit-2) - Optimized for unit vectors
 
 #### Since
@@ -6865,7 +7317,7 @@ Rejection of a from b, or copy of a if b is zero.
 
 > `static` **rejectUnchecked**(`a`, `b`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:1871](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L1871)
+Defined in: [src/core/vector2.ts:1945](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L1945)
 
 Vector rejection without validation (hot path).
 
@@ -6875,34 +7327,35 @@ Vector rejection without validation (hot path).
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Vector to decompose.
+Vector to decompose
 
 ##### b
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Axis of projection (must have non-zero length).
+Axis of projection (must have non-zero length)
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Rejection of a from b.
+Rejection of a from b
 
 #### Remarks
 
-**⚠️ Precondition:** `b` must have non-zero length.
+**Precondition:** `b` must have non-zero length.
 If b is zero, result will be (NaN, NaN).
 
 #### See
 
-- [reject](#reject-2) - Safe version with zero check
+- [reject](#reject-2) - Throws on zero-length axis
+- [rejectSafe](#rejectsafe-2) - Returns copy of input on zero-length axis
 - [rejectOnUnit](#rejectonunit-2) - Optimized for unit vectors
 
 #### Since
@@ -6915,7 +7368,7 @@ If b is zero, result will be (NaN, NaN).
 
 > `static` **rotate**(`v`, `angle`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:2038](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2038)
+Defined in: [src/core/vector2.ts:2112](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L2112)
 
 Rotates v by angle radians.
 
@@ -6925,25 +7378,25 @@ Rotates v by angle radians.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Vector to rotate.
+Vector to rotate
 
 ##### angle
 
 `number`
 
-Rotation angle (CCW positive).
+Rotation angle (CCW positive)
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Rotated vector.
+Rotated vector
 
 #### Example
 
@@ -6962,7 +7415,7 @@ const rotated = Vector2.rotate(v, Math.PI / 2); // (0, 1) - 90° CCW
 
 > `static` **rotateAround**(`v`, `center`, `angle`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:2078](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2078)
+Defined in: [src/core/vector2.ts:2152](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L2152)
 
 Rotates v around center by angle.
 
@@ -6972,31 +7425,31 @@ Rotates v around center by angle.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Vector to rotate.
+Vector to rotate
 
 ##### center
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Rotation pivot.
+Rotation pivot
 
 ##### angle
 
 `number`
 
-Rotation angle.
+Rotation angle
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Rotated vector.
+Rotated vector
 
 #### Example
 
@@ -7016,7 +7469,7 @@ const rotated = Vector2.rotateAround(point, center, Math.PI); // (0, 0)
 
 > `static` **rotateAroundCS**(`v`, `center`, `c`, `s`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:2106](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2106)
+Defined in: [src/core/vector2.ts:2180](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L2180)
 
 Rotates v around center using precomputed cos/sin.
 
@@ -7026,37 +7479,37 @@ Rotates v around center using precomputed cos/sin.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Vector to rotate.
+Vector to rotate
 
 ##### center
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Rotation pivot.
+Rotation pivot
 
 ##### c
 
 `number`
 
-Cosine of angle.
+Cosine of angle
 
 ##### s
 
 `number`
 
-Sine of angle.
+Sine of angle
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Rotated vector.
+Rotated vector
 
 #### Remarks
 
@@ -7072,7 +7525,7 @@ Optimal when rotating many points around the same center.
 
 > `static` **rotateCS**(`v`, `c`, `s`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:2055](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2055)
+Defined in: [src/core/vector2.ts:2129](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L2129)
 
 Rotates v using precomputed cos/sin (optimal for batches).
 
@@ -7082,31 +7535,65 @@ Rotates v using precomputed cos/sin (optimal for batches).
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Vector to rotate.
+Vector to rotate
 
 ##### c
 
 `number`
 
-Cosine of angle.
+Cosine of angle
 
 ##### s
 
 `number`
 
-Sine of angle.
+Sine of angle
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Rotated vector.
+Rotated vector
+
+#### Since
+
+0.7.0
+
+---
+
+### round()
+
+> `static` **round**(`v`, `out?`): `Vector2`
+
+Defined in: [src/core/vector2.ts:771](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L771)
+
+Applies Math.round to both components.
+
+#### Parameters
+
+##### v
+
+[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
+
+Source vector
+
+##### out?
+
+`Vector2`
+
+Optional output vector
+
+#### Returns
+
+`Vector2`
+
+Rounded vector
 
 #### Since
 
@@ -7118,7 +7605,7 @@ Rotated vector.
 
 > `static` **setAngle**(`v`, `angle`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:1677](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L1677)
+Defined in: [src/core/vector2.ts:1747](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L1747)
 
 Returns vector with same magnitude but new angle.
 
@@ -7128,25 +7615,25 @@ Returns vector with same magnitude but new angle.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Source vector.
+Source vector
 
 ##### angle
 
 `number`
 
-New heading in radians.
+New heading in radians
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Vector with new angle.
+Vector with new angle
 
 #### Since
 
@@ -7158,7 +7645,7 @@ Vector with new angle.
 
 > `static` **setMagnitude**(`v`, `newMagnitude`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:1601](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L1601)
+Defined in: [src/core/vector2.ts:1669](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L1669)
 
 Returns a copy of v with the requested length.
 
@@ -7168,29 +7655,34 @@ Returns a copy of v with the requested length.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Source vector.
+Source vector
 
 ##### newMagnitude
 
 `number`
 
-Desired magnitude.
+Desired magnitude
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Vector with specified length.
+Vector with specified length
 
 #### Throws
 
-If newMagnitude < 0 or v has zero length.
+If newMagnitude < 0 or v has zero length
+
+#### See
+
+- [setMagnitudeSafe](#setmagnitudesafe-2) - Returns fallback on zero-length vector
+- [setMagnitudeUnchecked](#setmagnitudeunchecked) - No validation
 
 #### Since
 
@@ -7202,7 +7694,7 @@ If newMagnitude < 0 or v has zero length.
 
 > `static` **setMagnitudeSafe**(`v`, `newMagnitude`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:1624](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L1624)
+Defined in: [src/core/vector2.ts:1694](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L1694)
 
 Safe setMagnitude. Zero vectors become (newMagnitude, 0).
 
@@ -7212,25 +7704,29 @@ Safe setMagnitude. Zero vectors become (newMagnitude, 0).
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Source vector.
+Source vector
 
 ##### newMagnitude
 
 `number`
 
-Desired magnitude (clamped to 0 if negative).
+Desired magnitude (clamped to 0 if negative)
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Vector with specified length.
+Vector with specified length
+
+#### See
+
+[setMagnitude](#setmagnitude-2) - Throws on zero-length vector or negative magnitude
 
 #### Since
 
@@ -7242,7 +7738,7 @@ Vector with specified length.
 
 > `static` **setMagnitudeUnchecked**(`v`, `newMagnitude`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:1656](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L1656)
+Defined in: [src/core/vector2.ts:1726](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L1726)
 
 Sets length without validation (hot path).
 
@@ -7252,29 +7748,29 @@ Sets length without validation (hot path).
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Source vector (must have non-zero length).
+Source vector (must have non-zero length)
 
 ##### newMagnitude
 
 `number`
 
-Desired magnitude (must be non-negative).
+Desired magnitude (must be non-negative)
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Vector with specified length.
+Vector with specified length
 
 #### Remarks
 
-⚠️ **Preconditions:** `v` must have non-zero length, `newMagnitude >= 0`.
+**Preconditions:** `v` must have non-zero length, `newMagnitude >= 0`.
 Calling with zero-length vector produces NaN/Infinity.
 
 #### See
@@ -7286,13 +7782,159 @@ Calling with zero-length vector produces NaN/Infinity.
 
 0.7.0
 
+---
+
+### sign()
+
+> `static` **sign**(`v`, `out?`): `Vector2`
+
+Defined in: [src/core/vector2.ts:813](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L813)
+
+Component-wise sign extraction: (sign(x), sign(y)).
+
+#### Parameters
+
+##### v
+
+[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
+
+Source vector
+
+##### out?
+
+`Vector2`
+
+Optional output vector
+
+#### Returns
+
+`Vector2`
+
+Vector with components -1, 0, or 1
+
+#### Since
+
+0.7.0
+
+---
+
+### step()
+
+> `static` **step**(`edge`, `v`, `out?`): `Vector2`
+
+Defined in: [src/core/vector2.ts:907](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L907)
+
+Component-wise step function (GLSL-style).
+
+#### Parameters
+
+##### edge
+
+[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
+
+Threshold vector
+
+##### v
+
+[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
+
+Input vector
+
+##### out?
+
+`Vector2`
+
+Optional output vector
+
+#### Returns
+
+`Vector2`
+
+Vector with 0 where `v < edge`, 1 otherwise
+
+#### Remarks
+
+Useful for shader-like operations and conditional masking.
+
+#### Since
+
+0.7.0
+
+---
+
+### swap()
+
+> `static` **swap**(`v`, `out?`): `Vector2`
+
+Defined in: [src/core/vector2.ts:889](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L889)
+
+Swaps x and y components.
+
+#### Parameters
+
+##### v
+
+[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
+
+Source vector
+
+##### out?
+
+`Vector2`
+
+Optional output vector
+
+#### Returns
+
+`Vector2`
+
+Vector with swapped components `(y, x)`
+
+#### Since
+
+0.7.0
+
+---
+
+### trunc()
+
+> `static` **trunc**(`v`, `out?`): `Vector2`
+
+Defined in: [src/core/vector2.ts:785](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L785)
+
+Applies Math.trunc to both components (rounds towards zero).
+
+#### Parameters
+
+##### v
+
+[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
+
+Source vector
+
+##### out?
+
+`Vector2`
+
+Optional output vector
+
+#### Returns
+
+`Vector2`
+
+Truncated vector
+
+#### Since
+
+0.7.0
+
 ## Transform Integration
 
 ### applyComplex()
 
 > **applyComplex**(`complex`): `this`
 
-Defined in: [src/core/vector2.ts:4064](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L4064)
+Defined in: [src/core/vector2.ts:4437](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L4437)
 
 Applies a complex number as a rotation to this vector in place.
 
@@ -7302,13 +7944,13 @@ Applies a complex number as a rotation to this vector in place.
 
 [`ReadonlyComplexLike`](../../types/interfaces/ReadonlyComplexLike.md)
 
-Complex number (will be normalized first).
+Complex number (will be normalized first)
 
 #### Returns
 
 `this`
 
-This for chaining.
+This for chaining
 
 #### Remarks
 
@@ -7334,7 +7976,7 @@ v.applyComplex(c); // v ≈ (0.707, 0.707)
 
 > **applyMatrix2**(`matrix`): `this`
 
-Defined in: [src/core/vector2.ts:3991](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3991)
+Defined in: [src/core/vector2.ts:4361](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L4361)
 
 Transforms this vector by a 2x2 matrix in place.
 
@@ -7344,18 +7986,22 @@ Transforms this vector by a 2x2 matrix in place.
 
 [`ReadonlyMatrix2Like`](../../types/interfaces/ReadonlyMatrix2Like.md)
 
-Matrix with m00, m01, m10, m11 components.
+Matrix with m00, m01, m10, m11 components
 
 #### Returns
 
 `this`
 
-This for chaining.
+This for chaining
 
 #### Remarks
 
 - Use `Matrix2.transformVector` semantics (spatial transform).
 - Use for chaining operations.
+
+#### Since
+
+0.7.0
 
 ---
 
@@ -7363,7 +8009,7 @@ This for chaining.
 
 > **applyMatrix3**(`matrix`): `this`
 
-Defined in: [src/core/vector2.ts:4010](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L4010)
+Defined in: [src/core/vector2.ts:4381](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L4381)
 
 Transforms this vector by a 3x3 matrix in place (includes translation and perspective).
 
@@ -7373,13 +8019,13 @@ Transforms this vector by a 3x3 matrix in place (includes translation and perspe
 
 [`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
 
-3x3 transformation matrix.
+3x3 transformation matrix
 
 #### Returns
 
 `this`
 
-This for chaining.
+This for chaining
 
 #### Remarks
 
@@ -7397,7 +8043,7 @@ This for chaining.
 
 > **applyRotation2**(`rotation`): `this`
 
-Defined in: [src/core/vector2.ts:3975](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L3975)
+Defined in: [src/core/vector2.ts:4343](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L4343)
 
 Applies a Rotation2 (unit complex) to this vector in place.
 
@@ -7407,13 +8053,13 @@ Applies a Rotation2 (unit complex) to this vector in place.
 
 [`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
 
-Rotation2 with cos and sin components.
+Rotation2 with cos and sin components
 
 #### Returns
 
 `this`
 
-This for chaining.
+This for chaining
 
 #### Remarks
 
@@ -7430,7 +8076,7 @@ This for chaining.
 
 > **applyTransform2**(`transform`): `this`
 
-Defined in: [src/core/vector2.ts:4035](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L4035)
+Defined in: [src/core/vector2.ts:4407](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L4407)
 
 Applies a full 2D transform (scale → rotate → translate) in place.
 
@@ -7440,13 +8086,13 @@ Applies a full 2D transform (scale → rotate → translate) in place.
 
 [`ReadonlyTransform2Like`](../../types/interfaces/ReadonlyTransform2Like.md)
 
-Transform2 with position, rotation, and scale.
+Transform2 with position, rotation, and scale
 
 #### Returns
 
 `this`
 
-This for chaining.
+This for chaining
 
 #### Remarks
 
@@ -7463,7 +8109,7 @@ This for chaining.
 
 > `static` **applyComplex**(`v`, `complex`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:2334](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2334)
+Defined in: [src/core/vector2.ts:2409](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L2409)
 
 Applies a complex number as a rotation to a vector.
 
@@ -7473,25 +8119,25 @@ Applies a complex number as a rotation to a vector.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Vector to transform.
+Vector to transform
 
 ##### complex
 
 [`ReadonlyComplexLike`](../../types/interfaces/ReadonlyComplexLike.md)
 
-Complex number (will be normalized first).
+Complex number (will be normalized first)
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Rotated vector.
+Rotated vector
 
 #### Remarks
 
@@ -7521,7 +8167,7 @@ const rotated = Vector2.applyComplex(v, c); // ≈ (0.707, 0.707)
 
 > `static` **applyMatrix2**(`v`, `matrix`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:2211](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2211)
+Defined in: [src/core/vector2.ts:2285](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L2285)
 
 Transforms a vector by a 2x2 matrix.
 
@@ -7531,25 +8177,25 @@ Transforms a vector by a 2x2 matrix.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Vector to transform.
+Vector to transform
 
 ##### matrix
 
 [`ReadonlyMatrix2Like`](../../types/interfaces/ReadonlyMatrix2Like.md)
 
-Matrix with m00, m01, m10, m11 components.
+Matrix with m00, m01, m10, m11 components
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Transformed vector.
+Transformed vector
 
 #### Remarks
 
@@ -7575,7 +8221,7 @@ const result = Vector2.applyMatrix2(v, mat); // (0, 1)
 
 > `static` **applyMatrix3**(`v`, `matrix`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:2252](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2252)
+Defined in: [src/core/vector2.ts:2327](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L2327)
 
 Transforms a vector by a 3x3 matrix (includes translation and perspective).
 
@@ -7585,25 +8231,25 @@ Transforms a vector by a 3x3 matrix (includes translation and perspective).
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Vector to transform (treated as a point).
+Vector to transform (treated as a point)
 
 ##### matrix
 
 [`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
 
-3x3 transformation matrix.
+3x3 transformation matrix
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Transformed vector.
+Transformed vector
 
 #### Remarks
 
@@ -7612,6 +8258,7 @@ Transformed vector.
   `[m00*x + m10*y + m20, m01*x + m11*y + m21]`
 
 For projective matrices, divides by the homogeneous coordinate w.
+When w ≈ 0, the point collapses to origin via `divideSafe` (returns 0).
 
 This treats the vector as a point (applies translation).
 For direction vectors (no translation), use Matrix3.transformVector.
@@ -7636,7 +8283,7 @@ const result = Vector2.applyMatrix3(v, m); // (11, 22)
 
 > `static` **applyRotation2**(`v`, `rotation`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:2180](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2180)
+Defined in: [src/core/vector2.ts:2254](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L2254)
 
 Applies a Rotation2 (unit complex) to a vector.
 
@@ -7646,25 +8293,25 @@ Applies a Rotation2 (unit complex) to a vector.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Vector to transform.
+Vector to transform
 
 ##### rotation
 
 [`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
 
-Rotation2 with cos and sin components.
+Rotation2 with cos and sin components
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Rotated vector.
+Rotated vector
 
 #### Remarks
 
@@ -7682,7 +8329,7 @@ Rotated vector.
 
 > `static` **applyTransform2**(`v`, `transform`, `out?`): `Vector2`
 
-Defined in: [src/core/vector2.ts:2293](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/vector2.ts#L2293)
+Defined in: [src/core/vector2.ts:2368](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/vector2.ts#L2368)
 
 Applies a full 2D transform (scale → rotate → translate) to a vector.
 
@@ -7692,25 +8339,25 @@ Applies a full 2D transform (scale → rotate → translate) to a vector.
 
 [`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
-Vector to transform.
+Vector to transform
 
 ##### transform
 
 [`ReadonlyTransform2Like`](../../types/interfaces/ReadonlyTransform2Like.md)
 
-Transform2 with position, rotation (angle), and scale.
+Transform2 with position, rotation (angle), and scale
 
 ##### out?
 
 `Vector2`
 
-Optional output vector.
+Optional output vector
 
 #### Returns
 
 `Vector2`
 
-Transformed vector.
+Transformed vector
 
 #### Remarks
 

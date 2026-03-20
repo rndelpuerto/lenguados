@@ -2,11 +2,11 @@
 
 ## File
 
-src/utils/random.ts
+utils/random.ts
 
 ## Description
 
-Deterministic random generation utilities for 2D mathematical objects.
+Deterministic random generation utilities for 2D mathematical objects
 
 ## Remarks
 

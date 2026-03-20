@@ -2,11 +2,11 @@
 
 ## File
 
-src/utils/random-source.ts
+utils/random-source.ts
 
 ## Description
 
-Random number source abstractions for deterministic sampling.
+Random number source abstractions for deterministic sampling
 
 ## Remarks
 
@@ -20,14 +20,16 @@ This allows the math2d library to support:
 integer conversion because it's IEEE 754 deterministic and the random
 sources handle their own determinism guarantees.
 
-## Types
+## Configuration
 
-- [RandomSource](interfaces/RandomSource.md)
+- [getDefaultRandomSource](functions/getDefaultRandomSource.md)
+- [setDefaultRandomSource](functions/setDefaultRandomSource.md)
 
-## Utility
+## Factory
 
 - [MathRandomSource](classes/MathRandomSource.md)
 - [SeededRandomSource](classes/SeededRandomSource.md)
-- [defaultRandomSource](variables/defaultRandomSource.md)
-- [getDefaultRandomSource](functions/getDefaultRandomSource.md)
-- [setDefaultRandomSource](functions/setDefaultRandomSource.md)
+
+## Types
+
+- [RandomSource](interfaces/RandomSource.md)

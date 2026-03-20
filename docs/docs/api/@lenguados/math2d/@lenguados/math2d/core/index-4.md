@@ -6,7 +6,7 @@ core/matrix3.ts
 
 ## Description
 
-Deterministic 3×3 matrix implementation for 2D affine transformations.
+Deterministic 3×3 matrix implementation for 2D affine transformations
 
 ## Remarks
 

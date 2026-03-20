@@ -2,7 +2,7 @@
 
 > `const` **SQRT_HALF**: `number` = `Math.SQRT1_2`
 
-Defined in: [src/auxiliary/scalar/constants.ts:218](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/auxiliary/scalar/constants.ts#L218)
+Defined in: [src/auxiliary/scalar/constants.ts:205](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/scalar/constants.ts#L205)
 
 Square root of 1/2 ≈ 0.707106781187.
 

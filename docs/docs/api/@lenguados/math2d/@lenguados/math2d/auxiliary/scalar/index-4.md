@@ -6,7 +6,7 @@ auxiliary/scalar/interpolation.ts
 
 ## Description
 
-Scalar interpolation operations.
+Scalar interpolation operations
 
 ## Interpolation
 

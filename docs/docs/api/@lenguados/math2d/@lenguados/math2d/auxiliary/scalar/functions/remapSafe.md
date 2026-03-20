@@ -2,7 +2,7 @@
 
 > **remapSafe**(`value`, `inMin`, `inMax`, `outMin`, `outMax`): `number`
 
-Defined in: [src/auxiliary/scalar/arithmetic.ts:145](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/auxiliary/scalar/arithmetic.ts#L145)
+Defined in: [src/auxiliary/scalar/arithmetic.ts:161](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/scalar/arithmetic.ts#L161)
 
 Linear mapping from [inMin, inMax] to [outMin, outMax] (safe).
 
@@ -12,37 +12,37 @@ Linear mapping from [inMin, inMax] to [outMin, outMax] (safe).
 
 `number`
 
-Value to remap.
+Value to remap
 
 ### inMin
 
 `number`
 
-Input range minimum.
+Input range minimum
 
 ### inMax
 
 `number`
 
-Input range maximum.
+Input range maximum
 
 ### outMin
 
 `number`
 
-Output range minimum.
+Output range minimum
 
 ### outMax
 
 `number`
 
-Output range maximum.
+Output range maximum
 
 ## Returns
 
 `number`
 
-Remapped value, or outMin if input range is degenerate.
+Remapped value, or outMin if input range is degenerate
 
 ## Example
 
@@ -53,7 +53,7 @@ remapSafe(5, 5, 5, 0, 100); // 0 (degenerate input range)
 
 ## See
 
-[remap](remap.md) - Returns midpoint for degenerate range
+[remap](remap.md) - Throws for degenerate range
 
 ## Since
 

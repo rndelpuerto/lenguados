@@ -2906,3 +2906,155 @@ describe('Matrix3', () => {
   });
  });
 });
+
+describe('Static getTranslation/getScale/getRotation', () => {
+ it('getTranslation extracts correct translation', () => {
+  const m = Matrix3.fromTranslation(new Vector2(10, 20));
+  const t = Matrix3.getTranslation(m);
+  expect(t.x).toBeCloseTo(10, DIGITS);
+  expect(t.y).toBeCloseTo(20, DIGITS);
+ });
+
+ it('getTranslation writes to out parameter', () => {
+  const m = Matrix3.fromTranslation(new Vector2(5, 7));
+  const out = new Vector2();
+  const result = Matrix3.getTranslation(m, out);
+  expect(result).toBe(out);
+  expect(out.x).toBeCloseTo(5, DIGITS);
+  expect(out.y).toBeCloseTo(7, DIGITS);
+ });
+
+ it('getScale extracts correct scale from rotated+scaled matrix', () => {
+  const m = Matrix3.multiply(
+   Matrix3.fromRotation(Math.PI / 3),
+   Matrix3.fromScale(new Vector2(2, 3)),
+  );
+  const s = Matrix3.getScale(m);
+  expect(s.x).toBeCloseTo(2, DIGITS);
+  expect(s.y).toBeCloseTo(3, DIGITS);
+ });
+
+ it('getScale writes to out parameter', () => {
+  const m = Matrix3.fromScale(new Vector2(4, 5));
+  const out = new Vector2();
+  const result = Matrix3.getScale(m, out);
+  expect(result).toBe(out);
+  expect(out.x).toBeCloseTo(4, DIGITS);
+  expect(out.y).toBeCloseTo(5, DIGITS);
+ });
+
+ it('getRotation extracts correct angle', () => {
+  const m = Matrix3.fromRotation(Math.PI / 4);
+  expect(Matrix3.getRotation(m)).toBeCloseTo(Math.PI / 4, DIGITS);
+ });
+
+ it('getRotation returns 0 for near-zero scale', () => {
+  const m = new Matrix3(0, 0, 0, 0, 0, 0, 0, 0, 1);
+  expect(Matrix3.getRotation(m)).toBe(0);
+ });
+
+ it('static and instance getters produce identical results', () => {
+  const m = Matrix3.multiply(
+   Matrix3.fromTranslation(new Vector2(10, 20)),
+   Matrix3.multiply(Matrix3.fromRotation(Math.PI / 6), Matrix3.fromScale(new Vector2(2, 3))),
+  );
+  expect(Matrix3.getRotation(m)).toBeCloseTo(m.getRotation(), DIGITS);
+  const staticScale = Matrix3.getScale(m);
+  const instanceScale = m.getScale();
+  expect(staticScale.x).toBeCloseTo(instanceScale.x, DIGITS);
+  expect(staticScale.y).toBeCloseTo(instanceScale.y, DIGITS);
+  const staticTranslation = Matrix3.getTranslation(m);
+  const instanceTranslation = m.getTranslation();
+  expect(staticTranslation.x).toBeCloseTo(instanceTranslation.x, DIGITS);
+  expect(staticTranslation.y).toBeCloseTo(instanceTranslation.y, DIGITS);
+ });
+});
+
+describe('Matrix3 Safe/Unchecked variants', () => {
+ it('static inverseSafe returns identity for singular matrix', () => {
+  const singular = new Matrix3(1, 2, 3, 4, 5, 6, 7, 8, 9); // det = 0
+  const result = Matrix3.inverseSafe(singular);
+  expect(result.m00).toBe(1);
+  expect(result.m01).toBe(0);
+  expect(result.m02).toBe(0);
+  expect(result.m10).toBe(0);
+  expect(result.m11).toBe(1);
+  expect(result.m12).toBe(0);
+  expect(result.m20).toBe(0);
+  expect(result.m21).toBe(0);
+  expect(result.m22).toBe(1);
+ });
+
+ it('static inverseUnchecked produces correct inverse for invertible matrix', () => {
+  const m = new Matrix3(1, 0, 0, 0, 2, 0, 3, 4, 1);
+  const result = Matrix3.inverseUnchecked(m);
+  const product = Matrix3.multiply(m, result);
+  expect(product.m00).toBeCloseTo(1, DIGITS);
+  expect(product.m01).toBeCloseTo(0, DIGITS);
+  expect(product.m02).toBeCloseTo(0, DIGITS);
+  expect(product.m10).toBeCloseTo(0, DIGITS);
+  expect(product.m11).toBeCloseTo(1, DIGITS);
+  expect(product.m12).toBeCloseTo(0, DIGITS);
+  expect(product.m20).toBeCloseTo(0, DIGITS);
+  expect(product.m21).toBeCloseTo(0, DIGITS);
+  expect(product.m22).toBeCloseTo(1, DIGITS);
+ });
+
+ it('static divideScalarSafe returns zero matrix for near-zero scalar', () => {
+  const m = new Matrix3(1, 2, 3, 4, 5, 6, 7, 8, 9);
+  const result = Matrix3.divideScalarSafe(m, 0);
+  expect(result.m00).toBe(0);
+  expect(result.m11).toBe(0);
+  expect(result.m22).toBe(0);
+ });
+
+ it('static divideScalarUnchecked produces correct result for valid scalar', () => {
+  const m = new Matrix3(2, 4, 6, 8, 10, 12, 14, 16, 18);
+  const result = Matrix3.divideScalarUnchecked(m, 2);
+  expect(result.m00).toBeCloseTo(1, DIGITS);
+  expect(result.m01).toBeCloseTo(2, DIGITS);
+  expect(result.m10).toBeCloseTo(4, DIGITS);
+  expect(result.m11).toBeCloseTo(5, DIGITS);
+  expect(result.m22).toBeCloseTo(9, DIGITS);
+ });
+
+ it('instance inverseSafe returns identity for singular matrix', () => {
+  const m = new Matrix3(1, 2, 3, 4, 5, 6, 7, 8, 9);
+  m.inverseSafe();
+  expect(m.m00).toBe(1);
+  expect(m.m01).toBe(0);
+  expect(m.m10).toBe(0);
+  expect(m.m11).toBe(1);
+  expect(m.m22).toBe(1);
+ });
+
+ it('instance inverseUnchecked produces correct inverse', () => {
+  const m = new Matrix3(1, 0, 0, 0, 2, 0, 3, 4, 1);
+  const original = m.clone();
+  m.inverseUnchecked();
+  const product = Matrix3.multiply(original, m);
+  expect(product.m00).toBeCloseTo(1, DIGITS);
+  expect(product.m01).toBeCloseTo(0, DIGITS);
+  expect(product.m10).toBeCloseTo(0, DIGITS);
+  expect(product.m11).toBeCloseTo(1, DIGITS);
+  expect(product.m22).toBeCloseTo(1, DIGITS);
+ });
+
+ it('instance divideScalarSafe returns zero for near-zero scalar', () => {
+  const m = new Matrix3(1, 2, 3, 4, 5, 6, 7, 8, 9);
+  m.divideScalarSafe(0);
+  expect(m.m00).toBe(0);
+  expect(m.m11).toBe(0);
+  expect(m.m22).toBe(0);
+ });
+
+ it('instance divideScalarUnchecked produces correct result', () => {
+  const m = new Matrix3(2, 4, 6, 8, 10, 12, 14, 16, 18);
+  m.divideScalarUnchecked(2);
+  expect(m.m00).toBeCloseTo(1, DIGITS);
+  expect(m.m01).toBeCloseTo(2, DIGITS);
+  expect(m.m10).toBeCloseTo(4, DIGITS);
+  expect(m.m11).toBeCloseTo(5, DIGITS);
+  expect(m.m22).toBeCloseTo(9, DIGITS);
+ });
+});

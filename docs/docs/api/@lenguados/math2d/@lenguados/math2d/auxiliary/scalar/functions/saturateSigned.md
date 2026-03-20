@@ -2,7 +2,7 @@
 
 > **saturateSigned**(`value`): `number`
 
-Defined in: [src/auxiliary/scalar/arithmetic.ts:85](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/auxiliary/scalar/arithmetic.ts#L85)
+Defined in: [src/auxiliary/scalar/arithmetic.ts:94](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/scalar/arithmetic.ts#L94)
 
 Saturates value to [-1, 1] range.
 Useful for normalized directions.
@@ -13,13 +13,13 @@ Useful for normalized directions.
 
 `number`
 
-Value to saturate.
+Value to saturate
 
 ## Returns
 
 `number`
 
-Saturated value in [-1, 1].
+Saturated value in [-1, 1]
 
 ## Example
 

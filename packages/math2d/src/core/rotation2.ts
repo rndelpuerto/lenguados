@@ -1,7 +1,7 @@
 /**
  * @file core/rotation2.ts
  * @module @lenguados/math2d/core
- * @description Deterministic 2D rotation for physics simulations.
+ * @description Deterministic 2D rotation for physics simulations
  *
  * @remarks
  * ## Design Pattern: Box2D b2Rot
@@ -98,12 +98,12 @@ export { isRotation2Like } from '../types';
 /**
  * Permanently freezes a {@link Rotation2} instance so it can no longer be mutated.
  *
- * @param rotation - The Rotation2 object to freeze.
- * @returns The same instance, now typed as ReadonlyRotation2Like.
- *
  * @remarks
  * - The returned object keeps its original reference; no new memory is allocated.
  * - In strict mode any subsequent attempt to modify `cos` or `sin` throws a TypeError.
+ *
+ * @param rotation - The Rotation2 object to freeze
+ * @returns The same instance, now typed as ReadonlyRotation2Like
  *
  * @example
  * ```typescript
@@ -126,8 +126,24 @@ export function freezeRotation2(rotation: Rotation2): ReadonlyRotation2 {
  * Deterministic 2D rotation stored as cosine and sine components.
  *
  * @remarks
- * Instances are normalized to unit magnitude, making them efficient for rotations.
- * Following standard mathematical conventions, all rotations in this library are **Counter-Clockwise (CCW) Positive**.
+ * - **Design:** Stored as `(cos, sin)` pair. Instance methods are mutable and chainable;
+ *   static methods are pure with alloc-free overloads via `out` parameter.
+ * - **Numerics:** Uses deterministic `sin`/`cos`/`atan2` kernels. Renormalization
+ *   maintains unit magnitude over accumulated rotations.
+ * - **Safety:** "Safe" variants return identity rotation instead of throwing on
+ *   zero-magnitude inputs.
+ *
+ * @example
+ * ```typescript
+ * // Create from angle
+ * const r = Rotation2.fromAngle(Math.PI / 4);
+ *
+ * // Apply rotation to vector
+ * const rotated = Rotation2.apply(r, vector);
+ *
+ * // Instance (mutable, chainable)
+ * rotation.multiply(other).normalize();
+ * ```
  *
  * @category Core
  * @since 0.7.0
@@ -148,9 +164,14 @@ export class Rotation2 implements Rotation2Like {
   * Creates a Rotation2 from cosine and sine components.
   *
   * @remarks
-  * Does NOT normalize the input. If `(cos, sin)` is not on the unit circle,
-  * the rotation will scale vectors. Use {@link Rotation2.fromAngle} for
-  * guaranteed normalization, or call {@link normalize} after construction.
+  * **Warning:** This constructor does NOT normalize the (cos, sin) input.
+  * A pair like `(2, 0)` will create a degenerate rotation that scales
+  * instead of rotating. Use {@link Rotation2.fromAngle | fromAngle} for
+  * angle-based construction or call {@link normalize} after construction
+  * if the input may not be unit-length.
+  *
+  * @param cos - Cosine of the rotation angle. @defaultValue `1`
+  * @param sin - Sine of the rotation angle. @defaultValue `0`
   */
  constructor(cos = 1, sin = 0) {
   this.cos = cos;
@@ -181,7 +202,8 @@ export class Rotation2 implements Rotation2Like {
 
  /**
   * Identity rotation (0°).
-  * @category Core
+  * @category Constant
+  * @since 0.7.0
   */
  public static readonly IDENTITY = Object.freeze(new Rotation2(1, 0)) as ReadonlyRotation2Like;
 
@@ -194,20 +216,23 @@ export class Rotation2 implements Rotation2Like {
 
  /**
   * 90° counter-clockwise rotation.
-  * @category Core
+  * @category Constant
+  * @since 0.7.0
   */
  public static readonly QUARTER_TURN = Object.freeze(new Rotation2(0, 1)) as ReadonlyRotation2Like;
 
  /**
   * 180° rotation.
-  * @category Core
+  * @category Constant
+  * @since 0.7.0
   */
  public static readonly HALF_TURN = Object.freeze(new Rotation2(-1, 0)) as ReadonlyRotation2Like;
 
  /**
   * 270° counter-clockwise rotation (90° clockwise).
-  * @see {@link NEGATIVE_QUARTER} — same rotation, named as clockwise quarter turn
-  * @category Core
+  * @see {@link NEGATIVE_QUARTER} - Same rotation, named as clockwise quarter turn
+  * @category Constant
+  * @since 0.7.0
   */
  public static readonly THREE_QUARTER_TURN = Object.freeze(
   new Rotation2(0, -1),
@@ -215,7 +240,8 @@ export class Rotation2 implements Rotation2Like {
 
  /**
   * 45° rotation (π/4).
-  * @category Core
+  * @category Constant
+  * @since 0.7.0
   */
  public static readonly EIGHTH_TURN = Object.freeze(
   Rotation2.fromAngle(PI / 4),
@@ -223,7 +249,8 @@ export class Rotation2 implements Rotation2Like {
 
  /**
   * 30° rotation (π/6).
-  * @category Core
+  * @category Constant
+  * @since 0.7.0
   */
  public static readonly TWELFTH_TURN = Object.freeze(
   Rotation2.fromAngle(PI / 6),
@@ -231,7 +258,8 @@ export class Rotation2 implements Rotation2Like {
 
  /**
   * 22.5° rotation (π/8).
-  * @category Core
+  * @category Constant
+  * @since 0.7.0
   */
  public static readonly SIXTEENTH_TURN = Object.freeze(
   Rotation2.fromAngle(PI / 8),
@@ -239,8 +267,9 @@ export class Rotation2 implements Rotation2Like {
 
  /**
   * -90° rotation (clockwise quarter turn).
-  * @see {@link THREE_QUARTER_TURN} — same rotation, named as 270° CCW
-  * @category Core
+  * @see {@link THREE_QUARTER_TURN} - Same rotation, named as 270° CCW
+  * @category Constant
+  * @since 0.7.0
   */
  public static readonly NEGATIVE_QUARTER = Object.freeze(
   new Rotation2(0, -1),
@@ -248,7 +277,8 @@ export class Rotation2 implements Rotation2Like {
 
  /**
   * 60° rotation (π/3).
-  * @category Core
+  * @category Constant
+  * @since 0.7.0
   */
  public static readonly SIXTH_TURN = Object.freeze(
   Rotation2.fromAngle(PI / 3),
@@ -282,15 +312,23 @@ export class Rotation2 implements Rotation2Like {
 
  /**
   * Creates a rotation from pre-computed cos/sin values.
-  * @param cos - Pre-computed cosine of the angle
-  * @param sin - Pre-computed sine of the angle
-  * @param out - Optional output rotation
-  * @returns Rotation with the given cos/sin
   *
   * @remarks
   * Trusts caller-provided cos/sin without normalization or validation,
   * consistent with all *CS methods in the library. Use when trig has
   * been pre-computed (e.g., via {@link sinCos}) to avoid redundant computation.
+  *
+  * @param cos - Pre-computed cosine of the angle
+  * @param sin - Pre-computed sine of the angle
+  * @param out - Optional output rotation
+  * @returns Rotation with the given cos/sin
+  *
+  * @example
+  * ```typescript
+  * const { cos, sin } = sinCos(Math.PI / 4);
+  * const rot = Rotation2.fromCS(cos, sin);         // 45° rotation
+  * const reused = Rotation2.fromCS(cos, sin, out); // reuse existing instance
+  * ```
   *
   * @category Factory
   * @since 0.7.0
@@ -304,6 +342,13 @@ export class Rotation2 implements Rotation2Like {
   * @param direction - Direction vector (will be normalized)
   * @param out - Optional output rotation
   * @returns Rotation pointing in the direction of the vector
+  *
+  * @example
+  * ```typescript
+  * const dir = { x: 3, y: 4 };
+  * const rot = Rotation2.fromVector2(dir);         // rotation toward (3,4)
+  * const reused = Rotation2.fromVector2(dir, out); // reuse existing instance
+  * ```
   *
   * @category Factory
   * @since 0.7.0
@@ -327,6 +372,14 @@ export class Rotation2 implements Rotation2Like {
   * @param to - Target direction (Vector2)
   * @param out - Optional output rotation
   * @returns Rotation that transforms 'from' to 'to'
+  *
+  * @example
+  * ```typescript
+  * const from = { x: 1, y: 0 };
+  * const to = { x: 0, y: 1 };
+  * const rot = Rotation2.fromVectors2(from, to);         // 90° CCW
+  * const reused = Rotation2.fromVectors2(from, to, out); // reuse existing instance
+  * ```
   *
   * @category Factory
   * @since 0.7.0
@@ -361,12 +414,22 @@ export class Rotation2 implements Rotation2Like {
 
  /**
   * Creates a rotation from a complex number.
+  *
+  * @remarks
+  * Zero-magnitude input produces identity rotation (cos=1, sin=0) after normalization.
+  *
   * @param complex - Complex number (will be normalized)
   * @param out - Optional output rotation
   * @returns Rotation from the complex number
   *
-  * @remarks
-  * Zero-magnitude input produces identity rotation (cos=1, sin=0) after normalization.
+  * @example
+  * ```typescript
+  * const c = new Complex(3, 4);
+  * const rot = Rotation2.fromComplex(c);         // normalized to unit rotation
+  * const reused = Rotation2.fromComplex(c, out); // reuse existing instance
+  * ```
+  *
+  * @see {@link fromComplexSafe} - Returns identity on zero magnitude
   *
   * @category Factory
   * @since 0.7.0
@@ -384,7 +447,17 @@ export class Rotation2 implements Rotation2Like {
   * @param out - Optional output rotation
   * @returns Rotation from the complex, or identity if magnitude is near zero
   *
-  * @see {@link fromComplex} - May produce invalid rotation if magnitude is zero
+  * @example
+  * ```typescript
+  * const c = new Complex(3, 4);
+  * const rot = Rotation2.fromComplexSafe(c);              // normalized to unit rotation
+  *
+  * const zero = new Complex(0, 0);
+  * const fallback = Rotation2.fromComplexSafe(zero);      // identity (cos=1, sin=0)
+  * const reused = Rotation2.fromComplexSafe(c, out);      // reuse existing instance
+  * ```
+  *
+  * @see {@link fromComplex} - Strict variant (also returns identity for zero magnitude)
   *
   * @category Factory
   * @since 0.7.0
@@ -402,6 +475,12 @@ export class Rotation2 implements Rotation2Like {
   * @param out - Optional output rotation
   * @returns Rotation from the object
   *
+  * @example
+  * ```typescript
+  * const rot = Rotation2.fromObject({ cos: 0, sin: 1 });         // 90° rotation
+  * const reused = Rotation2.fromObject({ cos: 0, sin: 1 }, out); // reuse existing instance
+  * ```
+  *
   * @category Factory
   * @since 0.7.0
   */
@@ -412,14 +491,15 @@ export class Rotation2 implements Rotation2Like {
 
  /**
   * Creates a rotation from individual cos and sin values.
-  * @param cos - Cosine component
-  * @param sin - Sine component
-  * @param out - Optional output rotation
-  * @returns Rotation from the values
   *
   * @remarks
   * The values are used directly without normalization.
   * For normalized rotations, use {@link fromAngle}.
+  *
+  * @param cos - Cosine component
+  * @param sin - Sine component
+  * @param out - Optional output rotation
+  * @returns Rotation from the values
   *
   * @example
   * ```typescript
@@ -442,7 +522,7 @@ export class Rotation2 implements Rotation2Like {
   * @param offset - Index offset. @defaultValue `0`
   * @param out - Optional output rotation
   * @returns Rotation from array
-  * @throws {RangeError} If offset is out of bounds.
+  * @throws {RangeError} If offset is out of bounds
   *
   * @example
   * ```typescript
@@ -469,6 +549,13 @@ export class Rotation2 implements Rotation2Like {
   * @param out - Optional output rotation
   * @returns A Rotation2 with identical values
   *
+  * @example
+  * ```typescript
+  * const original = Rotation2.fromAngle(Math.PI / 4);
+  * const cloned = Rotation2.clone(original);         // independent copy
+  * const reused = Rotation2.clone(original, out);    // reuse existing instance
+  * ```
+  *
   * @category Factory
   * @since 0.7.0
   */
@@ -481,6 +568,13 @@ export class Rotation2 implements Rotation2Like {
   * @param source - Source rotation
   * @param destination - Target rotation to receive the copy
   * @returns The destination rotation
+  *
+  * @example
+  * ```typescript
+  * const source = Rotation2.fromAngle(Math.PI / 2);
+  * const dest = new Rotation2();
+  * Rotation2.copy(source, dest); // dest now matches source
+  * ```
   *
   * @category Factory
   * @since 0.7.0
@@ -497,7 +591,16 @@ export class Rotation2 implements Rotation2Like {
   * @param out - Optional output rotation
   * @returns Normalized rotation
   *
-  * @category Factory
+  * @example
+  * ```typescript
+  * const drifted = new Rotation2(0.998, 0.065);
+  * const unit = Rotation2.normalize(drifted); // cos² + sin² ≈ 1
+  * ```
+  *
+  * @see {@link normalizeSafe} - Returns identity on zero magnitude
+  * @see {@link normalizeUnchecked} - No validation
+  *
+  * @category Transform
   * @since 0.7.0
   */
  public static normalize(rotation: ReadonlyRotation2Like, out?: Rotation2): Rotation2 {
@@ -510,16 +613,19 @@ export class Rotation2 implements Rotation2Like {
 
  /**
   * Safe normalization that handles zero-magnitude rotations.
-  * @param rotation - Rotation to normalize
-  * @param out - Optional output rotation
-  * @returns Normalized rotation, or identity if input has zero magnitude
   *
   * @remarks
-  * Unlike {@link normalize}, this method returns the identity rotation
-  * `(cos=1, sin=0)` instead of throwing when the input has zero magnitude.
+  * Both {@link normalize} and `normalizeSafe` return the identity rotation
+  * `(cos=1, sin=0)` for zero-magnitude input. The difference is that
+  * `normalizeSafe` makes the fallback behavior explicit via its API contract,
+  * whereas `normalize` delegates to an internal helper that silently returns identity.
   * The identity rotation is the neutral element for rotation composition —
   * applying it leaves vectors unchanged. This is useful for accumulated
   * rotations that may drift due to floating-point errors.
+  *
+  * @param rotation - Rotation to normalize
+  * @param out - Optional output rotation
+  * @returns Normalized rotation, or identity if input has zero magnitude
   *
   * @example
   * ```typescript
@@ -527,7 +633,9 @@ export class Rotation2 implements Rotation2Like {
   * const safe = Rotation2.normalizeSafe(drifted); // Returns IDENTITY
   * ```
   *
-  * @category Factory
+  * @see {@link normalize} - Strict variant (also returns identity for zero magnitude)
+  *
+  * @category Transform
   * @since 0.7.0
   */
  public static normalizeSafe(rotation: ReadonlyRotation2Like, out?: Rotation2): Rotation2 {
@@ -546,20 +654,21 @@ export class Rotation2 implements Rotation2Like {
 
  /**
   * Unchecked normalization for hot paths.
-  * @param rotation - Rotation to normalize (must have non-zero magnitude)
-  * @param out - Optional output rotation
-  * @returns Normalized rotation
   *
   * @remarks
-  * **⚠️ Precondition:** Rotation must have non-zero magnitude.
+  * **Precondition:** Rotation must have non-zero magnitude.
   * Calling with zero-magnitude produces Infinity/NaN.
   *
   * Use in performance-critical code where rotation validity is guaranteed.
   *
-  * @see {@link normalize} - Throws on zero magnitude
+  * @param rotation - Rotation to normalize (must have non-zero magnitude)
+  * @param out - Optional output rotation
+  * @returns Normalized rotation
+  *
+  * @see {@link normalize} - Strict variant (also returns identity for zero magnitude)
   * @see {@link normalizeSafe} - Returns identity on zero magnitude
   *
-  * @category Factory
+  * @category Transform
   * @since 0.7.0
   */
  public static normalizeUnchecked(rotation: ReadonlyRotation2Like, out?: Rotation2): Rotation2 {
@@ -577,15 +686,16 @@ export class Rotation2 implements Rotation2Like {
 
  /**
   * Multiplies two rotations (composition).
-  * @param a - First rotation
-  * @param b - Second rotation
-  * @param out - Optional output rotation
-  * @returns Combined rotation (a then b)
   *
   * @remarks
   * Repeated multiplication accumulates floating-point drift, causing the
   * result to deviate from unit magnitude. Call {@link normalize} periodically
   * (e.g., every 60–120 frames) in physics loops to maintain accuracy.
+  *
+  * @param a - First rotation
+  * @param b - Second rotation
+  * @param out - Optional output rotation
+  * @returns Combined rotation (a then b)
   *
   * @category Arithmetic
   * @since 0.7.0
@@ -635,13 +745,14 @@ export class Rotation2 implements Rotation2Like {
 
  /**
   * Returns the conjugate of a rotation (inverse for unit rotations).
-  * @param rotation - Rotation to conjugate
-  * @param out - Optional output rotation
-  * @returns Conjugated rotation
   *
   * @remarks
   * For unit complex numbers in SO(2), the conjugate `(cos, -sin)` is the inverse
   * rotation. Applying a rotation followed by its conjugate yields the identity.
+  *
+  * @param rotation - Rotation to conjugate
+  * @param out - Optional output rotation
+  * @returns Conjugated rotation
   *
   * @category Arithmetic
   * @since 0.7.0
@@ -651,20 +762,21 @@ export class Rotation2 implements Rotation2Like {
  }
 
  /* ======================================================================== */
- /* Static Transform Application                                             */
+ /* Static Transforms                                                        */
  /* ======================================================================== */
 
  /**
   * Applies a rotation to a vector.
-  * @param rotation - Rotation to apply
-  * @param vector - Vector to rotate
-  * @param out - Optional output vector
-  * @returns Rotated vector
   *
   * @remarks
   * - Use `Rotation2.apply` for pure rotation (operator semantics).
   * - Use `Matrix2.transformVector` for general linear transformations (spatial semantics).
   * - Mathematically equivalent to `Vector2.rotateCS(vector, rotation.cos, rotation.sin, out)`.
+  *
+  * @param rotation - Rotation to apply
+  * @param vector - Vector to rotate
+  * @param out - Optional output vector
+  * @returns Rotated vector
   *
   * @example
   * ```typescript
@@ -687,15 +799,16 @@ export class Rotation2 implements Rotation2Like {
 
  /**
   * Applies the inverse rotation to a vector.
-  * @param rotation - Rotation whose inverse to apply
-  * @param vector - Vector to rotate inversely
-  * @param out - Optional output vector
-  * @returns Inversely rotated vector
   *
   * @remarks
   * - Use `Rotation2.applyInverse` for pure rotation (operator semantics).
   * - Use `Matrix2.transformVector` for general linear transformations (spatial semantics).
   * - Mathematically equivalent to rotating by the negated angle.
+  *
+  * @param rotation - Rotation whose inverse to apply
+  * @param vector - Vector to rotate inversely
+  * @param out - Optional output vector
+  * @returns Inversely rotated vector
   *
   * @example
   * ```typescript
@@ -723,17 +836,18 @@ export class Rotation2 implements Rotation2Like {
 
  /**
   * Linear interpolation between two rotations.
-  * @param a - Start rotation
-  * @param b - End rotation
-  * @param t - Interpolation factor (not clamped; allows extrapolation which is linear in angle space and may wrap for large |t|)
-  * @param out - Optional output rotation
-  * @returns Interpolated rotation
   *
   * @remarks
   * For unit complex numbers in 2D (SO(2)), lerp via angle interpolation IS
   * equivalent to slerp. Unlike 3D quaternions where lerp and slerp differ,
   * in 2D the shortest-path angular interpolation produces the same result
   * as spherical interpolation on the unit circle.
+  *
+  * @param a - Start rotation
+  * @param b - End rotation
+  * @param t - Interpolation factor (not clamped; allows extrapolation which is linear in angle space and may wrap for large |t|)
+  * @param out - Optional output rotation
+  * @returns Interpolated rotation
   *
   * @category Interpolation
   * @since 0.7.0
@@ -770,15 +884,16 @@ export class Rotation2 implements Rotation2Like {
 
  /**
   * Smooth interpolation between two rotations using smoothStep easing.
+  *
+  * @remarks
+  * Uses Hermite smoothStep for ease-in-out effect.
+  * Equivalent to `lerp(from, to, smoothStep(0, 1, clamp(t, 0, 1)))`.
+  *
   * @param from - Source rotation
   * @param to - Target rotation
   * @param t - Interpolation factor (clamped to [0, 1])
   * @param out - Optional output rotation
   * @returns Smoothly interpolated rotation
-  *
-  * @remarks
-  * Uses Hermite smoothStep for ease-in-out effect.
-  * Equivalent to `lerp(from, to, smoothStep(0, 1, clamp(t, 0, 1)))`.
   *
   * @example
   * ```typescript
@@ -801,17 +916,18 @@ export class Rotation2 implements Rotation2Like {
  }
 
  /* ======================================================================== */
- /* Static Comparison & Validation                                           */
+ /* Static Comparison                                                        */
  /* ======================================================================== */
 
  /**
   * Exact component-wise equality (bit-identical).
-  * @param a - First rotation
-  * @param b - Second rotation
-  * @returns True if cos and sin are exactly identical
   *
   * @remarks
   * Use {@link nearEquals} for comparing results of floating-point operations.
+  *
+  * @param a - First rotation
+  * @param b - Second rotation
+  * @returns True if cos and sin are exactly identical
   *
   * @category Comparison
   * @since 0.7.0
@@ -822,14 +938,15 @@ export class Rotation2 implements Rotation2Like {
 
  /**
   * Approximate equality between two rotations using relative tolerance.
-  * @param a - First rotation
-  * @param b - Second rotation
-  * @param epsilon - Relative tolerance. @defaultValue `EPSILON`
-  * @returns True if rotations are equivalent within tolerance
   *
   * @remarks
   * First tries fast component comparison with relative tolerance, then falls
   * back to angle comparison using {@link angleDifference} for edge cases near ±180°.
+  *
+  * @param a - First rotation
+  * @param b - Second rotation
+  * @param epsilon - Relative tolerance. @defaultValue `EPSILON`
+  * @returns True if rotations are equivalent within tolerance
   *
   * @category Comparison
   * @since 0.7.0
@@ -854,12 +971,13 @@ export class Rotation2 implements Rotation2Like {
 
  /**
   * Tests if a rotation is the identity.
-  * @param rotation - Rotation to test
-  * @param epsilon - Tolerance (default: EPSILON)
-  * @returns True if rotation is identity
   *
   * @remarks
   * Uses {@link EPSILON} (1e-10) as default tolerance. Checks cos ≈ 1 and sin ≈ 0.
+  *
+  * @param rotation - Rotation to test
+  * @param epsilon - Tolerance (default: EPSILON)
+  * @returns True if rotation is identity
   *
   * @category Comparison
   * @since 0.7.0
@@ -908,11 +1026,12 @@ export class Rotation2 implements Rotation2Like {
 
  /**
   * Tests if any component is infinite (±Infinity).
-  * @param rotation - Rotation to test
-  * @returns True if cos or sin is ±Infinity
   *
   * @remarks
   * Distinguishes infinity from NaN. Use {@link isFinite} to check for both.
+  *
+  * @param rotation - Rotation to test
+  * @returns True if cos or sin is ±Infinity
   *
   * @category Comparison
   * @since 0.7.0
@@ -925,7 +1044,7 @@ export class Rotation2 implements Rotation2Like {
  }
 
  /* ======================================================================== */
- /* Static Computed Values                                                   */
+ /* Static Computed                                                          */
  /* ======================================================================== */
 
  /**
@@ -941,7 +1060,7 @@ export class Rotation2 implements Rotation2Like {
  }
 
  /* ======================================================================== */
- /* Instance Basic Mutators                                                  */
+ /* Instance Mutators                                                        */
  /* ======================================================================== */
 
  /**
@@ -1014,7 +1133,16 @@ export class Rotation2 implements Rotation2Like {
   * Normalizes this rotation to unit length.
   * @returns This for chaining
   *
-  * @category Mutator
+  * @example
+  * ```typescript
+  * const rot = new Rotation2(0.998, 0.065);
+  * rot.normalize(); // cos² + sin² ≈ 1
+  * ```
+  *
+  * @see {@link normalizeSafe} - Returns identity on zero magnitude
+  * @see {@link normalizeUnchecked} - No validation
+  *
+  * @category Transform
   * @since 0.7.0
   */
  normalize(): this {
@@ -1026,12 +1154,15 @@ export class Rotation2 implements Rotation2Like {
 
  /**
   * Safe normalization that handles zero-magnitude rotations.
-  * @returns This for chaining
   *
   * @remarks
-  * Unlike {@link normalize}, this method sets the rotation to identity
-  * instead of throwing when it has zero magnitude. This is useful for
-  * accumulated rotations that may drift due to floating-point errors.
+  * Both {@link normalize} and `normalizeSafe` return the identity rotation
+  * `(cos=1, sin=0)` for zero-magnitude input. The difference is that
+  * `normalizeSafe` makes the fallback behavior explicit via its API contract,
+  * whereas `normalize` delegates to an internal helper that silently returns identity.
+  * This is useful for accumulated rotations that may drift due to floating-point errors.
+  *
+  * @returns This for chaining
   *
   * @example
   * ```typescript
@@ -1039,7 +1170,9 @@ export class Rotation2 implements Rotation2Like {
   * rot.normalizeSafe(); // Safely normalizes
   * ```
   *
-  * @category Mutator
+  * @see {@link normalize} - Strict variant (also returns identity for zero magnitude)
+  *
+  * @category Transform
   * @since 0.7.0
   */
  normalizeSafe(): this {
@@ -1057,15 +1190,16 @@ export class Rotation2 implements Rotation2Like {
 
  /**
   * Unchecked normalization for hot paths.
-  * @returns This for chaining
   *
   * @remarks
-  * **⚠️ Precondition:** Rotation must have non-zero magnitude.
+  * **Precondition:** Rotation must have non-zero magnitude.
   *
-  * @see {@link normalize} - Throws on zero magnitude
+  * @returns This for chaining
+  *
+  * @see {@link normalize} - Strict variant (also returns identity for zero magnitude)
   * @see {@link normalizeSafe} - Returns identity on zero magnitude
   *
-  * @category Mutator
+  * @category Transform
   * @since 0.7.0
   */
  normalizeUnchecked(): this {
@@ -1077,7 +1211,7 @@ export class Rotation2 implements Rotation2Like {
  }
 
  /* ======================================================================== */
- /* Instance Angle Accessors                                                 */
+ /* Instance Accessors (Angle)                                               */
  /* ======================================================================== */
 
  /**
@@ -1091,7 +1225,7 @@ export class Rotation2 implements Rotation2Like {
   * ```
   *
   * @category Accessor
-  * @since 0.8.0
+  * @since 0.7.0
   */
  get angle(): number {
   return atan2(this.sin, this.cos);
@@ -1108,7 +1242,7 @@ export class Rotation2 implements Rotation2Like {
   * ```
   *
   * @category Accessor
-  * @since 0.8.0
+  * @since 0.7.0
   */
  set angle(value: number) {
   this.setAngle(value);
@@ -1116,7 +1250,6 @@ export class Rotation2 implements Rotation2Like {
 
  /**
   * Gets the angle in degrees.
-  * Uses auxiliary/angle/conversion for DRY compliance.
   * @returns Angle in degrees
   *
   * @example
@@ -1126,7 +1259,7 @@ export class Rotation2 implements Rotation2Like {
   * ```
   *
   * @category Accessor
-  * @since 0.8.0
+  * @since 0.7.0
   */
  get angleDegrees(): number {
   return radiansToDegrees(this.angle);
@@ -1134,7 +1267,6 @@ export class Rotation2 implements Rotation2Like {
 
  /**
   * Sets the angle in degrees.
-  * Uses auxiliary/angle/conversion for DRY compliance.
   *
   * @example
   * ```typescript
@@ -1142,7 +1274,7 @@ export class Rotation2 implements Rotation2Like {
   * ```
   *
   * @category Accessor
-  * @since 0.8.0
+  * @since 0.7.0
   */
  set angleDegrees(value: number) {
   this.angle = degreesToRadians(value);
@@ -1150,7 +1282,6 @@ export class Rotation2 implements Rotation2Like {
 
  /**
   * Gets the angle in turns (0-1 = one full rotation).
-  * Uses auxiliary/angle/conversion for DRY compliance.
   * @returns Angle in turns (0-1 range)
   *
   * @example
@@ -1160,7 +1291,7 @@ export class Rotation2 implements Rotation2Like {
   * ```
   *
   * @category Accessor
-  * @since 0.8.0
+  * @since 0.7.0
   */
  get angleTurns(): number {
   return radiansToTurns(this.angle);
@@ -1168,7 +1299,6 @@ export class Rotation2 implements Rotation2Like {
 
  /**
   * Sets the angle in turns (0-1 = one full rotation).
-  * Uses auxiliary/angle/conversion for DRY compliance.
   *
   * @example
   * ```typescript
@@ -1176,7 +1306,7 @@ export class Rotation2 implements Rotation2Like {
   * ```
   *
   * @category Accessor
-  * @since 0.8.0
+  * @since 0.7.0
   */
  set angleTurns(value: number) {
   this.angle = turnsToRadians(value);
@@ -1216,11 +1346,12 @@ export class Rotation2 implements Rotation2Like {
 
  /**
   * Conjugates this rotation in place (inverse for unit rotations).
-  * @returns This for chaining
   *
   * @remarks
   * For unit complex numbers in SO(2), the conjugate `(cos, -sin)` is the inverse
   * rotation. Applying a rotation followed by its conjugate yields the identity.
+  *
+  * @returns This for chaining
   *
   * @category Arithmetic
   * @since 0.7.0
@@ -1265,13 +1396,14 @@ export class Rotation2 implements Rotation2Like {
 
  /**
   * Applies the inverse rotation to a vector.
+  *
+  * @remarks
+  * Mathematically equivalent to `Vector2.rotateCS(vector, this.cos, -this.sin, out)`.
+  * Implemented inline for performance in hot paths.
+  *
   * @param vector - Vector to rotate inversely
   * @param out - Optional output vector
   * @returns Inversely rotated vector
-  *
-  * @remarks
-  * Mathematically equivalent to `Vector2.rotateCS(vector, this.c, -this.s, out)`.
-  * Implemented inline for performance in hot paths.
   *
   * @category Transform
   * @since 0.7.0
@@ -1286,11 +1418,12 @@ export class Rotation2 implements Rotation2Like {
 
  /**
   * Exact equality (bit-identical).
-  * @param other - Rotation to compare
-  * @returns True if cos and sin are exactly identical
   *
   * @remarks
   * Use {@link nearEquals} for comparing results of floating-point operations.
+  *
+  * @param other - Rotation to compare
+  * @returns True if cos and sin are exactly identical
   *
   * @category Comparison
   * @since 0.7.0
@@ -1301,13 +1434,14 @@ export class Rotation2 implements Rotation2Like {
 
  /**
   * Approximate equality with wrap-around handling using relative tolerance.
-  * @param other - Rotation to compare
-  * @param epsilon - Relative tolerance. @defaultValue `EPSILON`
-  * @returns True if rotations are equivalent within tolerance
   *
   * @remarks
   * First tries fast component comparison with relative tolerance, then falls
   * back to angle comparison for edge cases near ±180°.
+  *
+  * @param other - Rotation to compare
+  * @param epsilon - Relative tolerance. @defaultValue `EPSILON`
+  * @returns True if rotations are equivalent within tolerance
   *
   * @category Comparison
   * @since 0.7.0
@@ -1344,7 +1478,7 @@ export class Rotation2 implements Rotation2Like {
   * Returns true if all components are finite.
   * @returns True if no NaN or Infinity values
   *
-  * @category Validation
+  * @category Comparison
   * @since 0.7.0
   */
  isFinite(): boolean {
@@ -1355,7 +1489,7 @@ export class Rotation2 implements Rotation2Like {
   * Returns true if any component is NaN.
   * @returns True if any NaN value exists
   *
-  * @category Validation
+  * @category Comparison
   * @since 0.7.0
   */
  hasNaN(): boolean {
@@ -1366,7 +1500,7 @@ export class Rotation2 implements Rotation2Like {
   * Returns true if any component is infinite (±Infinity).
   * @returns True if any ±Infinity value exists
   *
-  * @category Validation
+  * @category Comparison
   * @since 0.7.0
   */
  hasInfinity(): boolean {
@@ -1374,14 +1508,14 @@ export class Rotation2 implements Rotation2Like {
  }
 
  /* ======================================================================== */
- /* Instance Getters (Derived)                                               */
+ /* Instance Accessors                                                       */
  /* ======================================================================== */
 
  /**
   * Returns the inverse rotation without modifying this one.
   * @returns New inverted rotation
   *
-  * @category Computed
+  * @category Accessor
   * @since 0.7.0
   */
  public get inversed(): Rotation2 {
@@ -1392,7 +1526,7 @@ export class Rotation2 implements Rotation2Like {
   * Returns the double of this rotation without modifying it.
   * @returns New rotation with double the angle
   *
-  * @category Computed
+  * @category Accessor
   * @since 0.7.0
   */
  public get doubled(): Rotation2 {
@@ -1404,7 +1538,7 @@ export class Rotation2 implements Rotation2Like {
   * Returns the perpendicular rotation (+90°) without modifying this one.
   * @returns New rotation rotated 90° counter-clockwise
   *
-  * @category Computed
+  * @category Accessor
   * @since 0.7.0
   */
  public get perpendicular(): Rotation2 {
@@ -1415,7 +1549,7 @@ export class Rotation2 implements Rotation2Like {
   * Returns the X-axis direction vector of this rotation.
   * @returns Unit vector pointing in rotation direction
   *
-  * @category Computed
+  * @category Accessor
   * @since 0.7.0
   */
  public get xAxis(): Vector2 {
@@ -1426,7 +1560,7 @@ export class Rotation2 implements Rotation2Like {
   * Returns the Y-axis direction vector of this rotation.
   * @returns Unit vector perpendicular to rotation direction
   *
-  * @category Computed
+  * @category Accessor
   * @since 0.7.0
   */
  public get yAxis(): Vector2 {
@@ -1438,7 +1572,7 @@ export class Rotation2 implements Rotation2Like {
   * Equivalent to rotating by the negative angle.
   * @returns New negated rotation
   *
-  * @category Computed
+  * @category Accessor
   * @since 0.7.0
   */
  public get negated(): Rotation2 {
@@ -1454,7 +1588,7 @@ export class Rotation2 implements Rotation2Like {
   *
   * @returns New normalized rotation
   *
-  * @category Computed
+  * @category Accessor
   * @since 0.7.0
   */
  public get normalized(): Rotation2 {
@@ -1573,15 +1707,15 @@ export class Rotation2 implements Rotation2Like {
  }
 
  /* ======================================================================== */
- /* Instance Serialization                                                   */
+ /* Instance Conversion (Serialization)                                      */
  /* ======================================================================== */
 
  /**
   * Writes to array or typed array.
   *
-  * @param out - Optional destination array. If not provided, returns a new tuple.
+  * @param out - Optional destination array. If not provided, returns a new tuple
   * @param offset - Write offset. @defaultValue `0`
-  * @returns The output array, or a new tuple if no output was provided.
+  * @returns The output array, or a new tuple if no output was provided
   *
   * @example
   * ```typescript
@@ -1593,7 +1727,7 @@ export class Rotation2 implements Rotation2Like {
   * r.toArray(arr, 4); // writes at indices 4, 5
   * ```
   *
-  * @category Serialization
+  * @category Conversion
   * @since 0.7.0
   */
  public toArray<T extends ArrayLike<number> & { [index: number]: number }>(
@@ -1619,7 +1753,7 @@ export class Rotation2 implements Rotation2Like {
   * // { cos: 0, sin: 1 }
   * ```
   *
-  * @category Serialization
+  * @category Conversion
   * @since 0.7.0
   */
  public toObject(): Rotation2Like {
@@ -1638,7 +1772,7 @@ export class Rotation2 implements Rotation2Like {
   * // '{"cos":0,"sin":1}'
   * ```
   *
-  * @category Serialization
+  * @category Conversion
   * @since 0.7.0
   */
  public toJSON(): Rotation2Like {
@@ -1658,7 +1792,7 @@ export class Rotation2 implements Rotation2Like {
   * // "Rotation2(90.0000°)"
   * ```
   *
-  * @category Serialization
+  * @category Conversion
   * @since 0.7.0
   */
  public toString(precision = 4): string {
@@ -1677,7 +1811,7 @@ export class Rotation2 implements Rotation2Like {
   * copy.identity(); // Original unchanged
   * ```
   *
-  * @category Serialization
+  * @category Conversion
   * @since 0.7.0
   */
  clone(): Rotation2 {
@@ -1686,7 +1820,7 @@ export class Rotation2 implements Rotation2Like {
 
  /**
   * Iterator for array destructuring.
-  * @returns Iterator yielding cos then sin.
+  * @returns Iterator yielding cos then sin
   *
   * @example
   * ```typescript

@@ -1,7 +1,7 @@
 /**
  * @file auxiliary/numeric/guards.ts
  * @module @lenguados/math2d/auxiliary/numeric
- * @description Numeric type guards (boolean predicates).
+ * @description Numeric type guards (boolean predicates)
  *
  * @remarks
  * This module provides boolean predicates for testing numeric values
@@ -16,8 +16,8 @@ import { SMALLEST_NORMAL } from '../scalar/constants';
 
 /**
  * Tests if value is positive infinity.
- * @param value - Value to test.
- * @returns True if positive infinity.
+ * @param value - Value to test
+ * @returns True if positive infinity
  *
  * @example
  * ```typescript
@@ -36,8 +36,8 @@ export function isPositiveInfinity(value: number): boolean {
 
 /**
  * Tests if value is negative infinity.
- * @param value - Value to test.
- * @returns True if negative infinity.
+ * @param value - Value to test
+ * @returns True if negative infinity
  *
  * @example
  * ```typescript
@@ -56,8 +56,8 @@ export function isNegativeInfinity(value: number): boolean {
 
 /**
  * Tests if value is any infinity.
- * @param value - Value to test.
- * @returns True if positive or negative infinity.
+ * @param value - Value to test
+ * @returns True if positive or negative infinity
  *
  * @example
  * ```typescript
@@ -76,14 +76,15 @@ export function isInfinity(value: number): boolean {
 
 /**
  * Tests if value is a denormal number.
- * @param value - Value to test.
- * @returns True if denormal.
  *
  * @remarks
  * Denormal (or subnormal) numbers are very small numbers that
  * can cause performance issues on some processors. In IEEE 754
  * double precision, denormals are numbers with absolute value
  * less than 2^-1022 (approximately 2.225e-308) but not zero.
+ *
+ * @param value - Value to test
+ * @returns True if denormal
  *
  * @example
  * ```typescript
@@ -102,10 +103,10 @@ export function isDenormal(value: number): boolean {
 
 /**
  * Tests if value is in range [min, max].
- * @param value - Value to test.
- * @param min - Lower bound (inclusive).
- * @param max - Upper bound (inclusive).
- * @returns True if value is within range.
+ * @param value - Value to test
+ * @param min - Lower bound (inclusive)
+ * @param max - Upper bound (inclusive)
+ * @returns True if value is within range
  *
  * @example
  * ```typescript

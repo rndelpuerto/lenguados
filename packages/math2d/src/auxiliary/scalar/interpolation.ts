@@ -1,22 +1,23 @@
 /**
  * @file auxiliary/scalar/interpolation.ts
  * @module @lenguados/math2d/auxiliary/scalar
- * @description Scalar interpolation operations.
+ * @description Scalar interpolation operations
  */
 
 import { saturate } from './arithmetic';
 
 /**
  * Linear interpolation between two values.
- * @param a - Start value.
- * @param b - End value.
- * @param t - Interpolation factor (usually 0-1).
- * @returns Interpolated value.
  *
  * @remarks
  * The interpolation factor t is not clamped, allowing extrapolation
  * for t values outside [0, 1]. Use {@link lerpClamped} when you need
  * to ensure the result stays within [a, b].
+ *
+ * @param a - Start value
+ * @param b - End value
+ * @param t - Interpolation factor (usually 0-1)
+ * @returns Interpolated value
  *
  * @example
  * ```typescript
@@ -27,7 +28,7 @@ import { saturate } from './arithmetic';
  * lerp(0, 10, -0.5);   // -5 (extrapolation)
  * ```
  *
- * @see {@link lerpClamped} for clamped interpolation
+ * @see {@link lerpClamped} — clamped interpolation
  * @category Interpolation
  * @since 0.7.0
  */
@@ -39,14 +40,15 @@ export function lerp(a: number, b: number, t: number): number {
 /**
  * Clamped linear interpolation.
  * Clamps t to [0, 1] before interpolating.
- * @param a - Start value.
- * @param b - End value.
- * @param t - Interpolation factor (will be clamped to [0, 1]).
- * @returns Interpolated value guaranteed to be in [a, b] (or [b, a] if b < a).
  *
  * @remarks
  * Use this when t may be outside [0, 1] and extrapolation is not desired.
  * For unclamped interpolation (allowing extrapolation), use {@link lerp}.
+ *
+ * @param a - Start value
+ * @param b - End value
+ * @param t - Interpolation factor (will be clamped to [0, 1])
+ * @returns Interpolated value guaranteed to be in [a, b] (or [b, a] if b < a)
  *
  * @example
  * ```typescript
@@ -55,7 +57,7 @@ export function lerp(a: number, b: number, t: number): number {
  * lerpClamped(0, 10, -0.5);  // 0 (clamped, not -5)
  * ```
  *
- * @see {@link lerp} for unclamped interpolation
+ * @see {@link lerp} — unclamped interpolation
  * @category Interpolation
  * @since 0.7.0
  */
@@ -68,14 +70,11 @@ export function lerpClamped(a: number, b: number, t: number): number {
 /**
  * Inverse linear interpolation (strict).
  * Returns t such that lerp(a, b, t) = value.
- * @param a - Start value.
- * @param b - End value.
- * @param value - Value to find t for.
- * @returns Interpolation factor t.
- * @throws {RangeError} If a === b (degenerate range).
- *
- * @see {@link inverseLerpSafe} - Returns 0 if range is degenerate
- * @see {@link inverseLerpUnchecked} - No validation
+ * @param a - Start value
+ * @param b - End value
+ * @param value - Value to find t for
+ * @returns Interpolation factor t
+ * @throws {RangeError} If a === b (degenerate range)
  *
  * @example
  * ```typescript
@@ -83,6 +82,9 @@ export function lerpClamped(a: number, b: number, t: number): number {
  * inverseLerp(0, 10, 0);     // 0
  * inverseLerp(0, 10, 10);    // 1
  * ```
+ *
+ * @see {@link inverseLerpSafe} — Returns 0 if range is degenerate
+ * @see {@link inverseLerpUnchecked} — No validation
  *
  * @category Interpolation
  * @since 0.7.0
@@ -97,10 +99,18 @@ export function inverseLerp(a: number, b: number, value: number): number {
 
 /**
  * Inverse linear interpolation (safe).
- * @param a - Start value.
- * @param b - End value.
- * @param value - Value to find t for.
- * @returns Interpolation factor t, or 0 if range is degenerate.
+ * @param a - Start value
+ * @param b - End value
+ * @param value - Value to find t for
+ * @returns Interpolation factor t, or 0 if range is degenerate
+ *
+ * @example
+ * ```typescript
+ * inverseLerpSafe(0, 10, 5);     // 0.5
+ * inverseLerpSafe(5, 5, 3);      // 0 (degenerate range)
+ * ```
+ *
+ * @see {@link inverseLerp} — Throws for degenerate range
  *
  * @category Interpolation
  * @since 0.7.0
@@ -113,13 +123,17 @@ export function inverseLerpSafe(a: number, b: number, value: number): number {
 
 /**
  * Inverse linear interpolation (unchecked).
- * @param a - Start value.
- * @param b - End value (must != a).
- * @param value - Value to find t for.
- * @returns Interpolation factor t.
  *
  * @remarks
- * **⚠️ Precondition:** a !== b.
+ * **Precondition:** a !== b.
+ *
+ * @param a - Start value
+ * @param b - End value (must != a)
+ * @param value - Value to find t for
+ * @returns Interpolation factor t
+ *
+ * @see {@link inverseLerp} — Throws for degenerate range
+ * @see {@link inverseLerpSafe} — Returns 0 if range is degenerate
  *
  * @category Interpolation
  * @since 0.7.0
@@ -131,14 +145,15 @@ export function inverseLerpUnchecked(a: number, b: number, value: number): numbe
 /**
  * Cubic Hermite interpolation (smooth step).
  * Maps [edge0, edge1] to [0, 1] with smooth curve.
- * @param edge0 - Lower edge.
- * @param edge1 - Upper edge.
- * @param x - Input value.
- * @returns Result in [0, 1].
  *
  * @remarks
  * Produces a smooth transition with zero derivatives at the boundaries.
  * Typically used for eased interpolation between 0 and 1.
+ *
+ * @param edge0 - Lower edge
+ * @param edge1 - Upper edge
+ * @param x - Input value
+ * @returns Result in [0, 1]
  *
  * @example
  * ```typescript
@@ -164,14 +179,15 @@ export function smoothStep(edge0: number, edge1: number, x: number): number {
 /**
  * Quintic Hermite interpolation (smoother step).
  * Even smoother than smoothStep.
- * @param edge0 - Lower edge.
- * @param edge1 - Upper edge.
- * @param x - Input value.
- * @returns Result in [0, 1].
  *
  * @remarks
  * Produces an even smoother transition than smoothStep with zero
  * first and second derivatives at the boundaries.
+ *
+ * @param edge0 - Lower edge
+ * @param edge1 - Upper edge
+ * @param x - Input value
+ * @returns Result in [0, 1]
  *
  * @example
  * ```typescript

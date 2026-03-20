@@ -2,11 +2,11 @@
 
 ## File
 
-src/validation/assert.ts
+validation/assert.ts
 
 ## Description
 
-Debug assertions for development-time validation.
+Debug assertions for development-time validation
 
 ## Remarks
 
@@ -47,24 +47,29 @@ assertFinite(value, 'myParam'); // Throws if NaN/Infinity
 
 ## See
 
-- safeDivide - Always-active safe division
-- safeSqrt - Always-active safe square root
+- divideSafe - Always-active safe division
+- sqrtSafe - Always-active safe square root
 
 ## Assertion
 
 - [assert](functions/assert.md)
+- [assertComplex](functions/assertComplex.md)
 - [assertComplexLike](functions/assertComplexLike.md)
 - [assertFinite](functions/assertFinite.md)
+- [assertInterval](functions/assertInterval.md)
 - [assertIntervalLike](functions/assertIntervalLike.md)
 - [assertMatrix2](functions/assertMatrix2.md)
 - [assertMatrix2Like](functions/assertMatrix2Like.md)
 - [assertMatrix3](functions/assertMatrix3.md)
+- [assertMatrix3Like](functions/assertMatrix3Like.md)
 - [assertNonNegative](functions/assertNonNegative.md)
 - [assertNonZero](functions/assertNonZero.md)
 - [assertPositive](functions/assertPositive.md)
 - [assertRange](functions/assertRange.md)
 - [assertRotation2](functions/assertRotation2.md)
+- [assertRotation2Like](functions/assertRotation2Like.md)
 - [assertSafeInteger](functions/assertSafeInteger.md)
+- [assertTransform2](functions/assertTransform2.md)
 - [assertTransform2Like](functions/assertTransform2Like.md)
 - [assertVector2](functions/assertVector2.md)
 - [assertVector2Like](functions/assertVector2Like.md)

@@ -2,7 +2,7 @@
 
 > **randomInRectangle**(`width`, `height`, `out`, `source`): [`Vector2`](../../core/classes/Vector2.md)
 
-Defined in: [src/utils/random.ts:315](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/utils/random.ts#L315)
+Defined in: [src/utils/random.ts:316](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/utils/random.ts#L316)
 
 Generates a random point inside a rectangle centered at the origin.
 
@@ -12,31 +12,31 @@ Generates a random point inside a rectangle centered at the origin.
 
 `number`
 
-Rectangle width.
+Rectangle width
 
 ### height
 
 `number`
 
-Rectangle height.
+Rectangle height
 
 ### out
 
 [`Vector2`](../../core/classes/Vector2.md) = `...`
 
-Optional output vector to avoid allocation. Defaults to `new Vector2()`.
+Optional output vector to avoid allocation. Defaults to `new Vector2()`
 
 ### source
 
-[`RandomSource`](../interfaces/RandomSource.md) = `defaultRandomSource`
+[`RandomSource`](../interfaces/RandomSource.md) = `...`
 
-Random source to sample from. Defaults to `defaultRandomSource`.
+Random source to sample from. Defaults to `defaultRandomSource`
 
 ## Returns
 
 [`Vector2`](../../core/classes/Vector2.md)
 
-The `out` vector set to a point inside the rectangle.
+The `out` vector set to a point inside the rectangle
 
 ## Remarks
 

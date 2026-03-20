@@ -6,7 +6,7 @@ auxiliary/angle/interpolation.ts
 
 ## Description
 
-Angular interpolation operations.
+Angular interpolation operations
 
 ## Interpolation
 

@@ -6,16 +6,16 @@ auxiliary/angle/index.ts
 
 ## Description
 
-Angular mathematical operations for the Lenguados math2d library.
+Angular mathematical operations for the Lenguados math2d library
 
 ## Remarks
 
 This module provides specialized angular operations including:
 
-- Angle conversions (degrees, radians, turns, gradians)
+- Angle conversions (degrees, radians, turns)
 - Angle normalization (wrap to standard ranges)
 - Angular operations (difference, distance, bisector, etc.)
-- Angular interpolation (lerp, slerp, spring)
+- Angular interpolation (lerp, smoothStep)
 - Angle unwrapping (continuous sequences)
 
 ## References
@@ -98,12 +98,6 @@ Re-exports [normalizeRadians](functions/normalizeRadians.md)
 
 ---
 
-### normalizeRadiansAround
-
-Re-exports [normalizeRadiansAround](functions/normalizeRadiansAround.md)
-
----
-
 ### normalizeRadiansPositive
 
 Re-exports [normalizeRadiansPositive](functions/normalizeRadiansPositive.md)
@@ -161,9 +155,3 @@ Re-exports [unwrapAngles](functions/unwrapAngles.md)
 ### unwrapAnglesInPlace
 
 Re-exports [unwrapAnglesInPlace](functions/unwrapAnglesInPlace.md)
-
----
-
-### wrapAngle
-
-Re-exports [wrapAngle](functions/wrapAngle.md)

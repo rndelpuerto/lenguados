@@ -2,7 +2,7 @@
 
 > **normalizeRadiansPositive**(`radians`): `number`
 
-Defined in: [src/auxiliary/angle/normalization.ts:50](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/auxiliary/angle/normalization.ts#L50)
+Defined in: [src/auxiliary/angle/normalization.ts:56](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/angle/normalization.ts#L56)
 
 Normalizes an angle to [0, TAU) range.
 Useful for progress, winding calculations.
@@ -13,13 +13,13 @@ Useful for progress, winding calculations.
 
 `number`
 
-Angle in radians.
+Angle in radians
 
 ## Returns
 
 `number`
 
-Normalized angle in [0, TAU).
+Normalized angle in [0, TAU)
 
 ## Example
 

@@ -2,7 +2,7 @@
 
 > **formatMatrix3**(`m`, `format`, `precision?`): `string`
 
-Defined in: [src/utils/parse.ts:504](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/utils/parse.ts#L504)
+Defined in: [src/utils/parse.ts:519](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/utils/parse.ts#L519)
 
 Formats a 3x3 matrix as a string.
 
@@ -12,11 +12,11 @@ Formats a 3x3 matrix as a string.
 
 [`ReadonlyMatrix3`](../../core/type-aliases/ReadonlyMatrix3.md)
 
-Matrix to format.
+Matrix to format
 
 ### format
 
-Output format. Defaults to `'flat'`.
+Output format. Defaults to `'flat'`
 
 `"json"` | `"flat"` | `"nested"`
 
@@ -24,13 +24,13 @@ Output format. Defaults to `'flat'`.
 
 `number`
 
-Number of decimal places. Defaults to full precision.
+Number of decimal places. Defaults to full precision
 
 ## Returns
 
 `string`
 
-Formatted string.
+Formatted string
 
 ## Remarks
 

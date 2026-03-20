@@ -2,7 +2,7 @@
 
 > **setAssertionsEnabled**(`enabled`): `void`
 
-Defined in: [src/validation/assert.ts:105](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/validation/assert.ts#L105)
+Defined in: [src/validation/assert.ts:115](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/validation/assert.ts#L115)
 
 Enables or disables assertions globally at runtime.
 
@@ -12,7 +12,7 @@ Enables or disables assertions globally at runtime.
 
 `boolean`
 
-`true` to enable assertions, `false` to disable.
+`true` to enable assertions, `false` to disable
 
 ## Returns
 

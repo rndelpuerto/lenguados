@@ -2,7 +2,7 @@
 
 > **loopSafe**(`value`, `min`, `max`): `number`
 
-Defined in: [src/auxiliary/scalar/arithmetic.ts:206](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/auxiliary/scalar/arithmetic.ts#L206)
+Defined in: [src/auxiliary/scalar/arithmetic.ts:222](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/scalar/arithmetic.ts#L222)
 
 Loops value into [min, max) range (safe).
 
@@ -12,25 +12,25 @@ Loops value into [min, max) range (safe).
 
 `number`
 
-Value to wrap.
+Value to wrap
 
 ### min
 
 `number`
 
-Lower bound (inclusive).
+Lower bound (inclusive)
 
 ### max
 
 `number`
 
-Upper bound (exclusive).
+Upper bound (exclusive)
 
 ## Returns
 
 `number`
 
-Wrapped value, or min if range is invalid.
+Wrapped value, or min if range is invalid
 
 ## Example
 

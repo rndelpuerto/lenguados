@@ -1376,3 +1376,19 @@ describe('Rotation2', () => {
   });
  });
 });
+
+describe('Rotation2.fromCS factory', () => {
+ it('unit input produces correct rotation', () => {
+  const cos45 = Math.cos(Math.PI / 4);
+  const sin45 = Math.sin(Math.PI / 4);
+  const r = Rotation2.fromCS(cos45, sin45);
+  expect(r.cos).toBeCloseTo(cos45, DIGITS);
+  expect(r.sin).toBeCloseTo(sin45, DIGITS);
+ });
+
+ it('non-unit input (2, 0) normalizes to (1, 0)', () => {
+  const r = Rotation2.fromCS(2, 0);
+  expect(r.cos).toBeCloseTo(1, DIGITS);
+  expect(r.sin).toBeCloseTo(0, DIGITS);
+ });
+});

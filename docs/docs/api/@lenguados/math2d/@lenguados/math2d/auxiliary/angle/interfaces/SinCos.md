@@ -1,6 +1,6 @@
 # Interface: SinCos
 
-Defined in: [src/auxiliary/angle/operations.ts:25](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/auxiliary/angle/operations.ts#L25)
+Defined in: [src/auxiliary/angle/operations.ts:25](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/angle/operations.ts#L25)
 
 Represents sine and cosine of an angle.
 
@@ -18,7 +18,7 @@ Used to avoid computing both separately when both are needed.
 
 > **cos**: `number`
 
-Defined in: [src/auxiliary/angle/operations.ts:29](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/auxiliary/angle/operations.ts#L29)
+Defined in: [src/auxiliary/angle/operations.ts:29](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/angle/operations.ts#L29)
 
 Cosine of the angle.
 
@@ -28,6 +28,6 @@ Cosine of the angle.
 
 > **sin**: `number`
 
-Defined in: [src/auxiliary/angle/operations.ts:27](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/auxiliary/angle/operations.ts#L27)
+Defined in: [src/auxiliary/angle/operations.ts:27](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/angle/operations.ts#L27)
 
 Sine of the angle.

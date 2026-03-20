@@ -1,7 +1,7 @@
 /**
  * @file auxiliary/numeric/safety.ts
  * @module @lenguados/math2d/auxiliary/numeric
- * @description Safe arithmetic operations that handle edge cases gracefully.
+ * @description Safe arithmetic operations that handle edge cases gracefully
  *
  * @remarks
  * This module provides operations that return safe numeric values
@@ -39,16 +39,17 @@ export const MIN_SAFE_DIVISOR = 1e-10;
 
 /**
  * Safe division with fallback to 0.
- * @param numerator - Dividend.
- * @param denominator - Divisor.
- * @param epsilon - Minimum safe divisor (default: MIN_SAFE_DIVISOR).
- * @returns Result or 0 if denominator is too small.
  *
  * @remarks
  * Default threshold is {@link MIN_SAFE_DIVISOR} (1e-10).
  * Returns 0 when |denominator| < epsilon, preventing Infinity/NaN from
  * near-zero division. Used internally by core types for `inverseSafe` and
  * `normalizeSafe` operations.
+ *
+ * @param numerator - Dividend
+ * @param denominator - Divisor
+ * @param epsilon - Minimum safe divisor (default: MIN_SAFE_DIVISOR)
+ * @returns Result or 0 if denominator is too small
  *
  * @example
  * ```typescript
@@ -71,14 +72,15 @@ export function divideSafe(
 
 /**
  * Safe reciprocal (1/x).
- * @param value - Value to invert.
- * @param epsilon - Minimum safe value (default: MIN_SAFE_DIVISOR).
- * @returns Reciprocal or 0 if value is too small.
  *
  * @remarks
  * Default threshold is {@link MIN_SAFE_DIVISOR} (1e-10).
  * Returns 0 when |value| < epsilon, preventing Infinity from near-zero
  * reciprocal. Equivalent to `divideSafe(1, value, epsilon)`.
+ *
+ * @param value - Value to invert
+ * @param epsilon - Minimum safe value (default: MIN_SAFE_DIVISOR)
+ * @returns Reciprocal or 0 if value is too small
  *
  * @example
  * ```typescript
@@ -101,12 +103,12 @@ export function reciprocalSafe(value: number, epsilon: number = MIN_SAFE_DIVISOR
 /**
  * Safe square root (clamps negative values to 0).
  *
- * @param x - Value to compute square root of
- * @returns Square root of x, or 0 for negative values
- *
  * @remarks
  * Uses `Math.sqrt` which is IEEE 754 required — correctly rounded and
  * deterministic across all platforms.
+ *
+ * @param x - Value to compute square root of
+ * @returns Square root of x, or 0 for negative values
  *
  * @category Safety
  * @since 0.7.0
@@ -139,14 +141,15 @@ export { asinSafe };
 
 /**
  * Safe logarithm (returns 0 for non-positive values).
- * @param value - Value to take logarithm of.
- * @param base - Logarithm base (default: Math.E for natural log).
- * @returns Logarithm or 0 for non-positive values.
  *
  * @remarks
  * Uses deterministic math for cross-platform reproducibility.
  * Returns 0 (not -Infinity) for non-positive inputs, consistent
  * with the Safe convention: fallbacks are always finite and usable.
+ *
+ * @param value - Value to take logarithm of
+ * @param base - Logarithm base (default: Math.E for natural log)
+ * @returns Logarithm or 0 for non-positive values
  *
  * @example
  * ```typescript
@@ -172,9 +175,6 @@ export function logSafe(value: number, base: number = Math.E): number {
 
 /**
  * Safe power that handles edge cases.
- * @param base - Base value.
- * @param exponent - Exponent.
- * @returns Result with special case handling.
  *
  * @remarks
  * Uses deterministic math for cross-platform reproducibility.
@@ -189,6 +189,10 @@ export function logSafe(value: number, base: number = Math.E): number {
  * This matches IEEE 754 §9.2, C99 `pow()`, and every industrial math library
  * (Unity, GLM, Eigen, Three.js). Returning a finite fallback like 0 would be
  * mathematically misleading and inconsistent with universal external convention.
+ *
+ * @param base - Base value
+ * @param exponent - Exponent
+ * @returns Result with special case handling
  *
  * @example
  * ```typescript
@@ -220,8 +224,8 @@ export function powSafe(base: number, exponent: number): number {
 /**
  * Kahan summation algorithm for improved precision.
  * Compensates for floating-point errors in large sums.
- * @param values - Array of numbers to sum.
- * @returns Sum with reduced rounding error.
+ * @param values - Array of numbers to sum
+ * @returns Sum with reduced rounding error
  *
  * @example
  * ```typescript
@@ -252,8 +256,8 @@ export function robustSum(values: readonly number[]): number {
 /**
  * Neumaier summation - improved Kahan algorithm.
  * Even more robust for values of varying magnitudes.
- * @param values - Array of numbers to sum.
- * @returns Sum with minimized error.
+ * @param values - Array of numbers to sum
+ * @returns Sum with minimized error
  *
  * @example
  * ```typescript
@@ -289,14 +293,15 @@ export function neumaierSum(values: readonly number[]): number {
 
 /**
  * Compensated product using error-free transformation.
- * @param a - First factor.
- * @param b - Second factor.
- * @returns Object with product and error term.
  *
  * @remarks
  * Veltkamp splitting multiplies inputs by `2^27 + 1` (~1.34e8).
  * This overflows for `|a|` or `|b|` > ~1.34e291 (`MAX_VALUE / 134217729`).
  * For such inputs, the error term will be unreliable (Infinity/NaN).
+ *
+ * @param a - First factor
+ * @param b - Second factor
+ * @returns Object with product and error term
  *
  * @example
  * ```typescript
@@ -339,10 +344,10 @@ export function compensatedProduct(a: number, b: number): { product: number; err
 
 /**
  * Safe linear interpolation that avoids overflow.
- * @param a - Start value.
- * @param b - End value.
- * @param t - Interpolation factor.
- * @returns Interpolated value.
+ * @param a - Start value
+ * @param b - End value
+ * @param t - Interpolation factor
+ * @returns Interpolated value
  *
  * @example
  * ```typescript
@@ -369,15 +374,16 @@ export function lerpSafe(a: number, b: number, t: number): number {
 
 /**
  * Validates and cleans numeric value.
- * @param value - Value to sanitize.
- * @param fallback - Value to use if input is invalid (default: 0).
- * @param min - Minimum allowed value (default: -Number.MAX_VALUE).
- * @param max - Maximum allowed value (default: Number.MAX_VALUE).
- * @returns Clean value or fallback.
  *
  * @remarks
  * Combines validation with clamping. Use when you need to ensure
  * a value is both finite and within a specific range.
+ *
+ * @param value - Value to sanitize
+ * @param fallback - Value to use if input is invalid (default: 0)
+ * @param min - Minimum allowed value (default: -Number.MAX_VALUE)
+ * @param max - Maximum allowed value (default: Number.MAX_VALUE)
+ * @returns Clean value or fallback
  *
  * @example
  * ```typescript
@@ -406,13 +412,14 @@ export function sanitizeNumber(
 
 /**
  * Ensures finite value, replaces NaN/Infinity.
- * @param value - Value to check.
- * @param fallback - Replacement for non-finite values (default: 0).
- * @returns Finite value or fallback.
  *
  * @remarks
  * Use when you need to guarantee a finite result from calculations
  * that might produce NaN or Infinity.
+ *
+ * @param value - Value to check
+ * @param fallback - Replacement for non-finite values (default: 0)
+ * @returns Finite value or fallback
  *
  * @example
  * ```typescript

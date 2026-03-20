@@ -1,15 +1,15 @@
 /**
  * @file auxiliary/angle/conversion.ts
  * @module @lenguados/math2d/auxiliary/angle
- * @description Angular unit conversion operations.
+ * @description Angular unit conversion operations
  */
 
 import { TAU, DEG_TO_RAD, RAD_TO_DEG, RAD_TO_TURN } from '../scalar/constants';
 
 /**
  * Converts degrees to radians.
- * @param degrees - Angle in degrees.
- * @returns Angle in radians.
+ * @param degrees - Angle in degrees
+ * @returns Angle in radians
  *
  * @example
  * ```typescript
@@ -27,8 +27,8 @@ export function degreesToRadians(degrees: number): number {
 
 /**
  * Converts radians to degrees.
- * @param radians - Angle in radians.
- * @returns Angle in degrees.
+ * @param radians - Angle in radians
+ * @returns Angle in degrees
  *
  * @example
  * ```typescript
@@ -46,8 +46,8 @@ export function radiansToDegrees(radians: number): number {
 
 /**
  * Converts turns to radians (1 turn = TAU radians = 2π radians).
- * @param turns - Number of turns.
- * @returns Angle in radians.
+ * @param turns - Number of turns
+ * @returns Angle in radians
  *
  * @example
  * ```typescript
@@ -66,8 +66,8 @@ export function turnsToRadians(turns: number): number {
 
 /**
  * Converts radians to turns (1 turn = TAU radians = 2π radians).
- * @param radians - Angle in radians.
- * @returns Number of turns.
+ * @param radians - Angle in radians
+ * @returns Number of turns
  *
  * @example
  * ```typescript

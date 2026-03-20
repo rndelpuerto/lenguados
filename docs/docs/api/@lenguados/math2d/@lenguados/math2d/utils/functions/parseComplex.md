@@ -2,7 +2,7 @@
 
 > **parseComplex**(`string_`, `out`): [`Complex`](../../core/classes/Complex.md)
 
-Defined in: [src/utils/parse.ts:683](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/utils/parse.ts#L683)
+Defined in: [src/utils/parse.ts:721](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/utils/parse.ts#L721)
 
 Parses a string representation of a complex number.
 
@@ -12,23 +12,19 @@ Parses a string representation of a complex number.
 
 `string`
 
-Input string to parse.
+Input string to parse
 
 ### out
 
 [`Complex`](../../core/classes/Complex.md) = `...`
 
-Optional output complex to avoid allocation. Defaults to `new Complex()`.
+Optional output complex to avoid allocation. Defaults to `new Complex()`
 
 ## Returns
 
 [`Complex`](../../core/classes/Complex.md)
 
-The `out` complex containing the parsed values.
-
-## Throws
-
-If the string cannot be parsed.
+The `out` complex containing the parsed values
 
 ## Remarks
 
@@ -38,6 +34,12 @@ Supported formats:
 - "a,b" (comma-separated real,imag)
 - "(a,b)" (with parentheses)
 - "{real:a, imag:b}" (JSON-like)
+
+Note: bracket stripping accepts mismatched brackets (e.g., "(1,2]").
+
+## Throws
+
+If the string cannot be parsed
 
 ## Example
 

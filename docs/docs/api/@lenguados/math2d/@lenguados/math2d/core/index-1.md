@@ -6,7 +6,7 @@ core/index.ts
 
 ## Description
 
-Core 2D mathematical types for the Lenguados math2d library.
+Core 2D mathematical types for the Lenguados math2d library
 
 ## Remarks
 
@@ -82,9 +82,33 @@ Re-exports [Interval](classes/Interval.md)
 
 ---
 
+### isComplexLike
+
+Re-exports [isComplexLike](../types/functions/isComplexLike.md)
+
+---
+
+### isIntervalLike
+
+Re-exports [isIntervalLike](../types/functions/isIntervalLike.md)
+
+---
+
 ### isMatrix3Like
 
 Re-exports [isMatrix3Like](../types/functions/isMatrix3Like.md)
+
+---
+
+### isRotation2Like
+
+Re-exports [isRotation2Like](../types/functions/isRotation2Like.md)
+
+---
+
+### isTransform2Like
+
+Re-exports [isTransform2Like](../types/functions/isTransform2Like.md)
 
 ---
 
@@ -127,6 +151,12 @@ Re-exports [ReadonlyMatrix2](type-aliases/ReadonlyMatrix2.md)
 ### ReadonlyMatrix3
 
 Re-exports [ReadonlyMatrix3](type-aliases/ReadonlyMatrix3.md)
+
+---
+
+### ReadonlyRotation2
+
+Re-exports [ReadonlyRotation2](type-aliases/ReadonlyRotation2.md)
 
 ---
 

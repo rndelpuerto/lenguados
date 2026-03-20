@@ -2,7 +2,7 @@
 
 > **assertSafeInteger**(`value`, `name?`): `void`
 
-Defined in: [src/validation/assert.ts:316](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/validation/assert.ts#L316)
+Defined in: [src/validation/assert.ts:334](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/validation/assert.ts#L334)
 
 Asserts that a value is a safe JavaScript integer.
 
@@ -12,27 +12,27 @@ Asserts that a value is a safe JavaScript integer.
 
 `number`
 
-Numeric value to validate.
+Numeric value to validate
 
 ### name?
 
 `string`
 
-Parameter name for error messages (optional).
+Parameter name for error messages (optional)
 
 ## Returns
 
 `void`
-
-## Throws
-
-If value is not a safe integer.
 
 ## Remarks
 
 Safe integers are integers that can be exactly represented as
 IEEE-754 double precision numbers. Range: -(2⁵³ - 1) to 2⁵³ - 1.
 No-op when assertions are disabled.
+
+## Throws
+
+If value is not a safe integer
 
 ## Example
 

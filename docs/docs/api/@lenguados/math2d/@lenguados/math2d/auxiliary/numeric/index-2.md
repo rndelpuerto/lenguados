@@ -6,7 +6,7 @@ auxiliary/numeric/rounding.ts
 
 ## Description
 
-Rounding and quantization operations.
+Rounding and quantization operations
 
 ## Arithmetic
 

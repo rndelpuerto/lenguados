@@ -2,7 +2,7 @@
 
 > **assertVector2**(`x`, `y`, `name?`): `void`
 
-Defined in: [src/validation/assert.ts:385](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/validation/assert.ts#L385)
+Defined in: [src/validation/assert.ts:403](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/validation/assert.ts#L403)
 
 Asserts that Vector2-like components are finite.
 
@@ -12,32 +12,32 @@ Asserts that Vector2-like components are finite.
 
 `number`
 
-X component to validate.
+X component to validate
 
 ### y
 
 `number`
 
-Y component to validate.
+Y component to validate
 
 ### name?
 
 `string`
 
-Vector name for error messages (optional).
+Vector name for error messages (optional)
 
 ## Returns
 
 `void`
 
-## Throws
-
-If assertions enabled and any component is not finite.
-
 ## Remarks
 
 Validates both components are finite (not NaN, not Infinity).
 No-op when assertions are disabled.
+
+## Throws
+
+If assertions enabled and any component is not finite
 
 ## Example
 

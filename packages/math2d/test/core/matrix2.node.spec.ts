@@ -2537,3 +2537,81 @@ describe('Matrix2', () => {
   });
  });
 });
+
+describe('Matrix2 Safe/Unchecked variants', () => {
+ it('static inverseSafe returns identity for singular matrix', () => {
+  const singular = new Matrix2(1, 2, 2, 4); // det = 1*4 - 2*2 = 0
+  const result = Matrix2.inverseSafe(singular);
+  expect(result.m00).toBe(1);
+  expect(result.m01).toBe(0);
+  expect(result.m10).toBe(0);
+  expect(result.m11).toBe(1);
+ });
+
+ it('static inverseUnchecked produces correct inverse for invertible matrix', () => {
+  const m = new Matrix2(4, 7, 2, 6); // det = 24 - 14 = 10
+  const result = Matrix2.inverseUnchecked(m);
+  // Verify A * A^-1 = I
+  const product = Matrix2.multiply(m, result);
+  expect(product.m00).toBeCloseTo(1, DIGITS);
+  expect(product.m01).toBeCloseTo(0, DIGITS);
+  expect(product.m10).toBeCloseTo(0, DIGITS);
+  expect(product.m11).toBeCloseTo(1, DIGITS);
+ });
+
+ it('static divideScalarSafe returns zero matrix for near-zero scalar', () => {
+  const m = new Matrix2(1, 2, 3, 4);
+  const result = Matrix2.divideScalarSafe(m, 0);
+  expect(result.m00).toBe(0);
+  expect(result.m01).toBe(0);
+  expect(result.m10).toBe(0);
+  expect(result.m11).toBe(0);
+ });
+
+ it('static divideScalarUnchecked produces correct result for valid scalar', () => {
+  const m = new Matrix2(4, 6, 8, 10);
+  const result = Matrix2.divideScalarUnchecked(m, 2);
+  expect(result.m00).toBeCloseTo(2, DIGITS);
+  expect(result.m01).toBeCloseTo(3, DIGITS);
+  expect(result.m10).toBeCloseTo(4, DIGITS);
+  expect(result.m11).toBeCloseTo(5, DIGITS);
+ });
+
+ it('instance inverseSafe returns identity for singular matrix', () => {
+  const m = new Matrix2(1, 2, 2, 4);
+  m.inverseSafe();
+  expect(m.m00).toBe(1);
+  expect(m.m01).toBe(0);
+  expect(m.m10).toBe(0);
+  expect(m.m11).toBe(1);
+ });
+
+ it('instance inverseUnchecked produces correct inverse', () => {
+  const m = new Matrix2(4, 7, 2, 6);
+  const original = m.clone();
+  m.inverseUnchecked();
+  const product = Matrix2.multiply(original, m);
+  expect(product.m00).toBeCloseTo(1, DIGITS);
+  expect(product.m01).toBeCloseTo(0, DIGITS);
+  expect(product.m10).toBeCloseTo(0, DIGITS);
+  expect(product.m11).toBeCloseTo(1, DIGITS);
+ });
+
+ it('instance divideScalarSafe returns zero for near-zero scalar', () => {
+  const m = new Matrix2(1, 2, 3, 4);
+  m.divideScalarSafe(0);
+  expect(m.m00).toBe(0);
+  expect(m.m01).toBe(0);
+  expect(m.m10).toBe(0);
+  expect(m.m11).toBe(0);
+ });
+
+ it('instance divideScalarUnchecked produces correct result', () => {
+  const m = new Matrix2(4, 6, 8, 10);
+  m.divideScalarUnchecked(2);
+  expect(m.m00).toBeCloseTo(2, DIGITS);
+  expect(m.m01).toBeCloseTo(3, DIGITS);
+  expect(m.m10).toBeCloseTo(4, DIGITS);
+  expect(m.m11).toBeCloseTo(5, DIGITS);
+ });
+});

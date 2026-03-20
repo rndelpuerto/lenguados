@@ -6,7 +6,7 @@ core/rotation2.ts
 
 ## Description
 
-Deterministic 2D rotation for physics simulations.
+Deterministic 2D rotation for physics simulations
 
 ## Remarks
 
@@ -65,3 +65,13 @@ const combined = rot.multiply(rot90); // 135°
 ## Helpers
 
 - [freezeRotation2](functions/freezeRotation2.md)
+
+## Other
+
+### isRotation2Like
+
+Re-exports [isRotation2Like](../types/functions/isRotation2Like.md)
+
+## Types
+
+- [ReadonlyRotation2](type-aliases/ReadonlyRotation2.md)

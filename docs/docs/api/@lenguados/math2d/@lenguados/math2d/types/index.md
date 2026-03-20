@@ -6,22 +6,12 @@ types/index.ts
 
 ## Description
 
-Shared type definitions and type guards for math2d.
+Shared type definitions and type guards for math2d
 
 ## Remarks
 
 This module centralizes structural types and runtime shape checks shared
 across the math2d package.
-
-## Type Guards
-
-- [isComplexLike](functions/isComplexLike.md)
-- [isIntervalLike](functions/isIntervalLike.md)
-- [isMatrix2Like](functions/isMatrix2Like.md)
-- [isMatrix3Like](functions/isMatrix3Like.md)
-- [isRotation2Like](functions/isRotation2Like.md)
-- [isTransform2Like](functions/isTransform2Like.md)
-- [isVector2Like](functions/isVector2Like.md)
 
 ## Types
 
@@ -39,3 +29,10 @@ across the math2d package.
 - [Rotation2Like](interfaces/Rotation2Like.md)
 - [Transform2Like](interfaces/Transform2Like.md)
 - [Vector2Like](interfaces/Vector2Like.md)
+- [isComplexLike](functions/isComplexLike.md)
+- [isIntervalLike](functions/isIntervalLike.md)
+- [isMatrix2Like](functions/isMatrix2Like.md)
+- [isMatrix3Like](functions/isMatrix3Like.md)
+- [isRotation2Like](functions/isRotation2Like.md)
+- [isTransform2Like](functions/isTransform2Like.md)
+- [isVector2Like](functions/isVector2Like.md)

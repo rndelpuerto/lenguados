@@ -1,7 +1,7 @@
 /**
  * @packageDocumentation
  * @module @lenguados/math2d
- * @description Pure mathematical primitives and operations for 2D graphics and physics.
+ * @description Pure mathematical primitives and operations for 2D graphics and physics
  *
  * @remarks
  *

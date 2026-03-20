@@ -2,11 +2,11 @@
 
 ## File
 
-src/utils/performance.ts
+utils/performance.ts
 
 ## Description
 
-Lightweight utilities for profiling and measuring execution time.
+Lightweight utilities for profiling and measuring execution time
 
 ## Remarks
 
@@ -35,12 +35,7 @@ import { measure, MeasurementCollector } from '@lenguados/math2d';
 import { measure, MeasurementCollector } from '@lenguados/devtools';
 ```
 
-## Types
-
-- [Measurement](interfaces/Measurement.md)
-- [MeasurementSummary](interfaces/MeasurementSummary.md)
-
-## Utility
+## Helpers
 
 - [MeasurementCollector](classes/MeasurementCollector.md)
 - [formatSummary](functions/formatSummary.md)
@@ -49,3 +44,8 @@ import { measure, MeasurementCollector } from '@lenguados/devtools';
 - [recordMeasurement](functions/recordMeasurement.md)
 - [summarizeMeasurements](functions/summarizeMeasurements.md)
 - [timestamp](functions/timestamp.md)
+
+## Types
+
+- [Measurement](interfaces/Measurement.md)
+- [MeasurementSummary](interfaces/MeasurementSummary.md)

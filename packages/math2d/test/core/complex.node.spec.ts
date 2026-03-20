@@ -2243,6 +2243,40 @@ describe('Complex NaN/Infinity handling', () => {
  });
 });
 
+describe('Complex predicates — edge cases', () => {
+ it('hasNaN detects NaN in both real and imaginary', () => {
+  expect(Complex.hasNaN(new Complex(NaN, NaN))).toBe(true);
+ });
+
+ it('hasInfinity detects Infinity in both components', () => {
+  expect(Complex.hasInfinity(new Complex(Infinity, -Infinity))).toBe(true);
+ });
+
+ it('instance hasInfinity detects Infinity', () => {
+  expect(new Complex(Infinity, 0).hasInfinity()).toBe(true);
+  expect(new Complex(0, -Infinity).hasInfinity()).toBe(true);
+  expect(new Complex(1, 2).hasInfinity()).toBe(false);
+ });
+
+ it('instance isZero positive and negative cases', () => {
+  expect(new Complex(0, 0).isZero()).toBe(true);
+  expect(new Complex(1, 0).isZero()).toBe(false);
+  expect(new Complex(0, 1).isZero()).toBe(false);
+ });
+
+ it('instance isNearZero negative case', () => {
+  expect(new Complex(1, 0).isNearZero()).toBe(false);
+ });
+
+ it('instance isReal negative case', () => {
+  expect(new Complex(5, 1).isReal()).toBe(false);
+ });
+
+ it('instance isImaginary negative case', () => {
+  expect(new Complex(1, 5).isImaginary()).toBe(false);
+ });
+});
+
 describe('Smith algorithm division robustness', () => {
  it('handles overflow: (1,0) / (1e200, 1e200)', () => {
   const a = new Complex(1, 0);
@@ -2301,5 +2335,56 @@ describe('negative-zero edge cases', () => {
   const c = new Complex(1, -0);
   const string_ = c.toString();
   expect(typeof string_).toBe('string');
+ });
+});
+
+describe('Instance slerp zero-magnitude guard', () => {
+ it('falls back to lerp when this has zero magnitude', () => {
+  const a = new Complex(0, 0);
+  const b = new Complex(2, 4);
+  const result = a.slerp(b, 0.5);
+  const expected = new Complex(0, 0).lerp(new Complex(2, 4), 0.5);
+  expect(result.real).toBeCloseTo(expected.real);
+  expect(result.imag).toBeCloseTo(expected.imag);
+ });
+
+ it('falls back to lerp when other has zero magnitude', () => {
+  const a = new Complex(2, 4);
+  const b = new Complex(0, 0);
+  const result = a.slerp(b, 0.5);
+  expect(result.real).toBeCloseTo(1);
+  expect(result.imag).toBeCloseTo(2);
+ });
+
+ it('static and instance slerp produce matching results for normal inputs', () => {
+  const a = new Complex(3, 4);
+  const b = new Complex(0, 5);
+  const staticResult = Complex.slerp(a, b, 0.5);
+  const instanceResult = a.clone().slerp(b, 0.5);
+  expect(instanceResult.real).toBeCloseTo(staticResult.real, DIGITS);
+  expect(instanceResult.imag).toBeCloseTo(staticResult.imag, DIGITS);
+ });
+
+ it('static and instance slerp produce matching results for zero-magnitude inputs', () => {
+  const a = new Complex(0, 0);
+  const b = new Complex(3, 4);
+  const staticResult = Complex.slerp(a, b, 0.5);
+  const instanceResult = a.clone().slerp(b, 0.5);
+  expect(instanceResult.real).toBeCloseTo(staticResult.real, DIGITS);
+  expect(instanceResult.imag).toBeCloseTo(staticResult.imag, DIGITS);
+ });
+});
+
+describe('Instance pow zero-to-negative validation', () => {
+ it('throws RangeError for zero complex raised to negative exponent', () => {
+  const zero = new Complex(0, 0);
+  expect(() => zero.pow(-1)).toThrow(RangeError);
+ });
+
+ it('zero complex raised to positive exponent returns (0, 0)', () => {
+  const zero = new Complex(0, 0);
+  const result = zero.pow(2);
+  expect(result.real).toBeCloseTo(0);
+  expect(result.imag).toBeCloseTo(0);
  });
 });

@@ -1,7 +1,7 @@
 /**
  * @file auxiliary/angle/operations.ts
  * @module @lenguados/math2d/auxiliary/angle
- * @description Angular operations and comparisons.
+ * @description Angular operations and comparisons
  */
 
 import { atan2, sinCos as deterministicSinCos } from '../../deterministic/deterministic-kernels';
@@ -33,13 +33,13 @@ export interface SinCos {
  * Computes sine and cosine of an angle simultaneously.
  * Uses deterministic math for cross-platform reproducibility.
  *
- * @param angle - Angle in radians.
- * @param out - Optional output object to write sin/cos into (zero-allocation).
- * @returns Object with sin and cos properties.
- *
  * @remarks
  * When `out` is provided, writes directly to it (zero-allocation for hot paths).
  * Otherwise, creates a new object.
+ *
+ * @param angle - Angle in radians
+ * @param out - Optional output object to write sin/cos into (zero-allocation)
+ * @returns Object with sin and cos properties
  *
  * @example
  * ```typescript
@@ -65,17 +65,17 @@ export function sinCos(angle: number, out?: SinCos): SinCos {
  * Computes sine and cosine of a normalized angle.
  * Normalizes the angle to [-π, π) before computing.
  *
- * @param angle - Angle in radians (will be normalized).
- * @param out - Optional output object to write sin/cos into (zero-allocation).
- * @returns Object with sin and cos properties.
+ * @remarks Uses deterministic math (`sin`, `cos` from deterministic-kernels).
+ *
+ * @param angle - Angle in radians (will be normalized)
+ * @param out - Optional output object to write sin/cos into (zero-allocation)
+ * @returns Object with sin and cos properties
  *
  * @example
  * ```typescript
  * const { sin, cos } = sinCosNormalized(5 * Math.PI);
  * // Equivalent to sinCos(Math.PI)
  * ```
- *
- * @remarks Uses deterministic math (`sin`, `cos` from deterministic-kernels).
  *
  * @category Arithmetic
  * @since 0.7.0
@@ -92,9 +92,15 @@ export function sinCosNormalized(angle: number, out?: SinCos): SinCos {
 /**
  * Signed shortest-arc delta in radians: rotate from `from` to `to`.
  * Result is in [-PI, PI).
- * @param from - Starting angle in radians.
- * @param to - Target angle in radians.
- * @returns Signed angle difference in [-PI, PI).
+ *
+ * @remarks
+ * Anti-symmetry breaks at the PI boundary due to the half-open [-PI, PI) range:
+ * `angleDifference(0, PI)` and `angleDifference(PI, 0)` both return `-PI`
+ * (not `+PI` and `-PI` respectively). This is inherent to the convention.
+ *
+ * @param from - Starting angle in radians
+ * @param to - Target angle in radians
+ * @returns Signed angle difference in [-PI, PI)
  *
  * @example
  * ```typescript
@@ -102,11 +108,6 @@ export function sinCosNormalized(angle: number, out?: SinCos): SinCos {
  * angleDifference(0, 3 * Math.PI / 2);    // -Math.PI / 2 (shorter path)
  * angleDifference(-Math.PI, Math.PI);     // 0 (same angle)
  * ```
- *
- * @remarks
- * Anti-symmetry breaks at the PI boundary due to the half-open [-PI, PI) range:
- * `angleDifference(0, PI)` and `angleDifference(PI, 0)` both return `-PI`
- * (not `+PI` and `-PI` respectively). This is inherent to the convention.
  *
  * @category Arithmetic
  * @since 0.7.0
@@ -118,9 +119,9 @@ export function angleDifference(from: number, to: number): number {
 /**
  * Absolute shortest-arc distance in radians.
  * Always positive, in [0, π].
- * @param a - First angle in radians.
- * @param b - Second angle in radians.
- * @returns Unsigned angle distance in [0, π].
+ * @param a - First angle in radians
+ * @param b - Second angle in radians
+ * @returns Unsigned angle distance in [0, π]
  *
  * @example
  * ```typescript
@@ -138,10 +139,10 @@ export function angleDistance(a: number, b: number): number {
 
 /**
  * Tests if angles are approximately equal.
- * @param a - First angle in radians.
- * @param b - Second angle in radians.
- * @param epsilon - Tolerance (default: EPSILON).
- * @returns True if angles are within epsilon.
+ * @param a - First angle in radians
+ * @param b - Second angle in radians
+ * @param epsilon - Tolerance (default: EPSILON)
+ * @returns True if angles are within epsilon
  *
  * @example
  * ```typescript
@@ -161,9 +162,9 @@ export function anglesNearEqual(a: number, b: number, epsilon: number = EPSILON)
 /**
  * Calculates angle bisector.
  * Returns angle halfway between a and b (shortest path).
- * @param a - First angle in radians.
- * @param b - Second angle in radians.
- * @returns Bisector angle.
+ * @param a - First angle in radians
+ * @param b - Second angle in radians
+ * @returns Bisector angle
  *
  * @example
  * ```typescript
@@ -182,11 +183,6 @@ export function angleBisector(a: number, b: number): number {
 
 /**
  * Tests if angle is between start and end (CCW).
- * @param angle - Angle to test.
- * @param start - Start angle.
- * @param end - End angle.
- * @param inclusive - Whether to include boundaries (default: true).
- * @returns True if angle is in the CCW arc from start to end.
  *
  * @remarks
  * Uses counter-clockwise convention. The arc from start to end
@@ -194,6 +190,12 @@ export function angleBisector(a: number, b: number): number {
  *
  * When `start === end`, the arc has zero length (a point), not a full circle.
  * Only the exact boundary angle matches (with `inclusive = true`).
+ *
+ * @param angle - Angle to test
+ * @param start - Start angle
+ * @param end - End angle
+ * @param inclusive - Whether to include boundaries (default: true)
+ * @returns True if angle is in the CCW arc from start to end
  *
  * @example
  * ```typescript
@@ -231,13 +233,14 @@ export function isAngleBetween(
 
 /**
  * Clamps angle to arc between min and max.
- * @param angle - Angle to clamp.
- * @param min - Minimum angle.
- * @param max - Maximum angle.
- * @returns Clamped angle in [-PI, PI) range.
  *
  * @remarks
  * Clamps to the nearest boundary of the shortest arc between min and max.
+ *
+ * @param angle - Angle to clamp
+ * @param min - Minimum angle
+ * @param max - Maximum angle
+ * @returns Clamped angle in [-PI, PI) range
  *
  * @example
  * ```typescript
@@ -270,11 +273,14 @@ export function clampAngle(angle: number, min: number, max: number): number {
 
 /**
  * Computes the directed angle from vector1 to vector2.
- * @param x1 - X component of first vector.
- * @param y1 - Y component of first vector.
- * @param x2 - X component of second vector.
- * @param y2 - Y component of second vector.
- * @returns Angle from vector1 to vector2.
+ *
+ * @remarks Uses deterministic math (`atan2` from deterministic-kernels).
+ *
+ * @param x1 - X component of first vector
+ * @param y1 - Y component of first vector
+ * @param x2 - X component of second vector
+ * @param y2 - Y component of second vector
+ * @returns Angle from vector1 to vector2
  *
  * @example
  * ```typescript
@@ -282,8 +288,6 @@ export function clampAngle(angle: number, min: number, max: number): number {
  * angleFromVectors(1, 0, 1, 0);      // 0 (same direction)
  * angleFromVectors(1, 0, -1, 0);     // Math.PI (opposite)
  * ```
- *
- * @remarks Uses deterministic math (`atan2` from deterministic-kernels).
  *
  * @category Arithmetic
  * @since 0.7.0

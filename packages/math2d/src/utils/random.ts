@@ -1,7 +1,7 @@
 /**
- * @file src/utils/random.ts
+ * @file utils/random.ts
  * @module @lenguados/math2d/utils
- * @description Deterministic random generation utilities for 2D mathematical objects.
+ * @description Deterministic random generation utilities for 2D mathematical objects
  *
  * @remarks
  * Implementation based on:
@@ -55,14 +55,14 @@ import { type RandomSource, getDefaultRandomSource } from './random-source';
 /**
  * Generates a random 2D vector with components in range [min, max).
  *
- * @param min - Minimum component value. Defaults to `0`.
- * @param max - Maximum component value (exclusive). Defaults to `1`.
- * @param out - Optional output vector to avoid allocation. Defaults to `new Vector2()`.
- * @param source - Random source to sample from. Defaults to `defaultRandomSource`.
- * @returns The `out` vector containing the random components.
- *
  * @remarks
  * Each component is sampled independently with a uniform distribution.
+ *
+ * @param min - Minimum component value. Defaults to `0`
+ * @param max - Maximum component value (exclusive). Defaults to `1`
+ * @param out - Optional output vector to avoid allocation. Defaults to `new Vector2()`
+ * @param source - Random source to sample from. Defaults to `defaultRandomSource`
+ * @returns The `out` vector containing the random components
  *
  * @example
  * ```typescript
@@ -85,12 +85,12 @@ export function randomVector2(
 /**
  * Generates a random unit vector.
  *
- * @param out - Optional output vector to avoid allocation. Defaults to `new Vector2()`.
- * @param source - Random source to sample from. Defaults to `defaultRandomSource`.
- * @returns The `out` vector set to a unit-length direction.
- *
  * @remarks
  * Uses a uniform distribution over the unit circle.
+ *
+ * @param out - Optional output vector to avoid allocation. Defaults to `new Vector2()`
+ * @param source - Random source to sample from. Defaults to `defaultRandomSource`
+ * @returns The `out` vector set to a unit-length direction
  *
  * @example
  * ```typescript
@@ -115,13 +115,13 @@ export function randomUnitVector2(
 /**
  * Generates a random point on a circle's circumference.
  *
- * @param radius - Circle radius. Defaults to `1`.
- * @param out - Optional output vector to avoid allocation. Defaults to `new Vector2()`.
- * @param source - Random source to sample from. Defaults to `defaultRandomSource`.
- * @returns The `out` vector set to a point on the circle.
- *
  * @remarks
  * Uses a uniform distribution along the perimeter. `radius` should be non-negative.
+ *
+ * @param radius - Circle radius. Defaults to `1`
+ * @param out - Optional output vector to avoid allocation. Defaults to `new Vector2()`
+ * @param source - Random source to sample from. Defaults to `defaultRandomSource`
+ * @returns The `out` vector set to a point on the circle
  *
  * @example
  * ```typescript
@@ -145,12 +145,12 @@ export function randomOnCircle(
 /**
  * Generates a random point inside a unit circle.
  *
- * @param out - Optional output vector to avoid allocation. Defaults to `new Vector2()`.
- * @param source - Random source to sample from. Defaults to `defaultRandomSource`.
- * @returns The `out` vector set to a point inside the unit circle.
- *
  * @remarks
  * Uses sqrt(r) in polar coordinates to achieve uniform area distribution.
+ *
+ * @param out - Optional output vector to avoid allocation. Defaults to `new Vector2()`
+ * @param source - Random source to sample from. Defaults to `defaultRandomSource`
+ * @returns The `out` vector set to a point inside the unit circle
  *
  * @example
  * ```typescript
@@ -174,13 +174,13 @@ export function randomInUnitCircle(
 /**
  * Generates a random point inside a circle with given radius.
  *
- * @param radius - Circle radius (non-negative).
- * @param out - Optional output vector to avoid allocation. Defaults to `new Vector2()`.
- * @param source - Random source to sample from. Defaults to `defaultRandomSource`.
- * @returns The `out` vector set to a point inside the circle.
- *
  * @remarks
  * Samples the unit disk and scales by `radius` to keep uniform area density.
+ *
+ * @param radius - Circle radius (non-negative)
+ * @param out - Optional output vector to avoid allocation. Defaults to `new Vector2()`
+ * @param source - Random source to sample from. Defaults to `defaultRandomSource`
+ * @returns The `out` vector set to a point inside the circle
  *
  * @example
  * ```typescript
@@ -208,12 +208,12 @@ export function randomInCircle(
 /**
  * Generates a random 2D rotation.
  *
- * @param out - Optional output rotation to avoid allocation. Defaults to `new Rotation2()`.
- * @param source - Random source to sample from. Defaults to `defaultRandomSource`.
- * @returns The `out` rotation set to a random angle.
- *
  * @remarks
  * Uses a uniform angle distribution in [0, TAU).
+ *
+ * @param out - Optional output rotation to avoid allocation. Defaults to `new Rotation2()`
+ * @param source - Random source to sample from. Defaults to `defaultRandomSource`
+ * @returns The `out` rotation set to a random angle
  *
  * @example
  * ```typescript
@@ -233,12 +233,12 @@ export function randomRotation2(
 /**
  * Generates a random 2x2 rotation matrix.
  *
- * @param out - Optional output matrix to avoid allocation. Defaults to `new Matrix2()`.
- * @param source - Random source to sample from. Defaults to `defaultRandomSource`.
- * @returns The `out` matrix set to a random rotation.
- *
  * @remarks
  * Uses a uniform angle distribution in [0, TAU).
+ *
+ * @param out - Optional output matrix to avoid allocation. Defaults to `new Matrix2()`
+ * @param source - Random source to sample from. Defaults to `defaultRandomSource`
+ * @returns The `out` matrix set to a random rotation
  *
  * @example
  * ```typescript
@@ -263,12 +263,12 @@ export function randomRotationMatrix2(
 /**
  * Generates a random rigid transform (SE(2)).
  *
- * @param out - Optional output transform to avoid allocation. Defaults to `new Transform2()`.
- * @param source - Random source to sample from. Defaults to `defaultRandomSource`.
- * @returns The `out` transform set to a random rotation and translation.
- *
  * @remarks
  * Rotation is sampled uniformly and translation is sampled inside the unit circle.
+ *
+ * @param out - Optional output transform to avoid allocation. Defaults to `new Transform2()`
+ * @param source - Random source to sample from. Defaults to `defaultRandomSource`
+ * @returns The `out` transform set to a random rotation and translation
  *
  * @example
  * ```typescript
@@ -295,15 +295,15 @@ export function randomTransform2(
 /**
  * Generates a random point inside a rectangle centered at the origin.
  *
- * @param width - Rectangle width.
- * @param height - Rectangle height.
- * @param out - Optional output vector to avoid allocation. Defaults to `new Vector2()`.
- * @param source - Random source to sample from. Defaults to `defaultRandomSource`.
- * @returns The `out` vector set to a point inside the rectangle.
- *
  * @remarks
  * Each coordinate is sampled uniformly from [-width/2, width/2) and
  * [-height/2, height/2).
+ *
+ * @param width - Rectangle width
+ * @param height - Rectangle height
+ * @param out - Optional output vector to avoid allocation. Defaults to `new Vector2()`
+ * @param source - Random source to sample from. Defaults to `defaultRandomSource`
+ * @returns The `out` vector set to a point inside the rectangle
  *
  * @example
  * ```typescript
@@ -325,16 +325,16 @@ export function randomInRectangle(
 /**
  * Generates a random point inside an axis-aligned box.
  *
- * @param minX - Minimum x coordinate.
- * @param minY - Minimum y coordinate.
- * @param maxX - Maximum x coordinate.
- * @param maxY - Maximum y coordinate.
- * @param out - Optional output vector to avoid allocation. Defaults to `new Vector2()`.
- * @param source - Random source to sample from. Defaults to `defaultRandomSource`.
- * @returns The `out` vector set to a point inside the box.
- *
  * @remarks
  * Each coordinate is sampled independently in [min, max).
+ *
+ * @param minX - Minimum x coordinate
+ * @param minY - Minimum y coordinate
+ * @param maxX - Maximum x coordinate
+ * @param maxY - Maximum y coordinate
+ * @param out - Optional output vector to avoid allocation. Defaults to `new Vector2()`
+ * @param source - Random source to sample from. Defaults to `defaultRandomSource`
+ * @returns The `out` vector set to a point inside the box
  *
  * @example
  * ```typescript
@@ -358,14 +358,14 @@ export function randomInBox(
 /**
  * Generates a random point on the perimeter of a rectangle.
  *
- * @param width - Rectangle width.
- * @param height - Rectangle height.
- * @param out - Optional output vector to avoid allocation. Defaults to `new Vector2()`.
- * @param source - Random source to sample from. Defaults to `defaultRandomSource`.
- * @returns The `out` vector set to a point on the rectangle's perimeter.
- *
  * @remarks
  * Samples uniformly along the perimeter length. Width and height should be positive.
+ *
+ * @param width - Rectangle width
+ * @param height - Rectangle height
+ * @param out - Optional output vector to avoid allocation. Defaults to `new Vector2()`
+ * @param source - Random source to sample from. Defaults to `defaultRandomSource`
+ * @returns The `out` vector set to a point on the rectangle's perimeter
  *
  * @example
  * ```typescript
@@ -408,24 +408,25 @@ export function randomOnRectangle(
 /**
  * Generates a random 2D vector with a normal distribution.
  *
- * @param mean - Mean of the distribution. Defaults to `0`.
- * @param standardDeviation - Standard deviation. Defaults to `1`.
- * @param out - Optional output vector to avoid allocation. Defaults to `new Vector2()`.
- * @param source - Random source to sample from. Defaults to `defaultRandomSource`.
- * @returns The `out` vector with Gaussian-distributed components.
- *
  * @remarks
  * Uses the Box-Muller transform to sample each component independently from
  * N(mean, standardDeviation^2). `standardDeviation` should be non-negative.
+ *
+ * @param mean - Mean of the distribution. Defaults to `0`
+ * @param standardDeviation - Standard deviation. Defaults to `1`
+ * @param out - Optional output vector to avoid allocation. Defaults to `new Vector2()`
+ * @param source - Random source to sample from. Defaults to `defaultRandomSource`
+ * @returns The `out` vector with Gaussian-distributed components
  *
  * @example
  * ```typescript
  * const v = randomGaussianVector2(0, 2);
  * ```
  *
+ * @see {@link https://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform} - Box-Muller transform
+ *
  * @category Factory
  * @since 0.7.0
- * @see https://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform
  */
 export function randomGaussianVector2(
  mean = 0,
@@ -456,14 +457,14 @@ export function randomGaussianVector2(
 /**
  * Generates a random point on a line segment.
  *
- * @param start - Start point of the segment.
- * @param end - End point of the segment.
- * @param out - Optional output vector to avoid allocation. Defaults to `new Vector2()`.
- * @param source - Random source to sample from. Defaults to `defaultRandomSource`.
- * @returns The `out` vector set to a random point on the segment.
- *
  * @remarks
  * Samples uniformly along the segment length.
+ *
+ * @param start - Start point of the segment
+ * @param end - End point of the segment
+ * @param out - Optional output vector to avoid allocation. Defaults to `new Vector2()`
+ * @param source - Random source to sample from. Defaults to `defaultRandomSource`
+ * @returns The `out` vector set to a random point on the segment
  *
  * @example
  * ```typescript
@@ -486,24 +487,25 @@ export function randomOnSegment(
 /**
  * Generates a random point inside a triangle.
  *
- * @param a - First vertex of the triangle.
- * @param b - Second vertex of the triangle.
- * @param c - Third vertex of the triangle.
- * @param out - Optional output vector to avoid allocation. Defaults to `new Vector2()`.
- * @param source - Random source to sample from. Defaults to `defaultRandomSource`.
- * @returns The `out` vector set to a random point inside the triangle.
- *
  * @remarks
  * Uses barycentric coordinates to ensure uniform area distribution.
+ *
+ * @param a - First vertex of the triangle
+ * @param b - Second vertex of the triangle
+ * @param c - Third vertex of the triangle
+ * @param out - Optional output vector to avoid allocation. Defaults to `new Vector2()`
+ * @param source - Random source to sample from. Defaults to `defaultRandomSource`
+ * @returns The `out` vector set to a random point inside the triangle
  *
  * @example
  * ```typescript
  * const p = randomInTriangle(a, b, c);
  * ```
  *
+ * @see {@link https://math.stackexchange.com/questions/18686/uniform-random-point-in-triangle} - Uniform random point in triangle
+ *
  * @category Factory
  * @since 0.7.0
- * @see https://math.stackexchange.com/questions/18686/uniform-random-point-in-triangle
  */
 export function randomInTriangle(
  a: ReadonlyVector2,
@@ -531,15 +533,15 @@ export function randomInTriangle(
 /**
  * Generates a random point on a triangle perimeter.
  *
- * @param a - First vertex of the triangle.
- * @param b - Second vertex of the triangle.
- * @param c - Third vertex of the triangle.
- * @param out - Optional output vector to avoid allocation. Defaults to `new Vector2()`.
- * @param source - Random source to sample from. Defaults to `defaultRandomSource`.
- * @returns The `out` vector set to a point on the triangle's perimeter.
- *
  * @remarks
  * Distributes points uniformly by edge length.
+ *
+ * @param a - First vertex of the triangle
+ * @param b - Second vertex of the triangle
+ * @param c - Third vertex of the triangle
+ * @param out - Optional output vector to avoid allocation. Defaults to `new Vector2()`
+ * @param source - Random source to sample from. Defaults to `defaultRandomSource`
+ * @returns The `out` vector set to a point on the triangle's perimeter
  *
  * @example
  * ```typescript
@@ -592,15 +594,15 @@ export function randomOnTriangle(
 /**
  * Generates a random complex number with components in range [min, max).
  *
- * @param min - Minimum component value. Defaults to `0`.
- * @param max - Maximum component value (exclusive). Defaults to `1`.
- * @param out - Optional output complex to avoid allocation. Defaults to `new Complex()`.
- * @param source - Random source to sample from. Defaults to `defaultRandomSource`.
- * @returns The `out` complex containing the random components.
- *
  * @remarks
  * Both real and imaginary components are sampled independently
  * with a uniform distribution.
+ *
+ * @param min - Minimum component value. Defaults to `0`
+ * @param max - Maximum component value (exclusive). Defaults to `1`
+ * @param out - Optional output complex to avoid allocation. Defaults to `new Complex()`
+ * @param source - Random source to sample from. Defaults to `defaultRandomSource`
+ * @returns The `out` complex containing the random components
  *
  * @example
  * ```typescript
@@ -623,13 +625,13 @@ export function randomComplex(
 /**
  * Generates a random unit complex number (on the unit circle).
  *
- * @param out - Optional output complex to avoid allocation. Defaults to `new Complex()`.
- * @param source - Random source to sample from. Defaults to `defaultRandomSource`.
- * @returns The `out` complex set to a unit-magnitude complex number.
- *
  * @remarks
  * Equivalent to generating a random rotation as a complex number.
  * Uses a uniform distribution over the unit circle.
+ *
+ * @param out - Optional output complex to avoid allocation. Defaults to `new Complex()`
+ * @param source - Random source to sample from. Defaults to `defaultRandomSource`
+ * @returns The `out` complex set to a unit-magnitude complex number
  *
  * @example
  * ```typescript
@@ -654,15 +656,15 @@ export function randomUnitComplex(
 /**
  * Generates a random interval within specified bounds.
  *
- * @param minBound - Minimum allowed value for interval.min. Defaults to `0`.
- * @param maxBound - Maximum allowed value for interval.max. Defaults to `1`.
- * @param out - Optional output interval to avoid allocation. Defaults to `new Interval()`.
- * @param source - Random source to sample from. Defaults to `defaultRandomSource`.
- * @returns The `out` interval containing random bounds within [minBound, maxBound].
- *
  * @remarks
  * Generates two random values, sorts them, and uses them as min/max.
  * This ensures min ≤ max invariant is always satisfied.
+ *
+ * @param minBound - Minimum allowed value for interval.min. Defaults to `0`
+ * @param maxBound - Maximum allowed value for interval.max. Defaults to `1`
+ * @param out - Optional output interval to avoid allocation. Defaults to `new Interval()`
+ * @param source - Random source to sample from. Defaults to `defaultRandomSource`
+ * @returns The `out` interval containing random bounds within [minBound, maxBound]
  *
  * @example
  * ```typescript

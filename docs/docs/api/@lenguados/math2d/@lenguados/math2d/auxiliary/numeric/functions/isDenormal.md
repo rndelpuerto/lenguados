@@ -2,7 +2,7 @@
 
 > **isDenormal**(`value`): `boolean`
 
-Defined in: [src/auxiliary/numeric/guards.ts:99](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/auxiliary/numeric/guards.ts#L99)
+Defined in: [src/auxiliary/numeric/guards.ts:100](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/numeric/guards.ts#L100)
 
 Tests if value is a denormal number.
 
@@ -12,13 +12,13 @@ Tests if value is a denormal number.
 
 `number`
 
-Value to test.
+Value to test
 
 ## Returns
 
 `boolean`
 
-True if denormal.
+True if denormal
 
 ## Remarks
 

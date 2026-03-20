@@ -2,7 +2,7 @@
 
 > **randomInCircle**(`radius`, `out`, `source`): [`Vector2`](../../core/classes/Vector2.md)
 
-Defined in: [src/utils/random.ts:193](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/utils/random.ts#L193)
+Defined in: [src/utils/random.ts:193](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/utils/random.ts#L193)
 
 Generates a random point inside a circle with given radius.
 
@@ -12,25 +12,25 @@ Generates a random point inside a circle with given radius.
 
 `number`
 
-Circle radius (non-negative).
+Circle radius (non-negative)
 
 ### out
 
 [`Vector2`](../../core/classes/Vector2.md) = `...`
 
-Optional output vector to avoid allocation. Defaults to `new Vector2()`.
+Optional output vector to avoid allocation. Defaults to `new Vector2()`
 
 ### source
 
-[`RandomSource`](../interfaces/RandomSource.md) = `defaultRandomSource`
+[`RandomSource`](../interfaces/RandomSource.md) = `...`
 
-Random source to sample from. Defaults to `defaultRandomSource`.
+Random source to sample from. Defaults to `defaultRandomSource`
 
 ## Returns
 
 [`Vector2`](../../core/classes/Vector2.md)
 
-The `out` vector set to a point inside the circle.
+The `out` vector set to a point inside the circle
 
 ## Remarks
 

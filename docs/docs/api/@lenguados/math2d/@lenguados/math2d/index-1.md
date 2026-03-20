@@ -2,7 +2,7 @@
 
 ## Description
 
-Pure mathematical primitives and operations for 2D graphics and physics.
+Pure mathematical primitives and operations for 2D graphics and physics
 
 ## Remarks
 
@@ -77,10 +77,6 @@ import {
  setAssertionsEnabled,
 } from '@lenguados/math2d/validation/assert';
 
-// Deterministic - precision arithmetic and rounding control
-import { PrecisionMath } from '@lenguados/math2d/deterministic/precision-math';
-import { RoundingControl } from '@lenguados/math2d/deterministic/rounding-control';
-
 // Random generation
 import { randomVector2, randomInCircle } from '@lenguados/math2d/utils/random';
 import { SeededRandomSource } from '@lenguados/math2d/utils/random-source';
@@ -103,12 +99,6 @@ Re-exports [acos](deterministic/functions/acos.md)
 ### acosSafe
 
 Re-exports [acosSafe](deterministic/functions/acosSafe.md)
-
----
-
-### ANGLE_EPSILON
-
-Re-exports [ANGLE_EPSILON](auxiliary/scalar/variables/ANGLE_EPSILON.md)
 
 ---
 
@@ -172,6 +162,12 @@ Re-exports [assert](validation/functions/assert.md)
 
 ---
 
+### assertComplex
+
+Re-exports [assertComplex](validation/functions/assertComplex.md)
+
+---
+
 ### assertComplexLike
 
 Re-exports [assertComplexLike](validation/functions/assertComplexLike.md)
@@ -181,6 +177,12 @@ Re-exports [assertComplexLike](validation/functions/assertComplexLike.md)
 ### assertFinite
 
 Re-exports [assertFinite](validation/functions/assertFinite.md)
+
+---
+
+### assertInterval
+
+Re-exports [assertInterval](validation/functions/assertInterval.md)
 
 ---
 
@@ -205,6 +207,12 @@ Re-exports [assertMatrix2Like](validation/functions/assertMatrix2Like.md)
 ### assertMatrix3
 
 Re-exports [assertMatrix3](validation/functions/assertMatrix3.md)
+
+---
+
+### assertMatrix3Like
+
+Re-exports [assertMatrix3Like](validation/functions/assertMatrix3Like.md)
 
 ---
 
@@ -238,9 +246,21 @@ Re-exports [assertRotation2](validation/functions/assertRotation2.md)
 
 ---
 
+### assertRotation2Like
+
+Re-exports [assertRotation2Like](validation/functions/assertRotation2Like.md)
+
+---
+
 ### assertSafeInteger
 
 Re-exports [assertSafeInteger](validation/functions/assertSafeInteger.md)
+
+---
+
+### assertTransform2
+
+Re-exports [assertTransform2](validation/functions/assertTransform2.md)
 
 ---
 
@@ -310,6 +330,12 @@ Re-exports [ComplexLike](types/interfaces/ComplexLike.md)
 
 ---
 
+### config
+
+Re-exports [config](deterministic/variables/config.md)
+
+---
+
 ### Constants
 
 Re-exports [Constants](auxiliary/scalar/variables/Constants.md)
@@ -340,6 +366,12 @@ Re-exports [DeterministicKernels](deterministic/variables/DeterministicKernels.m
 
 ---
 
+### divideSafe
+
+Re-exports [divideSafe](auxiliary/numeric/functions/divideSafe.md)
+
+---
+
 ### E
 
 Re-exports [E](auxiliary/scalar/variables/E.md)
@@ -364,9 +396,33 @@ Re-exports [EPSILON_SQUARED](auxiliary/scalar/variables/EPSILON_SQUARED.md)
 
 ---
 
+### exp
+
+Re-exports [exp](deterministic/functions/exp.md)
+
+---
+
+### expSafe
+
+Re-exports [expSafe](deterministic/functions/expSafe.md)
+
+---
+
 ### floorDivide
 
 Re-exports [floorDivide](auxiliary/scalar/functions/floorDivide.md)
+
+---
+
+### floorDivideSafe
+
+Re-exports [floorDivideSafe](auxiliary/scalar/functions/floorDivideSafe.md)
+
+---
+
+### floorDivideUnchecked
+
+Re-exports [floorDivideUnchecked](auxiliary/scalar/functions/floorDivideUnchecked.md)
 
 ---
 
@@ -457,6 +513,12 @@ Re-exports [greaterThan](auxiliary/scalar/functions/greaterThan.md)
 ### HALF_PI
 
 Re-exports [HALF_PI](auxiliary/scalar/variables/HALF_PI.md)
+
+---
+
+### hypot
+
+Re-exports [hypot](deterministic/functions/hypot.md)
 
 ---
 
@@ -610,6 +672,12 @@ Re-exports [lerpClamped](auxiliary/scalar/functions/lerpClamped.md)
 
 ---
 
+### lerpSafe
+
+Re-exports [lerpSafe](auxiliary/numeric/functions/lerpSafe.md)
+
+---
+
 ### lessThan
 
 Re-exports [lessThan](auxiliary/scalar/functions/lessThan.md)
@@ -619,6 +687,18 @@ Re-exports [lessThan](auxiliary/scalar/functions/lessThan.md)
 ### LN_2
 
 Re-exports [LN_2](auxiliary/scalar/variables/LN_2.md)
+
+---
+
+### log
+
+Re-exports [log](deterministic/functions/log.md)
+
+---
+
+### logSafe
+
+Re-exports [logSafe](auxiliary/numeric/functions/logSafe.md)
 
 ---
 
@@ -724,12 +804,6 @@ Re-exports [normalizeRadians](auxiliary/angle/functions/normalizeRadians.md)
 
 ---
 
-### normalizeRadiansAround
-
-Re-exports [normalizeRadiansAround](auxiliary/angle/functions/normalizeRadiansAround.md)
-
----
-
 ### normalizeRadiansPositive
 
 Re-exports [normalizeRadiansPositive](auxiliary/angle/functions/normalizeRadiansPositive.md)
@@ -763,6 +837,12 @@ Re-exports [pingPongUnchecked](auxiliary/scalar/functions/pingPongUnchecked.md)
 ### pow
 
 Re-exports [pow](deterministic/functions/pow.md)
+
+---
+
+### powSafe
+
+Re-exports [powSafe](auxiliary/numeric/functions/powSafe.md)
 
 ---
 
@@ -844,6 +924,12 @@ Re-exports [ReadonlyMatrix3Like](types/interfaces/ReadonlyMatrix3Like.md)
 
 ---
 
+### ReadonlyRotation2
+
+Re-exports [ReadonlyRotation2](core/type-aliases/ReadonlyRotation2.md)
+
+---
+
 ### ReadonlyRotation2Like
 
 Re-exports [ReadonlyRotation2Like](types/interfaces/ReadonlyRotation2Like.md)
@@ -871,6 +957,12 @@ Re-exports [ReadonlyVector2](core/type-aliases/ReadonlyVector2.md)
 ### ReadonlyVector2Like
 
 Re-exports [ReadonlyVector2Like](types/interfaces/ReadonlyVector2Like.md)
+
+---
+
+### reciprocalSafe
+
+Re-exports [reciprocalSafe](auxiliary/numeric/functions/reciprocalSafe.md)
 
 ---
 
@@ -931,54 +1023,6 @@ Re-exports [roundToPlaces](auxiliary/numeric/functions/roundToPlaces.md)
 ### roundToPowerOfTwo
 
 Re-exports [roundToPowerOfTwo](auxiliary/numeric/functions/roundToPowerOfTwo.md)
-
----
-
-### safeAcos
-
-Renames and re-exports [acosSafe](deterministic/functions/acosSafe.md)
-
----
-
-### safeAsin
-
-Renames and re-exports [asinSafe](deterministic/functions/asinSafe.md)
-
----
-
-### safeDivide
-
-Re-exports [safeDivide](auxiliary/numeric/functions/safeDivide.md)
-
----
-
-### safeLerp
-
-Re-exports [safeLerp](auxiliary/numeric/functions/safeLerp.md)
-
----
-
-### safeLog
-
-Re-exports [safeLog](auxiliary/numeric/functions/safeLog.md)
-
----
-
-### safePow
-
-Re-exports [safePow](auxiliary/numeric/functions/safePow.md)
-
----
-
-### safeReciprocal
-
-Re-exports [safeReciprocal](auxiliary/numeric/functions/safeReciprocal.md)
-
----
-
-### safeSqrt
-
-Renames and re-exports [sqrtSafe](deterministic/functions/sqrtSafe.md)
 
 ---
 
@@ -1066,12 +1110,6 @@ Re-exports [snapToGrid](auxiliary/numeric/functions/snapToGrid.md)
 
 ---
 
-### sqrt
-
-Re-exports [sqrt](deterministic/functions/sqrt.md)
-
----
-
 ### SQRT_2
 
 Re-exports [SQRT_2](auxiliary/scalar/variables/SQRT_2.md)
@@ -1086,7 +1124,7 @@ Re-exports [SQRT_HALF](auxiliary/scalar/variables/SQRT_HALF.md)
 
 ### sqrtSafe
 
-Re-exports [sqrtSafe](deterministic/functions/sqrtSafe.md)
+Re-exports [sqrtSafe](auxiliary/numeric/functions/sqrtSafe.md)
 
 ---
 
@@ -1153,9 +1191,3 @@ Re-exports [Vector2](core/classes/Vector2.md)
 ### Vector2Like
 
 Re-exports [Vector2Like](types/interfaces/Vector2Like.md)
-
----
-
-### wrapAngle
-
-Re-exports [wrapAngle](auxiliary/angle/functions/wrapAngle.md)

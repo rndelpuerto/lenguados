@@ -2,7 +2,7 @@
 
 > **areAssertionsEnabled**(): `boolean`
 
-Defined in: [src/validation/assert.ts:128](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/validation/assert.ts#L128)
+Defined in: [src/validation/assert.ts:138](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/validation/assert.ts#L138)
 
 Returns the current assertions state.
 
@@ -10,7 +10,7 @@ Returns the current assertions state.
 
 `boolean`
 
-`true` if assertions are enabled, `false` otherwise.
+`true` if assertions are enabled, `false` otherwise
 
 ## Remarks
 

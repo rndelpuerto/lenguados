@@ -1,7 +1,7 @@
 /**
  * @file auxiliary/angle/interpolation.ts
  * @module @lenguados/math2d/auxiliary/angle
- * @description Angular interpolation operations.
+ * @description Angular interpolation operations
  */
 
 import { smoothStep } from '../scalar/interpolation';
@@ -10,14 +10,15 @@ import { angleDifference } from './operations';
 
 /**
  * Interpolates between angles using shortest path.
- * @param from - Start angle in radians.
- * @param to - End angle in radians.
- * @param t - Interpolation factor [0, 1].
- * @returns Interpolated angle.
  *
  * @remarks
  * Works for any real t (not only [0, 1]). Extrapolation continues
  * linearly in angle space and may produce values outside [-PI, PI).
+ *
+ * @param from - Start angle in radians
+ * @param to - End angle in radians
+ * @param t - Interpolation factor [0, 1]
+ * @returns Interpolated angle
  *
  * @example
  * ```typescript
@@ -35,10 +36,10 @@ export function lerpAngle(from: number, to: number, t: number): number {
 
 /**
  * Smooth step interpolation for angles.
- * @param from - Start angle in radians.
- * @param to - End angle in radians.
- * @param t - Interpolation factor [0, 1].
- * @returns Interpolated angle with smooth acceleration/deceleration.
+ * @param from - Start angle in radians
+ * @param to - End angle in radians
+ * @param t - Interpolation factor [0, 1]
+ * @returns Interpolated angle with smooth acceleration/deceleration
  *
  * @example
  * ```typescript

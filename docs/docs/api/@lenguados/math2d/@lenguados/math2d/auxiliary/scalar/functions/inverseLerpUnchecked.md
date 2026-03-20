@@ -2,7 +2,7 @@
 
 > **inverseLerpUnchecked**(`a`, `b`, `value`): `number`
 
-Defined in: [src/auxiliary/scalar/interpolation.ts:126](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/auxiliary/scalar/interpolation.ts#L126)
+Defined in: [src/auxiliary/scalar/interpolation.ts:141](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/scalar/interpolation.ts#L141)
 
 Inverse linear interpolation (unchecked).
 
@@ -12,29 +12,34 @@ Inverse linear interpolation (unchecked).
 
 `number`
 
-Start value.
+Start value
 
 ### b
 
 `number`
 
-End value (must != a).
+End value (must != a)
 
 ### value
 
 `number`
 
-Value to find t for.
+Value to find t for
 
 ## Returns
 
 `number`
 
-Interpolation factor t.
+Interpolation factor t
 
 ## Remarks
 
-**⚠️ Precondition:** a !== b.
+**Precondition:** a !== b.
+
+## See
+
+- [inverseLerp](inverseLerp.md) — Throws for degenerate range
+- [inverseLerpSafe](inverseLerpSafe.md) — Returns 0 if range is degenerate
 
 ## Since
 

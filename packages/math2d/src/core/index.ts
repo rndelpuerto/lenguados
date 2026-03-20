@@ -1,7 +1,7 @@
 /**
  * @file core/index.ts
  * @module @lenguados/math2d/core
- * @description Core 2D mathematical types for the Lenguados math2d library.
+ * @description Core 2D mathematical types
  *
  * @remarks
  * This module provides the fundamental mathematical types:

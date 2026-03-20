@@ -2,7 +2,7 @@
 
 > **lessThan**(`a`, `b`, `epsilon`): `boolean`
 
-Defined in: [src/auxiliary/scalar/comparison.ts:131](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/auxiliary/scalar/comparison.ts#L131)
+Defined in: [src/auxiliary/scalar/comparison.ts:165](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/scalar/comparison.ts#L165)
 
 Tests if a < b with epsilon tolerance.
 Returns true if a < b - epsilon.
@@ -13,25 +13,25 @@ Returns true if a < b - epsilon.
 
 `number`
 
-First value.
+First value
 
 ### b
 
 `number`
 
-Second value.
+Second value
 
 ### epsilon
 
 `number` = `EPSILON`
 
-Tolerance (default: EPSILON).
+Tolerance (default: EPSILON)
 
 ## Returns
 
 `boolean`
 
-True if a is less than b beyond tolerance.
+True if a is less than b beyond tolerance
 
 ## Example
 

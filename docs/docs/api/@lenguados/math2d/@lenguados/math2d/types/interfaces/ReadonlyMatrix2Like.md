@@ -1,6 +1,6 @@
 # Interface: ReadonlyMatrix2Like
 
-Defined in: [src/types/index.ts:47](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/types/index.ts#L47)
+Defined in: [src/types/index.ts:47](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/types/index.ts#L47)
 
 Readonly interface for 2x2 matrix components.
 
@@ -14,7 +14,7 @@ Readonly interface for 2x2 matrix components.
 
 > `readonly` **m00**: `number`
 
-Defined in: [src/types/index.ts:48](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/types/index.ts#L48)
+Defined in: [src/types/index.ts:48](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/types/index.ts#L48)
 
 ---
 
@@ -22,7 +22,7 @@ Defined in: [src/types/index.ts:48](https://github.com/rndelpuerto/lenguados/blo
 
 > `readonly` **m01**: `number`
 
-Defined in: [src/types/index.ts:49](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/types/index.ts#L49)
+Defined in: [src/types/index.ts:49](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/types/index.ts#L49)
 
 ---
 
@@ -30,7 +30,7 @@ Defined in: [src/types/index.ts:49](https://github.com/rndelpuerto/lenguados/blo
 
 > `readonly` **m10**: `number`
 
-Defined in: [src/types/index.ts:50](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/types/index.ts#L50)
+Defined in: [src/types/index.ts:50](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/types/index.ts#L50)
 
 ---
 
@@ -38,4 +38,4 @@ Defined in: [src/types/index.ts:50](https://github.com/rndelpuerto/lenguados/blo
 
 > `readonly` **m11**: `number`
 
-Defined in: [src/types/index.ts:51](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/types/index.ts#L51)
+Defined in: [src/types/index.ts:51](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/types/index.ts#L51)

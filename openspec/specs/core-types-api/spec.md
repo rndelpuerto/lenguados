@@ -495,3 +495,53 @@ The `Matrix2.lerp` and `Matrix3.lerp` methods perform component-wise linear inte
 - **GIVEN** `a = Rotation2.NEGATIVE_QUARTER` and `b = Rotation2.THREE_QUARTER_TURN`
 - **WHEN** their `cos` and `sin` values are compared
 - **THEN** `a.cos === b.cos` and `a.sin === b.sin` SHALL both be `true` (both are `{ cos: 0, sin: -1 }`)
+
+---
+
+### Requirement: Matrix3 static decomposition getters
+
+Matrix3 SHALL provide static methods `getRotation()`, `getScale()`, and `getTranslation()` that accept `ReadonlyMatrix3Like` input, enabling allocation-free decomposition without constructing a Matrix3 instance.
+
+#### Scenario: Static getRotation extracts angle
+
+- **WHEN** a Matrix3 is composed from `fromRotation(PI / 4)` (45-degree rotation)
+- **THEN** `Matrix3.getRotation(matrix)` SHALL return a value within EPSILON of `PI / 4`
+
+#### Scenario: Static getRotation with near-zero scale
+
+- **WHEN** a Matrix3 has near-zero scale (columns near zero magnitude)
+- **THEN** `Matrix3.getRotation(matrix)` SHALL return `0`
+
+#### Scenario: Static getScale extracts scale vector
+
+- **WHEN** a Matrix3 is composed from `fromScaling(new Vector2(2, 3))`
+- **THEN** `Matrix3.getScale(matrix)` SHALL return a Vector2 within EPSILON of `(2, 3)`
+- **AND** `Matrix3.getScale(matrix, out)` SHALL write to `out` and return it
+
+#### Scenario: Static getTranslation extracts position
+
+- **WHEN** a Matrix3 is composed from `fromTranslation(new Vector2(10, 20))`
+- **THEN** `Matrix3.getTranslation(matrix)` SHALL return a Vector2 within EPSILON of `(10, 20)`
+- **AND** `Matrix3.getTranslation(matrix, out)` SHALL write to `out` and return it
+
+#### Scenario: Static/instance getter parity
+
+- **WHEN** `Matrix3.getRotation(m)` and `m.getRotation()` are called on the same matrix
+- **THEN** both SHALL return identical results
+- **AND** same for `getScale()` and `getTranslation()`
+
+---
+
+### Requirement: Transform2.multiply instance allocation-free
+
+The instance method `Transform2.multiply(other)` SHALL compute rotation composition inline without allocating intermediate objects, while producing bit-identical results to the current implementation.
+
+#### Scenario: Multiply produces same result after optimization
+
+- **WHEN** `Transform2.multiply(a, b)` (static) and `a.clone().multiply(b)` (instance) are called with identical inputs
+- **THEN** both SHALL produce bit-identical results for position, rotation (cos, sin), and scale
+
+#### Scenario: Multiply with identity transform
+
+- **WHEN** `transform.multiply(Transform2.IDENTITY)` is called
+- **THEN** the transform SHALL remain unchanged

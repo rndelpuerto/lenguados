@@ -1,7 +1,12 @@
 /**
  * @file core/transform2.ts
  * @module @lenguados/math2d/core
- * @description Deterministic 2D transform combining translation, rotation, and scale.
+ * @description Deterministic 2D transform combining translation, rotation, and scale
+ *
+ * @remarks
+ * Provides the {@link Transform2} class for decomposed SRT (Scale → Rotate → Translate)
+ * 2D transforms. Stores position, rotation, and scale as separate components for
+ * efficient composition, interpolation, and inverse computation.
  */
 
 import { saturate } from '../auxiliary/scalar/arithmetic';
@@ -58,13 +63,13 @@ export { isTransform2Like } from '../types';
 /**
  * Permanently freezes a {@link Transform2} instance so it can no longer be mutated.
  *
- * @param transform - The Transform2 object to freeze.
- * @returns The same instance, now typed as ReadonlyTransform2.
- *
  * @remarks
  * - The returned object keeps its original reference; no new memory is allocated.
  * - In strict mode any subsequent attempt to modify properties throws a TypeError.
  * - Note: This also freezes the nested `position` and `scale` vectors.
+ *
+ * @param transform - The Transform2 object to freeze
+ * @returns The same instance, now typed as ReadonlyTransform2
  *
  * @example
  * ```typescript
@@ -89,12 +94,31 @@ export function freezeTransform2(transform: Transform2): ReadonlyTransform2 {
 /**
  * Decomposed 2D affine transform applied in Scale → Rotate → Translate order.
  *
+ * @remarks
+ * - **Design:** Decomposed SRT (Scale → Rotate → Translate) transform. Stores
+ *   `position` (Vector2), `rotation` (Rotation2), and `scale` (Vector2) as separate
+ *   components. Instance methods are mutable and chainable; static methods are pure.
+ * - **Numerics:** Inverse computation uses the SRT decomposition formula. Non-uniform
+ *   scale inverse is an approximation; use `inverseTransformPoint` for exact results.
+ * - **Safety:** "Safe" variants return identity transform instead of throwing on
+ *   non-invertible transforms (zero scale).
+ *
+ * @example
+ * ```typescript
+ * // Create and compose transforms
+ * const t = new Transform2();
+ * t.setPosition(10, 20).setRotation(Math.PI / 4).setScale(2, 2);
+ *
+ * // Apply to a point
+ * const worldPoint = Transform2.transformPoint(t, localPoint);
+ * ```
+ *
  * @category Core
  * @since 0.7.0
  */
 export class Transform2 implements Transform2Like {
  /* ======================================================================== */
- /* Component Fields (SOLID: Transform2 is thin container)                   */
+ /* Instance Properties                                                      */
  /* ======================================================================== */
 
  public readonly position: Vector2;
@@ -103,9 +127,9 @@ export class Transform2 implements Transform2Like {
   * for convenient access, or rotation.cos/sin for direct component access.
   *
   * @remarks
-  * ## SOLID Architecture (v3)
-  * Transform2 is a thin container. All rotation logic lives in Rotation2.
-  * This follows Box2D's b2Transform/b2Rot separation pattern.
+  * The rotation is stored as a separate {@link Rotation2} instance rather than
+  * a raw angle. All rotation logic lives in Rotation2, following Box2D's
+  * b2Transform/b2Rot separation pattern for clean responsibility boundaries.
   *
   * @example
   * ```typescript
@@ -121,8 +145,8 @@ export class Transform2 implements Transform2Like {
   * transform.rotation.multiply(other.rotation);
   * ```
   *
-  * @category Component
-  * @since 0.8.0
+  * @category Accessor
+  * @since 0.7.0
   */
  public readonly rotation: Rotation2;
  public readonly scale: Vector2;
@@ -152,7 +176,8 @@ export class Transform2 implements Transform2Like {
 
  /**
   * Identity transform (no transformation).
-  * @category Core
+  * @category Constant
+  * @since 0.7.0
   */
  public static readonly IDENTITY = freezeTransform2(new Transform2());
 
@@ -165,13 +190,15 @@ export class Transform2 implements Transform2Like {
 
  /**
   * Flip horizontally (scale.x = -1).
-  * @category Core
+  * @category Constant
+  * @since 0.7.0
   */
  public static readonly FLIP_X = freezeTransform2(new Transform2(undefined, 0, { x: -1, y: 1 }));
 
  /**
   * Flip vertically (scale.y = -1).
-  * @category Core
+  * @category Constant
+  * @since 0.7.0
   */
  public static readonly FLIP_Y = freezeTransform2(new Transform2(undefined, 0, { x: 1, y: -1 }));
 
@@ -179,6 +206,13 @@ export class Transform2 implements Transform2Like {
  /* Constructor                                                              */
  /* ======================================================================== */
 
+ /**
+  * Creates a new Transform2 with the given position, rotation, and scale.
+  *
+  * @param position - Initial translation. @defaultValue `{ x: 0, y: 0 }`
+  * @param rotation - Initial rotation angle in radians. @defaultValue `0`
+  * @param scale - Initial scale factors. @defaultValue `{ x: 1, y: 1 }`
+  */
  constructor(position?: ReadonlyVector2Like, rotation = 0, scale?: ReadonlyVector2Like) {
   const initialPosition = Transform2.extractVector(
    position,
@@ -207,6 +241,16 @@ export class Transform2 implements Transform2Like {
   * @param out - Optional output transform
   * @returns Transform with specified values
   *
+  * @example
+  * ```typescript
+  * const t = Transform2.fromValues(10, 20, Math.PI / 2, 2, 3);
+  * // position=(10,20), rotation=90°, scale=(2,3)
+  *
+  * // Reuse existing transform to avoid allocation
+  * const out = new Transform2();
+  * Transform2.fromValues(5, 5, 0, 1, 1, out);
+  * ```
+  *
   * @category Factory
   * @since 0.7.0
   */
@@ -231,6 +275,16 @@ export class Transform2 implements Transform2Like {
   * @param out - Optional output transform
   * @returns Decomposed transform
   *
+  * @example
+  * ```typescript
+  * const matrix = Matrix3.fromTransform2(someTransform);
+  * const t = Transform2.fromMatrix3(matrix);
+  *
+  * // Reuse existing transform to avoid allocation
+  * const out = new Transform2();
+  * Transform2.fromMatrix3(matrix, out);
+  * ```
+  *
   * @category Factory
   * @since 0.7.0
   */
@@ -244,15 +298,16 @@ export class Transform2 implements Transform2Like {
 
  /**
   * Creates a transform from components.
+  *
+  * @remarks
+  * When passing a `ReadonlyRotation2Like` object, the angle is computed using
+  * `atan2(rotation.sin, rotation.cos)`.
+  *
   * @param position - Position vector
   * @param rotation - Rotation (angle in radians or Rotation2Like object with cos/sin)
   * @param scale - Scale (vector or uniform scalar)
   * @param out - Optional output transform
   * @returns Transform from components
-  *
-  * @remarks
-  * When passing a `ReadonlyRotation2Like` object, the angle is computed using
-  * `atan2(rotation.sin, rotation.cos)`.
   *
   * @example
   * ```typescript
@@ -325,6 +380,16 @@ export class Transform2 implements Transform2Like {
   * @param out - Optional output transform
   * @returns Transform from object
   *
+  * @example
+  * ```typescript
+  * const obj = { position: { x: 5, y: 10 }, rotation: { cos: 1, sin: 0 }, scale: { x: 2, y: 2 } };
+  * const t = Transform2.fromObject(obj);
+  *
+  * // Reuse existing transform to avoid allocation
+  * const out = new Transform2();
+  * Transform2.fromObject(obj, out);
+  * ```
+  *
   * @category Factory
   * @since 0.7.0
   */
@@ -349,6 +414,16 @@ export class Transform2 implements Transform2Like {
   * @param out - Optional output transform
   * @returns A Transform2 with identical values
   *
+  * @example
+  * ```typescript
+  * const original = Transform2.fromValues(10, 20, Math.PI / 4, 1, 1);
+  * const cloned = Transform2.clone(original);
+  *
+  * // Reuse existing transform to avoid allocation
+  * const out = new Transform2();
+  * Transform2.clone(original, out);
+  * ```
+  *
   * @category Factory
   * @since 0.7.0
   */
@@ -366,7 +441,7 @@ export class Transform2 implements Transform2Like {
   * @param offset - Index offset. @defaultValue `0`
   * @param out - Optional output transform
   * @returns Transform from array
-  * @throws {RangeError} If offset is out of bounds.
+  * @throws {RangeError} If offset is out of bounds
   *
   * @example
   * ```typescript
@@ -395,6 +470,14 @@ export class Transform2 implements Transform2Like {
   * @param destination - Target transform to receive the copy
   * @returns The destination transform
   *
+  * @example
+  * ```typescript
+  * const source = Transform2.fromPose(10, 20, Math.PI / 4);
+  * const destination = new Transform2();
+  * Transform2.copy(source, destination);
+  * // destination now holds the same values as source
+  * ```
+  *
   * @category Factory
   * @since 0.7.0
   */
@@ -411,10 +494,6 @@ export class Transform2 implements Transform2Like {
 
  /**
   * Multiplies two transforms: applies b in the local space of a.
-  * @param a - First transform (parent/outer transform)
-  * @param b - Second transform (child/inner transform)
-  * @param out - Optional output transform
-  * @returns Combined transform
   *
   * @remarks
   * **⚠️ Non-uniform scale limitation:**
@@ -438,6 +517,11 @@ export class Transform2 implements Transform2Like {
   *
   * This limitation mirrors Box2D's design, which uses b2Transform with
   * only position and rotation (no scale) to avoid this issue entirely.
+  *
+  * @param a - First transform (parent/outer transform)
+  * @param b - Second transform (child/inner transform)
+  * @param out - Optional output transform
+  * @returns Combined transform
   *
   * @see {@link Transform2.hasUniformScale} to check for uniform scaling
   *
@@ -468,10 +552,6 @@ export class Transform2 implements Transform2Like {
 
  /**
   * Calculates the inverse of a transform.
-  * @param transform - Transform to invert
-  * @param out - Optional output transform
-  * @returns Inverse transform
-  * @throws {RangeError} If scale.x or scale.y is near zero (non-invertible).
   *
   * @remarks
   * **Non-uniform scale warning:** This inversion is an APPROXIMATION when
@@ -481,6 +561,11 @@ export class Transform2 implements Transform2Like {
   * transformation, use {@link inverseTransformPoint}. For exact full inverse,
   * convert to Matrix3 via {@link toMatrix3} and use {@link Matrix3.inverse}.
   * This is a common SRT limitation documented by engines such as DigitalRune.
+  *
+  * @param transform - Transform to invert
+  * @param out - Optional output transform
+  * @returns Inverse transform
+  * @throws {RangeError} If scale.x or scale.y is near zero (non-invertible)
   *
   * @see {@link inverseSafe} - Returns identity instead of throwing
   * @see {@link inverseUnchecked} - No validation, for hot paths
@@ -516,9 +601,6 @@ export class Transform2 implements Transform2Like {
 
  /**
   * Calculates the inverse of a transform, returning identity if non-invertible.
-  * @param transform - Transform to invert
-  * @param out - Optional output transform
-  * @returns Inverse transform, or identity if scale is near zero
   *
   * @remarks
   * Uses {@link isNearZero} with default {@link EPSILON} (1e-10) on each scale
@@ -526,6 +608,10 @@ export class Transform2 implements Transform2Like {
   *
   * **Non-uniform scale warning:** See {@link inverse} for details on SRT
   * approximation. Use {@link inverseTransformPoint} for exact point inverse.
+  *
+  * @param transform - Transform to invert
+  * @param out - Optional output transform
+  * @returns Inverse transform, or identity if scale is near zero
   *
   * @see {@link inverse} - Throws on non-invertible transform
   * @see {@link inverseUnchecked} - No validation, for hot paths
@@ -562,16 +648,17 @@ export class Transform2 implements Transform2Like {
 
  /**
   * Calculates the inverse of a transform without validation.
-  * @param transform - Transform to invert (must have non-zero scale)
-  * @param out - Optional output transform
-  * @returns Inverse transform
   *
   * @remarks
-  * **⚠️ Precondition:** `transform.scale.x ≠ 0` and `transform.scale.y ≠ 0`.
+  * **Precondition:** `transform.scale.x ≠ 0` and `transform.scale.y ≠ 0`.
   * Calling with zero scale produces `Infinity`/`NaN` in the result.
   *
   * **Non-uniform scale warning:** See {@link inverse} for details on SRT
   * approximation. Use {@link inverseTransformPoint} for exact point inverse.
+  *
+  * @param transform - Transform to invert (must have non-zero scale)
+  * @param out - Optional output transform
+  * @returns Inverse transform
   *
   * @see {@link inverse} - Throws on non-invertible transform
   * @see {@link inverseSafe} - Returns identity instead of throwing
@@ -599,19 +686,20 @@ export class Transform2 implements Transform2Like {
  }
 
  /* ======================================================================== */
- /* Static Transform Application                                             */
+ /* Static Transforms                                                        */
  /* ======================================================================== */
 
  /**
   * Transforms a point by a transform (applies scale, rotation, then translation).
-  * @param transform - Transform to apply
-  * @param point - Point to transform
-  * @param out - Optional output vector
-  * @returns Transformed point
   *
   * @remarks
   * Points are affected by all components: scale, rotation, and translation.
   * Order of operations: Scale → Rotate → Translate.
+  *
+  * @param transform - Transform to apply
+  * @param point - Point to transform
+  * @param out - Optional output vector
+  * @returns Transformed point
   *
   * @example
   * ```typescript
@@ -640,16 +728,17 @@ export class Transform2 implements Transform2Like {
 
  /**
   * Transforms a point using precomputed cos/sin values.
+  *
+  * @remarks
+  * Use this method in hot paths where cos/sin are already computed.
+  * Avoids redundant trigonometric calculations in loops.
+  *
   * @param transform - Transform to apply (position and scale only)
   * @param point - Point to transform
   * @param cos - Precomputed cosine of rotation
   * @param sin - Precomputed sine of rotation
   * @param out - Optional output vector
   * @returns Transformed point
-  *
-  * @remarks
-  * Use this method in hot paths where cos/sin are already computed.
-  * Avoids redundant trigonometric calculations in loops.
   *
   * @example
   * ```typescript
@@ -680,14 +769,15 @@ export class Transform2 implements Transform2Like {
 
  /**
   * Transforms a vector by a transform (applies scale and rotation, no translation).
-  * @param transform - Transform to apply
-  * @param vector - Vector to transform
-  * @param out - Optional output vector
-  * @returns Transformed vector
   *
   * @remarks
   * Vectors are NOT affected by translation (they represent directions, not positions).
   * Only scale and rotation are applied.
+  *
+  * @param transform - Transform to apply
+  * @param vector - Vector to transform
+  * @param out - Optional output vector
+  * @returns Transformed vector
   *
   * @example
   * ```typescript
@@ -712,16 +802,17 @@ export class Transform2 implements Transform2Like {
 
  /**
   * Transforms a vector using precomputed cos/sin values.
+  *
+  * @remarks
+  * Use this method in hot paths where cos/sin are already computed.
+  * Avoids redundant trigonometric calculations in loops.
+  *
   * @param transform - Transform to apply (scale only)
   * @param vector - Vector to transform
   * @param cos - Precomputed cosine of rotation
   * @param sin - Precomputed sine of rotation
   * @param out - Optional output vector
   * @returns Transformed vector
-  *
-  * @remarks
-  * Use this method in hot paths where cos/sin are already computed.
-  * Avoids redundant trigonometric calculations in loops.
   *
   * @category Transform
   * @since 0.7.0
@@ -740,15 +831,16 @@ export class Transform2 implements Transform2Like {
 
  /**
   * Inverse transforms a point.
-  * @param transform - Transform to apply inversely
-  * @param point - Point to inverse transform
-  * @param out - Optional output vector
-  * @returns Inverse transformed point
-  * @throws {RangeError} If scale.x or scale.y is near zero.
   *
   * @remarks
   * Applies the inverse of the transform: Translate⁻¹ → Rotate⁻¹ → Scale⁻¹.
   * Useful for converting world coordinates to local coordinates.
+  *
+  * @param transform - Transform to apply inversely
+  * @param point - Point to inverse transform
+  * @param out - Optional output vector
+  * @returns Inverse transformed point
+  * @throws {RangeError} If scale.x or scale.y is near zero
   *
   * @example
   * ```typescript
@@ -785,13 +877,14 @@ export class Transform2 implements Transform2Like {
 
  /**
   * Inverse transforms a point, returning (0,0) if scale is near zero.
+  *
+  * @remarks
+  * Use when transform may have degenerate scale and you want graceful fallback.
+  *
   * @param transform - Transform to apply inversely
   * @param point - Point to inverse transform
   * @param out - Optional output vector
   * @returns Inverse transformed point, or (0,0) if scale is near zero
-  *
-  * @remarks
-  * Use when transform may have degenerate scale and you want graceful fallback.
   *
   * @see {@link inverseTransformPoint} - Throws on near-zero scale
   *
@@ -819,17 +912,18 @@ export class Transform2 implements Transform2Like {
 
  /**
   * Inverse transforms a point using precomputed cos/sin values (unchecked).
+  *
+  * @remarks
+  * **Precondition:** `transform.scale.x ≠ 0` and `transform.scale.y ≠ 0`.
+  *
+  * Use this method in hot paths where cos/sin are already computed.
+  *
   * @param transform - Transform to apply inversely (position and scale)
   * @param point - Point to inverse transform
   * @param cos - Precomputed cosine of rotation
   * @param sin - Precomputed sine of rotation
   * @param out - Optional output vector
   * @returns Inverse transformed point
-  *
-  * @remarks
-  * **⚠️ Precondition:** `transform.scale.x ≠ 0` and `transform.scale.y ≠ 0`.
-  *
-  * Use this method in hot paths where cos/sin are already computed.
   *
   * @category Transform
   * @since 0.7.0
@@ -853,15 +947,16 @@ export class Transform2 implements Transform2Like {
 
  /**
   * Inverse transforms a vector (ignores translation).
-  * @param transform - Transform to apply inversely
-  * @param vector - Vector to inverse transform
-  * @param out - Optional output vector
-  * @returns Inverse transformed vector
-  * @throws {RangeError} If scale.x or scale.y is near zero.
   *
   * @remarks
   * Applies the inverse of the transform's rotation and scale only.
   * Useful for converting world directions to local directions.
+  *
+  * @param transform - Transform to apply inversely
+  * @param vector - Vector to inverse transform
+  * @param out - Optional output vector
+  * @returns Inverse transformed vector
+  * @throws {RangeError} If scale.x or scale.y is near zero
   *
   * @example
   * ```typescript
@@ -925,17 +1020,18 @@ export class Transform2 implements Transform2Like {
 
  /**
   * Inverse transforms a vector using precomputed cos/sin values (unchecked).
+  *
+  * @remarks
+  * **Precondition:** `transform.scale.x ≠ 0` and `transform.scale.y ≠ 0`.
+  *
+  * Use this method in hot paths where cos/sin are already computed.
+  *
   * @param transform - Transform to apply inversely (scale only)
   * @param vector - Vector to inverse transform
   * @param cos - Precomputed cosine of rotation
   * @param sin - Precomputed sine of rotation
   * @param out - Optional output vector
   * @returns Inverse transformed vector
-  *
-  * @remarks
-  * **⚠️ Precondition:** `transform.scale.x ≠ 0` and `transform.scale.y ≠ 0`.
-  *
-  * Use this method in hot paths where cos/sin are already computed.
   *
   * @category Transform
   * @since 0.7.0
@@ -1005,15 +1101,16 @@ export class Transform2 implements Transform2Like {
 
  /**
   * Smooth interpolation between two transforms using smoothStep easing.
+  *
+  * @remarks
+  * Uses Hermite smoothStep for ease-in-out effect on all components.
+  * Position and scale use linear smoothStep, rotation uses angular smoothStep.
+  *
   * @param a - Source transform
   * @param b - Target transform
   * @param t - Interpolation factor (clamped to [0, 1])
   * @param out - Optional output transform
   * @returns Smoothly interpolated transform
-  *
-  * @remarks
-  * Uses Hermite smoothStep for ease-in-out effect on all components.
-  * Position and scale use linear smoothStep, rotation uses angular smoothStep.
   *
   * @example
   * ```typescript
@@ -1036,17 +1133,18 @@ export class Transform2 implements Transform2Like {
  }
 
  /* ======================================================================== */
- /* Static Comparison & Validation                                           */
+ /* Static Comparison                                                        */
  /* ======================================================================== */
 
  /**
   * Exact equality (bit-identical).
-  * @param a - First transform
-  * @param b - Second transform
-  * @returns True if exactly identical
   *
   * @remarks
   * Use {@link nearEquals} for comparing results of floating-point operations.
+  *
+  * @param a - First transform
+  * @param b - Second transform
+  * @returns True if exactly identical
   *
   * @category Comparison
   * @since 0.7.0
@@ -1061,14 +1159,15 @@ export class Transform2 implements Transform2Like {
 
  /**
   * Approximate equality using relative tolerance for position and scale.
-  * @param a - First transform
-  * @param b - Second transform
-  * @param epsilon - Tolerance. @defaultValue `EPSILON`
-  * @returns True if within epsilon
   *
   * @remarks
   * Position and scale use relative tolerance. Rotation uses absolute tolerance
   * since angles are bounded to a fixed range.
+  *
+  * @param a - First transform
+  * @param b - Second transform
+  * @param epsilon - Tolerance. @defaultValue `EPSILON`
+  * @returns True if within epsilon
   *
   * @category Comparison
   * @since 0.7.0
@@ -1087,13 +1186,14 @@ export class Transform2 implements Transform2Like {
 
  /**
   * Tests if a transform is the identity.
-  * @param transform - Transform to test
-  * @param epsilon - Tolerance (default: EPSILON)
-  * @returns True if identity
   *
   * @remarks
   * Uses {@link EPSILON} (1e-10) as default tolerance. Checks position ≈ (0,0),
   * rotation ≈ identity, and scale ≈ (1,1).
+  *
+  * @param transform - Transform to test
+  * @param epsilon - Tolerance (default: EPSILON)
+  * @returns True if identity
   *
   * @category Comparison
   * @since 0.7.0
@@ -1139,11 +1239,12 @@ export class Transform2 implements Transform2Like {
 
  /**
   * Tests if any component is infinite (±Infinity).
-  * @param transform - Transform to test
-  * @returns True if any component is ±Infinity
   *
   * @remarks
   * Distinguishes infinity from NaN. Use {@link isFinite} to check for both.
+  *
+  * @param transform - Transform to test
+  * @returns True if any component is ±Infinity
   *
   * @category Comparison
   * @since 0.7.0
@@ -1159,13 +1260,13 @@ export class Transform2 implements Transform2Like {
  /**
   * Tests if transform is invertible (has non-zero scale).
   *
-  * @param transform - Transform to test.
-  * @param epsilon - Tolerance. @defaultValue `EPSILON`
-  * @returns True if transform can be inverted.
-  *
   * @remarks
   * A transform is invertible when both scale components are non-zero.
   * This follows the Eigen C++ convention for matrix invertibility.
+  *
+  * @param transform - Transform to test
+  * @param epsilon - Tolerance. @defaultValue `EPSILON`
+  * @returns True if transform can be inverted
   *
   * @category Comparison
   * @since 0.7.0
@@ -1176,12 +1277,13 @@ export class Transform2 implements Transform2Like {
 
  /**
   * Tests if transform has uniform scale.
-  * @param transform - Transform to test
-  * @param epsilon - Tolerance for comparison
-  * @returns True if scale.x ≈ scale.y
   *
   * @remarks
   * Uses relative tolerance for comparing scale components.
+  *
+  * @param transform - Transform to test
+  * @param epsilon - Tolerance for comparison
+  * @returns True if scale.x ≈ scale.y
   *
   * @example
   * ```typescript
@@ -1235,7 +1337,7 @@ export class Transform2 implements Transform2Like {
  }
 
  /* ======================================================================== */
- /* Instance Basic Mutators                                                  */
+ /* Instance Mutators                                                        */
  /* ======================================================================== */
 
  /**
@@ -1292,18 +1394,21 @@ export class Transform2 implements Transform2Like {
  }
 
  /* ======================================================================== */
- /* Instance Computed Values                                                 */
+ /* Instance Computed                                                        */
  /* ======================================================================== */
+
+ /* ------ Comparison ------ */
 
  /**
   * Tests if scale is uniform (x equals y).
-  * @param epsilon - Relative tolerance (default: EPSILON)
-  * @returns True if uniform scale
   *
   * @remarks
   * Uses relative tolerance for comparing scale components.
   *
-  * @category Computed
+  * @param epsilon - Relative tolerance (default: EPSILON)
+  * @returns True if uniform scale
+  *
+  * @category Comparison
   * @since 0.7.0
   */
  hasUniformScale(epsilon: number = EPSILON): boolean {
@@ -1314,7 +1419,7 @@ export class Transform2 implements Transform2Like {
   * Tests if scale has negative components.
   * @returns True if any scale component is negative
   *
-  * @category Computed
+  * @category Comparison
   * @since 0.7.0
   */
  hasNegativeScale(): boolean {
@@ -1333,7 +1438,7 @@ export class Transform2 implements Transform2Like {
  }
 
  /* ======================================================================== */
- /* Matrix Conversion                                                        */
+ /* Instance Conversion (Matrix)                                             */
  /* ======================================================================== */
 
  /**
@@ -1350,12 +1455,13 @@ export class Transform2 implements Transform2Like {
 
  /**
   * Converts this transform's rotation to a Rotation2.
-  * @param out - Optional output rotation
-  * @returns Rotation2 representation of the transform's angle
   *
   * @remarks
   * Useful for extracting the rotation component for reuse in hot paths,
   * avoiding repeated `sinCos()` calls.
+  *
+  * @param out - Optional output rotation
+  * @returns Rotation2 representation of the transform's angle
   *
   * @example
   * ```typescript
@@ -1371,6 +1477,8 @@ export class Transform2 implements Transform2Like {
  public toRotation2(out?: Rotation2): Rotation2 {
   return Rotation2.clone(this.rotation, out);
  }
+
+ /* ------ Mutator ------ */
 
  /**
   * Sets this transform from a 3x3 matrix.
@@ -1390,7 +1498,7 @@ export class Transform2 implements Transform2Like {
  /* ======================================================================== */
 
  /**
-  * Transforms a point (applies translation).
+  * Transforms a point by applying scale, rotation, and translation.
   * @param point - Point to transform
   * @param out - Optional output vector
   * @returns Transformed point
@@ -1460,6 +1568,7 @@ export class Transform2 implements Transform2Like {
   * @param point - Point to inverse transform
   * @param out - Optional output vector
   * @returns Inverse transformed point
+  * @throws {RangeError} If transform is not invertible
   *
   * @category Transform
   * @since 0.7.0
@@ -1490,13 +1599,15 @@ export class Transform2 implements Transform2Like {
 
  /**
   * Inverse transforms a vector (ignores translation).
-  * @param vector - Vector to inverse transform
-  * @param out - Optional output vector
-  * @returns Inverse transformed vector
   *
   * @remarks
   * Applies the inverse of the transform's rotation and scale only.
   * Useful for converting world directions to local directions.
+  *
+  * @param vector - Vector to inverse transform
+  * @param out - Optional output vector
+  * @returns Inverse transformed vector
+  * @throws {RangeError} If transform is not invertible
   *
   * @category Transform
   * @since 0.7.0
@@ -1529,14 +1640,14 @@ export class Transform2 implements Transform2Like {
   * Transforms multiple points efficiently (batch operation).
   * Calculates sin/cos once and applies to all points.
   *
-  * @param points - Array of points to transform
-  * @param out - Optional output array (will be filled/extended as needed)
-  * @returns Array of transformed points
-  *
   * @remarks
   * More efficient than calling transformPoint multiple times because
   * sin/cos are calculated only once. Internally uses the same math as
   * {@link transformPoint}.
+  *
+  * @param points - Array of points to transform
+  * @param out - Optional output array (will be filled/extended as needed)
+  * @returns Array of transformed points
   *
   * @example
   * ```typescript
@@ -1573,13 +1684,13 @@ export class Transform2 implements Transform2Like {
   * Transforms multiple vectors efficiently (batch operation).
   * Calculates sin/cos once and applies to all vectors.
   *
-  * @param vectors - Array of vectors to transform
-  * @param out - Optional output array (will be filled/extended as needed)
-  * @returns Array of transformed vectors
-  *
   * @remarks
   * Unlike points, vectors are not affected by translation.
   * More efficient than calling transformVector multiple times.
+  *
+  * @param vectors - Array of vectors to transform
+  * @param out - Optional output array (will be filled/extended as needed)
+  * @returns Array of transformed vectors
   *
   * @category Transform
   * @since 0.7.0
@@ -1618,18 +1729,23 @@ export class Transform2 implements Transform2Like {
   * @since 0.7.0
   */
  multiply(other: ReadonlyTransform2): this {
-  const newRotation = Rotation2.multiply(this.rotation, other.rotation);
+  // Inline rotation multiply to avoid temp Rotation2 allocation
+  const thisCos = this.rotation.cos;
+  const thisSin = this.rotation.sin;
+  const newCos = thisCos * other.rotation.cos - thisSin * other.rotation.sin;
+  const newSin = thisSin * other.rotation.cos + thisCos * other.rotation.sin;
+
   const newScaleX = this.scale.x * other.scale.x;
   const newScaleY = this.scale.y * other.scale.y;
 
   // Transform the other's position by this transform
-  const { cos, sin } = this.rotation;
   const scaledX = other.position.x * this.scale.x;
   const scaledY = other.position.y * this.scale.y;
-  const newPosX = scaledX * cos - scaledY * sin + this.position.x;
-  const newPosY = scaledX * sin + scaledY * cos + this.position.y;
+  const newPosX = scaledX * thisCos - scaledY * thisSin + this.position.x;
+  const newPosY = scaledX * thisSin + scaledY * thisCos + this.position.y;
 
-  this.rotation.copy(newRotation);
+  this.rotation.cos = newCos;
+  this.rotation.sin = newSin;
   this.scale.set(newScaleX, newScaleY);
   this.position.set(newPosX, newPosY);
   return this;
@@ -1637,12 +1753,13 @@ export class Transform2 implements Transform2Like {
 
  /**
   * Inverts this transform in place.
-  * @returns This for chaining
-  * @throws {RangeError} If scale.x or scale.y is near zero.
   *
   * @remarks
   * **Non-uniform scale warning:** See static {@link Transform2.inverse} for
   * details on SRT approximation.
+  *
+  * @returns This for chaining
+  * @throws {RangeError} If scale.x or scale.y is near zero
   *
   * @see {@link inverseSafe} - Sets to identity instead of throwing
   * @see {@link inverseUnchecked} - No validation, for hot paths
@@ -1678,6 +1795,7 @@ export class Transform2 implements Transform2Like {
   * Inverts this transform in place, setting to identity if non-invertible.
   * @returns This for chaining
   *
+  * @see {@link inverse} - Throws on non-invertible transform
   * @category Arithmetic
   * @since 0.7.0
   */
@@ -1693,10 +1811,11 @@ export class Transform2 implements Transform2Like {
 
  /**
   * Inverts this transform in place without validation.
-  * @returns This for chaining
   *
   * @remarks
-  * **⚠️ Precondition:** `scale.x ≠ 0` and `scale.y ≠ 0`.
+  * **Precondition:** `scale.x ≠ 0` and `scale.y ≠ 0`.
+  *
+  * @returns This for chaining
   *
   * @category Arithmetic
   * @since 0.7.0
@@ -1725,11 +1844,12 @@ export class Transform2 implements Transform2Like {
 
  /**
   * Exact equality (bit-identical).
-  * @param other - Transform to compare
-  * @returns True if exactly identical
   *
   * @remarks
   * Use {@link nearEquals} for comparing results of floating-point operations.
+  *
+  * @param other - Transform to compare
+  * @returns True if exactly identical
   *
   * @category Comparison
   * @since 0.7.0
@@ -1740,13 +1860,14 @@ export class Transform2 implements Transform2Like {
 
  /**
   * Approximate equality using relative tolerance for position and scale.
-  * @param other - Transform to compare
-  * @param epsilon - Tolerance. @defaultValue `EPSILON`
-  * @returns True if within epsilon
   *
   * @remarks
   * Position and scale use relative tolerance. Rotation uses absolute tolerance
   * since angles are bounded to a fixed range.
+  *
+  * @param other - Transform to compare
+  * @param epsilon - Tolerance. @defaultValue `EPSILON`
+  * @returns True if within epsilon
   *
   * @category Comparison
   * @since 0.7.0
@@ -1759,7 +1880,7 @@ export class Transform2 implements Transform2Like {
   * Returns true if all components are finite.
   * @returns True if no NaN or Infinity values
   *
-  * @category Validation
+  * @category Comparison
   * @since 0.7.0
   */
  isFinite(): boolean {
@@ -1770,7 +1891,7 @@ export class Transform2 implements Transform2Like {
   * Returns true if any component is NaN.
   * @returns True if any NaN value exists
   *
-  * @category Validation
+  * @category Comparison
   * @since 0.7.0
   */
  hasNaN(): boolean {
@@ -1781,7 +1902,7 @@ export class Transform2 implements Transform2Like {
   * Returns true if any component is infinite (±Infinity).
   * @returns True if any ±Infinity value exists
   *
-  * @category Validation
+  * @category Comparison
   * @since 0.7.0
   */
  hasInfinity(): boolean {
@@ -1818,14 +1939,14 @@ export class Transform2 implements Transform2Like {
  }
 
  /* ======================================================================== */
- /* Instance Getters (Derived)                                               */
+ /* Instance Accessors                                                       */
  /* ======================================================================== */
 
  /**
   * Returns the inverse without modifying this transform.
   * @returns New inverse transform
   *
-  * @category Computed
+  * @category Accessor
   * @since 0.7.0
   */
  public get inverted(): Transform2 {
@@ -1836,7 +1957,7 @@ export class Transform2 implements Transform2Like {
   * Returns the rotation as a unit Vector2 (direction).
   * @returns Direction vector
   *
-  * @category Computed
+  * @category Accessor
   * @since 0.7.0
   */
  public get direction(): Vector2 {
@@ -1848,7 +1969,7 @@ export class Transform2 implements Transform2Like {
   * Returns the rotation in degrees.
   * @returns Rotation in degrees
   *
-  * @category Computed
+  * @category Accessor
   * @since 0.7.0
   */
  public get rotationDegrees(): number {
@@ -1893,12 +2014,13 @@ export class Transform2 implements Transform2Like {
 
  /**
   * Smooth interpolation with another transform in place.
-  * @param other - Target transform
-  * @param t - Interpolation factor (clamped to [0, 1])
-  * @returns This for chaining
   *
   * @remarks
   * Uses Hermite smoothStep for ease-in-out effect.
+  *
+  * @param other - Target transform
+  * @param t - Interpolation factor (clamped to [0, 1])
+  * @returns This for chaining
   *
   * @category Interpolation
   * @since 0.7.0
@@ -1918,19 +2040,16 @@ export class Transform2 implements Transform2Like {
   *
   * @example
   * ```typescript
-  * const t = new Transform2();
-  * t.position.set(100, 50);
-  * t.rotation = Math.PI / 4;
-  * t.scale.set(2, 2);
+  * const t = Transform2.fromValues(100, 50, Math.PI / 4, 2, 2);
   * const obj = t.toObject();
   * // {
   * //   position: { x: 100, y: 50 },
-  * //   rotation: 0.785...,
+  * //   rotation: { cos: 0.707..., sin: 0.707... },
   * //   scale: { x: 2, y: 2 }
   * // }
   * ```
   *
-  * @category Serialization
+  * @category Conversion
   * @since 0.7.0
   */
  public toObject(): Transform2Like {
@@ -1954,7 +2073,7 @@ export class Transform2 implements Transform2Like {
   * // [100, 50, 0.785..., 2, 2]
   * ```
   *
-  * @category Serialization
+  * @category Conversion
   * @since 0.7.0
   */
  public toArray<T extends ArrayLike<number> & { [index: number]: number }>(
@@ -1991,7 +2110,7 @@ export class Transform2 implements Transform2Like {
   * // '{"position":{"x":100,"y":50},"rotation":0,"scale":{"x":1,"y":1}}'
   * ```
   *
-  * @category Serialization
+  * @category Conversion
   * @since 0.7.0
   */
  public toJSON(): Transform2Like {
@@ -2006,14 +2125,12 @@ export class Transform2 implements Transform2Like {
   *
   * @example
   * ```typescript
-  * const t = new Transform2();
-  * t.position.set(100, 50);
-  * t.rotation = Math.PI / 4;
+  * const t = Transform2.fromPose(100, 50, Math.PI / 4);
   * console.log(t.toString());
   * // "Transform2(pos: (100.0000, 50.0000), rot: 45.0000°, scale: (1.0000, 1.0000))"
   * ```
   *
-  * @category Serialization
+  * @category Conversion
   * @since 0.7.0
   */
  public toString(precision = 4): string {
@@ -2034,7 +2151,7 @@ export class Transform2 implements Transform2Like {
   * copy.identity(); // Original unchanged
   * ```
   *
-  * @category Serialization
+  * @category Conversion
   * @since 0.7.0
   */
  clone(): Transform2 {

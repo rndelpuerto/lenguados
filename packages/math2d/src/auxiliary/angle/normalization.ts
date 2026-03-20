@@ -1,7 +1,7 @@
 /**
  * @file auxiliary/angle/normalization.ts
  * @module @lenguados/math2d/auxiliary/angle
- * @description Angle normalization operations.
+ * @description Angle normalization operations
  */
 
 import { loop } from '../scalar/arithmetic';
@@ -10,8 +10,14 @@ import { PI, TAU } from '../scalar/constants';
 /**
  * Normalizes an angle to [-PI, PI) range.
  * Standard signed angle representation.
- * @param radians - Angle in radians.
- * @returns Normalized angle in [-PI, PI).
+ *
+ * @remarks
+ * For very large angles (>1e6 radians), floating-point precision loss in
+ * the modulo operation may produce results that deviate from the
+ * mathematically correct normalized value.
+ *
+ * @param radians - Angle in radians
+ * @returns Normalized angle in [-PI, PI)
  *
  * @example
  * ```typescript
@@ -21,11 +27,6 @@ import { PI, TAU } from '../scalar/constants';
  * normalizeRadians(3 * Math.PI);    // -Math.PI
  * normalizeRadians(2 * Math.PI);    // 0
  * ```
- *
- * @remarks
- * For very large angles (>1e6 radians), floating-point precision loss in
- * the modulo operation may produce results that deviate from the
- * mathematically correct normalized value.
  *
  * @category Normalization
  * @since 0.7.0
@@ -37,8 +38,8 @@ export function normalizeRadians(radians: number): number {
 /**
  * Normalizes an angle to [0, TAU) range.
  * Useful for progress, winding calculations.
- * @param radians - Angle in radians.
- * @returns Normalized angle in [0, TAU).
+ * @param radians - Angle in radians
+ * @returns Normalized angle in [0, TAU)
  *
  * @example
  * ```typescript
@@ -58,8 +59,8 @@ export function normalizeRadiansPositive(radians: number): number {
 
 /**
  * Normalizes degrees to [-180, 180).
- * @param degrees - Angle in degrees.
- * @returns Normalized angle in [-180, 180).
+ * @param degrees - Angle in degrees
+ * @returns Normalized angle in [-180, 180)
  *
  * @example
  * ```typescript
@@ -79,8 +80,8 @@ export function normalizeDegrees(degrees: number): number {
 
 /**
  * Normalizes degrees to [0, 360).
- * @param degrees - Angle in degrees.
- * @returns Normalized angle in [0, 360).
+ * @param degrees - Angle in degrees
+ * @returns Normalized angle in [0, 360)
  *
  * @example
  * ```typescript

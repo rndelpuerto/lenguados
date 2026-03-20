@@ -2,7 +2,7 @@
 
 > **normalizeRadians**(`radians`): `number`
 
-Defined in: [src/auxiliary/angle/normalization.ts:28](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/auxiliary/angle/normalization.ts#L28)
+Defined in: [src/auxiliary/angle/normalization.ts:34](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/angle/normalization.ts#L34)
 
 Normalizes an angle to [-PI, PI) range.
 Standard signed angle representation.
@@ -13,13 +13,19 @@ Standard signed angle representation.
 
 `number`
 
-Angle in radians.
+Angle in radians
 
 ## Returns
 
 `number`
 
-Normalized angle in [-PI, PI).
+Normalized angle in [-PI, PI)
+
+## Remarks
+
+For very large angles (>1e6 radians), floating-point precision loss in
+the modulo operation may produce results that deviate from the
+mathematically correct normalized value.
 
 ## Example
 

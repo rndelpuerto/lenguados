@@ -2,7 +2,7 @@
 
 > **angleDifference**(`from`, `to`): `number`
 
-Defined in: [src/auxiliary/angle/operations.ts:118](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/auxiliary/angle/operations.ts#L118)
+Defined in: [src/auxiliary/angle/operations.ts:115](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/angle/operations.ts#L115)
 
 Signed shortest-arc delta in radians: rotate from `from` to `to`.
 Result is in [-PI, PI).
@@ -13,19 +13,25 @@ Result is in [-PI, PI).
 
 `number`
 
-Starting angle in radians.
+Starting angle in radians
 
 ### to
 
 `number`
 
-Target angle in radians.
+Target angle in radians
 
 ## Returns
 
 `number`
 
-Signed angle difference in [-PI, PI).
+Signed angle difference in [-PI, PI)
+
+## Remarks
+
+Anti-symmetry breaks at the PI boundary due to the half-open [-PI, PI) range:
+`angleDifference(0, PI)` and `angleDifference(PI, 0)` both return `-PI`
+(not `+PI` and `-PI` respectively). This is inherent to the convention.
 
 ## Example
 

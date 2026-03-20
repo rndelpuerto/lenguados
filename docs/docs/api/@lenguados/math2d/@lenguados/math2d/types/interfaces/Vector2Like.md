@@ -1,6 +1,6 @@
 # Interface: Vector2Like
 
-Defined in: [src/types/index.ts:32](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/types/index.ts#L32)
+Defined in: [src/types/index.ts:32](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/types/index.ts#L32)
 
 Mutable interface for objects with x,y components.
 
@@ -14,7 +14,7 @@ Mutable interface for objects with x,y components.
 
 > **x**: `number`
 
-Defined in: [src/types/index.ts:33](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/types/index.ts#L33)
+Defined in: [src/types/index.ts:33](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/types/index.ts#L33)
 
 ---
 
@@ -22,4 +22,4 @@ Defined in: [src/types/index.ts:33](https://github.com/rndelpuerto/lenguados/blo
 
 > **y**: `number`
 
-Defined in: [src/types/index.ts:34](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/types/index.ts#L34)
+Defined in: [src/types/index.ts:34](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/types/index.ts#L34)

@@ -1,6 +1,6 @@
 # Interface: IntervalLike
 
-Defined in: [src/types/index.ts:217](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/types/index.ts#L217)
+Defined in: [src/types/index.ts:199](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/types/index.ts#L199)
 
 Mutable interface for intervals.
 
@@ -14,7 +14,7 @@ Mutable interface for intervals.
 
 > **max**: `number`
 
-Defined in: [src/types/index.ts:219](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/types/index.ts#L219)
+Defined in: [src/types/index.ts:201](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/types/index.ts#L201)
 
 ---
 
@@ -22,4 +22,4 @@ Defined in: [src/types/index.ts:219](https://github.com/rndelpuerto/lenguados/bl
 
 > **min**: `number`
 
-Defined in: [src/types/index.ts:218](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/types/index.ts#L218)
+Defined in: [src/types/index.ts:200](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/types/index.ts#L200)

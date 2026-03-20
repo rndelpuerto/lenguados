@@ -2,7 +2,7 @@
 
 > **angleBisector**(`a`, `b`): `number`
 
-Defined in: [src/auxiliary/angle/operations.ts:182](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/auxiliary/angle/operations.ts#L182)
+Defined in: [src/auxiliary/angle/operations.ts:179](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/angle/operations.ts#L179)
 
 Calculates angle bisector.
 Returns angle halfway between a and b (shortest path).
@@ -13,19 +13,19 @@ Returns angle halfway between a and b (shortest path).
 
 `number`
 
-First angle in radians.
+First angle in radians
 
 ### b
 
 `number`
 
-Second angle in radians.
+Second angle in radians
 
 ## Returns
 
 `number`
 
-Bisector angle.
+Bisector angle
 
 ## Example
 

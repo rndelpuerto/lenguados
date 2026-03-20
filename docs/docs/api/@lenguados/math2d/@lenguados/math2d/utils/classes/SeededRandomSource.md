@@ -1,13 +1,22 @@
 # Class: SeededRandomSource
 
-Defined in: [src/utils/random-source.ts:119](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/utils/random-source.ts#L119)
+Defined in: [src/utils/random-source.ts:213](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/utils/random-source.ts#L213)
 
-Deterministic random source using a linear congruential generator (LCG).
+Deterministic random source using xoshiro128++ algorithm.
 
 ## Remarks
 
-Based on Park and Miller's "minimal standard" generator and provides
-deterministic pseudo-random numbers when seeded.
+Uses xoshiro128++ (Blackman & Vigna, 2021) with 4 × uint32 state for
+high-quality pseudo-random numbers. State is initialized via SplitMix32
+seed expansion. Provides unbiased integer generation via rejection sampling.
+
+## Example
+
+```typescript
+const rng = new SeededRandomSource(12345);
+const a = rng.next(); // deterministic value in [0, 1)
+const b = rng.nextInt(100); // deterministic integer in [0, 100)
+```
 
 ## Since
 
@@ -23,7 +32,7 @@ deterministic pseudo-random numbers when seeded.
 
 > **new SeededRandomSource**(`seed?`): `SeededRandomSource`
 
-Defined in: [src/utils/random-source.ts:132](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/utils/random-source.ts#L132)
+Defined in: [src/utils/random-source.ts:221](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/utils/random-source.ts#L221)
 
 Creates a new seeded random source.
 
@@ -33,27 +42,27 @@ Creates a new seeded random source.
 
 `number`
 
-Initial seed value. Defaults to the current time.
+Initial seed value. Defaults to sub-millisecond timestamp
 
 #### Returns
 
 `SeededRandomSource`
 
-## Utility
+## Accessor
 
 ### getState()
 
-> **getState**(): `number`
+> **getState**(): \[`number`, `number`, `number`, `number`\]
 
-Defined in: [src/utils/random-source.ts:199](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/utils/random-source.ts#L199)
+Defined in: [src/utils/random-source.ts:304](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/utils/random-source.ts#L304)
 
-Returns the current internal state.
+Returns the current internal state as a 4-element uint32 array.
 
 #### Returns
 
-`number`
+\[`number`, `number`, `number`, `number`\]
 
-Current state value.
+Copy of the current `[s0, s1, s2, s3]` state
 
 #### Remarks
 
@@ -69,7 +78,7 @@ Useful for saving and restoring random generator state.
 
 > **next**(): `number`
 
-Defined in: [src/utils/random-source.ts:149](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/utils/random-source.ts#L149)
+Defined in: [src/utils/random-source.ts:245](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/utils/random-source.ts#L245)
 
 Generates the next random number.
 
@@ -77,11 +86,11 @@ Generates the next random number.
 
 `number`
 
-A random number in [0, 1).
+A random number in [0, 1)
 
 #### Remarks
 
-Uses Park and Miller's algorithm with Schrage's method to avoid overflow.
+Uses xoshiro128++ algorithm with 32-bit state for deterministic generation.
 
 #### Since
 
@@ -97,9 +106,9 @@ Uses Park and Miller's algorithm with Schrage's method to avoid overflow.
 
 > **nextInt**(`max`): `number`
 
-Defined in: [src/utils/random-source.ts:171](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/utils/random-source.ts#L171)
+Defined in: [src/utils/random-source.ts:264](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/utils/random-source.ts#L264)
 
-Generates a random integer.
+Generates a random integer in [0, max).
 
 #### Parameters
 
@@ -107,13 +116,21 @@ Generates a random integer.
 
 `number`
 
-Exclusive upper bound.
+Exclusive upper bound
 
 #### Returns
 
 `number`
 
-A random integer in [0, max).
+A random integer in [0, max)
+
+#### Remarks
+
+Uses rejection sampling with modulo debiasing to eliminate bias.
+
+#### Throws
+
+If max is not a positive integer
 
 #### Since
 
@@ -123,15 +140,45 @@ A random integer in [0, max).
 
 [`RandomSource`](../interfaces/RandomSource.md).[`nextInt`](../interfaces/RandomSource.md#nextint)
 
+## Configuration
+
+### restoreState()
+
+> **restoreState**(`state`): `void`
+
+Defined in: [src/utils/random-source.ts:318](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/utils/random-source.ts#L318)
+
+Restores a previously saved state.
+
+#### Parameters
+
+##### state
+
+\[`number`, `number`, `number`, `number`\]
+
+4-element uint32 state array from [getState](#getstate)
+
+#### Returns
+
+`void`
+
+#### Throws
+
+If state is not a 4-element array or is all zeros
+
+#### Since
+
+0.7.0
+
 ---
 
 ### seed()
 
 > **seed**(`seed`): `void`
 
-Defined in: [src/utils/random-source.ts:183](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/utils/random-source.ts#L183)
+Defined in: [src/utils/random-source.ts:289](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/utils/random-source.ts#L289)
 
-Re-seeds the generator.
+Re-seeds the generator using SplitMix32 expansion.
 
 #### Parameters
 
@@ -139,7 +186,7 @@ Re-seeds the generator.
 
 `number`
 
-New seed value.
+New seed value
 
 #### Returns
 
@@ -152,37 +199,3 @@ New seed value.
 #### Implementation of
 
 [`RandomSource`](../interfaces/RandomSource.md).[`seed`](../interfaces/RandomSource.md#seed)
-
----
-
-### setState()
-
-> **setState**(`state`): `void`
-
-Defined in: [src/utils/random-source.ts:216](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/utils/random-source.ts#L216)
-
-Sets the internal state directly.
-
-#### Parameters
-
-##### state
-
-`number`
-
-State value to set.
-
-#### Returns
-
-`void`
-
-#### Remarks
-
-Useful for restoring a previously saved state.
-
-#### Throws
-
-If `state` is outside [1, M - 1].
-
-#### Since
-
-0.7.0

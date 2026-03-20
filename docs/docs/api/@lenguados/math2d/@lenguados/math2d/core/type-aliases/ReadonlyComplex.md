@@ -2,7 +2,7 @@
 
 > **ReadonlyComplex** = `Readonly`\<[`Complex`](../classes/Complex.md)\>
 
-Defined in: [src/core/complex.ts:75](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/complex.ts#L75)
+Defined in: [src/core/complex.ts:79](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/complex.ts#L79)
 
 Readonly view of a [Complex](../classes/Complex.md) instance.
 

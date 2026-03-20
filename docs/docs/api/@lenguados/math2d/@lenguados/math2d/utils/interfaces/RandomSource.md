@@ -1,6 +1,6 @@
 # Interface: RandomSource
 
-Defined in: [src/utils/random-source.ts:31](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/utils/random-source.ts#L31)
+Defined in: [src/utils/random-source.ts:31](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/utils/random-source.ts#L31)
 
 Defines a uniform random number source with optional seeding.
 
@@ -12,13 +12,13 @@ Implementations must provide uniform distribution in [0, 1).
 
 0.7.0
 
-## Utility
+## Accessor
 
 ### next()
 
 > **next**(): `number`
 
-Defined in: [src/utils/random-source.ts:40](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/utils/random-source.ts#L40)
+Defined in: [src/utils/random-source.ts:40](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/utils/random-source.ts#L40)
 
 Generates a random number in the range [0, 1).
 
@@ -26,7 +26,7 @@ Generates a random number in the range [0, 1).
 
 `number`
 
-A random number in [0, 1).
+A random number in [0, 1)
 
 #### Since
 
@@ -38,7 +38,7 @@ A random number in [0, 1).
 
 > **nextInt**(`max`): `number`
 
-Defined in: [src/utils/random-source.ts:51](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/utils/random-source.ts#L51)
+Defined in: [src/utils/random-source.ts:51](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/utils/random-source.ts#L51)
 
 Generates a random integer in the range [0, max).
 
@@ -48,13 +48,13 @@ Generates a random integer in the range [0, max).
 
 `number`
 
-Exclusive upper bound (must be positive).
+Exclusive upper bound (must be positive)
 
 #### Returns
 
 `number`
 
-A random integer in [0, max).
+A random integer in [0, max)
 
 #### Since
 
@@ -66,7 +66,7 @@ A random integer in [0, max).
 
 > `optional` **seed**(`seed`): `void`
 
-Defined in: [src/utils/random-source.ts:64](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/utils/random-source.ts#L64)
+Defined in: [src/utils/random-source.ts:64](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/utils/random-source.ts#L64)
 
 Seeds the random number generator when supported.
 
@@ -76,7 +76,7 @@ Seeds the random number generator when supported.
 
 `number`
 
-Integer seed value.
+Integer seed value
 
 #### Returns
 

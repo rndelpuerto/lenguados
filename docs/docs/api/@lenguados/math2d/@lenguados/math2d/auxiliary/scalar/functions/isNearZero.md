@@ -2,7 +2,7 @@
 
 > **isNearZero**(`value`, `epsilon`): `boolean`
 
-Defined in: [src/auxiliary/scalar/comparison.ts:50](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/auxiliary/scalar/comparison.ts#L50)
+Defined in: [src/auxiliary/scalar/comparison.ts:67](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/scalar/comparison.ts#L67)
 
 Tests if value is near zero.
 
@@ -12,19 +12,24 @@ Tests if value is near zero.
 
 `number`
 
-Value to test.
+Value to test
 
 ### epsilon
 
 `number` = `EPSILON`
 
-Tolerance (default: EPSILON).
+Tolerance (default: EPSILON)
 
 ## Returns
 
 `boolean`
 
-True if |value| <= epsilon.
+True if |value| <= epsilon
+
+## Remarks
+
+Default tolerance is [EPSILON](../variables/EPSILON.md) (1e-10). Used by core type operations
+(normalization, inverse, projection) to detect geometrically degenerate inputs.
 
 ## Example
 

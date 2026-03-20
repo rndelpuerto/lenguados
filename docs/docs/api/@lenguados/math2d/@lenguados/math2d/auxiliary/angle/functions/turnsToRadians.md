@@ -2,7 +2,7 @@
 
 > **turnsToRadians**(`turns`): `number`
 
-Defined in: [src/auxiliary/angle/conversion.ts:63](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/auxiliary/angle/conversion.ts#L63)
+Defined in: [src/auxiliary/angle/conversion.ts:63](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/angle/conversion.ts#L63)
 
 Converts turns to radians (1 turn = TAU radians = 2π radians).
 
@@ -12,13 +12,13 @@ Converts turns to radians (1 turn = TAU radians = 2π radians).
 
 `number`
 
-Number of turns.
+Number of turns
 
 ## Returns
 
 `number`
 
-Angle in radians.
+Angle in radians
 
 ## Example
 

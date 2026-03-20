@@ -2,7 +2,7 @@
 
 > **sanitizeNumber**(`value`, `fallback`, `min`, `max`): `number`
 
-Defined in: [src/auxiliary/numeric/safety.ts:340](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/auxiliary/numeric/safety.ts#L340)
+Defined in: [src/auxiliary/numeric/safety.ts:401](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/numeric/safety.ts#L401)
 
 Validates and cleans numeric value.
 
@@ -12,31 +12,31 @@ Validates and cleans numeric value.
 
 `number`
 
-Value to sanitize.
+Value to sanitize
 
 ### fallback
 
 `number` = `0`
 
-Value to use if input is invalid (default: 0).
+Value to use if input is invalid (default: 0)
 
 ### min
 
 `number` = `-Number.MAX_VALUE`
 
-Minimum allowed value (default: -Number.MAX_VALUE).
+Minimum allowed value (default: -Number.MAX_VALUE)
 
 ### max
 
 `number` = `Number.MAX_VALUE`
 
-Maximum allowed value (default: Number.MAX_VALUE).
+Maximum allowed value (default: Number.MAX_VALUE)
 
 ## Returns
 
 `number`
 
-Clean value or fallback.
+Clean value or fallback
 
 ## Remarks
 

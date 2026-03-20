@@ -2,7 +2,7 @@
 
 > **randomRotation2**(`out`, `source`): [`Rotation2`](../../core/classes/Rotation2.md)
 
-Defined in: [src/utils/random.ts:226](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/utils/random.ts#L226)
+Defined in: [src/utils/random.ts:226](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/utils/random.ts#L226)
 
 Generates a random 2D rotation.
 
@@ -12,19 +12,19 @@ Generates a random 2D rotation.
 
 [`Rotation2`](../../core/classes/Rotation2.md) = `...`
 
-Optional output rotation to avoid allocation. Defaults to `new Rotation2()`.
+Optional output rotation to avoid allocation. Defaults to `new Rotation2()`
 
 ### source
 
-[`RandomSource`](../interfaces/RandomSource.md) = `defaultRandomSource`
+[`RandomSource`](../interfaces/RandomSource.md) = `...`
 
-Random source to sample from. Defaults to `defaultRandomSource`.
+Random source to sample from. Defaults to `defaultRandomSource`
 
 ## Returns
 
 [`Rotation2`](../../core/classes/Rotation2.md)
 
-The `out` rotation set to a random angle.
+The `out` rotation set to a random angle
 
 ## Remarks
 

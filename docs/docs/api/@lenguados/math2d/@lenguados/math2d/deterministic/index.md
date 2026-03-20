@@ -6,7 +6,7 @@ deterministic/deterministic-kernels.ts
 
 ## Description
 
-Deterministic mathematical kernels for L0 cross-platform consistency.
+Deterministic mathematical kernels for L0 cross-platform consistency
 
 ## Remarks
 
@@ -32,24 +32,31 @@ the Remez algorithm for minimax approximation.
 
 ## See
 
-https://www.netlib.org/fdlibm/
-
-## Since
-
-0.8.0
+[https://www.netlib.org/fdlibm/](https://www.netlib.org/fdlibm/) - FreeBSD fdlibm reference implementation
 
 ## Arithmetic
 
+- [acos](functions/acos.md)
+- [acosSafe](functions/acosSafe.md)
+- [asin](functions/asin.md)
+- [asinSafe](functions/asinSafe.md)
+- [atan](functions/atan.md)
+- [atan2](functions/atan2.md)
+- [cos](functions/cos.md)
 - [exp](functions/exp.md)
 - [expSafe](functions/expSafe.md)
 - [hypot](functions/hypot.md)
 - [log](functions/log.md)
-- [logSafe](functions/logSafe.md)
 - [pow](functions/pow.md)
-- [sqrt](functions/sqrt.md)
-- [sqrtSafe](functions/sqrtSafe.md)
+- [sin](functions/sin.md)
+- [sinCos](functions/sinCos.md)
+- [tan](functions/tan.md)
 
-## Deterministic
+## Configuration
+
+- [config](variables/config.md)
+
+## Helpers
 
 - [DeterministicKernels](variables/DeterministicKernels.md)
 
@@ -59,15 +66,8 @@ https://www.netlib.org/fdlibm/
 
 Re-exports [SinCos](../auxiliary/angle/interfaces/SinCos.md)
 
-## Trigonometry
+---
 
-- [acos](functions/acos.md)
-- [acosSafe](functions/acosSafe.md)
-- [asin](functions/asin.md)
-- [asinSafe](functions/asinSafe.md)
-- [atan](functions/atan.md)
-- [atan2](functions/atan2.md)
-- [cos](functions/cos.md)
-- [sin](functions/sin.md)
-- [sinCos](functions/sinCos.md)
-- [tan](functions/tan.md)
+### sqrtSafe
+
+Re-exports [sqrtSafe](../auxiliary/numeric/functions/sqrtSafe.md)

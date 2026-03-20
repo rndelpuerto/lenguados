@@ -6,7 +6,7 @@ auxiliary/angle/unwrapping.ts
 
 ## Description
 
-Angle unwrapping for continuous sequences.
+Angle unwrapping for continuous sequences
 
 ## Normalization
 

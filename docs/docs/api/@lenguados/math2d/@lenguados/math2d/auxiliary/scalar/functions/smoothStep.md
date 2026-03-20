@@ -2,7 +2,7 @@
 
 > **smoothStep**(`edge0`, `edge1`, `x`): `number`
 
-Defined in: [src/auxiliary/scalar/interpolation.ts:153](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/auxiliary/scalar/interpolation.ts#L153)
+Defined in: [src/auxiliary/scalar/interpolation.ts:169](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/scalar/interpolation.ts#L169)
 
 Cubic Hermite interpolation (smooth step).
 Maps [edge0, edge1] to [0, 1] with smooth curve.
@@ -13,25 +13,25 @@ Maps [edge0, edge1] to [0, 1] with smooth curve.
 
 `number`
 
-Lower edge.
+Lower edge
 
 ### edge1
 
 `number`
 
-Upper edge.
+Upper edge
 
 ### x
 
 `number`
 
-Input value.
+Input value
 
 ## Returns
 
 `number`
 
-Result in [0, 1].
+Result in [0, 1]
 
 ## Remarks
 

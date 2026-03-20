@@ -6,7 +6,7 @@ core/complex.ts
 
 ## Description
 
-Deterministic complex number implementation for advanced mathematics.
+Deterministic complex number implementation for advanced mathematics
 
 ## Remarks
 
@@ -45,14 +45,17 @@ const c2 = r2.toComplex();
 
 Rotation2 for 2D rotations in physics simulations
 
-## Core
-
-- [Complex](classes/Complex.md)
-
 ## Helpers
 
 - [freezeComplex](functions/freezeComplex.md)
 
+## Other
+
+### isComplexLike
+
+Re-exports [isComplexLike](../types/functions/isComplexLike.md)
+
 ## Types
 
+- [Complex](classes/Complex.md)
 - [ReadonlyComplex](type-aliases/ReadonlyComplex.md)

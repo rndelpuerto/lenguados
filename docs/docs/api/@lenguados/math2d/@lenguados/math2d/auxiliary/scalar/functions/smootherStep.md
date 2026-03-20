@@ -2,7 +2,7 @@
 
 > **smootherStep**(`edge0`, `edge1`, `x`): `number`
 
-Defined in: [src/auxiliary/scalar/interpolation.ts:184](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/auxiliary/scalar/interpolation.ts#L184)
+Defined in: [src/auxiliary/scalar/interpolation.ts:201](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/scalar/interpolation.ts#L201)
 
 Quintic Hermite interpolation (smoother step).
 Even smoother than smoothStep.
@@ -13,25 +13,25 @@ Even smoother than smoothStep.
 
 `number`
 
-Lower edge.
+Lower edge
 
 ### edge1
 
 `number`
 
-Upper edge.
+Upper edge
 
 ### x
 
 `number`
 
-Input value.
+Input value
 
 ## Returns
 
 `number`
 
-Result in [0, 1].
+Result in [0, 1]
 
 ## Remarks
 

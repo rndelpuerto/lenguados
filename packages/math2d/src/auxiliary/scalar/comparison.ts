@@ -1,17 +1,13 @@
 /**
  * @file auxiliary/scalar/comparison.ts
  * @module @lenguados/math2d/auxiliary/scalar
- * @description Scalar comparison operations with tolerance.
+ * @description Scalar comparison operations with tolerance
  */
 
 import { EPSILON } from './constants';
 
 /**
  * Tests if two values are approximately equal.
- * @param a - First value.
- * @param b - Second value.
- * @param epsilon - Tolerance (default: EPSILON).
- * @returns True if |a - b| <= epsilon.
  *
  * @remarks
  * Default tolerance is {@link EPSILON} (1e-10). This is an absolute comparison —
@@ -20,6 +16,11 @@ import { EPSILON } from './constants';
  * Note: `Math.abs(a - b)` overflows to `Infinity` when `a` and `b` have
  * opposite signs and large magnitudes (e.g., `1e308` and `-1e308`), but
  * this correctly returns `false` since `Infinity > epsilon`.
+ *
+ * @param a - First value
+ * @param b - Second value
+ * @param epsilon - Tolerance (default: EPSILON)
+ * @returns True if |a - b| <= epsilon
  *
  * @example
  * ```typescript
@@ -44,13 +45,14 @@ export function nearEquals(a: number, b: number, epsilon: number = EPSILON): boo
 
 /**
  * Tests if value is near zero.
- * @param value - Value to test.
- * @param epsilon - Tolerance (default: EPSILON).
- * @returns True if |value| <= epsilon.
  *
  * @remarks
  * Default tolerance is {@link EPSILON} (1e-10). Used by core type operations
  * (normalization, inverse, projection) to detect geometrically degenerate inputs.
+ *
+ * @param value - Value to test
+ * @param epsilon - Tolerance (default: EPSILON)
+ * @returns True if |value| <= epsilon
  *
  * @example
  * ```typescript
@@ -71,13 +73,14 @@ export function isNearZero(value: number, epsilon: number = EPSILON): boolean {
 
 /**
  * Tests if value is near one.
- * @param value - Value to test.
- * @param epsilon - Tolerance (default: EPSILON).
- * @returns True if |value - 1| <= epsilon.
  *
  * @remarks
  * Default tolerance is {@link EPSILON} (1e-10). Commonly used to verify
  * normalization constraints (e.g., unit vectors, rotation magnitudes).
+ *
+ * @param value - Value to test
+ * @param epsilon - Tolerance (default: EPSILON)
+ * @returns True if |value - 1| <= epsilon
  *
  * @example
  * ```typescript
@@ -99,15 +102,18 @@ export function isNearOne(value: number, epsilon: number = EPSILON): boolean {
 /**
  * Tests relative equality: |a-b| <= epsilon * max(|a|, |b|, 1).
  * Better for large numbers.
- * @param a - First value.
- * @param b - Second value.
- * @param relativeEpsilon - Relative tolerance fraction.
- * @returns True if within the scaled tolerance.
  *
  * @remarks
  * Default tolerance is {@link EPSILON} (1e-10), scaled by max(|a|, |b|, 1).
  * Unlike {@link nearEquals} which uses absolute tolerance, this scales with
  * magnitude — better for comparing values across different orders of magnitude.
+ *
+ * @param a - First value
+ * @param b - Second value
+ * @param relativeEpsilon - Relative tolerance fraction
+ * @returns True if within the scaled tolerance
+ *
+ * @throws {RangeError} If relativeEpsilon is negative
  *
  * @example
  * ```typescript
@@ -116,8 +122,6 @@ export function isNearOne(value: number, epsilon: number = EPSILON): boolean {
  * relativeEquals(1000, 1010, 0.01);        // true
  * relativeEquals(0.001, 0.002, 0.01);      // false (100% difference)
  * ```
- *
- * @throws {RangeError} If relativeEpsilon is negative.
  *
  * @category Comparison
  * @since 0.7.0
@@ -143,10 +147,10 @@ export function relativeEquals(a: number, b: number, relativeEpsilon: number = E
 /**
  * Tests if a < b with epsilon tolerance.
  * Returns true if a < b - epsilon.
- * @param a - First value.
- * @param b - Second value.
- * @param epsilon - Tolerance (default: EPSILON).
- * @returns True if a is less than b beyond tolerance.
+ * @param a - First value
+ * @param b - Second value
+ * @param epsilon - Tolerance (default: EPSILON)
+ * @returns True if a is less than b beyond tolerance
  *
  * @example
  * ```typescript
@@ -168,10 +172,10 @@ export function lessThan(a: number, b: number, epsilon: number = EPSILON): boole
 /**
  * Tests if a > b with epsilon tolerance.
  * Returns true if a > b + epsilon.
- * @param a - First value.
- * @param b - Second value.
- * @param epsilon - Tolerance (default: EPSILON).
- * @returns True if a is greater than b beyond tolerance.
+ * @param a - First value
+ * @param b - Second value
+ * @param epsilon - Tolerance (default: EPSILON)
+ * @returns True if a is greater than b beyond tolerance
  *
  * @example
  * ```typescript
@@ -192,16 +196,17 @@ export function greaterThan(a: number, b: number, epsilon: number = EPSILON): bo
 
 /**
  * Tests if value is in range [min, max] with epsilon.
- * @param value - Value to test.
- * @param min - Lower bound (inclusive).
- * @param max - Upper bound (inclusive).
- * @param epsilon - Tolerance (default: EPSILON).
- * @returns True if value is within range with tolerance.
  *
  * @remarks
  * Uses epsilon tolerance at both bounds:
  * - Lower bound: value >= min - epsilon
  * - Upper bound: value <= max + epsilon
+ *
+ * @param value - Value to test
+ * @param min - Lower bound (inclusive)
+ * @param max - Upper bound (inclusive)
+ * @param epsilon - Tolerance (default: EPSILON)
+ * @returns True if value is within range with tolerance
  *
  * @example
  * ```typescript
@@ -231,14 +236,14 @@ export function inRange(
 /**
  * Compares two values with tolerance.
  *
- * @param a - First value.
- * @param b - Second value.
- * @param epsilon - Tolerance (default: EPSILON).
- * @returns -1 if a < b (beyond epsilon), 0 if approximately equal, 1 if a > b (beyond epsilon).
- *
  * @remarks
  * This provides a three-way comparison suitable for sorting or ordering.
  * Values within epsilon of each other are considered equal (returns 0).
+ *
+ * @param a - First value
+ * @param b - Second value
+ * @param epsilon - Tolerance (default: EPSILON)
+ * @returns -1 if a < b (beyond epsilon), 0 if approximately equal, 1 if a > b (beyond epsilon)
  *
  * @example
  * ```typescript

@@ -2,30 +2,13 @@
 
 > `const` **Constants**: `object`
 
-Defined in: [src/auxiliary/scalar/constants.ts:292](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/auxiliary/scalar/constants.ts#L292)
+Defined in: [src/auxiliary/scalar/constants.ts:282](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/scalar/constants.ts#L282)
 
 Unified constants object for convenient access.
 
 ## Type Declaration
 
 ## Angular
-
-#### ANGLE_EPSILON
-
-> **ANGLE_EPSILON**: `1e-12`
-
-Angle epsilon for near-zero angle comparisons.
-
-##### Remarks
-
-Used in deterministic kernels for detecting angles near zero
-where special handling may be needed.
-
-##### Constant
-
-##### Since
-
-0.7.0
 
 #### HALF_PI
 
@@ -174,22 +157,6 @@ Base of natural logarithms. Fundamental in calculus and exponential growth.
 
 0.7.0
 
-#### GOLDEN_RATIO
-
-> **GOLDEN_RATIO**: `number`
-
-Golden Ratio φ ≈ 1.618033988749895.
-
-##### Remarks
-
-Used in aesthetic proportions, Fibonacci sequences, and optimal spacing algorithms.
-
-##### Constant
-
-##### Since
-
-0.7.0
-
 #### GOLDEN_RATIO_CONJUGATE
 
 > **GOLDEN_RATIO_CONJUGATE**: `number`
@@ -281,6 +248,12 @@ Numbers smaller than this (but not zero) are denormal/subnormal.
 ##### Since
 
 0.7.0
+
+## Other
+
+#### GOLDEN_RATIO
+
+> **GOLDEN_RATIO**: `number`
 
 ## Tolerance
 

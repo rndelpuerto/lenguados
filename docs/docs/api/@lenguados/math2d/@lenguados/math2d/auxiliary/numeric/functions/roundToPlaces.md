@@ -2,7 +2,7 @@
 
 > **roundToPlaces**(`value`, `places`): `number`
 
-Defined in: [src/auxiliary/numeric/rounding.ts:63](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/auxiliary/numeric/rounding.ts#L63)
+Defined in: [src/auxiliary/numeric/rounding.ts:64](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/numeric/rounding.ts#L64)
 
 Rounds to specific decimal places.
 
@@ -12,19 +12,19 @@ Rounds to specific decimal places.
 
 `number`
 
-Value to round.
+Value to round
 
 ### places
 
 `number`
 
-Number of decimal places.
+Number of decimal places
 
 ## Returns
 
 `number`
 
-Rounded value.
+Rounded value
 
 ## Example
 

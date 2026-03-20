@@ -1,7 +1,12 @@
 /**
  * @file core/matrix2.ts
  * @module @lenguados/math2d/core
- * @description Deterministic, allocation-aware 2×2 matrix implementation.
+ * @description Deterministic, allocation-aware 2×2 matrix implementation
+ *
+ * @remarks
+ * Provides the {@link Matrix2} class for column-major 2×2 matrix operations including
+ * multiplication, inversion, decomposition, and vector transformation. All operations
+ * are deterministic for cross-platform reproducibility.
  */
 
 import { sinCos } from '../auxiliary/angle/operations';
@@ -52,12 +57,12 @@ export type ReadonlyMatrix2 = Readonly<Matrix2>;
 /**
  * Permanently freezes a {@link Matrix2} instance so it can no longer be mutated.
  *
- * @param matrix - The Matrix2 object to freeze.
- * @returns The same instance, now typed as ReadonlyMatrix2.
- *
  * @remarks
  * - The returned object keeps its original reference; no new memory is allocated.
  * - In strict mode any subsequent attempt to modify components throws a TypeError.
+ *
+ * @param matrix - The Matrix2 object to freeze
+ * @returns The same instance, now typed as ReadonlyMatrix2
  *
  * @example
  * ```typescript
@@ -87,15 +92,22 @@ export { isMatrix2Like } from '../types';
  * Column-major 2×2 matrix suitable for WebGL and physics calculations.
  *
  * @remarks
- * **Data Layout**: Stores elements in **Column-Major Memory Layout** (standard for WebGL and Three.js).
- * Example memory sequence:
- * - Column 0: `m00`, `m01`
- * - Column 1: `m10`, `m11`
+ * - **Design:** 2×2 column-major matrix stored as `(m00, m01, m10, m11)`. Instance methods
+ *   are mutable and chainable; static methods are pure with alloc-free overloads via `out`.
+ * - **Numerics:** Deterministic for cross-platform reproducibility. Determinant uses
+ *   exact floating-point arithmetic.
+ * - **Safety:** "Safe" variants return identity/zero matrix instead of throwing on
+ *   singular matrices.
  *
- * **API Design**:
- * - Instance methods mutate `this` for fluent chaining.
- * - Static helpers are pure and provide optional `out` parameters to eliminate allocations.
- * - Trigonometric operations rely on deterministic kernels.
+ * @example
+ * ```typescript
+ * // Static (pure, allocation-controlled)
+ * const product = Matrix2.multiply(a, b);
+ * const inv = Matrix2.inverse(m);
+ *
+ * // Instance (mutable, chainable)
+ * matrix.multiply(other).transpose();
+ * ```
  *
  * @category Core
  * @since 0.7.0
@@ -113,7 +125,11 @@ export class Matrix2 implements Matrix2Like {
  /* Static Constants (Immutable)                                             */
  /* ======================================================================== */
 
- /** Identity matrix (no transformation). */
+ /**
+  * Identity matrix (no transformation).
+  * @category Constant
+  * @since 0.7.0
+  */
  public static readonly IDENTITY = freezeMatrix2(new Matrix2(1, 0, 0, 1));
 
  /**
@@ -123,39 +139,83 @@ export class Matrix2 implements Matrix2Like {
   */
  public static readonly ELEMENT_COUNT = 4;
 
- /** Zero matrix. */
+ /**
+  * Zero matrix.
+  * @category Constant
+  * @since 0.7.0
+  */
  public static readonly ZERO = freezeMatrix2(new Matrix2(0, 0, 0, 0));
 
- /** All-ones matrix. */
+ /**
+  * All-ones matrix.
+  * @category Constant
+  * @since 0.7.0
+  */
  public static readonly ONE = freezeMatrix2(new Matrix2(1, 1, 1, 1));
 
- /** Matrix with all elements set to EPSILON (useful for tolerance comparisons). */
+ /**
+  * Matrix with all elements set to EPSILON (useful for tolerance comparisons).
+  * @category Constant
+  * @since 0.7.0
+  */
  public static readonly EPSILON_MATRIX = freezeMatrix2(
   new Matrix2(EPSILON, EPSILON, EPSILON, EPSILON),
  );
 
- /** 90° counter-clockwise rotation. */
+ /**
+  * 90° counter-clockwise rotation.
+  * @category Constant
+  * @since 0.7.0
+  */
  public static readonly ROTATE_90 = freezeMatrix2(new Matrix2(0, 1, -1, 0));
 
- /** 180° rotation (same as FLIP_XY). */
+ /**
+  * 180° rotation (same as FLIP_XY).
+  * @category Constant
+  * @since 0.7.0
+  */
  public static readonly ROTATE_180 = freezeMatrix2(new Matrix2(-1, 0, 0, -1));
 
- /** 270° counter-clockwise rotation (same as 90° clockwise). */
+ /**
+  * 270° counter-clockwise rotation (same as 90° clockwise).
+  * @category Constant
+  * @since 0.7.0
+  */
  public static readonly ROTATE_270 = freezeMatrix2(new Matrix2(0, -1, 1, 0));
 
- /** Flip horizontally (mirror across Y axis). */
+ /**
+  * Flip horizontally (mirror across Y axis).
+  * @category Constant
+  * @since 0.7.0
+  */
  public static readonly FLIP_X = freezeMatrix2(new Matrix2(-1, 0, 0, 1));
 
- /** Flip vertically (mirror across X axis). */
+ /**
+  * Flip vertically (mirror across X axis).
+  * @category Constant
+  * @since 0.7.0
+  */
  public static readonly FLIP_Y = freezeMatrix2(new Matrix2(1, 0, 0, -1));
 
- /** Flip both axes (same as ROTATE_180). */
+ /**
+  * Flip both axes (same as ROTATE_180).
+  * @category Constant
+  * @since 0.7.0
+  */
  public static readonly FLIP_XY = freezeMatrix2(new Matrix2(-1, 0, 0, -1));
 
- /** Uniform scale by 2. */
+ /**
+  * Uniform scale by 2.
+  * @category Constant
+  * @since 0.7.0
+  */
  public static readonly SCALE_2 = freezeMatrix2(new Matrix2(2, 0, 0, 2));
 
- /** Uniform scale by 0.5. */
+ /**
+  * Uniform scale by 0.5.
+  * @category Constant
+  * @since 0.7.0
+  */
  public static readonly SCALE_HALF = freezeMatrix2(new Matrix2(0.5, 0, 0, 0.5));
 
  /* ======================================================================== */
@@ -165,12 +225,22 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Creates a matrix from explicit components.
   *
-  * @param m00 - Component at row 0, column 0.
-  * @param m01 - Component at row 1, column 0.
-  * @param m10 - Component at row 0, column 1.
-  * @param m11 - Component at row 1, column 1.
-  * @param out - Optional output matrix.
-  * @returns A Matrix2 with the specified components.
+  * @param m00 - Component at row 0, column 0
+  * @param m01 - Component at row 1, column 0
+  * @param m10 - Component at row 0, column 1
+  * @param m11 - Component at row 1, column 1
+  * @param out - Optional output matrix
+  * @returns A Matrix2 with the specified components
+  *
+  * @example
+  * ```typescript
+  * // Column-major: (m00, m01, m10, m11)
+  * const m = Matrix2.fromValues(1, 0, 0, 1); // identity matrix
+  *
+  * // Reuse an existing matrix to avoid allocation
+  * const out = new Matrix2();
+  * Matrix2.fromValues(2, 0, 0, 3, out);
+  * ```
   *
   * @category Factory
   * @since 0.7.0
@@ -188,9 +258,19 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Creates a deep copy of a matrix.
   *
-  * @param source - Matrix to clone.
-  * @param out - Optional output matrix.
-  * @returns A Matrix2 with identical components.
+  * @param source - Matrix to clone
+  * @param out - Optional output matrix
+  * @returns A Matrix2 with identical components
+  *
+  * @example
+  * ```typescript
+  * const original = Matrix2.fromValues(1, 2, 3, 4);
+  * const cloned = Matrix2.clone(original);
+  *
+  * // Reuse an existing matrix
+  * const out = new Matrix2();
+  * Matrix2.clone(original, out);
+  * ```
   *
   * @category Factory
   * @since 0.7.0
@@ -202,9 +282,16 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Copies component values from source into destination (alloc-free).
   *
-  * @param source - Source matrix.
-  * @param destination - Target matrix to receive the copy.
-  * @returns The destination matrix.
+  * @param source - Source matrix
+  * @param destination - Target matrix to receive the copy
+  * @returns The destination matrix
+  *
+  * @example
+  * ```typescript
+  * const source = Matrix2.fromValues(1, 2, 3, 4);
+  * const destination = new Matrix2();
+  * Matrix2.copy(source, destination); // destination now holds (1, 2, 3, 4)
+  * ```
   *
   * @category Factory
   * @since 0.7.0
@@ -216,10 +303,19 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Creates a matrix from a plain object `{ m00, m01, m10, m11 }`.
   *
-  * @param object - Plain object with matrix components.
-  * @param out - Optional output matrix.
-  * @returns A Matrix2 with the object's components.
-  * @throws {Error} If any component is not finite.
+  * @param object - Plain object with matrix components
+  * @param out - Optional output matrix
+  * @returns A Matrix2 with the object's components
+  * @throws {Error} If any component is not finite
+  *
+  * @example
+  * ```typescript
+  * const m = Matrix2.fromObject({ m00: 1, m01: 0, m10: 0, m11: 1 }); // identity matrix
+  *
+  * // Reuse an existing matrix
+  * const out = new Matrix2();
+  * Matrix2.fromObject({ m00: 2, m01: 0, m10: 0, m11: 3 }, out);
+  * ```
   *
   * @category Factory
   * @since 0.7.0
@@ -231,15 +327,15 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Creates a matrix from a rotation.
   *
-  * @param rotation - Rotation object (with cos/sin properties) or angle in radians.
-  * @param out - Optional output matrix.
-  * @returns Rotation matrix.
-  *
   * @remarks
   * Accepts any object with `cos` and `sin` properties, including:
   * - {@link Rotation2} instances
   * - Plain objects `{ cos, sin }`
   * - Results from `sinCos(angle)`
+  *
+  * @param rotation - Rotation object (with cos/sin properties) or angle in radians
+  * @param out - Optional output matrix
+  * @returns Rotation matrix
   *
   * @example
   * ```typescript
@@ -268,9 +364,9 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Creates a scaling matrix.
   *
-  * @param scale - Scale factors as Vector2 or uniform scale.
-  * @param out - Optional output matrix.
-  * @returns Scale matrix.
+  * @param scale - Scale factors as Vector2 or uniform scale
+  * @param out - Optional output matrix
+  * @returns Scale matrix
   *
   * @example
   * ```typescript
@@ -292,9 +388,9 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Creates a shearing matrix.
   *
-  * @param shear - Shear factors as Vector2 (x=horizontal, y=vertical).
-  * @param out - Optional output matrix.
-  * @returns Shear matrix.
+  * @param shear - Shear factors as Vector2 (x=horizontal, y=vertical)
+  * @param out - Optional output matrix
+  * @returns Shear matrix
   *
   * @example
   * ```typescript
@@ -311,10 +407,21 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Creates a matrix from column vectors.
   *
-  * @param col0 - First column.
-  * @param col1 - Second column.
-  * @param out - Optional output matrix.
-  * @returns Matrix with specified columns.
+  * @param col0 - First column
+  * @param col1 - Second column
+  * @param out - Optional output matrix
+  * @returns Matrix with specified columns
+  *
+  * @example
+  * ```typescript
+  * const col0 = { x: 1, y: 0 };
+  * const col1 = { x: 0, y: 1 };
+  * const m = Matrix2.fromColumns(col0, col1); // identity matrix
+  *
+  * // Reuse an existing matrix
+  * const out = new Matrix2();
+  * Matrix2.fromColumns(col0, col1, out);
+  * ```
   *
   * @category Factory
   * @since 0.7.0
@@ -330,10 +437,21 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Creates a matrix from row vectors.
   *
-  * @param row0 - First row.
-  * @param row1 - Second row.
-  * @param out - Optional output matrix.
-  * @returns Matrix with specified rows.
+  * @param row0 - First row
+  * @param row1 - Second row
+  * @param out - Optional output matrix
+  * @returns Matrix with specified rows
+  *
+  * @example
+  * ```typescript
+  * const row0 = { x: 1, y: 0 };
+  * const row1 = { x: 0, y: 1 };
+  * const m = Matrix2.fromRows(row0, row1); // identity matrix
+  *
+  * // Reuse an existing matrix
+  * const out = new Matrix2();
+  * Matrix2.fromRows(row0, row1, out);
+  * ```
   *
   * @category Factory
   * @since 0.7.0
@@ -349,12 +467,22 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Creates a matrix from an array.
   *
-  * @param array - Array with matrix elements.
+  * @param array - Array with matrix elements
   * @param offset - Starting index. @defaultValue `0`
   * @param columnMajor - If true, array is column-major. @defaultValue `true`
-  * @param out - Optional output matrix.
-  * @returns Matrix with components from the array.
-  * @throws {RangeError} If offset is out of bounds.
+  * @param out - Optional output matrix
+  * @returns Matrix with components from the array
+  * @throws {RangeError} If offset is out of bounds
+  *
+  * @example
+  * ```typescript
+  * // Column-major array (default)
+  * const m = Matrix2.fromArray([1, 0, 0, 1]); // identity matrix
+  *
+  * // Row-major array with offset
+  * const out = new Matrix2();
+  * Matrix2.fromArray([0, 0, 2, 0, 0, 3], 2, false, out);
+  * ```
   *
   * @category Factory
   * @since 0.7.0
@@ -386,9 +514,19 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Creates a matrix from another matrix-like object.
   *
-  * @param matrix - Source matrix.
-  * @param out - Optional output matrix.
-  * @returns Matrix with copied components.
+  * @param matrix - Source matrix
+  * @param out - Optional output matrix
+  * @returns Matrix with copied components
+  *
+  * @example
+  * ```typescript
+  * const source: Matrix2Like = { m00: 1, m01: 2, m10: 3, m11: 4 };
+  * const m = Matrix2.fromMatrix2(source);
+  *
+  * // Reuse an existing matrix
+  * const out = new Matrix2();
+  * Matrix2.fromMatrix2(source, out);
+  * ```
   *
   * @category Factory
   * @since 0.7.0
@@ -404,10 +542,10 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Component-wise addition of two matrices.
   *
-  * @param a - First addend.
-  * @param b - Second addend.
-  * @param out - Optional output matrix.
-  * @returns Matrix with components `(a.mXX + b.mXX)`.
+  * @param a - First addend
+  * @param b - Second addend
+  * @param out - Optional output matrix
+  * @returns Matrix with components `(a.mXX + b.mXX)`
   *
   * @category Arithmetic
   * @since 0.7.0
@@ -419,10 +557,10 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Component-wise subtraction of two matrices.
   *
-  * @param a - Minuend.
-  * @param b - Subtrahend.
-  * @param out - Optional output matrix.
-  * @returns Matrix with components `(a.mXX - b.mXX)`.
+  * @param a - Minuend
+  * @param b - Subtrahend
+  * @param out - Optional output matrix
+  * @returns Matrix with components `(a.mXX - b.mXX)`
   *
   * @category Arithmetic
   * @since 0.7.0
@@ -434,10 +572,10 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Multiplies two matrices.
   *
-  * @param a - First matrix.
-  * @param b - Second matrix.
-  * @param out - Optional output matrix.
-  * @returns Product matrix a × b.
+  * @param a - First matrix
+  * @param b - Second matrix
+  * @param out - Optional output matrix
+  * @returns Product matrix a × b
   *
   * @example
   * ```typescript
@@ -461,15 +599,15 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Multiplies two matrices in reverse order: `left * right`.
   *
-  * @param left - Left matrix (applied second).
-  * @param right - Right matrix (applied first).
-  * @param out - Optional output matrix.
-  * @returns `left * right`.
-  *
   * @remarks
   * Semantically identical to {@link multiply}(left, right). The value
   * of `premultiply` is in the instance method where it reverses the
   * multiplication order: `this.premultiply(other)` computes `other * this`.
+  *
+  * @param left - Left matrix (applied second)
+  * @param right - Right matrix (applied first)
+  * @param out - Optional output matrix
+  * @returns `left * right`
   *
   * @category Arithmetic
   * @since 0.7.0
@@ -485,10 +623,10 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Scales a matrix by a scalar.
   *
-  * @param matrix - Matrix to scale.
-  * @param scalar - Scale factor.
-  * @param out - Optional output matrix.
-  * @returns Scaled matrix.
+  * @param matrix - Matrix to scale
+  * @param scalar - Scale factor
+  * @param out - Optional output matrix
+  * @returns Scaled matrix
   *
   * @category Arithmetic
   * @since 0.7.0
@@ -505,10 +643,10 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Alias for {@link scale}. Multiplies all components by a scalar.
   *
-  * @param matrix - Matrix to scale.
-  * @param scalar - Scale factor.
-  * @param out - Optional output matrix.
-  * @returns Scaled matrix.
+  * @param matrix - Matrix to scale
+  * @param scalar - Scale factor
+  * @param out - Optional output matrix
+  * @returns Scaled matrix
   *
   * @category Arithmetic
   * @since 0.7.0
@@ -520,10 +658,10 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Adds a scalar to all matrix components.
   *
-  * @param matrix - Input matrix.
-  * @param scalar - Scalar to add.
-  * @param out - Optional output matrix.
-  * @returns Matrix with scalar added to all components.
+  * @param matrix - Input matrix
+  * @param scalar - Scalar to add
+  * @param out - Optional output matrix
+  * @returns Matrix with scalar added to all components
   *
   * @category Arithmetic
   * @since 0.7.0
@@ -540,10 +678,10 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Subtracts a scalar from all matrix components.
   *
-  * @param matrix - Input matrix.
-  * @param scalar - Scalar to subtract.
-  * @param out - Optional output matrix.
-  * @returns Matrix with scalar subtracted from all components.
+  * @param matrix - Input matrix
+  * @param scalar - Scalar to subtract
+  * @param out - Optional output matrix
+  * @returns Matrix with scalar subtracted from all components
   *
   * @category Arithmetic
   * @since 0.7.0
@@ -560,14 +698,14 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Fused multiply-add: `a * scale + b`.
   *
-  * @param a - Matrix to scale.
-  * @param scale - Scale factor.
-  * @param b - Matrix to add.
-  * @param out - Optional output matrix.
-  * @returns Matrix equal to `a * scale + b`.
-  *
   * @remarks
   * More efficient than separate scale and add operations.
+  *
+  * @param a - Matrix to scale
+  * @param scale - Scale factor
+  * @param b - Matrix to add
+  * @param out - Optional output matrix
+  * @returns Matrix equal to `a * scale + b`
   *
   * @category Arithmetic
   * @since 0.7.0
@@ -589,15 +727,24 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Divides all matrix components by a scalar (strict).
   *
-  * @param matrix - Input matrix.
-  * @param scalar - Scalar divisor.
-  * @param out - Optional output matrix.
-  * @returns Matrix with all components divided by scalar.
-  * @throws {RangeError} If scalar is near zero.
-  *
   * @remarks
   * For safe division that returns zeros, use {@link divideScalarSafe}.
   * For hot paths, use {@link divideScalarUnchecked}.
+  *
+  * @param matrix - Input matrix
+  * @param scalar - Scalar divisor
+  * @param out - Optional output matrix
+  * @returns Matrix with all components divided by scalar
+  * @throws {RangeError} If scalar is near zero
+  *
+  * @example
+  * ```typescript
+  * Matrix2.divideScalar(new Matrix2(4, 6, 8, 10), 2); // Matrix2(2, 3, 4, 5)
+  * Matrix2.divideScalar(new Matrix2(1, 2, 3, 4), 0);  // throws RangeError
+  * ```
+  *
+  * @see {@link divideScalarSafe} - Returns fallback zero matrix for near-zero divisor
+  * @see {@link divideScalarUnchecked} - No validation
   *
   * @category Arithmetic
   * @since 0.7.0
@@ -618,10 +765,18 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Divides all matrix components by a scalar (safe).
   *
-  * @param matrix - Input matrix.
-  * @param scalar - Scalar divisor.
-  * @param out - Optional output matrix.
-  * @returns Matrix with components divided by scalar, or zero matrix if scalar is near zero.
+  * @param matrix - Input matrix
+  * @param scalar - Scalar divisor
+  * @param out - Optional output matrix
+  * @returns Matrix with components divided by scalar, or zero matrix if scalar is near zero
+  *
+  * @example
+  * ```typescript
+  * Matrix2.divideScalarSafe(new Matrix2(4, 6, 8, 10), 2); // Matrix2(2, 3, 4, 5)
+  * Matrix2.divideScalarSafe(new Matrix2(1, 2, 3, 4), 0);  // Matrix2(0, 0, 0, 0)
+  * ```
+  *
+  * @see {@link divideScalar} - Throws for near-zero divisor
   *
   * @category Arithmetic
   * @since 0.7.0
@@ -646,13 +801,16 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Divides all matrix components by a scalar (unchecked for hot paths).
   *
-  * @param matrix - Input matrix.
-  * @param scalar - Scalar divisor (must be non-zero).
-  * @param out - Optional output matrix.
-  * @returns Matrix with components divided by scalar.
-  *
   * @remarks
-  * ⚠️ **Precondition:** Scalar must be non-zero.
+  * **Precondition:** Scalar must be non-zero.
+  *
+  * @param matrix - Input matrix
+  * @param scalar - Scalar divisor (must be non-zero)
+  * @param out - Optional output matrix
+  * @returns Matrix with components divided by scalar
+  *
+  * @see {@link divideScalar} - Throws on near-zero divisor
+  * @see {@link divideScalarSafe} - Returns fallback on near-zero divisor
   *
   * @category Arithmetic
   * @since 0.7.0
@@ -674,13 +832,13 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Computes element-wise modulo of two matrices.
   *
-  * @param a - Dividend matrix.
-  * @param b - Divisor matrix.
-  * @param out - Optional output matrix.
-  * @returns Result matrix with element-wise modulo.
-  *
   * @remarks
   * Uses the positive modulo operation (always returns positive results).
+  *
+  * @param a - Dividend matrix
+  * @param b - Divisor matrix
+  * @param out - Optional output matrix
+  * @returns Result matrix with element-wise modulo
   *
   * @category Arithmetic
   * @since 0.7.0
@@ -697,10 +855,10 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Computes scalar modulo on all matrix components.
   *
-  * @param matrix - Dividend matrix.
-  * @param scalar - Scalar divisor.
-  * @param out - Optional output matrix.
-  * @returns Result matrix with each element modulo scalar.
+  * @param matrix - Dividend matrix
+  * @param scalar - Scalar divisor
+  * @param out - Optional output matrix
+  * @returns Result matrix with each element modulo scalar
   *
   * @category Arithmetic
   * @since 0.7.0
@@ -714,14 +872,16 @@ export class Matrix2 implements Matrix2Like {
   );
  }
 
+ /* ------ Static Matrix Operations ------ */
+
  /**
   * Transposes a matrix (swaps rows and columns).
   *
-  * @param matrix - Matrix to transpose.
-  * @param out - Optional output matrix.
-  * @returns Transposed matrix.
+  * @param matrix - Matrix to transpose
+  * @param out - Optional output matrix
+  * @returns Transposed matrix
   *
-  * @category Arithmetic
+  * @category Matrix Operations
   * @since 0.7.0
   */
  public static transpose(matrix: ReadonlyMatrix2Like, out?: Matrix2): Matrix2 {
@@ -731,12 +891,21 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Inverts a matrix.
   *
-  * @param matrix - Matrix to invert.
-  * @param out - Optional output matrix.
-  * @returns Inverted matrix.
-  * @throws {RangeError} If matrix is singular (determinant ≈ 0).
+  * @param matrix - Matrix to invert
+  * @param out - Optional output matrix
+  * @returns Inverted matrix
+  * @throws {RangeError} If matrix is singular (determinant ≈ 0)
   *
-  * @category Arithmetic
+  * @example
+  * ```typescript
+  * Matrix2.inverse(new Matrix2(1, 0, 0, 1)); // Matrix2(1, 0, 0, 1) (identity)
+  * Matrix2.inverse(new Matrix2(1, 1, 1, 1)); // throws RangeError (singular)
+  * ```
+  *
+  * @see {@link inverseSafe} - Returns fallback identity for singular matrices
+  * @see {@link inverseUnchecked} - No validation
+  *
+  * @category Matrix Operations
   * @since 0.7.0
   */
  public static inverse(matrix: ReadonlyMatrix2Like, out?: Matrix2): Matrix2 {
@@ -757,13 +926,13 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Safe inversion. Returns identity if matrix is singular.
   *
-  * @param matrix - Matrix to invert.
-  * @param out - Optional output matrix.
-  * @returns Inverted matrix, or identity if singular.
-  *
   * @remarks
   * Uses {@link isNearZero} with default {@link EPSILON} (1e-10) to test the
   * determinant. Returns identity when |det| ≤ EPSILON.
+  *
+  * @param matrix - Matrix to invert
+  * @param out - Optional output matrix
+  * @returns Inverted matrix, or identity if singular
   *
   * @example
   * ```typescript
@@ -771,7 +940,9 @@ export class Matrix2 implements Matrix2Like {
   * const inv = Matrix2.inverseSafe(singular); // Returns IDENTITY
   * ```
   *
-  * @category Arithmetic
+  * @see {@link inverse} - Throws for singular matrices
+  *
+  * @category Matrix Operations
   * @since 0.7.0
   */
  public static inverseSafe(matrix: ReadonlyMatrix2Like, out?: Matrix2): Matrix2 {
@@ -792,22 +963,17 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Unchecked inversion for hot paths.
   *
-  * ⚠️ **Precondition:** Matrix must be invertible (det ≠ 0).
+  * **Precondition:** Matrix must be invertible (det ≠ 0).
   * Calling with a singular matrix produces NaN/Infinity components.
   *
-  * @param matrix - Matrix to invert (must be non-singular).
-  * @param out - Optional output matrix.
-  * @returns Inverted matrix.
+  * @param matrix - Matrix to invert (must be non-singular)
+  * @param out - Optional output matrix
+  * @returns Inverted matrix
   *
-  * @example
-  * ```typescript
-  * // Only use when you're certain the matrix is invertible
-  * if (matrix.isInvertible()) {
-  *   const inv = Matrix2.inverseUnchecked(matrix);
-  * }
-  * ```
+  * @see {@link inverse} - Throws on singular matrices
+  * @see {@link inverseSafe} - Returns fallback on singular matrices
   *
-  * @category Arithmetic
+  * @category Matrix Operations
   * @since 0.7.0
   */
  public static inverseUnchecked(matrix: ReadonlyMatrix2Like, out?: Matrix2): Matrix2 {
@@ -823,15 +989,15 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Calculates the adjugate (adjoint) matrix.
   *
-  * @param matrix - Matrix to calculate adjugate of.
-  * @param out - Optional output matrix.
-  * @returns Adjugate matrix.
-  *
   * @remarks
   * The adjugate is the transpose of the cofactor matrix.
   * For a 2x2 matrix [a b; c d], the adjugate is [d -b; -c a].
   *
-  * @category Arithmetic
+  * @param matrix - Matrix to calculate adjugate of
+  * @param out - Optional output matrix
+  * @returns Adjugate matrix
+  *
+  * @category Matrix Operations
   * @since 0.7.0
   */
  public static adjugate(matrix: ReadonlyMatrix2Like, out?: Matrix2): Matrix2 {
@@ -841,9 +1007,9 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Negates all elements of a matrix.
   *
-  * @param matrix - Matrix to negate.
-  * @param out - Optional output matrix.
-  * @returns Negated matrix.
+  * @param matrix - Matrix to negate
+  * @param out - Optional output matrix
+  * @returns Negated matrix
   *
   * @example
   * ```typescript
@@ -860,17 +1026,17 @@ export class Matrix2 implements Matrix2Like {
  }
 
  /* ======================================================================== */
- /* Static Numeric Transforms                                                */
+ /* Static Transforms                                                        */
  /* ======================================================================== */
 
  /**
   * Applies Math.floor to all matrix elements.
   *
-  * @param matrix - Input matrix.
-  * @param out - Optional output matrix.
-  * @returns Matrix with floored elements.
+  * @param matrix - Input matrix
+  * @param out - Optional output matrix
+  * @returns Matrix with floored elements
   *
-  * @category Arithmetic
+  * @category Transform
   * @since 0.7.0
   */
  public static floor(matrix: ReadonlyMatrix2Like, out?: Matrix2): Matrix2 {
@@ -885,11 +1051,11 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Applies Math.ceil to all matrix elements.
   *
-  * @param matrix - Input matrix.
-  * @param out - Optional output matrix.
-  * @returns Matrix with ceiled elements.
+  * @param matrix - Input matrix
+  * @param out - Optional output matrix
+  * @returns Matrix with ceiled elements
   *
-  * @category Arithmetic
+  * @category Transform
   * @since 0.7.0
   */
  public static ceil(matrix: ReadonlyMatrix2Like, out?: Matrix2): Matrix2 {
@@ -904,11 +1070,11 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Applies Math.round to all matrix elements.
   *
-  * @param matrix - Input matrix.
-  * @param out - Optional output matrix.
-  * @returns Matrix with rounded elements.
+  * @param matrix - Input matrix
+  * @param out - Optional output matrix
+  * @returns Matrix with rounded elements
   *
-  * @category Arithmetic
+  * @category Transform
   * @since 0.7.0
   */
  public static round(matrix: ReadonlyMatrix2Like, out?: Matrix2): Matrix2 {
@@ -923,11 +1089,11 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Applies Math.trunc to all matrix elements (rounds towards zero).
   *
-  * @param matrix - Input matrix.
-  * @param out - Optional output matrix.
-  * @returns Truncated matrix.
+  * @param matrix - Input matrix
+  * @param out - Optional output matrix
+  * @returns Truncated matrix
   *
-  * @category Arithmetic
+  * @category Transform
   * @since 0.7.0
   */
  public static trunc(matrix: ReadonlyMatrix2Like, out?: Matrix2): Matrix2 {
@@ -942,11 +1108,11 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Applies absolute value to all matrix elements.
   *
-  * @param matrix - Input matrix.
-  * @param out - Optional output matrix.
-  * @returns Matrix with absolute values.
+  * @param matrix - Input matrix
+  * @param out - Optional output matrix
+  * @returns Matrix with absolute values
   *
-  * @category Arithmetic
+  * @category Transform
   * @since 0.7.0
   */
  public static abs(matrix: ReadonlyMatrix2Like, out?: Matrix2): Matrix2 {
@@ -961,11 +1127,11 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Applies sign function to all matrix elements.
   *
-  * @param matrix - Input matrix.
-  * @param out - Optional output matrix.
-  * @returns Matrix with signs (-1, 0, or 1).
+  * @param matrix - Input matrix
+  * @param out - Optional output matrix
+  * @returns Matrix with signs (-1, 0, or 1)
   *
-  * @category Arithmetic
+  * @category Transform
   * @since 0.7.0
   */
  public static sign(matrix: ReadonlyMatrix2Like, out?: Matrix2): Matrix2 {
@@ -980,12 +1146,12 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Component-wise minimum of two matrices.
   *
-  * @param a - First matrix.
-  * @param b - Second matrix.
-  * @param out - Optional output matrix.
-  * @returns Matrix with per-component minima.
+  * @param a - First matrix
+  * @param b - Second matrix
+  * @param out - Optional output matrix
+  * @returns Matrix with per-component minima
   *
-  * @category Arithmetic
+  * @category Transform
   * @since 0.7.0
   */
  public static min(a: ReadonlyMatrix2Like, b: ReadonlyMatrix2Like, out?: Matrix2): Matrix2 {
@@ -1000,12 +1166,12 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Component-wise maximum of two matrices.
   *
-  * @param a - First matrix.
-  * @param b - Second matrix.
-  * @param out - Optional output matrix.
-  * @returns Matrix with per-component maxima.
+  * @param a - First matrix
+  * @param b - Second matrix
+  * @param out - Optional output matrix
+  * @returns Matrix with per-component maxima
   *
-  * @category Arithmetic
+  * @category Transform
   * @since 0.7.0
   */
  public static max(a: ReadonlyMatrix2Like, b: ReadonlyMatrix2Like, out?: Matrix2): Matrix2 {
@@ -1020,13 +1186,13 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Clamps all matrix components between min and max matrices.
   *
-  * @param matrix - Matrix to clamp.
-  * @param minM - Per-component minima.
-  * @param maxM - Per-component maxima.
-  * @param out - Optional output matrix.
-  * @returns Clamped matrix.
+  * @param matrix - Matrix to clamp
+  * @param minM - Per-component minima
+  * @param maxM - Per-component maxima
+  * @param out - Optional output matrix
+  * @returns Clamped matrix
   *
-  * @category Arithmetic
+  * @category Transform
   * @since 0.7.0
   */
  public static clamp(
@@ -1046,13 +1212,13 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Clamps all matrix components between scalar min and max.
   *
-  * @param matrix - Matrix to clamp.
-  * @param min - Minimum scalar.
-  * @param max - Maximum scalar.
-  * @param out - Optional output matrix.
-  * @returns Clamped matrix.
+  * @param matrix - Matrix to clamp
+  * @param min - Minimum scalar
+  * @param max - Maximum scalar
+  * @param out - Optional output matrix
+  * @returns Clamped matrix
   *
-  * @category Arithmetic
+  * @category Transform
   * @since 0.7.0
   */
  public static clampScalar(
@@ -1076,15 +1242,15 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Linear interpolation between two matrices with t clamped to [0, 1].
   *
-  * @param a - Start matrix.
-  * @param b - End matrix.
-  * @param t - Interpolation factor [0, 1], clamped.
-  * @param out - Optional output matrix.
-  * @returns Interpolated matrix.
-  *
   * @remarks
   * Component-wise lerp between rotation matrices does not produce a valid
   * rotation matrix. Use {@link Rotation2.lerp} for interpolating rotations.
+  *
+  * @param a - Start matrix
+  * @param b - End matrix
+  * @param t - Interpolation factor [0, 1], clamped
+  * @param out - Optional output matrix
+  * @returns Interpolated matrix
   *
   * @example
   * ```typescript
@@ -1113,15 +1279,15 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Clamped linear interpolation (alias for lerp).
   *
-  * @param a - Start matrix.
-  * @param b - End matrix.
-  * @param t - Interpolation factor (clamped to [0, 1]).
-  * @param out - Optional output matrix.
-  * @returns Interpolated matrix.
-  *
   * @remarks
   * This is an alias for `lerp` which already clamps t.
   * Provided for API symmetry with Vector2.
+  *
+  * @param a - Start matrix
+  * @param b - End matrix
+  * @param t - Interpolation factor (clamped to [0, 1])
+  * @param out - Optional output matrix
+  * @returns Interpolated matrix
   *
   * @category Interpolation
   * @since 0.7.0
@@ -1138,14 +1304,14 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Smooth step interpolation between two matrices.
   *
-  * @param a - Start matrix.
-  * @param b - End matrix.
-  * @param t - Interpolation factor [0, 1].
-  * @param out - Optional output matrix.
-  * @returns Smoothly interpolated matrix.
-  *
   * @remarks
   * Uses the smoothstep formula: 3t² - 2t³
+  *
+  * @param a - Start matrix
+  * @param b - End matrix
+  * @param t - Interpolation factor [0, 1]
+  * @param out - Optional output matrix
+  * @returns Smoothly interpolated matrix
   *
   * @category Interpolation
   * @since 0.7.0
@@ -1167,18 +1333,18 @@ export class Matrix2 implements Matrix2Like {
  }
 
  /* ======================================================================== */
- /* Static Comparison & Validation                                          */
+ /* Static Comparison                                                        */
  /* ======================================================================== */
 
  /**
   * Exact component-wise equality (bit-identical).
   *
-  * @param a - First matrix.
-  * @param b - Second matrix.
-  * @returns True if all components are exactly identical.
-  *
   * @remarks
   * Use {@link nearEquals} for comparing results of floating-point operations.
+  *
+  * @param a - First matrix
+  * @param b - Second matrix
+  * @returns True if all components are exactly identical
   *
   * @category Comparison
   * @since 0.7.0
@@ -1190,14 +1356,14 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Approximate component-wise equality using relative tolerance.
   *
-  * @param a - First matrix.
-  * @param b - Second matrix.
-  * @param epsilon - Relative tolerance. @defaultValue `EPSILON`
-  * @returns True if all component differences are within scaled epsilon.
-  *
   * @remarks
   * Uses relative tolerance: `|a - b| <= epsilon * max(1, |a|, |b|)` per component.
   * This scales with value magnitude, making it robust for both small and large values.
+  *
+  * @param a - First matrix
+  * @param b - Second matrix
+  * @param epsilon - Relative tolerance. @defaultValue `EPSILON`
+  * @returns True if all component differences are within scaled epsilon
   *
   * @category Comparison
   * @since 0.7.0
@@ -1218,13 +1384,13 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Tests if a matrix is the identity matrix.
   *
-  * @param matrix - Matrix to test.
-  * @param epsilon - Tolerance. @defaultValue `EPSILON`
-  * @returns True if matrix is identity.
-  *
   * @remarks
   * Uses {@link EPSILON} (1e-10) as default tolerance. Diagonal elements are
   * compared to 1 via absolute tolerance; off-diagonal elements are compared to 0.
+  *
+  * @param matrix - Matrix to test
+  * @param epsilon - Tolerance. @defaultValue `EPSILON`
+  * @returns True if matrix is identity
   *
   * @category Comparison
   * @since 0.7.0
@@ -1241,8 +1407,8 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Tests if a matrix is exactly zero.
   *
-  * @param matrix - Matrix to test.
-  * @returns True if all components are zero.
+  * @param matrix - Matrix to test
+  * @returns True if all components are zero
   *
   * @category Comparison
   * @since 0.7.0
@@ -1254,9 +1420,9 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Tests if a matrix is approximately zero.
   *
-  * @param matrix - Matrix to test.
+  * @param matrix - Matrix to test
   * @param epsilon - Tolerance. @defaultValue `EPSILON`
-  * @returns True if all components are within epsilon of zero.
+  * @returns True if all components are within epsilon of zero
   *
   * @category Comparison
   * @since 0.7.0
@@ -1273,8 +1439,8 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Tests if all components are finite numbers.
   *
-  * @param matrix - Matrix to test.
-  * @returns True if all components are finite.
+  * @param matrix - Matrix to test
+  * @returns True if all components are finite
   *
   * @category Comparison
   * @since 0.7.0
@@ -1291,8 +1457,8 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Tests if any component is NaN.
   *
-  * @param matrix - Matrix to test.
-  * @returns True if any component is NaN.
+  * @param matrix - Matrix to test
+  * @returns True if any component is NaN
   *
   * @category Comparison
   * @since 0.7.0
@@ -1309,11 +1475,11 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Tests if any component is infinite (±Infinity).
   *
-  * @param matrix - Matrix to test.
-  * @returns True if any component is ±Infinity.
-  *
   * @remarks
   * Distinguishes infinity from NaN. Use {@link isFinite} to check for both.
+  *
+  * @param matrix - Matrix to test
+  * @returns True if any component is ±Infinity
   *
   * @category Comparison
   * @since 0.7.0
@@ -1326,12 +1492,12 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Tests if a matrix is symmetric (m01 ≈ m10).
   *
-  * @param matrix - Matrix to test.
-  * @param epsilon - Relative tolerance. @defaultValue `EPSILON`
-  * @returns True if matrix is symmetric.
-  *
   * @remarks
   * Uses relative tolerance for comparing off-diagonal elements.
+  *
+  * @param matrix - Matrix to test
+  * @param epsilon - Relative tolerance. @defaultValue `EPSILON`
+  * @returns True if matrix is symmetric
   *
   * @category Comparison
   * @since 0.7.0
@@ -1343,12 +1509,12 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Tests if a matrix is skew-symmetric (m00 ≈ 0, m11 ≈ 0, m01 ≈ -m10).
   *
-  * @param matrix - Matrix to test.
-  * @param epsilon - Tolerance. @defaultValue `EPSILON`
-  * @returns True if matrix is skew-symmetric.
-  *
   * @remarks
   * Uses relative tolerance for comparing off-diagonal elements.
+  *
+  * @param matrix - Matrix to test
+  * @param epsilon - Tolerance. @defaultValue `EPSILON`
+  * @returns True if matrix is skew-symmetric
   *
   * @category Comparison
   * @since 0.7.0
@@ -1364,9 +1530,9 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Tests if a matrix is diagonal (off-diagonal elements ≈ 0).
   *
-  * @param matrix - Matrix to test.
+  * @param matrix - Matrix to test
   * @param epsilon - Tolerance. @defaultValue `EPSILON`
-  * @returns True if matrix is diagonal.
+  * @returns True if matrix is diagonal
   *
   * @category Comparison
   * @since 0.7.0
@@ -1378,13 +1544,13 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Tests if a matrix is invertible (determinant ≠ 0).
   *
-  * @param matrix - Matrix to test.
-  * @param epsilon - Tolerance. @defaultValue `EPSILON`
-  * @returns True if matrix is invertible (non-singular).
-  *
   * @remarks
   * A matrix is invertible when its determinant is non-zero.
   * This follows the Eigen C++ convention.
+  *
+  * @param matrix - Matrix to test
+  * @param epsilon - Tolerance. @defaultValue `EPSILON`
+  * @returns True if matrix is invertible (non-singular)
   *
   * @category Comparison
   * @since 0.7.0
@@ -1396,13 +1562,13 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Tests if a matrix is orthogonal (M * M^T = I).
   *
-  * @param matrix - Matrix to test.
-  * @param epsilon - Tolerance. @defaultValue `EPSILON`
-  * @returns True if matrix is orthogonal.
-  *
   * @remarks
   * An orthogonal matrix has columns that are orthonormal (unit length and perpendicular).
   * Orthogonal matrices represent pure rotations/reflections and preserve distances/angles.
+  *
+  * @param matrix - Matrix to test
+  * @param epsilon - Tolerance. @defaultValue `EPSILON`
+  * @returns True if matrix is orthogonal
   *
   * @category Comparison
   * @since 0.7.0
@@ -1427,10 +1593,10 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Calculates the determinant of a matrix.
   *
-  * @param matrix - Matrix to calculate determinant of.
-  * @returns Determinant value.
+  * @param matrix - Matrix to calculate determinant of
+  * @returns Determinant value
   *
-  * @category Matrix Operations
+  * @category Computed
   * @since 0.7.0
   */
  public static determinant(matrix: ReadonlyMatrix2Like): number {
@@ -1440,10 +1606,10 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Calculates the trace (sum of diagonal elements) of a matrix.
   *
-  * @param matrix - Matrix to calculate trace of.
-  * @returns Sum of diagonal elements (m00 + m11).
+  * @param matrix - Matrix to calculate trace of
+  * @returns Sum of diagonal elements (m00 + m11)
   *
-  * @category Matrix Operations
+  * @category Computed
   * @since 0.7.0
   */
  public static trace(matrix: ReadonlyMatrix2Like): number {
@@ -1453,13 +1619,13 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Calculates the Frobenius norm of a matrix.
   *
-  * @param matrix - Matrix to calculate norm of.
-  * @returns Square root of sum of squared elements.
-  *
   * @remarks
   * Uses deterministic sqrt for cross-platform reproducibility.
   *
-  * @category Matrix Operations
+  * @param matrix - Matrix to calculate norm of
+  * @returns Square root of sum of squared elements
+  *
+  * @category Computed
   * @since 0.7.0
   */
  public static frobeniusNorm(matrix: ReadonlyMatrix2Like): number {
@@ -1482,6 +1648,8 @@ export class Matrix2 implements Matrix2Like {
   * ```typescript
   * const m = Matrix2.compose(Math.PI / 4, new Vector2(2, 1));
   * ```
+  * @category Matrix Operations
+  * @since 0.7.0
   */
  public static compose(
   rotation: number,
@@ -1508,6 +1676,8 @@ export class Matrix2 implements Matrix2Like {
   * const m = Matrix2.fromRotation(Math.PI / 4).scaleBy(new Vector2(2, 1));
   * const { rotation, scale } = Matrix2.decompose(m);
   * ```
+  * @category Matrix Operations
+  * @since 0.7.0
   */
  public static decompose(matrix: ReadonlyMatrix2Like): { rotation: number; scale: Vector2 } {
   const sx = hypot(matrix.m00, matrix.m01);
@@ -1525,6 +1695,17 @@ export class Matrix2 implements Matrix2Like {
   };
  }
 
+ /**
+  * Transforms a vector by a matrix.
+  *
+  * @param matrix - Matrix to transform by
+  * @param vector - Vector to transform
+  * @param out - Optional output vector
+  * @returns Transformed vector
+  *
+  * @category Transform
+  * @since 0.7.0
+  */
  public static transformVector(
   matrix: ReadonlyMatrix2Like,
   vector: ReadonlyVector2Like,
@@ -1540,14 +1721,14 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Rotates a matrix by an angle.
   *
-  * @param matrix - Matrix to rotate.
-  * @param angle - Angle in radians.
-  * @param out - Optional output matrix.
-  * @returns Rotated matrix.
-  *
   * @remarks
   * Equivalent to `Matrix2.multiply(matrix, Matrix2.fromRotation(angle), out)`
   * but more efficient as it avoids creating an intermediate matrix.
+  *
+  * @param matrix - Matrix to rotate
+  * @param angle - Angle in radians
+  * @param out - Optional output matrix
+  * @returns Rotated matrix
   *
   * @example
   * ```typescript
@@ -1566,15 +1747,15 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Rotates a matrix using precomputed cosine and sine values.
   *
-  * @param matrix - Matrix to rotate.
-  * @param cos - Cosine of the rotation angle.
-  * @param sin - Sine of the rotation angle.
-  * @param out - Optional output matrix.
-  * @returns Rotated matrix.
-  *
   * @remarks
   * Use this method in hot paths where the same rotation is applied to multiple
   * matrices. Precompute `cos` and `sin` once and reuse them.
+  *
+  * @param matrix - Matrix to rotate
+  * @param cos - Cosine of the rotation angle
+  * @param sin - Sine of the rotation angle
+  * @param out - Optional output matrix
+  * @returns Rotated matrix
   *
   * @example
   * ```typescript
@@ -1608,14 +1789,14 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Scales a matrix by per-axis factors.
   *
-  * @param matrix - Matrix to scale.
-  * @param scale - Scale factors (Vector2 or uniform number).
-  * @param out - Optional output matrix.
-  * @returns Scaled matrix.
-  *
   * @remarks
   * Unlike {@link scale} which multiplies all elements by a scalar,
   * this method applies non-uniform scaling using a Vector2.
+  *
+  * @param matrix - Matrix to scale
+  * @param scale - Scale factors (Vector2 or uniform number)
+  * @param out - Optional output matrix
+  * @returns Scaled matrix
   *
   * @example
   * ```typescript
@@ -1685,8 +1866,8 @@ export class Matrix2 implements Matrix2Like {
   * @param m01 - Column 0, Row 1 (when first arg is a number)
   * @param m10 - Column 1, Row 0 (when first arg is a number)
   * @param m11 - Column 1, Row 1 (when first arg is a number)
-  * @throws {RangeError} If array has less than 4 elements.
-  * @throws {TypeError} If arguments are invalid.
+  * @throws {RangeError} If array has less than 4 elements
+  * @throws {TypeError} If arguments are invalid
   *
   * @example
   * ```typescript
@@ -1742,7 +1923,7 @@ export class Matrix2 implements Matrix2Like {
  }
 
  /* ======================================================================== */
- /* Instance Basic Mutators                                                  */
+ /* Instance Mutators                                                        */
  /* ======================================================================== */
 
  /**
@@ -1752,7 +1933,7 @@ export class Matrix2 implements Matrix2Like {
   * @param m01 - Column 0, Row 1
   * @param m10 - Column 1, Row 0
   * @param m11 - Column 1, Row 1
-  * @returns This matrix for chaining.
+  * @returns This matrix for chaining
   *
   * @category Mutator
   * @since 0.7.0
@@ -1768,8 +1949,8 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Copies components from another matrix.
   *
-  * @param other - Matrix to copy from.
-  * @returns This matrix for chaining.
+  * @param other - Matrix to copy from
+  * @returns This matrix for chaining
   *
   * @category Mutator
   * @since 0.7.0
@@ -1784,9 +1965,10 @@ export class Matrix2 implements Matrix2Like {
 
  /**
   * Sets this matrix from array values (column-major order).
-  * @param array - Source array [m00, m01, m10, m11].
-  * @param offset - Starting index (default 0).
-  * @returns This for chaining.
+  * @param array - Source array [m00, m01, m10, m11]
+  * @param offset - Starting index (default 0)
+  * @returns This for chaining
+  * @throws {RangeError} If array has insufficient length
   *
   * @category Mutator
   * @since 0.7.0
@@ -1803,7 +1985,7 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Sets this matrix to identity.
   *
-  * @returns This matrix for chaining.
+  * @returns This matrix for chaining
   *
   * @category Mutator
   * @since 0.7.0
@@ -1819,7 +2001,7 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Resets all components to zero.
   *
-  * @returns This matrix for chaining.
+  * @returns This matrix for chaining
   *
   * @category Mutator
   * @since 0.7.0
@@ -1833,17 +2015,17 @@ export class Matrix2 implements Matrix2Like {
  }
 
  /* ======================================================================== */
- /* Instance Computed Values                                                 */
+ /* Instance Computed                                                        */
  /* ======================================================================== */
 
  /**
   * Calculates the determinant of the matrix.
   *
-  * @returns Determinant value.
-  *
   * @remarks
   * A determinant of 0 indicates the matrix is singular (non-invertible).
   * The absolute value represents the area scaling factor.
+  *
+  * @returns Determinant value
   *
   * @category Computed
   * @since 0.7.0
@@ -1855,7 +2037,7 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Calculates the trace of the matrix.
   *
-  * @returns Sum of diagonal elements.
+  * @returns Sum of diagonal elements
   *
   * @category Computed
   * @since 0.7.0
@@ -1867,10 +2049,10 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Calculates the Frobenius norm.
   *
-  * @returns Square root of sum of squared elements.
-  *
   * @remarks
   * Uses deterministic sqrt for cross-platform reproducibility.
+  *
+  * @returns Square root of sum of squared elements
   *
   * @category Computed
   * @since 0.7.0
@@ -1885,7 +2067,7 @@ export class Matrix2 implements Matrix2Like {
   * Tests if this matrix is invertible.
   *
   * @param epsilon - Tolerance for determinant. @defaultValue `EPSILON`
-  * @returns True if determinant is non-zero.
+  * @returns True if determinant is non-zero
   *
   * @category Comparison
   * @since 0.7.0
@@ -1898,7 +2080,7 @@ export class Matrix2 implements Matrix2Like {
   * Tests if this matrix is orthogonal.
   *
   * @param epsilon - Tolerance. @defaultValue `EPSILON`
-  * @returns True if M * M^T = I.
+  * @returns True if M * M^T = I
   *
   * @category Comparison
   * @since 0.7.0
@@ -1919,10 +2101,10 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Extracts rotation angle from the matrix.
   *
-  * @returns Rotation angle in radians.
-  *
   * @remarks
   * Assumes the matrix represents a pure rotation or rotation with uniform scale.
+  *
+  * @returns Rotation angle in radians
   *
   * @category Computed
   * @since 0.7.0
@@ -1934,14 +2116,14 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Extracts scale factors from the matrix (always positive).
   *
-  * @param out - Optional output vector.
-  * @returns Scale factors for each axis (always ≥ 0).
-  *
   * @remarks
   * Returns the length of each column vector. Values are always non-negative
   * since `hypot` computes magnitudes. This does NOT account for determinant
   * sign (reflection). Use {@link Matrix2.decompose} for signed scale that
   * matches the rotation convention.
+  *
+  * @param out - Optional output vector
+  * @returns Scale factors for each axis (always ≥ 0)
   *
   * @category Computed
   * @since 0.7.0
@@ -1953,7 +2135,7 @@ export class Matrix2 implements Matrix2Like {
  }
 
  /* ======================================================================== */
- /* Instance Getters (Derived)                                               */
+ /* Instance Accessors                                                       */
  /* ======================================================================== */
 
  /**
@@ -1966,6 +2148,9 @@ export class Matrix2 implements Matrix2Like {
   * const t = m.transposed;
   * // t = Matrix2(1, 3, 2, 4), m unchanged
   * ```
+  *
+  * @category Accessor
+  * @since 0.7.0
   */
  public get transposed(): Matrix2 {
   return new Matrix2(this.m00, this.m10, this.m01, this.m11);
@@ -1982,6 +2167,9 @@ export class Matrix2 implements Matrix2Like {
   * const inv = m.inverted;
   * // m × inv ≈ identity
   * ```
+  *
+  * @category Accessor
+  * @since 0.7.0
   */
  public get inverted(): Matrix2 {
   const det = this.determinant();
@@ -2002,6 +2190,9 @@ export class Matrix2 implements Matrix2Like {
   * const neg = m.negated;
   * // neg = Matrix2(-1, -2, -3, -4), m unchanged
   * ```
+  *
+  * @category Accessor
+  * @since 0.7.0
   */
  public get negated(): Matrix2 {
   return new Matrix2(-this.m00, -this.m01, -this.m10, -this.m11);
@@ -2010,6 +2201,9 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Returns the first column as a new vector.
   * @returns First column vector
+  *
+  * @category Accessor
+  * @since 0.7.0
   */
  public get column0(): Vector2 {
   return new Vector2(this.m00, this.m01);
@@ -2018,6 +2212,9 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Returns the second column as a new vector.
   * @returns Second column vector
+  *
+  * @category Accessor
+  * @since 0.7.0
   */
  public get column1(): Vector2 {
   return new Vector2(this.m10, this.m11);
@@ -2026,6 +2223,9 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Returns the first row as a new vector.
   * @returns First row vector
+  *
+  * @category Accessor
+  * @since 0.7.0
   */
  public get row0(): Vector2 {
   return new Vector2(this.m00, this.m10);
@@ -2034,6 +2234,9 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Returns the second row as a new vector.
   * @returns Second row vector
+  *
+  * @category Accessor
+  * @since 0.7.0
   */
  public get row1(): Vector2 {
   return new Vector2(this.m01, this.m11);
@@ -2042,6 +2245,9 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Returns the diagonal elements as a new vector.
   * @returns Diagonal vector (m00, m11)
+  *
+  * @category Accessor
+  * @since 0.7.0
   */
  public get diagonal(): Vector2 {
   return new Vector2(this.m00, this.m11);
@@ -2054,8 +2260,8 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Adds another matrix to this one.
   *
-  * @param other - Matrix to add.
-  * @returns This matrix for chaining.
+  * @param other - Matrix to add
+  * @returns This matrix for chaining
   *
   * @category Arithmetic
   * @since 0.7.0
@@ -2071,8 +2277,8 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Subtracts another matrix from this one.
   *
-  * @param other - Matrix to subtract.
-  * @returns This matrix for chaining.
+  * @param other - Matrix to subtract
+  * @returns This matrix for chaining
   *
   * @category Arithmetic
   * @since 0.7.0
@@ -2088,8 +2294,8 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Multiplies this matrix by another (this × other).
   *
-  * @param other - Matrix to multiply by.
-  * @returns This matrix for chaining.
+  * @param other - Matrix to multiply by
+  * @returns This matrix for chaining
   *
   * @example
   * ```typescript
@@ -2115,8 +2321,8 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Scales all matrix components by a scalar.
   *
-  * @param scalar - Scale factor.
-  * @returns This matrix for chaining.
+  * @param scalar - Scale factor
+  * @returns This matrix for chaining
   *
   * @category Arithmetic
   * @since 0.7.0
@@ -2132,8 +2338,8 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Adds a scalar to all components.
   *
-  * @param scalar - Scalar to add.
-  * @returns This matrix for chaining.
+  * @param scalar - Scalar to add
+  * @returns This matrix for chaining
   *
   * @category Arithmetic
   * @since 0.7.0
@@ -2149,8 +2355,8 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Subtracts a scalar from all components.
   *
-  * @param scalar - Scalar to subtract.
-  * @returns This matrix for chaining.
+  * @param scalar - Scalar to subtract
+  * @returns This matrix for chaining
   *
   * @category Arithmetic
   * @since 0.7.0
@@ -2166,9 +2372,9 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Fused multiply-add: `this = this * scale + m`.
   *
-  * @param scale - Scale factor.
-  * @param m - Matrix to add.
-  * @returns This matrix for chaining.
+  * @param scale - Scale factor
+  * @param m - Matrix to add
+  * @returns This matrix for chaining
   *
   * @category Arithmetic
   * @since 0.7.0
@@ -2184,13 +2390,22 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Divides all components by a scalar (strict).
   *
-  * @param scalar - Scalar divisor.
-  * @returns This matrix for chaining.
-  * @throws {RangeError} If scalar is near zero.
-  *
   * @remarks
   * For safe division that returns zeros, use {@link divideScalarSafe}.
   * For hot paths, use {@link divideScalarUnchecked}.
+  *
+  * @param scalar - Scalar divisor
+  * @returns This matrix for chaining
+  * @throws {RangeError} If scalar is near zero
+  *
+  * @example
+  * ```typescript
+  * new Matrix2(4, 6, 8, 10).divideScalar(2); // Matrix2(2, 3, 4, 5)
+  * new Matrix2(1, 2, 3, 4).divideScalar(0);  // throws RangeError
+  * ```
+  *
+  * @see {@link divideScalarSafe} - Returns fallback zero matrix for near-zero divisor
+  * @see {@link divideScalarUnchecked} - No validation
   *
   * @category Arithmetic
   * @since 0.7.0
@@ -2210,8 +2425,16 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Safe scalar division. If |scalar| ≤ EPSILON, sets all components to zero.
   *
-  * @param scalar - Scalar divisor.
-  * @returns This matrix for chaining.
+  * @param scalar - Scalar divisor
+  * @returns This matrix for chaining
+  *
+  * @example
+  * ```typescript
+  * new Matrix2(4, 6, 8, 10).divideScalarSafe(2); // Matrix2(2, 3, 4, 5)
+  * new Matrix2(1, 2, 3, 4).divideScalarSafe(0);  // Matrix2(0, 0, 0, 0)
+  * ```
+  *
+  * @see {@link divideScalar} - Throws for near-zero divisor
   *
   * @category Arithmetic
   * @since 0.7.0
@@ -2231,11 +2454,14 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Unchecked scalar division for hot paths.
   *
-  * @param scalar - Scalar divisor (must be non-zero).
-  * @returns This matrix for chaining.
-  *
   * @remarks
-  * ⚠️ **Precondition:** Scalar must be non-zero.
+  * **Precondition:** Scalar must be non-zero.
+  *
+  * @param scalar - Scalar divisor (must be non-zero)
+  * @returns This matrix for chaining
+  *
+  * @see {@link divideScalar} - Throws on near-zero divisor
+  * @see {@link divideScalarSafe} - Returns fallback on near-zero divisor
   *
   * @category Arithmetic
   * @since 0.7.0
@@ -2252,11 +2478,11 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Component-wise modulo with another matrix.
   *
-  * @param other - Divisor matrix.
-  * @returns This matrix for chaining.
-  *
   * @remarks
   * Uses the positive modulo operation (always returns positive results).
+  *
+  * @param other - Divisor matrix
+  * @returns This matrix for chaining
   *
   * @category Arithmetic
   * @since 0.7.0
@@ -2272,8 +2498,8 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Scalar modulo on all components.
   *
-  * @param scalar - Scalar divisor.
-  * @returns This matrix for chaining.
+  * @param scalar - Scalar divisor
+  * @returns This matrix for chaining
   *
   * @category Arithmetic
   * @since 0.7.0
@@ -2293,6 +2519,8 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Transposes the matrix in place.
   * @returns This matrix for chaining
+  * @category Matrix Operations
+  * @since 0.7.0
   */
  public transpose(): this {
   const temporary = this.m01;
@@ -2305,6 +2533,18 @@ export class Matrix2 implements Matrix2Like {
   * Inverts the matrix in place.
   * @returns This matrix for chaining
   * @throws {RangeError} If matrix is singular (determinant ≈ 0)
+  *
+  * @example
+  * ```typescript
+  * new Matrix2(1, 0, 0, 1).inverse(); // Matrix2(1, 0, 0, 1) (identity)
+  * new Matrix2(1, 1, 1, 1).inverse(); // throws RangeError (singular)
+  * ```
+  *
+  * @see {@link inverseSafe} - Returns fallback identity for singular matrices
+  * @see {@link inverseUnchecked} - No validation
+  *
+  * @category Matrix Operations
+  * @since 0.7.0
   */
  public inverse(): this {
   const det = this.determinant();
@@ -2323,6 +2563,17 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Safe inversion in place. Sets to identity if singular.
   * @returns This matrix for chaining
+  *
+  * @example
+  * ```typescript
+  * new Matrix2(1, 0, 0, 1).inverseSafe(); // Matrix2(1, 0, 0, 1) (identity)
+  * new Matrix2(1, 1, 1, 1).inverseSafe(); // Matrix2(1, 0, 0, 1) (fallback)
+  * ```
+  *
+  * @see {@link inverse} - Throws for singular matrices
+  *
+  * @category Matrix Operations
+  * @since 0.7.0
   */
  public inverseSafe(): this {
   const det = this.determinant();
@@ -2341,17 +2592,16 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Unchecked inversion for hot paths.
   *
-  * ⚠️ **Precondition:** Matrix must be invertible (det ≠ 0).
+  * **Precondition:** Matrix must be invertible (det ≠ 0).
   * Calling with a singular matrix produces NaN/Infinity components.
   *
   * @returns This matrix for chaining
   *
-  * @example
-  * ```typescript
-  * if (matrix.isInvertible()) {
-  *   matrix.inverseUnchecked();
-  * }
-  * ```
+  * @see {@link inverse} - Throws on singular matrices
+  * @see {@link inverseSafe} - Returns fallback on singular matrices
+  *
+  * @category Matrix Operations
+  * @since 0.7.0
   */
  public inverseUnchecked(): this {
   const invDet = 1 / (this.m00 * this.m11 - this.m01 * this.m10);
@@ -2365,6 +2615,8 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Calculates the adjugate (adjoint) matrix in place.
   * @returns This matrix for chaining
+  * @category Matrix Operations
+  * @since 0.7.0
   */
  public adjugate(): this {
   const r00 = this.m11;
@@ -2384,6 +2636,8 @@ export class Matrix2 implements Matrix2Like {
   * m.negate();
   * // m = Matrix2(-1, -2, -3, -4)
   * ```
+  * @category Arithmetic
+  * @since 0.7.0
   */
  public negate(): this {
   this.m00 = -this.m00;
@@ -2394,12 +2648,14 @@ export class Matrix2 implements Matrix2Like {
  }
 
  /* ======================================================================== */
- /* Instance Numeric Transforms                                              */
+ /* Instance Transforms                                                      */
  /* ======================================================================== */
 
  /**
   * Applies Math.floor to all elements.
   * @returns This matrix for chaining
+  * @category Transform
+  * @since 0.7.0
   */
  public floor(): this {
   this.m00 = Math.floor(this.m00);
@@ -2412,6 +2668,8 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Applies Math.ceil to all elements.
   * @returns This matrix for chaining
+  * @category Transform
+  * @since 0.7.0
   */
  public ceil(): this {
   this.m00 = Math.ceil(this.m00);
@@ -2424,6 +2682,8 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Applies Math.round to all elements.
   * @returns This matrix for chaining
+  * @category Transform
+  * @since 0.7.0
   */
  public round(): this {
   this.m00 = Math.round(this.m00);
@@ -2436,6 +2696,8 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Applies absolute value to all elements.
   * @returns This matrix for chaining
+  * @category Transform
+  * @since 0.7.0
   */
  public abs(): this {
   this.m00 = Math.abs(this.m00);
@@ -2448,6 +2710,8 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Applies sign function to all elements.
   * @returns This matrix for chaining
+  * @category Transform
+  * @since 0.7.0
   */
  public sign(): this {
   this.m00 = scalarSign(this.m00);
@@ -2461,6 +2725,8 @@ export class Matrix2 implements Matrix2Like {
   * Component-wise minimum with another matrix.
   * @param other - Other matrix
   * @returns This matrix for chaining
+  * @category Transform
+  * @since 0.7.0
   */
  public min(other: ReadonlyMatrix2Like): this {
   this.m00 = Math.min(this.m00, other.m00);
@@ -2474,6 +2740,8 @@ export class Matrix2 implements Matrix2Like {
   * Component-wise maximum with another matrix.
   * @param other - Other matrix
   * @returns This matrix for chaining
+  * @category Transform
+  * @since 0.7.0
   */
  public max(other: ReadonlyMatrix2Like): this {
   this.m00 = Math.max(this.m00, other.m00);
@@ -2488,6 +2756,8 @@ export class Matrix2 implements Matrix2Like {
   * @param minM - Per-component minima
   * @param maxM - Per-component maxima
   * @returns This matrix for chaining
+  * @category Transform
+  * @since 0.7.0
   */
  public clamp(minM: ReadonlyMatrix2Like, maxM: ReadonlyMatrix2Like): this {
   this.m00 = clamp(this.m00, minM.m00, maxM.m00);
@@ -2502,6 +2772,8 @@ export class Matrix2 implements Matrix2Like {
   * @param min - Minimum scalar
   * @param max - Maximum scalar
   * @returns This matrix for chaining
+  * @category Transform
+  * @since 0.7.0
   */
  public clampScalar(min: number, max: number): this {
   this.m00 = clamp(this.m00, min, max);
@@ -2513,12 +2785,13 @@ export class Matrix2 implements Matrix2Like {
 
  /**
   * Pre-multiplies this matrix by another (other × this).
-  * @param other - Matrix to multiply by
-  * @returns This matrix for chaining
   *
   * @remarks
   * Unlike `multiply`, this applies the other transformation first.
   * Useful when building transformation chains in specific order.
+  *
+  * @param other - Matrix to multiply by
+  * @returns This matrix for chaining
   *
   * @example
   * ```typescript
@@ -2526,6 +2799,8 @@ export class Matrix2 implements Matrix2Like {
   * const rot = Matrix2.fromRotation(Math.PI / 4);
   * scale.premultiply(rot); // scale is now rot × scale
   * ```
+  * @category Arithmetic
+  * @since 0.7.0
   */
  public premultiply(other: ReadonlyMatrix2Like): this {
   const { m00: a00, m01: a01, m10: a10, m11: a11 } = other;
@@ -2544,7 +2819,7 @@ export class Matrix2 implements Matrix2Like {
   * @param scale - Uniform scale factor or per-axis scale
   * @returns This matrix for chaining
   *
-  * @category Composition
+  * @category Matrix Operations
   * @since 0.7.0
   */
  public compose(rotation: number, scale: ReadonlyVector2Like | number): this {
@@ -2567,7 +2842,7 @@ export class Matrix2 implements Matrix2Like {
   * Decomposes this matrix into rotation and scale components.
   * @returns Object with rotation (radians) and scale (Vector2)
   *
-  * @category Composition
+  * @category Matrix Operations
   * @since 0.7.0
   */
  public decompose(): { rotation: number; scale: Vector2 } {
@@ -2575,7 +2850,7 @@ export class Matrix2 implements Matrix2Like {
  }
 
  /* ======================================================================== */
- /* Instance Transformations                                                 */
+ /* Instance Transforms (Geometric)                                          */
  /* ======================================================================== */
 
  /**
@@ -2591,6 +2866,7 @@ export class Matrix2 implements Matrix2Like {
   * const rotated = mat.transformVector(v); // Vector2(0, 1)
   * ```
   * @category Transform
+  * @since 0.7.0
   */
  public transformVector(vector: ReadonlyVector2, out?: Vector2): Vector2 {
   const { x, y } = vector;
@@ -2601,6 +2877,8 @@ export class Matrix2 implements Matrix2Like {
   * Rotates this matrix by an angle in place.
   * @param angle - Angle in radians
   * @returns This matrix for chaining
+  * @category Transform
+  * @since 0.7.0
   */
  public rotate(angle: number): this {
   const { cos, sin } = sinCos(angle);
@@ -2610,13 +2888,13 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Rotates this matrix using precomputed cosine and sine values in place.
   *
-  * @param cos - Cosine of the rotation angle.
-  * @param sin - Sine of the rotation angle.
-  * @returns This matrix for chaining.
-  *
   * @remarks
   * Use this method in hot paths where the same rotation is applied to multiple
   * matrices. Precompute `cos` and `sin` once and reuse them.
+  *
+  * @param cos - Cosine of the rotation angle
+  * @param sin - Sine of the rotation angle
+  * @returns This matrix for chaining
   *
   * @example
   * ```typescript
@@ -2625,7 +2903,7 @@ export class Matrix2 implements Matrix2Like {
   * m.rotateCS(rotation.cos, rotation.sin);
   * ```
   *
-  * @category Matrix Operations
+  * @category Transform
   * @since 0.7.0
   */
  public rotateCS(cos: number, sin: number): this {
@@ -2642,6 +2920,8 @@ export class Matrix2 implements Matrix2Like {
   * Scales this matrix by per-axis factors.
   * @param scale - Scale factors (Vector2 or uniform number)
   * @returns This matrix for chaining
+  * @category Transform
+  * @since 0.7.0
   */
  public scaleBy(scale: ReadonlyVector2Like | number): this {
   if (typeof scale === 'number') {
@@ -2673,6 +2953,8 @@ export class Matrix2 implements Matrix2Like {
   * const col0 = m.getColumn(0); // First column
   * const col1 = m.getColumn(1); // Second column
   * ```
+  * @category Column/Row
+  * @since 0.7.0
   */
  public getColumn(index: number, out?: Vector2): Vector2 {
   // Development assertion (Box2D pattern)
@@ -2699,6 +2981,8 @@ export class Matrix2 implements Matrix2Like {
   * const m = new Matrix2();
   * m.setColumn(0, new Vector2(2, 0)); // Set first column
   * ```
+  * @category Column/Row
+  * @since 0.7.0
   */
  public setColumn(index: number, column: ReadonlyVector2Like): this {
   // Development assertion
@@ -2730,6 +3014,8 @@ export class Matrix2 implements Matrix2Like {
   * const row0 = m.getRow(0); // First row
   * const row1 = m.getRow(1); // Second row
   * ```
+  * @category Column/Row
+  * @since 0.7.0
   */
  public getRow(index: number, out?: Vector2): Vector2 {
   // Development assertion
@@ -2756,6 +3042,8 @@ export class Matrix2 implements Matrix2Like {
   * const m = new Matrix2();
   * m.setRow(0, new Vector2(2, 0)); // Set first row
   * ```
+  * @category Column/Row
+  * @since 0.7.0
   */
  public setRow(index: number, row: ReadonlyVector2Like): this {
   // Development assertion
@@ -2779,11 +3067,12 @@ export class Matrix2 implements Matrix2Like {
 
  /**
   * Exact equality with other matrix (bit-identical).
-  * @param other - Matrix to compare.
-  * @returns True if all components are exactly identical.
   *
   * @remarks
   * Use {@link nearEquals} for comparing results of floating-point operations.
+  *
+  * @param other - Matrix to compare
+  * @returns True if all components are exactly identical
   *
   * @category Comparison
   * @since 0.7.0
@@ -2795,12 +3084,12 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Approximate equality with other matrix using relative tolerance.
   *
-  * @param other - Matrix to compare.
-  * @param epsilon - Relative tolerance. @defaultValue `EPSILON`
-  * @returns True if all component differences are within scaled epsilon.
-  *
   * @remarks
   * Uses relative tolerance: `|a - b| <= epsilon * max(1, |a|, |b|)` per component.
+  *
+  * @param other - Matrix to compare
+  * @param epsilon - Relative tolerance. @defaultValue `EPSILON`
+  * @returns True if all component differences are within scaled epsilon
   *
   * @category Comparison
   * @since 0.7.0
@@ -2813,6 +3102,8 @@ export class Matrix2 implements Matrix2Like {
   * Tests if this is the identity matrix.
   * @param epsilon - Tolerance (default: EPSILON)
   * @returns True if matrix is identity
+  * @category Comparison
+  * @since 0.7.0
   */
  public isIdentity(epsilon: number = EPSILON): boolean {
   return (
@@ -2826,6 +3117,8 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Tests if this matrix is exactly zero.
   * @returns True if all components are zero
+  * @category Comparison
+  * @since 0.7.0
   */
  public isZero(): boolean {
   return this.m00 === 0 && this.m01 === 0 && this.m10 === 0 && this.m11 === 0;
@@ -2835,6 +3128,8 @@ export class Matrix2 implements Matrix2Like {
   * Tests if this matrix is approximately zero.
   * @param epsilon - Tolerance (default: EPSILON)
   * @returns True if all components are within epsilon of zero
+  * @category Comparison
+  * @since 0.7.0
   */
  public isNearZero(epsilon: number = EPSILON): boolean {
   return (
@@ -2848,6 +3143,8 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Tests if all components are finite numbers.
   * @returns True if all components are finite
+  * @category Comparison
+  * @since 0.7.0
   */
  public isFinite(): boolean {
   return (
@@ -2861,6 +3158,8 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Tests if any component is NaN.
   * @returns True if any component is NaN
+  * @category Comparison
+  * @since 0.7.0
   */
  public hasNaN(): boolean {
   return (
@@ -2874,6 +3173,8 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Tests if any component is infinite (±Infinity).
   * @returns True if any component is ±Infinity
+  * @category Comparison
+  * @since 0.7.0
   */
  public hasInfinity(): boolean {
   return Matrix2.hasInfinity(this);
@@ -2881,10 +3182,13 @@ export class Matrix2 implements Matrix2Like {
 
  /**
   * Tests if this matrix is symmetric (m01 ≈ m10).
-  * @param epsilon - Relative tolerance (default: EPSILON)
-  * @returns True if matrix is symmetric
   *
   * @remarks Uses relative tolerance for comparing off-diagonal elements.
+  *
+  * @param epsilon - Relative tolerance (default: EPSILON)
+  * @returns True if matrix is symmetric
+  * @category Comparison
+  * @since 0.7.0
   */
  public isSymmetric(epsilon: number = EPSILON): boolean {
   return relativeEquals(this.m01, this.m10, epsilon);
@@ -2892,10 +3196,13 @@ export class Matrix2 implements Matrix2Like {
 
  /**
   * Tests if this matrix is skew-symmetric.
-  * @param epsilon - Tolerance (default: EPSILON)
-  * @returns True if matrix is skew-symmetric
   *
   * @remarks Uses relative tolerance for comparing off-diagonal elements.
+  *
+  * @param epsilon - Tolerance (default: EPSILON)
+  * @returns True if matrix is skew-symmetric
+  * @category Comparison
+  * @since 0.7.0
   */
  public isSkewSymmetric(epsilon: number = EPSILON): boolean {
   return (
@@ -2909,6 +3216,8 @@ export class Matrix2 implements Matrix2Like {
   * Tests if this matrix is diagonal.
   * @param epsilon - Tolerance (default: EPSILON)
   * @returns True if matrix is diagonal
+  * @category Comparison
+  * @since 0.7.0
   */
  public isDiagonal(epsilon: number = EPSILON): boolean {
   return isNearZero(this.m01, epsilon) && isNearZero(this.m10, epsilon);
@@ -2930,6 +3239,8 @@ export class Matrix2 implements Matrix2Like {
   * const b = Matrix2.fromRotation(Math.PI / 2);
   * a.lerp(b, 0.5); // a is now halfway between identity and b
   * ```
+  * @category Interpolation
+  * @since 0.7.0
   */
  public lerp(other: ReadonlyMatrix2Like, t: number): this {
   this.m00 = lerp(this.m00, other.m00, t);
@@ -2942,9 +3253,9 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Clamped linear interpolation (alias for lerp).
   *
-  * @param other - Target matrix.
-  * @param t - Interpolation factor (clamped to [0, 1]).
-  * @returns This matrix for chaining.
+  * @param other - Target matrix
+  * @param t - Interpolation factor (clamped to [0, 1])
+  * @returns This matrix for chaining
   *
   * @category Interpolation
   * @since 0.7.0
@@ -2956,9 +3267,9 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Smooth step interpolation with another matrix.
   *
-  * @param other - Target matrix.
-  * @param t - Interpolation factor [0, 1].
-  * @returns This matrix for chaining.
+  * @param other - Target matrix
+  * @param t - Interpolation factor [0, 1]
+  * @returns This matrix for chaining
   *
   * @category Interpolation
   * @since 0.7.0
@@ -2977,6 +3288,8 @@ export class Matrix2 implements Matrix2Like {
   * Alias for {@link scale}. Multiplies all components by a scalar.
   * @param scalar - Scale factor
   * @returns This matrix for chaining
+  * @category Arithmetic
+  * @since 0.7.0
   */
  public multiplyScalar(scalar: number): this {
   return this.scale(scalar);
@@ -2989,15 +3302,15 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Writes the matrix to an array or typed array.
   *
-  * @typeParam T - Array type (number[], Float32Array, Float64Array, etc.)
-  * @param out - Optional output array. If not provided, returns a new tuple.
-  * @param offset - Write offset. @defaultValue `0`
-  * @param columnMajor - Use column-major order. @defaultValue `true`
-  * @returns The output array, or a new tuple if no output was provided.
-  *
   * @remarks
   * Follows the same pattern as {@link Vector2.toArray} for API consistency.
   * Accepts any array-like type that supports indexed assignment.
+  *
+  * @template T - Array type (number[], Float32Array, Float64Array, etc.)
+  * @param out - Optional output array. If not provided, returns a new tuple
+  * @param offset - Write offset. @defaultValue `0`
+  * @param columnMajor - Use column-major order. @defaultValue `true`
+  * @returns The output array, or a new tuple if no output was provided
   *
   * @category Conversion
   * @since 0.7.0
@@ -3031,7 +3344,9 @@ export class Matrix2 implements Matrix2Like {
 
  /**
   * Converts to a plain object.
-  * @returns Object with m00, m01, m10, m11 properties.
+  * @returns Object with m00, m01, m10, m11 properties
+  * @category Conversion
+  * @since 0.7.0
   */
  public toObject(): Matrix2Like {
   return { m00: this.m00, m01: this.m01, m10: this.m10, m11: this.m11 };
@@ -3039,7 +3354,9 @@ export class Matrix2 implements Matrix2Like {
 
  /**
   * Alias for toObject (JSON serialization).
-  * @returns Object with matrix components.
+  * @returns Object with matrix components
+  * @category Conversion
+  * @since 0.7.0
   */
  public toJSON(): Matrix2Like {
   return this.toObject();
@@ -3047,9 +3364,6 @@ export class Matrix2 implements Matrix2Like {
 
  /**
   * Converts this matrix to a Matrix3Like (embeds in homogeneous coordinates).
-  *
-  * @param out - Optional output object to populate.
-  * @returns Matrix3Like representation (plain object or provided out).
   *
   * @remarks
   * Returns a `Matrix3Like` object, not a `Matrix3` instance, to avoid
@@ -3064,6 +3378,9 @@ export class Matrix2 implements Matrix2Like {
   * [ m01  m11  0 ]
   * [  0    0   1 ]
   * ```
+  *
+  * @param out - Optional output object to populate
+  * @returns Matrix3Like representation (plain object or provided out)
   *
   * @example
   * ```typescript
@@ -3103,15 +3420,21 @@ export class Matrix2 implements Matrix2Like {
   * Converts to string representation.
   * @param precision - Number of decimal places (default: 4)
   * @returns String representation
+  * @category Conversion
+  * @since 0.7.0
   */
  public toString(precision = 4): string {
   const p = (n: number) => n.toFixed(precision);
   return `Matrix2(\n  ${p(this.m00)}, ${p(this.m10)}\n  ${p(this.m01)}, ${p(this.m11)}\n)`;
  }
 
+ /* ------ Transform ------ */
+
  /**
   * Applies Math.trunc to all elements (rounds towards zero).
-  * @returns This for chaining.
+  * @returns This for chaining
+  * @category Transform
+  * @since 0.7.0
   */
  public trunc(): this {
   this.m00 = Math.trunc(this.m00);
@@ -3124,6 +3447,8 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Creates a clone of this matrix.
   * @returns New matrix with same components
+  * @category Conversion
+  * @since 0.7.0
   */
  public clone(): Matrix2 {
   return new Matrix2(this.m00, this.m01, this.m10, this.m11);
@@ -3131,7 +3456,7 @@ export class Matrix2 implements Matrix2Like {
 
  /**
   * Iterator for array destructuring (column-major order).
-  * @returns Iterator yielding m00, m01, m10, m11.
+  * @returns Iterator yielding m00, m01, m10, m11
   *
   * @example
   * ```typescript

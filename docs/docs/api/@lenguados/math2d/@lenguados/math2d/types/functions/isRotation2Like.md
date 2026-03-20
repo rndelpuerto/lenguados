@@ -2,7 +2,7 @@
 
 > **isRotation2Like**(`value`): `value is ReadonlyRotation2Like`
 
-Defined in: [src/types/index.ts:332](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/types/index.ts#L332)
+Defined in: [src/types/index.ts:314](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/types/index.ts#L314)
 
 Type guard to check if value has rotation properties (Rotation2Like).
 
@@ -12,13 +12,13 @@ Type guard to check if value has rotation properties (Rotation2Like).
 
 `unknown`
 
-Value to check.
+Value to check
 
 ## Returns
 
 `value is ReadonlyRotation2Like`
 
-True if value conforms to ReadonlyRotation2Like.
+True if value conforms to ReadonlyRotation2Like
 
 ## Example
 

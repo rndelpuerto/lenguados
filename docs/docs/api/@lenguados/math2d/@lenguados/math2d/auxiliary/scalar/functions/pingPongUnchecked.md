@@ -2,7 +2,7 @@
 
 > **pingPongUnchecked**(`value`, `min`, `max`): `number`
 
-Defined in: [src/auxiliary/scalar/arithmetic.ts:303](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/auxiliary/scalar/arithmetic.ts#L303)
+Defined in: [src/auxiliary/scalar/arithmetic.ts:327](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/scalar/arithmetic.ts#L327)
 
 Ping-pongs value in [min, max] range (unchecked).
 
@@ -12,29 +12,34 @@ Ping-pongs value in [min, max] range (unchecked).
 
 `number`
 
-Value to ping-pong.
+Value to ping-pong
 
 ### min
 
 `number`
 
-Lower bound.
+Lower bound
 
 ### max
 
 `number`
 
-Upper bound (must be > min).
+Upper bound (must be > min)
 
 ## Returns
 
 `number`
 
-Ping-ponged value.
+Ping-ponged value
 
 ## Remarks
 
-**⚠️ Precondition:** max > min.
+**Precondition:** max > min.
+
+## See
+
+- [pingPong](pingPong.md) — Throws for invalid range
+- [pingPongSafe](pingPongSafe.md) — Returns min if range is invalid
 
 ## Since
 

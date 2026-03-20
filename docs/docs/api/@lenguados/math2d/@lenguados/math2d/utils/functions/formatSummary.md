@@ -2,7 +2,7 @@
 
 > **formatSummary**(`summary`): `string`
 
-Defined in: [src/utils/performance.ts:256](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/utils/performance.ts#L256)
+Defined in: [src/utils/performance.ts:256](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/utils/performance.ts#L256)
 
 Formats a measurement summary into a human-friendly string. Values are shown
 with three decimal places by default.
@@ -13,13 +13,13 @@ with three decimal places by default.
 
 [`MeasurementSummary`](../interfaces/MeasurementSummary.md)
 
-Summary statistics to format.
+Summary statistics to format
 
 ## Returns
 
 `string`
 
-Human-readable string.
+Human-readable string
 
 ## Example
 

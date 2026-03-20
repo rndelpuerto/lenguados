@@ -1,7 +1,7 @@
 /**
- * @file src/validation/assert.ts
+ * @file validation/assert.ts
  * @module @lenguados/math2d/validation
- * @description Debug assertions for development-time validation.
+ * @description Debug assertions for development-time validation
  *
  * @remarks
  * **Pattern**: Inspired by Box2D/Bullet Physics assertions with compile-time DCE.
@@ -90,8 +90,6 @@ let assertionsEnabled = true;
 /**
  * Enables or disables assertions globally at runtime.
  *
- * @param enabled - `true` to enable assertions, `false` to disable.
- *
  * @remarks
  * **Development only**: This function only has effect when `process.env.NODE_ENV !== 'production'`
  * (development build). In production builds, assertions are
@@ -99,6 +97,8 @@ let assertionsEnabled = true;
  *
  * The `safe*` functions in `auxiliary/numeric/safety.ts` remain active
  * regardless of this setting.
+ *
+ * @param enabled - `true` to enable assertions, `false` to disable
  *
  * @example
  * ```typescript
@@ -119,11 +119,11 @@ export function setAssertionsEnabled(enabled: boolean): void {
 /**
  * Returns the current assertions state.
  *
- * @returns `true` if assertions are enabled, `false` otherwise.
- *
  * @remarks
  * In development: Returns the runtime state set by {@link setAssertionsEnabled}.
  * In production: Always returns `false` (assertions are compile-time eliminated).
+ *
+ * @returns `true` if assertions are enabled, `false` otherwise
  *
  * @example
  * ```typescript
@@ -146,12 +146,12 @@ export function areAssertionsEnabled(): boolean {
 /**
  * Asserts that a value is finite (not NaN, not Infinity).
  *
- * @param value - Numeric value to validate.
- * @param name - Parameter name for error messages (optional).
- * @throws {Error} If assertions enabled and value is not finite.
- *
  * @remarks
  * No-op when assertions are disabled. Zero runtime cost in production.
+ *
+ * @param value - Numeric value to validate
+ * @param name - Parameter name for error messages (optional)
+ * @throws {Error} If assertions enabled and value is not finite
  *
  * @example
  * ```typescript
@@ -179,13 +179,13 @@ export function assertFinite(value: number, name?: string): void {
 /**
  * Asserts that a value is not zero.
  *
- * @param value - Numeric value to validate.
- * @param name - Parameter name for error messages (optional).
- * @throws {Error} If assertions enabled and value is exactly zero.
- *
  * @remarks
  * Uses strict equality (`=== 0`). For near-zero checks, use `isNearZero`.
  * No-op when assertions are disabled.
+ *
+ * @param value - Numeric value to validate
+ * @param name - Parameter name for error messages (optional)
+ * @throws {Error} If assertions enabled and value is exactly zero
  *
  * @example
  * ```typescript
@@ -212,15 +212,15 @@ export function assertNonZero(value: number, name?: string): void {
 /**
  * Asserts that a value is within a range (inclusive).
  *
- * @param value - Numeric value to validate.
- * @param min - Minimum inclusive bound.
- * @param max - Maximum inclusive bound.
- * @param name - Parameter name for error messages (optional).
- * @throws {Error} If assertions enabled and value ∉ [min, max].
- *
  * @remarks
  * Uses inclusive bounds: `min ≤ value ≤ max`.
  * No-op when assertions are disabled.
+ *
+ * @param value - Numeric value to validate
+ * @param min - Minimum inclusive bound
+ * @param max - Maximum inclusive bound
+ * @param name - Parameter name for error messages (optional)
+ * @throws {Error} If assertions enabled and value ∉ [min, max]
  *
  * @example
  * ```typescript
@@ -245,13 +245,13 @@ export function assertRange(value: number, min: number, max: number, name?: stri
 /**
  * Asserts that a value is strictly positive (> 0).
  *
- * @param value - Numeric value to validate.
- * @param name - Parameter name for error messages (optional).
- * @throws {Error} If assertions enabled and value ≤ 0.
- *
  * @remarks
  * Zero is not considered positive. Use `assertNonNegative` for ≥ 0.
  * No-op when assertions are disabled.
+ *
+ * @param value - Numeric value to validate
+ * @param name - Parameter name for error messages (optional)
+ * @throws {Error} If assertions enabled and value ≤ 0
  *
  * @example
  * ```typescript
@@ -278,13 +278,13 @@ export function assertPositive(value: number, name?: string): void {
 /**
  * Asserts that a value is non-negative (≥ 0).
  *
- * @param value - Numeric value to validate.
- * @param name - Parameter name for error messages (optional).
- * @throws {Error} If assertions enabled and value < 0.
- *
  * @remarks
  * Zero is considered valid. Use `assertPositive` for strictly > 0.
  * No-op when assertions are disabled.
+ *
+ * @param value - Numeric value to validate
+ * @param name - Parameter name for error messages (optional)
+ * @throws {Error} If assertions enabled and value < 0
  *
  * @example
  * ```typescript
@@ -311,14 +311,14 @@ export function assertNonNegative(value: number, name?: string): void {
 /**
  * Asserts that a value is a safe JavaScript integer.
  *
- * @param value - Numeric value to validate.
- * @param name - Parameter name for error messages (optional).
- * @throws {Error} If value is not a safe integer.
- *
  * @remarks
  * Safe integers are integers that can be exactly represented as
  * IEEE-754 double precision numbers. Range: -(2⁵³ - 1) to 2⁵³ - 1.
  * No-op when assertions are disabled.
+ *
+ * @param value - Numeric value to validate
+ * @param name - Parameter name for error messages (optional)
+ * @throws {Error} If value is not a safe integer
  *
  * @example
  * ```typescript
@@ -347,13 +347,13 @@ export function assertSafeInteger(value: number, name?: string): void {
 /**
  * Asserts a generic boolean condition.
  *
- * @param condition - Boolean condition to validate.
- * @param message - Error message if condition is false (optional).
- * @throws {Error} If assertions enabled and condition is `false`.
- *
  * @remarks
  * Base assertion for any custom validation logic.
  * No-op when assertions are disabled.
+ *
+ * @param condition - Boolean condition to validate
+ * @param message - Error message if condition is false (optional)
+ * @throws {Error} If assertions enabled and condition is `false`
  *
  * @example
  * ```typescript
@@ -380,14 +380,14 @@ export function assert(condition: boolean, message?: string): void {
 /**
  * Asserts that Vector2-like components are finite.
  *
- * @param x - X component to validate.
- * @param y - Y component to validate.
- * @param name - Vector name for error messages (optional).
- * @throws {Error} If assertions enabled and any component is not finite.
- *
  * @remarks
  * Validates both components are finite (not NaN, not Infinity).
  * No-op when assertions are disabled.
+ *
+ * @param x - X component to validate
+ * @param y - Y component to validate
+ * @param name - Vector name for error messages (optional)
+ * @throws {Error} If assertions enabled and any component is not finite
  *
  * @example
  * ```typescript
@@ -416,16 +416,16 @@ export function assertVector2(x: number, y: number, name?: string): void {
 /**
  * Asserts that Matrix2-like elements are finite.
  *
- * @param m00 - Element at row 0, column 0.
- * @param m01 - Element at row 0, column 1.
- * @param m10 - Element at row 1, column 0.
- * @param m11 - Element at row 1, column 1.
- * @param name - Matrix name for error messages (optional).
- * @throws {Error} If assertions enabled and any element is not finite.
- *
  * @remarks
  * Validates all 4 elements are finite (not NaN, not Infinity).
  * No-op when assertions are disabled.
+ *
+ * @param m00 - Element at row 0, column 0
+ * @param m01 - Element at row 0, column 1
+ * @param m10 - Element at row 1, column 0
+ * @param m11 - Element at row 1, column 1
+ * @param name - Matrix name for error messages (optional)
+ * @throws {Error} If assertions enabled and any element is not finite
  *
  * @example
  * ```typescript
@@ -466,21 +466,21 @@ export function assertMatrix2(
 /**
  * Asserts that Matrix3-like elements are finite.
  *
- * @param m00 - Element at row 0, column 0.
- * @param m01 - Element at row 0, column 1.
- * @param m02 - Element at row 0, column 2.
- * @param m10 - Element at row 1, column 0.
- * @param m11 - Element at row 1, column 1.
- * @param m12 - Element at row 1, column 2.
- * @param m20 - Element at row 2, column 0.
- * @param m21 - Element at row 2, column 1.
- * @param m22 - Element at row 2, column 2.
- * @param name - Matrix name for error messages (optional).
- * @throws {Error} If assertions enabled and any element is not finite.
- *
  * @remarks
  * Validates all 9 elements are finite (not NaN, not Infinity).
  * No-op when assertions are disabled.
+ *
+ * @param m00 - Element at row 0, column 0
+ * @param m01 - Element at row 0, column 1
+ * @param m02 - Element at row 0, column 2
+ * @param m10 - Element at row 1, column 0
+ * @param m11 - Element at row 1, column 1
+ * @param m12 - Element at row 1, column 2
+ * @param m20 - Element at row 2, column 0
+ * @param m21 - Element at row 2, column 1
+ * @param m22 - Element at row 2, column 2
+ * @param name - Matrix name for error messages (optional)
+ * @throws {Error} If assertions enabled and any element is not finite
  *
  * @example
  * ```typescript
@@ -543,15 +543,15 @@ export function assertMatrix3(
 /**
  * Asserts that Rotation2-like components are finite.
  *
- * @param cos - Cosine component to validate.
- * @param sin - Sine component to validate.
- * @param name - Rotation name for error messages (optional).
- * @throws {Error} If assertions enabled and any component is not finite.
- *
  * @remarks
  * Validates both cos and sin are finite (not NaN, not Infinity).
  * Does NOT validate that cos² + sin² = 1 (unit constraint).
  * No-op when assertions are disabled.
+ *
+ * @param cos - Cosine component to validate
+ * @param sin - Sine component to validate
+ * @param name - Rotation name for error messages (optional)
+ * @throws {Error} If assertions enabled and any component is not finite
  *
  * @example
  * ```typescript
@@ -580,14 +580,22 @@ export function assertRotation2(cos: number, sin: number, name?: string): void {
 /**
  * Asserts that Complex-like components are finite.
  *
- * @param real - Real component to validate.
- * @param imag - Imaginary component to validate.
- * @param name - Complex name for error messages (optional).
- * @throws {Error} If assertions enabled and any component is not finite.
- *
  * @remarks
  * Validates both real and imag are finite (not NaN, not Infinity).
  * No-op when assertions are disabled.
+ *
+ * @param real - Real component to validate
+ * @param imag - Imaginary component to validate
+ * @param name - Complex name for error messages (optional)
+ * @throws {Error} If assertions enabled and any component is not finite
+ *
+ * @example
+ * ```typescript
+ * function createComplex(real: number, imag: number): Complex {
+ *   assertComplex(real, imag, 'input');
+ *   return new Complex(real, imag);
+ * }
+ * ```
  *
  * @category Assertion
  * @since 0.8.0
@@ -608,14 +616,22 @@ export function assertComplex(real: number, imag: number, name?: string): void {
 /**
  * Asserts that Interval components are finite and properly ordered.
  *
- * @param min - Minimum bound to validate.
- * @param max - Maximum bound to validate.
- * @param name - Interval name for error messages (optional).
- * @throws {Error} If assertions enabled and any component is not finite or min > max.
- *
  * @remarks
  * Validates both components are finite AND min <= max.
  * No-op when assertions are disabled.
+ *
+ * @param min - Minimum bound to validate
+ * @param max - Maximum bound to validate
+ * @param name - Interval name for error messages (optional)
+ * @throws {Error} If assertions enabled and any component is not finite or min > max
+ *
+ * @example
+ * ```typescript
+ * function createInterval(min: number, max: number): Interval {
+ *   assertInterval(min, max, 'bounds');
+ *   return new Interval(min, max);
+ * }
+ * ```
  *
  * @category Assertion
  * @since 0.8.0
@@ -639,18 +655,26 @@ export function assertInterval(min: number, max: number, name?: string): void {
 /**
  * Asserts that Transform2 components are finite.
  *
- * @param px - Position X to validate.
- * @param py - Position Y to validate.
- * @param cos - Rotation cosine to validate.
- * @param sin - Rotation sine to validate.
- * @param sx - Scale X to validate.
- * @param sy - Scale Y to validate.
- * @param name - Transform name for error messages (optional).
- * @throws {Error} If assertions enabled and any component is not finite.
- *
  * @remarks
  * Validates all 6 components are finite (not NaN, not Infinity).
  * No-op when assertions are disabled.
+ *
+ * @param px - Position X to validate
+ * @param py - Position Y to validate
+ * @param cos - Rotation cosine to validate
+ * @param sin - Rotation sine to validate
+ * @param sx - Scale X to validate
+ * @param sy - Scale Y to validate
+ * @param name - Transform name for error messages (optional)
+ * @throws {Error} If assertions enabled and any component is not finite
+ *
+ * @example
+ * ```typescript
+ * function createTransform(px: number, py: number, cos: number, sin: number): Transform2 {
+ *   assertTransform2(px, py, cos, sin, 1, 1, 'input');
+ *   return new Transform2(px, py, cos, sin, 1, 1);
+ * }
+ * ```
  *
  * @category Assertion
  * @since 0.8.0
@@ -695,13 +719,13 @@ export function assertTransform2(
 /**
  * Asserts that an object has valid Vector2-like shape with finite components.
  *
- * @param value - Object to validate.
- * @param name - Object name for error messages (optional).
- * @throws {Error} If assertions enabled and object is not Vector2-like or has invalid components.
- *
  * @remarks
  * Validates that object has `x` and `y` numeric properties that are finite.
  * No-op when assertions are disabled.
+ *
+ * @param value - Object to validate
+ * @param name - Object name for error messages (optional)
+ * @throws {Error} If assertions enabled and object is not Vector2-like or has invalid components
  *
  * @example
  * ```typescript
@@ -730,13 +754,21 @@ export function assertVector2Like(value: unknown, name?: string): void {
 /**
  * Asserts that an object has valid Rotation2-like shape with finite elements.
  *
- * @param value - Object to validate.
- * @param name - Object name for error messages (optional).
- * @throws {Error} If assertions enabled and object is not Rotation2-like or has invalid elements.
- *
  * @remarks
  * Validates that object has `cos` and `sin` numeric properties that are finite.
  * No-op when assertions are disabled.
+ *
+ * @param value - Object to validate
+ * @param name - Object name for error messages (optional)
+ * @throws {Error} If assertions enabled and object is not Rotation2-like or has invalid elements
+ *
+ * @example
+ * ```typescript
+ * function processRotation(r: unknown): Rotation2 {
+ *   assertRotation2Like(r, 'input');
+ *   return new Rotation2(r.cos, r.sin);
+ * }
+ * ```
  *
  * @category Assertion
  * @since 0.8.0
@@ -757,13 +789,21 @@ export function assertRotation2Like(value: unknown, name?: string): void {
 /**
  * Asserts that an object has valid Matrix2-like shape with finite elements.
  *
- * @param value - Object to validate.
- * @param name - Object name for error messages (optional).
- * @throws {Error} If assertions enabled and object is not Matrix2-like or has invalid elements.
- *
  * @remarks
  * Validates that object has `m00`, `m01`, `m10`, `m11` numeric properties that are finite.
  * No-op when assertions are disabled.
+ *
+ * @param value - Object to validate
+ * @param name - Object name for error messages (optional)
+ * @throws {Error} If assertions enabled and object is not Matrix2-like or has invalid elements
+ *
+ * @example
+ * ```typescript
+ * function processMatrix(m: unknown): Matrix2 {
+ *   assertMatrix2Like(m, 'input');
+ *   return new Matrix2(m.m00, m.m01, m.m10, m.m11);
+ * }
+ * ```
  *
  * @category Assertion
  * @since 0.7.0
@@ -786,13 +826,21 @@ export function assertMatrix2Like(value: unknown, name?: string): void {
 /**
  * Asserts that an object has valid Matrix3-like shape with finite elements.
  *
- * @param value - Object to validate.
- * @param name - Object name for error messages (optional).
- * @throws {Error} If assertions enabled and object is not Matrix3-like or has invalid elements.
- *
  * @remarks
  * Validates that object has `m00`..`m22` numeric properties that are finite.
  * No-op when assertions are disabled.
+ *
+ * @param value - Object to validate
+ * @param name - Object name for error messages (optional)
+ * @throws {Error} If assertions enabled and object is not Matrix3-like or has invalid elements
+ *
+ * @example
+ * ```typescript
+ * function processMatrix3(m: unknown): void {
+ *   assertMatrix3Like(m, 'transform');
+ *   // m is now validated as Matrix3Like with finite elements
+ * }
+ * ```
  *
  * @category Assertion
  * @since 0.8.0
@@ -815,13 +863,21 @@ export function assertMatrix3Like(value: unknown, name?: string): void {
 /**
  * Asserts that an object has valid Complex-like shape with finite components.
  *
- * @param value - Object to validate.
- * @param name - Object name for error messages (optional).
- * @throws {Error} If assertions enabled and object is not Complex-like or has invalid components.
- *
  * @remarks
  * Validates that object has `real` and `imag` numeric properties that are finite.
  * No-op when assertions are disabled.
+ *
+ * @param value - Object to validate
+ * @param name - Object name for error messages (optional)
+ * @throws {Error} If assertions enabled and object is not Complex-like or has invalid components
+ *
+ * @example
+ * ```typescript
+ * function processComplex(c: unknown): Complex {
+ *   assertComplexLike(c, 'input');
+ *   return new Complex(c.real, c.imag);
+ * }
+ * ```
  *
  * @category Assertion
  * @since 0.7.0
@@ -842,14 +898,22 @@ export function assertComplexLike(value: unknown, name?: string): void {
 /**
  * Asserts that an object has valid Interval-like shape with finite bounds.
  *
- * @param value - Object to validate.
- * @param name - Object name for error messages (optional).
- * @throws {Error} If assertions enabled and object is not Interval-like or has invalid bounds.
- *
  * @remarks
  * Validates that object has `min` and `max` numeric properties that are finite.
  * Also validates that min ≤ max.
  * No-op when assertions are disabled.
+ *
+ * @param value - Object to validate
+ * @param name - Object name for error messages (optional)
+ * @throws {Error} If assertions enabled and object is not Interval-like or has invalid bounds
+ *
+ * @example
+ * ```typescript
+ * function processInterval(i: unknown): Interval {
+ *   assertIntervalLike(i, 'range');
+ *   return new Interval(i.min, i.max);
+ * }
+ * ```
  *
  * @category Assertion
  * @since 0.7.0
@@ -875,13 +939,21 @@ export function assertIntervalLike(value: unknown, name?: string): void {
 /**
  * Asserts that an object has valid Transform2-like shape.
  *
- * @param value - Object to validate.
- * @param name - Object name for error messages (optional).
- * @throws {Error} If assertions enabled and object is not Transform2-like.
- *
  * @remarks
  * Validates that object has `position` (Vector2-like), `rotation` (Rotation2-like), and `scale` (Vector2-like).
  * No-op when assertions are disabled.
+ *
+ * @param value - Object to validate
+ * @param name - Object name for error messages (optional)
+ * @throws {Error} If assertions enabled and object is not Transform2-like
+ *
+ * @example
+ * ```typescript
+ * function processTransform(t: unknown): void {
+ *   assertTransform2Like(t, 'input');
+ *   // t is now validated as Transform2Like with finite components
+ * }
+ * ```
  *
  * @category Assertion
  * @since 0.7.0

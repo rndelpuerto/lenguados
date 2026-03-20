@@ -2,7 +2,7 @@
 
 > **log**(`x`): `number`
 
-Defined in: [src/deterministic/deterministic-kernels.ts:755](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/deterministic/deterministic-kernels.ts#L755)
+Defined in: [src/deterministic/deterministic-kernels.ts:744](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/deterministic/deterministic-kernels.ts#L744)
 
 Deterministic natural logarithm using fdlibm algorithm.
 

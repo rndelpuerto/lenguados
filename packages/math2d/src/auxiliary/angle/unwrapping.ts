@@ -1,7 +1,7 @@
 /**
  * @file auxiliary/angle/unwrapping.ts
  * @module @lenguados/math2d/auxiliary/angle
- * @description Angle unwrapping for continuous sequences.
+ * @description Angle unwrapping for continuous sequences
  */
 
 import { normalizeRadians } from './normalization';
@@ -11,10 +11,6 @@ import { angleDifference } from './operations';
  * Unwraps a sequence of angles into a continuous series by
  * taking shortest-arc steps between consecutive elements.
  *
- * @param angles - Array of angles in radians.
- * @param reference - Optional continuity reference for the first element.
- * @returns New array of unwrapped angles (real-valued).
- *
  * @remarks
  * If `reference` is provided, the first element is chosen equivalent to `angles[0]`
  * but closest to `reference`.
@@ -22,14 +18,18 @@ import { angleDifference } from './operations';
  * Note: large real jumps (> PI) will still choose the shortest path and may not
  * reflect true multi-turn motion—this is by design for continuity.
  *
+ * @param angles - Array of angles in radians
+ * @param reference - Optional continuity reference for the first element
+ * @returns New array of unwrapped angles (real-valued)
+ *
+ * @throws {TypeError} If input array contains holes (undefined values)
+ *
  * @example
  * ```typescript
  * unwrapAngles([0, 3, -3, 0]);           // [0, 3, 3.28..., 6.28...]
  * unwrapAngles([0, Math.PI, 0]);         // [0, Math.PI, 0] (shortest arc back)
  * unwrapAngles([0, 3, 6], -Math.PI);     // [-6.28..., -3.28..., -0.28...]
  * ```
- *
- * @throws {TypeError} If input array contains holes (undefined values).
  *
  * @category Normalization
  * @since 0.7.0
@@ -68,12 +68,15 @@ export function unwrapAngles(angles: number[], reference?: number): number[] {
 
 /**
  * Unwraps angles in-place.
- * @param angles - Array of angles to unwrap (modified in-place).
- * @param reference - Optional continuity reference for the first element.
- * @returns The modified angles array.
  *
  * @remarks
  * More memory efficient than unwrapAngles for large arrays.
+ *
+ * @param angles - Array of angles to unwrap (modified in-place)
+ * @param reference - Optional continuity reference for the first element
+ * @returns The modified angles array
+ *
+ * @throws {TypeError} If input array contains holes (undefined values)
  *
  * @example
  * ```typescript
@@ -81,8 +84,6 @@ export function unwrapAngles(angles: number[], reference?: number): number[] {
  * unwrapAnglesInPlace(angles);
  * console.log(angles);  // [0, 3, 3.28..., 6.28...]
  * ```
- *
- * @throws {TypeError} If input array contains holes (undefined values).
  *
  * @category Normalization
  * @since 0.7.0
@@ -122,6 +123,11 @@ export function unwrapAnglesInPlace(angles: number[], reference?: number): numbe
  * Streaming unwrapper for angles in radians.
  * Maintains continuity across calls by accumulating shortest-arc deltas.
  *
+ * @remarks
+ * For very long sequences (>100K samples), accumulated floating-point error
+ * in the unwrapped value may cause precision degradation. Consider periodic
+ * re-anchoring via `reset()` for such use cases.
+ *
  * @example
  * ```typescript
  * const unwrapper = new AngleUnwrapper();
@@ -135,11 +141,6 @@ export function unwrapAnglesInPlace(angles: number[], reference?: number): numbe
  * console.log(unwrapper.next(Math.PI));     // Math.PI
  * ```
  *
- * @remarks
- * For very long sequences (>100K samples), accumulated floating-point error
- * in the unwrapped value may cause precision degradation. Consider periodic
- * re-anchoring via `reset()` for such use cases.
- *
  * @category Normalization
  * @since 0.7.0
  */
@@ -149,7 +150,7 @@ export class AngleUnwrapper {
 
  /**
   * Creates a new angle unwrapper.
-  * @param initialAngle - Optional initial angle.
+  * @param initialAngle - Optional initial angle
   */
  constructor(initialAngle?: number) {
   if (initialAngle !== undefined) {
@@ -161,6 +162,9 @@ export class AngleUnwrapper {
  /**
   * Whether the unwrapper has received at least one angle.
   * Distinguishes uninitialized state from "initialized at 0".
+  * @returns True if the unwrapper has been initialized
+  * @category Accessor
+  * @since 0.7.0
   */
  get initialized(): boolean {
   return this._initialized;
@@ -169,8 +173,8 @@ export class AngleUnwrapper {
  /**
   * Feeds a new wrapped angle and returns the continuous (unwrapped) value.
   * On first call, it initializes to the provided angle.
-  * @param theta - Wrapped angle in radians.
-  * @returns Unwrapped angle in radians.
+  * @param theta - Wrapped angle in radians
+  * @returns Unwrapped angle in radians
   *
   * @category Normalization
   * @since 0.7.0
@@ -188,7 +192,7 @@ export class AngleUnwrapper {
 
  /**
   * Returns the last unwrapped value.
-  * @returns The last unwrapped value.
+  * @returns The last unwrapped value
   *
   * @category Normalization
   * @since 0.7.0
@@ -199,7 +203,7 @@ export class AngleUnwrapper {
 
  /**
   * Resets the internal state. If `theta` is provided, sets it as the starting value.
-  * @param theta - Optional new starting angle.
+  * @param theta - Optional new starting angle
   *
   * @category Normalization
   * @since 0.7.0

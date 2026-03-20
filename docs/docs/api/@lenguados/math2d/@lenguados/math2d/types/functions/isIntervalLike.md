@@ -2,7 +2,7 @@
 
 > **isIntervalLike**(`value`): `value is ReadonlyIntervalLike`
 
-Defined in: [src/types/index.ts:408](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/types/index.ts#L408)
+Defined in: [src/types/index.ts:390](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/types/index.ts#L390)
 
 Type guard to check if value has interval properties (IntervalLike).
 
@@ -12,13 +12,13 @@ Type guard to check if value has interval properties (IntervalLike).
 
 `unknown`
 
-Value to check.
+Value to check
 
 ## Returns
 
 `value is ReadonlyIntervalLike`
 
-True if value conforms to ReadonlyIntervalLike.
+True if value conforms to ReadonlyIntervalLike
 
 ## Example
 

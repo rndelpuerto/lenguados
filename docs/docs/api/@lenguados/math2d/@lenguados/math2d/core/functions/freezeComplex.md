@@ -2,7 +2,7 @@
 
 > **freezeComplex**(`complex`): [`ReadonlyComplex`](../type-aliases/ReadonlyComplex.md)
 
-Defined in: [src/core/complex.ts:100](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/complex.ts#L100)
+Defined in: [src/core/complex.ts:106](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/complex.ts#L106)
 
 Permanently freezes a [Complex](../classes/Complex.md) instance so it can no longer be mutated.
 
@@ -12,13 +12,13 @@ Permanently freezes a [Complex](../classes/Complex.md) instance so it can no lon
 
 [`Complex`](../classes/Complex.md)
 
-The Complex object to freeze.
+The Complex object to freeze
 
 ## Returns
 
 [`ReadonlyComplex`](../type-aliases/ReadonlyComplex.md)
 
-The same instance, now typed as ReadonlyComplex.
+The same instance, now typed as ReadonlyComplex
 
 ## Remarks
 

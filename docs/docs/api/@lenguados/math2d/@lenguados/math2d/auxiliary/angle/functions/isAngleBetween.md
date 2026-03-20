@@ -2,7 +2,7 @@
 
 > **isAngleBetween**(`angle`, `start`, `end`, `inclusive`): `boolean`
 
-Defined in: [src/auxiliary/angle/operations.ts:210](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/auxiliary/angle/operations.ts#L210)
+Defined in: [src/auxiliary/angle/operations.ts:211](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/angle/operations.ts#L211)
 
 Tests if angle is between start and end (CCW).
 
@@ -12,36 +12,39 @@ Tests if angle is between start and end (CCW).
 
 `number`
 
-Angle to test.
+Angle to test
 
 ### start
 
 `number`
 
-Start angle.
+Start angle
 
 ### end
 
 `number`
 
-End angle.
+End angle
 
 ### inclusive
 
 `boolean` = `true`
 
-Whether to include boundaries (default: true).
+Whether to include boundaries (default: true)
 
 ## Returns
 
 `boolean`
 
-True if angle is in the CCW arc from start to end.
+True if angle is in the CCW arc from start to end
 
 ## Remarks
 
 Uses counter-clockwise convention. The arc from start to end
 is traversed in the positive (CCW) direction.
+
+When `start === end`, the arc has zero length (a point), not a full circle.
+Only the exact boundary angle matches (with `inclusive = true`).
 
 ## Example
 

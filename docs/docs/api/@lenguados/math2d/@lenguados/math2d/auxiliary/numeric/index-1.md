@@ -6,7 +6,7 @@ auxiliary/numeric/index.ts
 
 ## Description
 
-Numeric robustness and safety operations for the Lenguados math2d library.
+Numeric robustness and safety operations for the Lenguados math2d library
 
 ## Remarks
 
@@ -17,11 +17,17 @@ This module provides low-level numeric operations including:
 - Rounding and quantization operations
 - Value wrapping and modulo operations
 
-## References
+## Other
 
 ### compensatedProduct
 
 Re-exports [compensatedProduct](functions/compensatedProduct.md)
+
+---
+
+### divideSafe
+
+Re-exports [divideSafe](functions/divideSafe.md)
 
 ---
 
@@ -85,6 +91,18 @@ Re-exports [isPositiveInfinity](functions/isPositiveInfinity.md)
 
 ---
 
+### lerpSafe
+
+Re-exports [lerpSafe](functions/lerpSafe.md)
+
+---
+
+### logSafe
+
+Re-exports [logSafe](functions/logSafe.md)
+
+---
+
 ### MIN_SAFE_DIVISOR
 
 Re-exports [MIN_SAFE_DIVISOR](variables/MIN_SAFE_DIVISOR.md)
@@ -94,6 +112,18 @@ Re-exports [MIN_SAFE_DIVISOR](variables/MIN_SAFE_DIVISOR.md)
 ### neumaierSum
 
 Re-exports [neumaierSum](functions/neumaierSum.md)
+
+---
+
+### powSafe
+
+Re-exports [powSafe](functions/powSafe.md)
+
+---
+
+### reciprocalSafe
+
+Re-exports [reciprocalSafe](functions/reciprocalSafe.md)
 
 ---
 
@@ -127,54 +157,6 @@ Re-exports [roundToPowerOfTwo](functions/roundToPowerOfTwo.md)
 
 ---
 
-### safeAcos
-
-Renames and re-exports [acosSafe](../../deterministic/functions/acosSafe.md)
-
----
-
-### safeAsin
-
-Renames and re-exports [asinSafe](../../deterministic/functions/asinSafe.md)
-
----
-
-### safeDivide
-
-Re-exports [safeDivide](functions/safeDivide.md)
-
----
-
-### safeLerp
-
-Re-exports [safeLerp](functions/safeLerp.md)
-
----
-
-### safeLog
-
-Re-exports [safeLog](functions/safeLog.md)
-
----
-
-### safePow
-
-Re-exports [safePow](functions/safePow.md)
-
----
-
-### safeReciprocal
-
-Re-exports [safeReciprocal](functions/safeReciprocal.md)
-
----
-
-### safeSqrt
-
-Renames and re-exports [sqrtSafe](../../deterministic/functions/sqrtSafe.md)
-
----
-
 ### sanitizeNumber
 
 Re-exports [sanitizeNumber](functions/sanitizeNumber.md)
@@ -184,3 +166,21 @@ Re-exports [sanitizeNumber](functions/sanitizeNumber.md)
 ### snapToGrid
 
 Re-exports [snapToGrid](functions/snapToGrid.md)
+
+---
+
+### sqrtSafe
+
+Re-exports [sqrtSafe](functions/sqrtSafe.md)
+
+## Safety
+
+### acosSafe
+
+Re-exports [acosSafe](../../deterministic/functions/acosSafe.md)
+
+---
+
+### asinSafe
+
+Re-exports [asinSafe](../../deterministic/functions/asinSafe.md)

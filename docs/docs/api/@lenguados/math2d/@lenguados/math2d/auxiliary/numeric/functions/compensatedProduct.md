@@ -2,7 +2,7 @@
 
 > **compensatedProduct**(`a`, `b`): `object`
 
-Defined in: [src/auxiliary/numeric/safety.ts:253](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/auxiliary/numeric/safety.ts#L253)
+Defined in: [src/auxiliary/numeric/safety.ts:317](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/numeric/safety.ts#L317)
 
 Compensated product using error-free transformation.
 
@@ -12,19 +12,19 @@ Compensated product using error-free transformation.
 
 `number`
 
-First factor.
+First factor
 
 ### b
 
 `number`
 
-Second factor.
+Second factor
 
 ## Returns
 
 `object`
 
-Object with product and error term.
+Object with product and error term
 
 ### error
 
@@ -33,6 +33,12 @@ Object with product and error term.
 ### product
 
 > **product**: `number`
+
+## Remarks
+
+Veltkamp splitting multiplies inputs by `2^27 + 1` (~1.34e8).
+This overflows for `|a|` or `|b|` > ~1.34e291 (`MAX_VALUE / 134217729`).
+For such inputs, the error term will be unreliable (Infinity/NaN).
 
 ## Example
 

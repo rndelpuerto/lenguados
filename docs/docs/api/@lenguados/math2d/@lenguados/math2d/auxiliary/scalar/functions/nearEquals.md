@@ -2,7 +2,7 @@
 
 > **nearEquals**(`a`, `b`, `epsilon`): `boolean`
 
-Defined in: [src/auxiliary/scalar/comparison.ts:26](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/auxiliary/scalar/comparison.ts#L26)
+Defined in: [src/auxiliary/scalar/comparison.ts:35](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/scalar/comparison.ts#L35)
 
 Tests if two values are approximately equal.
 
@@ -12,25 +12,34 @@ Tests if two values are approximately equal.
 
 `number`
 
-First value.
+First value
 
 ### b
 
 `number`
 
-Second value.
+Second value
 
 ### epsilon
 
 `number` = `EPSILON`
 
-Tolerance (default: EPSILON).
+Tolerance (default: EPSILON)
 
 ## Returns
 
 `boolean`
 
-True if |a - b| <= epsilon.
+True if |a - b| <= epsilon
+
+## Remarks
+
+Default tolerance is [EPSILON](../variables/EPSILON.md) (1e-10). This is an absolute comparison —
+for large magnitudes where relative error matters, use [relativeEquals](relativeEquals.md).
+
+Note: `Math.abs(a - b)` overflows to `Infinity` when `a` and `b` have
+opposite signs and large magnitudes (e.g., `1e308` and `-1e308`), but
+this correctly returns `false` since `Infinity > epsilon`.
 
 ## Example
 

@@ -2,11 +2,11 @@
 
 ## File
 
-src/utils/parse.ts
+utils/parse.ts
 
 ## Description
 
-Parsing and formatting utilities for math2d types.
+Parsing and formatting utilities for math2d types
 
 ## Remarks
 
@@ -44,7 +44,7 @@ import { parseVector2, formatVector2 } from '@lenguados/math2d';
 import { parseVector2, formatVector2 } from '@lenguados/math2d-io';
 ```
 
-## Serialization
+## Conversion
 
 - [formatComplex](functions/formatComplex.md)
 - [formatInterval](functions/formatInterval.md)

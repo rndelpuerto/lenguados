@@ -6,7 +6,7 @@ auxiliary/numeric/guards.ts
 
 ## Description
 
-Numeric type guards (boolean predicates).
+Numeric type guards (boolean predicates)
 
 ## Remarks
 

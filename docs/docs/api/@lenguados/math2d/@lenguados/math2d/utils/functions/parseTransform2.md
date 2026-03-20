@@ -2,7 +2,7 @@
 
 > **parseTransform2**(`string_`, `out`): [`Transform2`](../../core/classes/Transform2.md)
 
-Defined in: [src/utils/parse.ts:562](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/utils/parse.ts#L562)
+Defined in: [src/utils/parse.ts:577](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/utils/parse.ts#L577)
 
 Parses a string representation of a 2D transform.
 
@@ -12,23 +12,19 @@ Parses a string representation of a 2D transform.
 
 `string`
 
-Input string to parse.
+Input string to parse
 
 ### out
 
 [`Transform2`](../../core/classes/Transform2.md) = `...`
 
-Optional output transform to avoid allocation. Defaults to `new Transform2()`.
+Optional output transform to avoid allocation. Defaults to `new Transform2()`
 
 ## Returns
 
 [`Transform2`](../../core/classes/Transform2.md)
 
-The `out` transform containing the parsed values.
-
-## Throws
-
-If the string cannot be parsed.
+The `out` transform containing the parsed values
 
 ## Remarks
 
@@ -37,6 +33,10 @@ Supported formats:
 - "px,py,c,s" (position x,y and rotation cos,sin)
 - "px py c s" (space-separated)
 - JSON format with `p` and `r` properties
+
+## Throws
+
+If the string cannot be parsed
 
 ## Example
 

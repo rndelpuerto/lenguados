@@ -2,7 +2,7 @@
 
 > **randomUnitComplex**(`out`, `source`): [`Complex`](../../core/classes/Complex.md)
 
-Defined in: [src/utils/random.ts:636](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/utils/random.ts#L636)
+Defined in: [src/utils/random.ts:644](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/utils/random.ts#L644)
 
 Generates a random unit complex number (on the unit circle).
 
@@ -12,19 +12,19 @@ Generates a random unit complex number (on the unit circle).
 
 [`Complex`](../../core/classes/Complex.md) = `...`
 
-Optional output complex to avoid allocation. Defaults to `new Complex()`.
+Optional output complex to avoid allocation. Defaults to `new Complex()`
 
 ### source
 
-[`RandomSource`](../interfaces/RandomSource.md) = `defaultRandomSource`
+[`RandomSource`](../interfaces/RandomSource.md) = `...`
 
-Random source to sample from. Defaults to `defaultRandomSource`.
+Random source to sample from. Defaults to `defaultRandomSource`
 
 ## Returns
 
 [`Complex`](../../core/classes/Complex.md)
 
-The `out` complex set to a unit-magnitude complex number.
+The `out` complex set to a unit-magnitude complex number
 
 ## Remarks
 

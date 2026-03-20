@@ -2,7 +2,7 @@
 
 > **inverseLerp**(`a`, `b`, `value`): `number`
 
-Defined in: [src/auxiliary/scalar/interpolation.ts:89](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/auxiliary/scalar/interpolation.ts#L89)
+Defined in: [src/auxiliary/scalar/interpolation.ts:92](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/scalar/interpolation.ts#L92)
 
 Inverse linear interpolation (strict).
 Returns t such that lerp(a, b, t) = value.
@@ -13,34 +13,29 @@ Returns t such that lerp(a, b, t) = value.
 
 `number`
 
-Start value.
+Start value
 
 ### b
 
 `number`
 
-End value.
+End value
 
 ### value
 
 `number`
 
-Value to find t for.
+Value to find t for
 
 ## Returns
 
 `number`
 
-Interpolation factor t.
+Interpolation factor t
 
 ## Throws
 
-If a === b (degenerate range).
-
-## See
-
-- [inverseLerpSafe](inverseLerpSafe.md) - Returns 0 if range is degenerate
-- [inverseLerpUnchecked](inverseLerpUnchecked.md) - No validation
+If a === b (degenerate range)
 
 ## Example
 
@@ -49,6 +44,11 @@ inverseLerp(0, 10, 5); // 0.5
 inverseLerp(0, 10, 0); // 0
 inverseLerp(0, 10, 10); // 1
 ```
+
+## See
+
+- [inverseLerpSafe](inverseLerpSafe.md) — Returns 0 if range is degenerate
+- [inverseLerpUnchecked](inverseLerpUnchecked.md) — No validation
 
 ## Since
 

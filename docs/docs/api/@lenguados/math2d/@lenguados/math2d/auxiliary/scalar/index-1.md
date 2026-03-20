@@ -6,7 +6,7 @@ auxiliary/scalar/comparison.ts
 
 ## Description
 
-Scalar comparison operations with tolerance.
+Scalar comparison operations with tolerance
 
 ## Comparison
 

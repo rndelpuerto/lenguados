@@ -1,7 +1,7 @@
 /**
  * @file deterministic/deterministic-kernels.ts
  * @module @lenguados/math2d/deterministic
- * @description Deterministic mathematical kernels for L0 cross-platform consistency.
+ * @description Deterministic mathematical kernels for L0 cross-platform consistency
  *
  * @remarks
  * ## Purpose
@@ -23,16 +23,15 @@
  * Coefficients are derived from **fdlibm** (FreeBSD Math Library), computed using
  * the Remez algorithm for minimax approximation.
  *
- * @see https://www.netlib.org/fdlibm/
- * @since 0.8.0
+ * @see {@link https://www.netlib.org/fdlibm/} - FreeBSD fdlibm reference implementation
  */
 
 import type { SinCos } from '../auxiliary/angle/operations';
 import { HALF_PI, PI, QUARTER_PI } from '../auxiliary/scalar/constants';
 
-/* ======================================================================== */
-/* Runtime Configuration                                                     */
-/* ======================================================================== */
+/* ========================================================================== */
+/* Runtime Configuration                                                       */
+/* ========================================================================== */
 
 /**
  * Global configuration for deterministic math execution.
@@ -63,14 +62,17 @@ import { HALF_PI, PI, QUARTER_PI } from '../auxiliary/scalar/constants';
  * // Disable determinism, run native C-level floats on local CPU
  * config.useNativeMath = true;
  * ```
+ *
+ * @category Configuration
+ * @since 0.8.0
  */
 export const config = {
  useNativeMath: false,
 };
 
-/* ======================================================================== */
-/* Internal Constants                                                        */
-/* ======================================================================== */
+/* ========================================================================== */
+/* Internal Constants                                                          */
+/* ========================================================================== */
 
 // Local aliases for performance (avoid repeated property access)
 const PI_2 = HALF_PI;
@@ -85,9 +87,9 @@ const PIO2_HI = 1.5707963267948966; // 0x3FF921FB54442D18 (53 bits of π/2)
 const PIO2_LO = 6.123233995736766e-17; // 0x3C91A62633145C07 (remaining bits)
 const INV_PIO2 = 6.36619772367581382433e-1; // 2/π for quadrant computation
 
-/* ======================================================================== */
-/* Polynomial Coefficients (from fdlibm)                                     */
-/* ======================================================================== */
+/* ========================================================================== */
+/* Polynomial Coefficients (from fdlibm)                                       */
+/* ========================================================================== */
 
 /**
  * Sine polynomial coefficients for sin(x) ≈ x + S1*x³ + S2*x⁵ + ... on [-π/4, π/4]
@@ -159,9 +161,9 @@ const E3 = 6.61375632143793436117e-5; // 1/15120
 const E4 = -1.6533902205465251539e-6; // -1/604800
 const E5 = 4.13813679705723846039e-8; // approximation
 
-/* ======================================================================== */
-/* Core Functions                                                            */
-/* ======================================================================== */
+/* ========================================================================== */
+/* Core Functions                                                              */
+/* ========================================================================== */
 
 /**
  * Shared buffer for IEEE 754 bit manipulation.
@@ -174,6 +176,7 @@ const ieeeView = new DataView(ieeeBuffer);
 
 /**
  * Compute 2^n via IEEE 754 bit construction. Handles the full exponent range.
+ * @param n - Integer exponent
  * @returns 2 raised to the power n
  * @internal
  */
@@ -192,10 +195,6 @@ export function pow2(n: number): number {
 /**
  * Deterministic hypotenuse: sqrt(x² + y²) without intermediate overflow.
  *
- * @param x - First value
- * @param y - Second value
- * @returns sqrt(x² + y²) computed safely
- *
  * @remarks
  * **Problem solved:** The naive formula `sqrt(x*x + y*y)` overflows to Infinity
  * when `x` or `y` > ~1e154, even though the result is representable.
@@ -205,6 +204,10 @@ export function pow2(n: number): number {
  *
  * **Performance:** ~17% faster than Math.hypot in benchmarks.
  *
+ * @param x - First value
+ * @param y - Second value
+ * @returns sqrt(x² + y²) computed safely
+ *
  * @example
  * ```typescript
  * hypot(3, 4);         // 5
@@ -213,7 +216,7 @@ export function pow2(n: number): number {
  * hypot(Infinity, 5);  // Infinity
  * ```
  *
- * @see https://www.netlib.org/fdlibm/e_hypot.c
+ * @see {@link https://www.netlib.org/fdlibm/e_hypot.c} - fdlibm hypot source
  * @category Arithmetic
  * @since 0.9.0
  */
@@ -258,13 +261,13 @@ export function hypot(x: number, y: number): number {
 /**
  * Reduce angle to range [-π/4, π/4] and determine quadrant info.
  *
- * @param x - Angle in radians
- * @returns Tuple of [reduced angle in [-π/4, π/4], quadrant 0-3]
- * @internal
- *
  * @remarks
  * Uses quadrant-based reduction (not octant). Each quadrant is π/2 wide.
  * The reduced value is always in [-π/4, π/4] after adjustment.
+ *
+ * @param x - Angle in radians
+ * @returns Tuple of [reduced angle in [-π/4, π/4], quadrant 0-3]
+ * @internal
  */
 function reduceAngle(x: number): [number, number] {
  // Cody-Waite two-step range reduction for precision on large angles.
@@ -313,12 +316,12 @@ function kernelCos(x: number): number {
 /**
  * Deterministic sine function.
  *
- * @param x - Angle in radians
- * @returns sin(x) with ~15 digit precision
- *
  * @remarks
  * Uses range reduction to [-π/4, π/4] followed by fdlibm polynomial.
  * Completely deterministic: no Math.sin dependency.
+ *
+ * @param x - Angle in radians
+ * @returns sin(x) with ~15 digit precision
  *
  * @example
  * ```typescript
@@ -327,7 +330,7 @@ function kernelCos(x: number): number {
  * sin(PI);          // ~0 (very small due to range reduction)
  * ```
  *
- * @category Trigonometry
+ * @category Arithmetic
  * @since 0.8.0
  */
 export function sin(x: number): number {
@@ -354,12 +357,12 @@ export function sin(x: number): number {
 /**
  * Deterministic cosine function.
  *
- * @param x - Angle in radians
- * @returns cos(x) with ~15 digit precision
- *
  * @remarks
  * Uses range reduction to [-π/4, π/4] followed by fdlibm polynomial.
  * Completely deterministic: no Math.cos dependency.
+ *
+ * @param x - Angle in radians
+ * @returns cos(x) with ~15 digit precision
  *
  * @example
  * ```typescript
@@ -368,7 +371,7 @@ export function sin(x: number): number {
  * cos(PI);          // -1
  * ```
  *
- * @category Trigonometry
+ * @category Arithmetic
  * @since 0.8.0
  */
 export function cos(x: number): number {
@@ -395,17 +398,23 @@ export function cos(x: number): number {
 /**
  * Compute sin and cos simultaneously (more efficient than separate calls).
  *
- * @param x - Angle in radians
- * @param out - Optional output object to write sin/cos into (zero-allocation)
- * @returns Object with sin and cos values
- *
  * @remarks
  * Range reduction uses Cody-Waite two-step subtraction with 106-bit extended
  * precision for PI/2 (PIO2_HI + PIO2_LO). For `|x| > 2^20·PI` (~3.3e6 radians),
  * the reduction error may exceed 1 ULP, causing gradual precision degradation.
  * Typical 2D physics simulations operate well within this bound.
  *
- * @category Trigonometry
+ * @param x - Angle in radians
+ * @param out - Optional output object to write sin/cos into (zero-allocation)
+ * @returns Object with sin and cos values
+ *
+ * @example
+ * ```typescript
+ * const result = sinCos(PI / 4);
+ * // result.sin ≈ 0.7071, result.cos ≈ 0.7071
+ * ```
+ *
+ * @category Arithmetic
  * @since 0.8.0
  */
 export function sinCos(x: number, out?: SinCos): SinCos {
@@ -457,7 +466,13 @@ export function sinCos(x: number, out?: SinCos): SinCos {
  * @param x - Angle in radians
  * @returns tan(x) = sin(x) / cos(x)
  *
- * @category Trigonometry
+ * @example
+ * ```typescript
+ * tan(0);           // 0
+ * tan(PI / 4);      // ~1
+ * ```
+ *
+ * @category Arithmetic
  * @since 0.8.0
  */
 export function tan(x: number): number {
@@ -499,7 +514,14 @@ function kernelAtan(x: number): number {
  * @param x - Any real number
  * @returns atan(x) in [-π/2, π/2]
  *
- * @category Trigonometry
+ * @example
+ * ```typescript
+ * atan(0);        // 0
+ * atan(1);        // ~0.7854 (π/4)
+ * atan(Infinity); // ~1.5708 (π/2)
+ * ```
+ *
+ * @category Arithmetic
  * @since 0.8.0
  */
 export function atan(x: number): number {
@@ -544,13 +566,13 @@ export function atan(x: number): number {
 /**
  * Deterministic two-argument arctangent.
  *
- * @param y - Y coordinate
- * @param x - X coordinate
- * @returns Angle in [-π, π] from positive X axis to point (x, y)
- *
  * @remarks
  * This is the most important function for 2D geometry as it gives the angle
  * of a vector. Uses pure arithmetic via atan() and quadrant logic.
+ *
+ * @param y - Y coordinate
+ * @param x - X coordinate
+ * @returns Angle in [-π, π] from positive X axis to point (x, y)
  *
  * @example
  * ```typescript
@@ -560,7 +582,7 @@ export function atan(x: number): number {
  * atan2(-1, 0);  // -π/2 (negative Y axis)
  * ```
  *
- * @category Trigonometry
+ * @category Arithmetic
  * @since 0.8.0
  */
 export function atan2(y: number, x: number): number {
@@ -608,10 +630,21 @@ export function atan2(y: number, x: number): number {
 /**
  * Deterministic arccosine using atan2.
  *
+ * @remarks
+ * Returns NaN for inputs outside [-1, 1]. Use {@link acosSafe} for automatic clamping.
+ *
  * @param x - Value in [-1, 1]
  * @returns acos(x) in [0, π]
  *
- * @category Trigonometry
+ * @example
+ * ```typescript
+ * acos(1);    // 0
+ * acos(0);    // ~1.5708 (π/2)
+ * acos(-1);   // ~3.1416 (π)
+ * ```
+ *
+ * @see {@link acosSafe} — Clamps input to [-1, 1]
+ * @category Arithmetic
  * @since 0.8.0
  */
 export function acos(x: number): number {
@@ -625,10 +658,21 @@ export function acos(x: number): number {
 /**
  * Deterministic arcsine using atan2.
  *
+ * @remarks
+ * Returns NaN for inputs outside [-1, 1]. Use {@link asinSafe} for automatic clamping.
+ *
  * @param x - Value in [-1, 1]
  * @returns asin(x) in [-π/2, π/2]
  *
- * @category Trigonometry
+ * @example
+ * ```typescript
+ * asin(0);    // 0
+ * asin(1);    // ~1.5708 (π/2)
+ * asin(-1);   // ~-1.5708 (-π/2)
+ * ```
+ *
+ * @see {@link asinSafe} — Clamps input to [-1, 1]
+ * @category Arithmetic
  * @since 0.8.0
  */
 export function asin(x: number): number {
@@ -645,7 +689,8 @@ export function asin(x: number): number {
  * @param x - Any value (will be clamped)
  * @returns acos(clamp(x, -1, 1))
  *
- * @category Trigonometry
+ * @see {@link acos} — Returns NaN for out-of-range inputs
+ * @category Arithmetic
  * @since 0.8.0
  */
 export function acosSafe(x: number): number {
@@ -660,7 +705,8 @@ export function acosSafe(x: number): number {
  * @param x - Any value (will be clamped)
  * @returns asin(clamp(x, -1, 1))
  *
- * @category Trigonometry
+ * @see {@link asin} — Returns NaN for out-of-range inputs
+ * @category Arithmetic
  * @since 0.8.0
  */
 export function asinSafe(x: number): number {
@@ -669,20 +715,20 @@ export function asinSafe(x: number): number {
  return asin(x);
 }
 
-/* ======================================================================== */
-/* Logarithm and Exponential Functions                                       */
-/* ======================================================================== */
+/* ========================================================================== */
+/* Logarithm and Exponential Functions                                         */
+/* ========================================================================== */
 
 /**
  * Deterministic natural logarithm using fdlibm algorithm.
- *
- * @param x - Value to compute logarithm of (must be positive)
- * @returns ln(x), NaN for x <= 0
  *
  * @remarks
  * Uses range reduction x = 2^k * (1+f) where sqrt(2)/2 < 1+f < sqrt(2),
  * then polynomial approximation for log(1+f).
  * Completely deterministic: no Math.log dependency.
+ *
+ * @param x - Value to compute logarithm of (must be positive)
+ * @returns ln(x), NaN for x <= 0
  *
  * @example
  * ```typescript
@@ -747,9 +793,6 @@ export function log(x: number): number {
 /**
  * Kernel-level safe natural logarithm (returns 0 for non-positive values).
  *
- * @param x - Value to compute logarithm of
- * @returns ln(x) for x > 0, 0 otherwise
- *
  * @remarks
  * This is the kernel-level safe variant (single-argument, no base support).
  * The public API `logSafe` in `auxiliary/numeric/safety` adds custom base
@@ -757,9 +800,10 @@ export function log(x: number): number {
  * Not exported from the main index to avoid naming collisions with the
  * richer public variant.
  *
+ * @param x - Value to compute logarithm of
+ * @returns ln(x) for x > 0, 0 otherwise
+ *
  * @internal
- * @category Arithmetic
- * @since 0.9.0
  */
 export function logKernelSafe(x: number): number {
  if (x <= 0) return 0;
@@ -769,13 +813,13 @@ export function logKernelSafe(x: number): number {
 /**
  * Deterministic exponential function using fdlibm algorithm.
  *
- * @param x - Exponent value
- * @returns e^x
- *
  * @remarks
  * Uses range reduction x = k*ln(2) + r where |r| <= ln(2)/2,
  * then polynomial approximation for exp(r).
  * Completely deterministic: no Math.exp dependency.
+ *
+ * @param x - Exponent value
+ * @returns e^x
  *
  * @example
  * ```typescript
@@ -846,14 +890,21 @@ export function expSafe(x: number): number {
 /**
  * Deterministic power function.
  *
- * @param base - Base value
- * @param exponent - Exponent value
- * @returns base^exponent
- *
  * @remarks
  * For integer exponents, uses exponentiation by squaring.
  * For non-integer exponents, uses deterministic exp(exponent * log(base)).
  * Fully L0 deterministic with no Math.pow dependency.
+ *
+ * @param base - Base value
+ * @param exponent - Exponent value
+ * @returns base^exponent
+ *
+ * @example
+ * ```typescript
+ * pow(2, 10);    // 1024
+ * pow(9, 0.5);   // 3 (square root)
+ * pow(2, -1);    // 0.5
+ * ```
  *
  * @category Arithmetic
  * @since 0.8.0
@@ -888,9 +939,9 @@ export function pow(base: number, exponent: number): number {
  return exp(exponent * log(base));
 }
 
-/* ======================================================================== */
-/* Exports                                                                   */
-/* ======================================================================== */
+/* ========================================================================== */
+/* Exports                                                                     */
+/* ========================================================================== */
 
 /**
  * Deterministic math kernels for L0 cross-platform consistency.
@@ -904,7 +955,7 @@ export function pow(base: number, exponent: number): number {
  * `Math.sqrt`, `Math.floor`, `Math.ceil`, `Math.abs` are IEEE 754 required
  * operations and should be used directly — they are deterministic.
  *
- * @category Deterministic
+ * @category Helpers
  * @since 0.8.0
  */
 export const DeterministicKernels = {

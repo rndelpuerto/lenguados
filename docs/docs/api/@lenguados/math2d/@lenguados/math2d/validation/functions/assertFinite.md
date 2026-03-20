@@ -2,7 +2,7 @@
 
 > **assertFinite**(`value`, `name?`): `void`
 
-Defined in: [src/validation/assert.ts:158](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/validation/assert.ts#L158)
+Defined in: [src/validation/assert.ts:168](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/validation/assert.ts#L168)
 
 Asserts that a value is finite (not NaN, not Infinity).
 
@@ -12,25 +12,25 @@ Asserts that a value is finite (not NaN, not Infinity).
 
 `number`
 
-Numeric value to validate.
+Numeric value to validate
 
 ### name?
 
 `string`
 
-Parameter name for error messages (optional).
+Parameter name for error messages (optional)
 
 ## Returns
 
 `void`
 
-## Throws
-
-If assertions enabled and value is not finite.
-
 ## Remarks
 
 No-op when assertions are disabled. Zero runtime cost in production.
+
+## Throws
+
+If assertions enabled and value is not finite
 
 ## Example
 

@@ -1,7 +1,7 @@
 /**
- * @file src/utils/performance.ts
+ * @file utils/performance.ts
  * @module @lenguados/math2d/utils
- * @description Lightweight utilities for profiling and measuring execution time.
+ * @description Lightweight utilities for profiling and measuring execution time
  *
  * @remarks
  * This module provides development-time utilities for measuring performance.
@@ -43,14 +43,14 @@ const hasPerformanceNow =
 /**
  * Returns a high-resolution timestamp when available, falling back to `Date.now()`.
  *
- * @returns Timestamp in milliseconds.
+ * @returns Timestamp in milliseconds
  *
  * @example
  * ```typescript
  * const start = timestamp();
  * ```
  *
- * @category Utility
+ * @category Helpers
  * @since 0.7.0
  */
 export function timestamp(): number {
@@ -79,9 +79,9 @@ export interface Measurement<T> {
 /**
  * Measures a synchronous function, returning its result and duration.
  *
- * @param label - Identifier for the measurement.
- * @param function_ - Function to execute.
- * @returns Measurement metadata.
+ * @param label - Identifier for the measurement
+ * @param function_ - Function to execute
+ * @returns Measurement metadata
  *
  * @example
  * ```typescript
@@ -89,7 +89,7 @@ export interface Measurement<T> {
  * console.log(result.duration);
  * ```
  *
- * @category Utility
+ * @category Helpers
  * @since 0.7.0
  */
 export function measure<T>(label: string, function_: () => T): Measurement<T> {
@@ -102,9 +102,9 @@ export function measure<T>(label: string, function_: () => T): Measurement<T> {
 /**
  * Measures an asynchronous function, returning its result and duration.
  *
- * @param label - Identifier for the measurement.
- * @param function_ - Async function to execute.
- * @returns Measurement metadata.
+ * @param label - Identifier for the measurement
+ * @param function_ - Async function to execute
+ * @returns Measurement metadata
  *
  * @example
  * ```typescript
@@ -112,7 +112,7 @@ export function measure<T>(label: string, function_: () => T): Measurement<T> {
  * console.log(result.duration);
  * ```
  *
- * @category Utility
+ * @category Helpers
  * @since 0.7.0
  */
 export async function measureAsync<T>(
@@ -128,8 +128,8 @@ export async function measureAsync<T>(
 /**
  * Accumulates measurements into a target collector.
  *
- * @param collector - Map to accumulate measurements into.
- * @param measurement - Measurement to record.
+ * @param collector - Map to accumulate measurements into
+ * @param measurement - Measurement to record
  *
  * @example
  * ```typescript
@@ -137,7 +137,7 @@ export async function measureAsync<T>(
  * recordMeasurement(collector, measure('tick', () => 1));
  * ```
  *
- * @category Utility
+ * @category Helpers
  * @since 0.7.0
  */
 export function recordMeasurement<T>(
@@ -176,15 +176,15 @@ export interface MeasurementSummary {
 /**
  * Computes summary statistics for every label within a measurement collector.
  *
- * @param collector - Map produced via {@link recordMeasurement}.
- * @returns Map of label to summary statistics.
+ * @param collector - Map produced via {@link recordMeasurement}
+ * @returns Map of label to summary statistics
  *
  * @example
  * ```typescript
  * const summaries = summarizeMeasurements(new Map());
  * ```
  *
- * @category Utility
+ * @category Helpers
  * @since 0.7.0
  */
 export function summarizeMeasurements<T>(
@@ -235,8 +235,8 @@ export function summarizeMeasurements<T>(
  * Formats a measurement summary into a human-friendly string. Values are shown
  * with three decimal places by default.
  *
- * @param summary - Summary statistics to format.
- * @returns Human-readable string.
+ * @param summary - Summary statistics to format
+ * @returns Human-readable string
  *
  * @example
  * ```typescript
@@ -250,7 +250,7 @@ export function summarizeMeasurements<T>(
  * });
  * ```
  *
- * @category Utility
+ * @category Helpers
  * @since 0.7.0
  */
 export function formatSummary(summary: MeasurementSummary): string {
@@ -275,7 +275,7 @@ export function formatSummary(summary: MeasurementSummary): string {
  * collector.record(measure('tick', () => 1));
  * ```
  *
- * @category Utility
+ * @category Helpers
  * @since 0.7.0
  */
 export class MeasurementCollector<T> {
@@ -284,9 +284,9 @@ export class MeasurementCollector<T> {
  /**
   * Records a measurement in the collector.
   *
-  * @param measurement - Measurement to record.
+  * @param measurement - Measurement to record
   *
-  * @category Utility
+  * @category Mutator
   * @since 0.7.0
   */
  record(measurement: Measurement<T>): void {
@@ -296,9 +296,9 @@ export class MeasurementCollector<T> {
  /**
   * Records multiple measurements in sequence.
   *
-  * @param measurements - Iterable of measurements to record.
+  * @param measurements - Iterable of measurements to record
   *
-  * @category Utility
+  * @category Mutator
   * @since 0.7.0
   */
  recordMany(measurements: Iterable<Measurement<T>>): void {
@@ -310,7 +310,7 @@ export class MeasurementCollector<T> {
  /**
   * Clears all recorded measurements.
   *
-  * @category Utility
+  * @category Mutator
   * @since 0.7.0
   */
  clear(): void {
@@ -320,9 +320,9 @@ export class MeasurementCollector<T> {
  /**
   * Returns a snapshot of the underlying measurements map.
   *
-  * @returns Read-only view of recorded measurements.
+  * @returns Read-only view of recorded measurements
   *
-  * @category Utility
+  * @category Accessor
   * @since 0.7.0
   */
  get entries(): ReadonlyMap<string, readonly Measurement<T>[]> {
@@ -332,9 +332,9 @@ export class MeasurementCollector<T> {
  /**
   * Computes summary statistics for the recorded measurements.
   *
-  * @returns Map of label to summary statistics.
+  * @returns Map of label to summary statistics
   *
-  * @category Utility
+  * @category Computed
   * @since 0.7.0
   */
  summarize(): Map<string, MeasurementSummary> {
@@ -344,9 +344,9 @@ export class MeasurementCollector<T> {
  /**
   * Convenience helper returning all summaries as an array.
   *
-  * @returns Array of summary statistics.
+  * @returns Array of summary statistics
   *
-  * @category Utility
+  * @category Computed
   * @since 0.7.0
   */
  summarizeArray(): MeasurementSummary[] {
@@ -356,9 +356,9 @@ export class MeasurementCollector<T> {
  /**
   * Formats summaries using {@link formatSummary}.
   *
-  * @returns Array of formatted summary strings.
+  * @returns Array of formatted summary strings
   *
-  * @category Utility
+  * @category Conversion
   * @since 0.7.0
   */
  formatSummaries(): string[] {

@@ -2,7 +2,7 @@
 
 > **assertMatrix3**(`m00`, `m01`, `m02`, `m10`, `m11`, `m12`, `m20`, `m21`, `m22`, `name?`): `void`
 
-Defined in: [src/validation/assert.ts:480](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/validation/assert.ts#L480)
+Defined in: [src/validation/assert.ts:498](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/validation/assert.ts#L498)
 
 Asserts that Matrix3-like elements are finite.
 
@@ -12,74 +12,74 @@ Asserts that Matrix3-like elements are finite.
 
 `number`
 
-Element at row 0, column 0.
+Element at row 0, column 0
 
 ### m01
 
 `number`
 
-Element at row 0, column 1.
+Element at row 0, column 1
 
 ### m02
 
 `number`
 
-Element at row 0, column 2.
+Element at row 0, column 2
 
 ### m10
 
 `number`
 
-Element at row 1, column 0.
+Element at row 1, column 0
 
 ### m11
 
 `number`
 
-Element at row 1, column 1.
+Element at row 1, column 1
 
 ### m12
 
 `number`
 
-Element at row 1, column 2.
+Element at row 1, column 2
 
 ### m20
 
 `number`
 
-Element at row 2, column 0.
+Element at row 2, column 0
 
 ### m21
 
 `number`
 
-Element at row 2, column 1.
+Element at row 2, column 1
 
 ### m22
 
 `number`
 
-Element at row 2, column 2.
+Element at row 2, column 2
 
 ### name?
 
 `string`
 
-Matrix name for error messages (optional).
+Matrix name for error messages (optional)
 
 ## Returns
 
 `void`
 
-## Throws
-
-If assertions enabled and any element is not finite.
-
 ## Remarks
 
 Validates all 9 elements are finite (not NaN, not Infinity).
 No-op when assertions are disabled.
+
+## Throws
+
+If assertions enabled and any element is not finite
 
 ## Example
 

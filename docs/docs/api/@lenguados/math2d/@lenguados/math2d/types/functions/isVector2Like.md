@@ -2,7 +2,7 @@
 
 > **isVector2Like**(`value`): `value is ReadonlyVector2Like`
 
-Defined in: [src/types/index.ts:288](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/types/index.ts#L288)
+Defined in: [src/types/index.ts:270](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/types/index.ts#L270)
 
 Type guard to check if value has x,y properties (Vector2Like).
 
@@ -12,13 +12,13 @@ Type guard to check if value has x,y properties (Vector2Like).
 
 `unknown`
 
-Value to check.
+Value to check
 
 ## Returns
 
 `value is ReadonlyVector2Like`
 
-True if value conforms to ReadonlyVector2Like.
+True if value conforms to ReadonlyVector2Like
 
 ## Example
 

@@ -2,7 +2,7 @@
 
 > **fract**(`value`): `number`
 
-Defined in: [src/auxiliary/numeric/rounding.ts:158](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/auxiliary/numeric/rounding.ts#L158)
+Defined in: [src/auxiliary/numeric/rounding.ts:164](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/numeric/rounding.ts#L164)
 
 Gets fractional part.
 
@@ -12,13 +12,13 @@ Gets fractional part.
 
 `number`
 
-Value to get fraction from.
+Value to get fraction from
 
 ## Returns
 
 `number`
 
-Fractional part (always positive).
+Fractional part (always positive)
 
 ## Example
 

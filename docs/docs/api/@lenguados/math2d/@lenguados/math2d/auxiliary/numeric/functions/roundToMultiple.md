@@ -2,7 +2,7 @@
 
 > **roundToMultiple**(`value`, `multiple`): `number`
 
-Defined in: [src/auxiliary/numeric/rounding.ts:85](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/auxiliary/numeric/rounding.ts#L85)
+Defined in: [src/auxiliary/numeric/rounding.ts:87](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/numeric/rounding.ts#L87)
 
 Rounds to nearest multiple.
 
@@ -12,19 +12,19 @@ Rounds to nearest multiple.
 
 `number`
 
-Value to round.
+Value to round
 
 ### multiple
 
 `number`
 
-Multiple to round to.
+Multiple to round to
 
 ## Returns
 
 `number`
 
-Rounded value.
+Rounded value
 
 ## Example
 

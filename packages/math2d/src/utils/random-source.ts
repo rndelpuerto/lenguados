@@ -1,7 +1,7 @@
 /**
- * @file src/utils/random-source.ts
+ * @file utils/random-source.ts
  * @module @lenguados/math2d/utils
- * @description Random number source abstractions for deterministic sampling.
+ * @description Random number source abstractions for deterministic sampling
  *
  * @remarks
  * This allows the math2d library to support:
@@ -32,9 +32,9 @@ export interface RandomSource {
  /**
   * Generates a random number in the range [0, 1).
   *
-  * @returns A random number in [0, 1).
+  * @returns A random number in [0, 1)
   *
-  * @category Utility
+  * @category Accessor
   * @since 0.7.0
   */
  next(): number;
@@ -42,10 +42,10 @@ export interface RandomSource {
  /**
   * Generates a random integer in the range [0, max).
   *
-  * @param max - Exclusive upper bound (must be positive).
-  * @returns A random integer in [0, max).
+  * @param max - Exclusive upper bound (must be positive)
+  * @returns A random integer in [0, max)
   *
-  * @category Utility
+  * @category Accessor
   * @since 0.7.0
   */
  nextInt(max: number): number;
@@ -53,12 +53,12 @@ export interface RandomSource {
  /**
   * Seeds the random number generator when supported.
   *
-  * @param seed - Integer seed value.
-  *
   * @remarks
   * Not all sources support seeding (for example, Math.random()).
   *
-  * @category Utility
+  * @param seed - Integer seed value
+  *
+  * @category Accessor
   * @since 0.7.0
   */
  seed?(seed: number): void;
@@ -74,7 +74,14 @@ export interface RandomSource {
  * @remarks
  * This source is not seedable and is not deterministic.
  *
- * @category Utility
+ * @example
+ * ```typescript
+ * const rng = new MathRandomSource();
+ * const value = rng.next();       // random number in [0, 1)
+ * const index = rng.nextInt(10);  // random integer in [0, 10)
+ * ```
+ *
+ * @category Factory
  * @since 0.7.0
  * @public
  */
@@ -82,9 +89,9 @@ export class MathRandomSource implements RandomSource {
  /**
   * Generates a random number using Math.random().
   *
-  * @returns A random number in [0, 1).
+  * @returns A random number in [0, 1)
   *
-  * @category Utility
+  * @category Accessor
   * @since 0.7.0
   */
  next(): number {
@@ -94,10 +101,10 @@ export class MathRandomSource implements RandomSource {
  /**
   * Generates a random integer using Math.random().
   *
-  * @param max - Exclusive upper bound.
-  * @returns A random integer in [0, max).
+  * @param max - Exclusive upper bound
+  * @returns A random integer in [0, max)
   *
-  * @category Utility
+  * @category Accessor
   * @since 0.7.0
   */
  nextInt(max: number): number {
@@ -113,13 +120,13 @@ export class MathRandomSource implements RandomSource {
  * SplitMix32 seed expansion function.
  * Expands a single 32-bit seed into a full 128-bit xoshiro128++ state.
  *
- * @param seed - 32-bit integer seed.
- * @returns 4-element array of uint32 state values.
- *
  * @remarks
  * Uses the SplitMix32 algorithm per Blackman & Vigna recommendation for
  * initializing larger state from a single seed. Constants: gamma = 0x9e3779b9,
  * mixing multipliers 0x85ebca6b and 0xc2b2ae35, shift amounts 16/13/16.
+ *
+ * @param seed - 32-bit integer seed
+ * @returns 4-element array of uint32 state values
  *
  * @internal
  */
@@ -145,7 +152,9 @@ function splitMix32(seed: number): [number, number, number, number] {
 
 /**
  * 32-bit left rotation.
- * @returns Rotated 32-bit unsigned integer.
+ * @param x - Value to rotate
+ * @param k - Number of positions to rotate left
+ * @returns Rotated 32-bit unsigned integer
  * @internal
  */
 function rotl(x: number, k: number): number {
@@ -156,10 +165,11 @@ function rotl(x: number, k: number): number {
  * xoshiro128++ core step.
  * Advances the 4 × uint32 state and returns a 32-bit unsigned integer.
  *
- * @returns 32-bit unsigned integer.
- *
  * @remarks
  * Implements the scrambler: `rotl(s0 + s3, 7) + s0` per Blackman & Vigna (2021).
+ *
+ * @param s - 4-element state array of uint32 values
+ * @returns 32-bit unsigned integer
  *
  * @internal
  */
@@ -189,7 +199,14 @@ function xoshiro128pp(s: [number, number, number, number]): number {
  * high-quality pseudo-random numbers. State is initialized via SplitMix32
  * seed expansion. Provides unbiased integer generation via rejection sampling.
  *
- * @category Utility
+ * @example
+ * ```typescript
+ * const rng = new SeededRandomSource(12345);
+ * const a = rng.next();       // deterministic value in [0, 1)
+ * const b = rng.nextInt(100); // deterministic integer in [0, 100)
+ * ```
+ *
+ * @category Factory
  * @since 0.7.0
  * @public
  */
@@ -199,7 +216,7 @@ export class SeededRandomSource implements RandomSource {
  /**
   * Creates a new seeded random source.
   *
-  * @param seed - Initial seed value. Defaults to sub-millisecond timestamp.
+  * @param seed - Initial seed value. Defaults to sub-millisecond timestamp
   */
  constructor(seed?: number) {
   if (seed !== undefined) {
@@ -217,12 +234,12 @@ export class SeededRandomSource implements RandomSource {
  /**
   * Generates the next random number.
   *
-  * @returns A random number in [0, 1).
-  *
   * @remarks
   * Uses xoshiro128++ algorithm with 32-bit state for deterministic generation.
   *
-  * @category Utility
+  * @returns A random number in [0, 1)
+  *
+  * @category Accessor
   * @since 0.7.0
   */
  next(): number {
@@ -233,15 +250,15 @@ export class SeededRandomSource implements RandomSource {
  /**
   * Generates a random integer in [0, max).
   *
-  * @param max - Exclusive upper bound.
-  * @returns A random integer in [0, max).
-  *
-  * @throws {TypeError} If max is not a positive integer.
-  *
   * @remarks
   * Uses rejection sampling with modulo debiasing to eliminate bias.
   *
-  * @category Utility
+  * @param max - Exclusive upper bound
+  * @returns A random integer in [0, max)
+  *
+  * @throws {TypeError} If max is not a positive integer
+  *
+  * @category Accessor
   * @since 0.7.0
   */
  nextInt(max: number): number {
@@ -264,9 +281,9 @@ export class SeededRandomSource implements RandomSource {
  /**
   * Re-seeds the generator using SplitMix32 expansion.
   *
-  * @param seed - New seed value.
+  * @param seed - New seed value
   *
-  * @category Utility
+  * @category Configuration
   * @since 0.7.0
   */
  seed(seed: number): void {
@@ -276,12 +293,12 @@ export class SeededRandomSource implements RandomSource {
  /**
   * Returns the current internal state as a 4-element uint32 array.
   *
-  * @returns Copy of the current `[s0, s1, s2, s3]` state.
-  *
   * @remarks
   * Useful for saving and restoring random generator state.
   *
-  * @category Utility
+  * @returns Copy of the current `[s0, s1, s2, s3]` state
+  *
+  * @category Accessor
   * @since 0.7.0
   */
  getState(): [number, number, number, number] {
@@ -291,11 +308,11 @@ export class SeededRandomSource implements RandomSource {
  /**
   * Restores a previously saved state.
   *
-  * @param state - 4-element uint32 state array from {@link getState}.
+  * @param state - 4-element uint32 state array from {@link getState}
   *
-  * @throws {RangeError} If state is not a 4-element array or is all zeros.
+  * @throws {RangeError} If state is not a 4-element array or is all zeros
   *
-  * @category Utility
+  * @category Configuration
   * @since 0.7.0
   */
  restoreState(state: [number, number, number, number]): void {
@@ -322,9 +339,14 @@ let defaultRandomSource: RandomSource = new MathRandomSource();
 /**
  * Sets the global default random source.
  *
- * @param source - New default random source.
+ * @param source - New default random source
  *
- * @category Utility
+ * @example
+ * ```typescript
+ * setDefaultRandomSource(new SeededRandomSource(42));
+ * ```
+ *
+ * @category Configuration
  * @since 0.7.0
  * @public
  */
@@ -335,9 +357,15 @@ export function setDefaultRandomSource(source: RandomSource): void {
 /**
  * Returns the global default random source.
  *
- * @returns Current default random source.
+ * @returns Current default random source
  *
- * @category Utility
+ * @example
+ * ```typescript
+ * const rng = getDefaultRandomSource();
+ * const value = rng.next();
+ * ```
+ *
+ * @category Configuration
  * @since 0.7.0
  * @public
  */

@@ -6,11 +6,10 @@ auxiliary/scalar/constants.ts
 
 ## Description
 
-Mathematical constants for scalar operations.
+Mathematical constants for scalar operations
 
 ## Angular
 
-- [ANGLE_EPSILON](variables/ANGLE_EPSILON.md)
 - [HALF_PI](variables/HALF_PI.md)
 - [PI](variables/PI.md)
 - [QUARTER_PI](variables/QUARTER_PI.md)
@@ -30,7 +29,6 @@ Mathematical constants for scalar operations.
 ## Mathematical
 
 - [E](variables/E.md)
-- [GOLDEN_RATIO](variables/GOLDEN_RATIO.md)
 - [GOLDEN_RATIO_CONJUGATE](variables/GOLDEN_RATIO_CONJUGATE.md)
 - [LN_2](variables/LN_2.md)
 - [SQRT_2](variables/SQRT_2.md)
@@ -40,6 +38,10 @@ Mathematical constants for scalar operations.
 
 - [MAX_SAFE_INTEGER_F64](variables/MAX_SAFE_INTEGER_F64.md)
 - [SMALLEST_NORMAL](variables/SMALLEST_NORMAL.md)
+
+## Other
+
+- [GOLDEN_RATIO](variables/GOLDEN_RATIO.md)
 
 ## Tolerance
 

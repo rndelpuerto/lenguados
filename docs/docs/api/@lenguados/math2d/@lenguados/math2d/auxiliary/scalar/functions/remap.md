@@ -2,7 +2,7 @@
 
 > **remap**(`value`, `inMin`, `inMax`, `outMin`, `outMax`): `number`
 
-Defined in: [src/auxiliary/scalar/arithmetic.ts:109](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/auxiliary/scalar/arithmetic.ts#L109)
+Defined in: [src/auxiliary/scalar/arithmetic.ts:124](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/scalar/arithmetic.ts#L124)
 
 Linear mapping from [inMin, inMax] to [outMin, outMax].
 
@@ -12,37 +12,46 @@ Linear mapping from [inMin, inMax] to [outMin, outMax].
 
 `number`
 
-Value to remap.
+Value to remap
 
 ### inMin
 
 `number`
 
-Input range minimum.
+Input range minimum
 
 ### inMax
 
 `number`
 
-Input range maximum.
+Input range maximum
 
 ### outMin
 
 `number`
 
-Output range minimum.
+Output range minimum
 
 ### outMax
 
 `number`
 
-Output range maximum.
+Output range maximum
 
 ## Returns
 
 `number`
 
-Remapped value.
+Remapped value
+
+## Remarks
+
+For large-magnitude operands, intermediate subtraction `(value - inMin)`
+and multiplication may lose precision due to floating-point cancellation.
+
+## Throws
+
+If inMin === inMax (zero input range)
 
 ## Example
 

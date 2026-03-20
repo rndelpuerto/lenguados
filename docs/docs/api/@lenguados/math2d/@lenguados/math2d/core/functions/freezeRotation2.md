@@ -1,8 +1,8 @@
 # Function: freezeRotation2()
 
-> **freezeRotation2**(`rotation`): [`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
+> **freezeRotation2**(`rotation`): [`ReadonlyRotation2`](../type-aliases/ReadonlyRotation2.md)
 
-Defined in: [src/core/rotation2.ts:102](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/core/rotation2.ts#L102)
+Defined in: [src/core/rotation2.ts:117](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/rotation2.ts#L117)
 
 Permanently freezes a [Rotation2](../classes/Rotation2.md) instance so it can no longer be mutated.
 
@@ -12,13 +12,13 @@ Permanently freezes a [Rotation2](../classes/Rotation2.md) instance so it can no
 
 [`Rotation2`](../classes/Rotation2.md)
 
-The Rotation2 object to freeze.
+The Rotation2 object to freeze
 
 ## Returns
 
-[`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
+[`ReadonlyRotation2`](../type-aliases/ReadonlyRotation2.md)
 
-The same instance, now typed as ReadonlyRotation2Like.
+The same instance, now typed as ReadonlyRotation2Like
 
 ## Remarks
 

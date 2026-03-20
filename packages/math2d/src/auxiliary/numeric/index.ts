@@ -1,7 +1,7 @@
 /**
  * @file auxiliary/numeric/index.ts
  * @module @lenguados/math2d/auxiliary/numeric
- * @description Numeric robustness and safety operations for the Lenguados math2d library.
+ * @description Numeric robustness and safety operations
  *
  * @remarks
  * This module provides low-level numeric operations including:

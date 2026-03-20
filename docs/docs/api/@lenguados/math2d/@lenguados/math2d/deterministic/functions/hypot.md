@@ -2,7 +2,7 @@
 
 > **hypot**(`x`, `y`): `number`
 
-Defined in: [src/deterministic/deterministic-kernels.ts:273](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/deterministic/deterministic-kernels.ts#L273)
+Defined in: [src/deterministic/deterministic-kernels.ts:223](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/deterministic/deterministic-kernels.ts#L223)
 
 Deterministic hypotenuse: sqrt(x² + y²) without intermediate overflow.
 
@@ -47,7 +47,7 @@ hypot(Infinity, 5); // Infinity
 
 ## See
 
-https://www.netlib.org/fdlibm/e_hypot.c
+[https://www.netlib.org/fdlibm/e_hypot.c](https://www.netlib.org/fdlibm/e_hypot.c) - fdlibm hypot source
 
 ## Since
 

@@ -2,7 +2,7 @@
 
 > **measureAsync**\<`T`\>(`label`, `function_`): `Promise`\<[`Measurement`](../interfaces/Measurement.md)\<`T`\>\>
 
-Defined in: [src/utils/performance.ts:118](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/utils/performance.ts#L118)
+Defined in: [src/utils/performance.ts:118](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/utils/performance.ts#L118)
 
 Measures an asynchronous function, returning its result and duration.
 
@@ -18,19 +18,19 @@ Measures an asynchronous function, returning its result and duration.
 
 `string`
 
-Identifier for the measurement.
+Identifier for the measurement
 
 ### function\_
 
 () => `Promise`\<`T`\>
 
-Async function to execute.
+Async function to execute
 
 ## Returns
 
 `Promise`\<[`Measurement`](../interfaces/Measurement.md)\<`T`\>\>
 
-Measurement metadata.
+Measurement metadata
 
 ## Example
 

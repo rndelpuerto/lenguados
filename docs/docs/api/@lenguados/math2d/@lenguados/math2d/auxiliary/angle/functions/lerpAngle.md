@@ -2,7 +2,7 @@
 
 > **lerpAngle**(`from`, `to`, `t`): `number`
 
-Defined in: [src/auxiliary/angle/interpolation.ts:34](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/auxiliary/angle/interpolation.ts#L34)
+Defined in: [src/auxiliary/angle/interpolation.ts:33](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/angle/interpolation.ts#L33)
 
 Interpolates between angles using shortest path.
 
@@ -12,37 +12,37 @@ Interpolates between angles using shortest path.
 
 `number`
 
-Start angle in radians.
+Start angle in radians
 
 ### to
 
 `number`
 
-End angle in radians.
+End angle in radians
 
 ### t
 
 `number`
 
-Interpolation factor [0, 1].
+Interpolation factor [0, 1]
 
 ## Returns
 
 `number`
 
-Interpolated angle.
+Interpolated angle
 
 ## Remarks
 
-Works for any real t (not only [0, 1]). Output is normalized
-near `from` to avoid jumps.
+Works for any real t (not only [0, 1]). Extrapolation continues
+linearly in angle space and may produce values outside [-PI, PI).
 
 ## Example
 
 ```typescript
 lerpAngle(0, Math.PI / 2, 0.5); // Math.PI / 4
 lerpAngle(0, (3 * Math.PI) / 2, 0.5); // -Math.PI / 4 (short path)
-lerpAngle(-Math.PI, Math.PI, 0.5); // -Math.PI or Math.PI (on boundary)
+lerpAngle(-Math.PI, Math.PI, 0.5); // -Math.PI (angles are equivalent, no arc to traverse)
 ```
 
 ## Since

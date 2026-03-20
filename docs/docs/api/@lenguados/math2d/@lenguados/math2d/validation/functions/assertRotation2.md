@@ -2,7 +2,7 @@
 
 > **assertRotation2**(`cos`, `sin`, `name?`): `void`
 
-Defined in: [src/validation/assert.ts:549](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/validation/assert.ts#L549)
+Defined in: [src/validation/assert.ts:567](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/validation/assert.ts#L567)
 
 Asserts that Rotation2-like components are finite.
 
@@ -12,33 +12,33 @@ Asserts that Rotation2-like components are finite.
 
 `number`
 
-Cosine component to validate.
+Cosine component to validate
 
 ### sin
 
 `number`
 
-Sine component to validate.
+Sine component to validate
 
 ### name?
 
 `string`
 
-Rotation name for error messages (optional).
+Rotation name for error messages (optional)
 
 ## Returns
 
 `void`
-
-## Throws
-
-If assertions enabled and any component is not finite.
 
 ## Remarks
 
 Validates both cos and sin are finite (not NaN, not Infinity).
 Does NOT validate that cos² + sin² = 1 (unit constraint).
 No-op when assertions are disabled.
+
+## Throws
+
+If assertions enabled and any component is not finite
 
 ## Example
 

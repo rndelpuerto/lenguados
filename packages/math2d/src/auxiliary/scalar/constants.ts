@@ -1,7 +1,7 @@
 /**
  * @file auxiliary/scalar/constants.ts
  * @module @lenguados/math2d/auxiliary/scalar
- * @description Mathematical constants for scalar operations.
+ * @description Mathematical constants for scalar operations
  */
 
 /* ========================================================================== */

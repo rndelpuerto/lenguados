@@ -2,7 +2,7 @@
 
 > **inRange**(`value`, `min`, `max`, `epsilon`): `boolean`
 
-Defined in: [src/auxiliary/scalar/comparison.ts:183](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/auxiliary/scalar/comparison.ts#L183)
+Defined in: [src/auxiliary/scalar/comparison.ts:224](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/scalar/comparison.ts#L224)
 
 Tests if value is in range [min, max] with epsilon.
 
@@ -12,31 +12,31 @@ Tests if value is in range [min, max] with epsilon.
 
 `number`
 
-Value to test.
+Value to test
 
 ### min
 
 `number`
 
-Lower bound (inclusive).
+Lower bound (inclusive)
 
 ### max
 
 `number`
 
-Upper bound (inclusive).
+Upper bound (inclusive)
 
 ### epsilon
 
 `number` = `EPSILON`
 
-Tolerance (default: EPSILON).
+Tolerance (default: EPSILON)
 
 ## Returns
 
 `boolean`
 
-True if value is within range with tolerance.
+True if value is within range with tolerance
 
 ## Remarks
 

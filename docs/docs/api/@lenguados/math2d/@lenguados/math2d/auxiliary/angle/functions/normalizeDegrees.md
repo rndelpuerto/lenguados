@@ -2,7 +2,7 @@
 
 > **normalizeDegrees**(`degrees`): `number`
 
-Defined in: [src/auxiliary/angle/normalization.ts:92](https://github.com/rndelpuerto/lenguados/blob/76bf48f6de585e4e63fa105b28c850c7b70ac176/packages/math2d/src/auxiliary/angle/normalization.ts#L92)
+Defined in: [src/auxiliary/angle/normalization.ts:77](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/angle/normalization.ts#L77)
 
 Normalizes degrees to [-180, 180).
 
@@ -12,13 +12,13 @@ Normalizes degrees to [-180, 180).
 
 `number`
 
-Angle in degrees.
+Angle in degrees
 
 ## Returns
 
 `number`
 
-Normalized angle in [-180, 180).
+Normalized angle in [-180, 180)
 
 ## Example
 
