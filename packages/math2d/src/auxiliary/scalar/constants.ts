@@ -39,37 +39,6 @@ export const EPSILON = 1e-10;
  */
 export const EPSILON_SQUARED = EPSILON * EPSILON;
 
-/**
- * Tolerance for iterative angle algorithms.
- *
- * @remarks
- * Used in iterative angle operations (like constraint solving) where
- * a looser tolerance than EPSILON is acceptable for convergence.
- * Value of 1e-6 provides good balance between precision and performance.
- *
- * @constant {number}
- * @category Tolerance
- * @since 0.7.0
- */
-export const ITERATIVE_TOLERANCE = 1e-6;
-
-/* ========================================================================== */
-/* Numeric Limits                                                            */
-/* ========================================================================== */
-
-/**
- * Maximum safe integer in float64 (2^53 - 1).
- *
- * @remarks
- * Beyond this value, integer arithmetic becomes imprecise due to
- * IEEE 754 double precision limitations.
- *
- * @constant {number}
- * @category Numeric Limits
- * @since 0.7.0
- */
-export const MAX_SAFE_INTEGER_F64 = Number.MAX_SAFE_INTEGER;
-
 /* ========================================================================== */
 /* Angular Constants                                                          */
 /* ========================================================================== */
@@ -214,45 +183,6 @@ export const SQRT_HALF = Math.SQRT1_2;
 export const LN_2 = Math.LN2;
 
 /**
- * Euler's number e ≈ 2.718281828459045.
- *
- * @remarks
- * Base of natural logarithms. Fundamental in calculus and exponential growth.
- *
- * @constant {number}
- * @category Mathematical
- * @since 0.7.0
- */
-export const E = Math.E;
-
-/**
- * Golden Ratio φ ≈ 1.618033988749895.
- *
- * @remarks
- * The unique positive solution to φ² = φ + 1.
- * Satisfies φ = (1 + √5) / 2 and φ * GOLDEN_RATIO_CONJUGATE = 1.
- *
- * @constant {number}
- * @category Mathematical
- * @since 0.7.0
- */
-const SQRT5 = Math.sqrt(5);
-
-export const GOLDEN_RATIO = (1 + SQRT5) / 2;
-
-/**
- * Golden Ratio Conjugate Φ ≈ 0.618033988749895.
- *
- * @remarks
- * Equals 1 / φ or φ - 1.
- *
- * @constant {number}
- * @category Mathematical
- * @since 0.7.0
- */
-export const GOLDEN_RATIO_CONJUGATE = (SQRT5 - 1) / 2;
-
-/**
  * Smallest positive normal number in IEEE 754 double precision.
  * Numbers smaller than this (but not zero) are denormal/subnormal.
  *
@@ -282,8 +212,6 @@ export const SMALLEST_NORMAL = 2.2250738585072014e-308; // 2^-1022
 export const Constants = {
  EPSILON,
  EPSILON_SQUARED,
- ITERATIVE_TOLERANCE,
- MAX_SAFE_INTEGER_F64,
  PI,
  TAU,
  HALF_PI,
@@ -296,10 +224,6 @@ export const Constants = {
  SQRT_2,
  SQRT_HALF,
  LN_2,
-
- E,
- GOLDEN_RATIO,
- GOLDEN_RATIO_CONJUGATE,
 
  SMALLEST_NORMAL,
 } as const;

@@ -47,6 +47,18 @@ export function roundToInt(value: number): number {
 
 /**
  * Rounds to specific decimal places.
+ *
+ * @remarks
+ * Uses the standard `Math.round(value * 10^places) / 10^places` approach.
+ * Due to IEEE 754 binary floating-point representation, some decimal values
+ * cannot be represented exactly. For example, `1.005` is stored as
+ * `1.00499999999999989...`, so `roundToPlaces(1.005, 2)` returns `1.0`
+ * rather than `1.01`. This is inherent to all multiply-round-divide
+ * approaches in binary floating-point arithmetic.
+ *
+ * For extreme places values (>308), 10**places overflows to Infinity,
+ * causing the result to be NaN.
+ *
  * @param value - Value to round
  * @param places - Number of decimal places
  * @returns Rounded value
@@ -80,6 +92,8 @@ export function roundToPlaces(value: number, places: number): number {
  * roundToMultiple(23, 10);       // 20
  * roundToMultiple(1.7, 0.5);     // 1.5
  * ```
+ *
+ * @see {@link snapToGrid} - Equivalent: roundToMultiple(value, multiple) = snapToGrid(value, multiple, 0)
  *
  * @category Arithmetic
  * @since 0.7.0
@@ -121,6 +135,55 @@ export function roundToPowerOfTwo(value: number): number {
 }
 
 /**
+ * Returns the smallest power of two greater than or equal to value.
+ * @param value - Input value (positive)
+ * @returns Next power of two, or 0 for non-positive input
+ *
+ * @example
+ * ```typescript
+ * ceilPowerOfTwo(5);      // 8
+ * ceilPowerOfTwo(8);      // 8
+ * ceilPowerOfTwo(1);      // 1
+ * ceilPowerOfTwo(0);      // 0
+ * ```
+ *
+ * @see {@link floorPowerOfTwo} - Largest power of two ≤ value
+ * @see {@link roundToPowerOfTwo} - Nearest power of two
+ * @category Arithmetic
+ * @since 0.9.0
+ */
+export function ceilPowerOfTwo(value: number): number {
+ if (value <= 0) return 0;
+ const raw = log(value) / LN_2;
+ const rounded = Math.round(raw);
+ const log2 = Math.abs(raw - rounded) < 1e-10 ? rounded : raw;
+ return 2 ** Math.ceil(log2);
+}
+
+/**
+ * Returns the largest power of two less than or equal to value.
+ * @param value - Input value (positive)
+ * @returns Previous power of two, or 0 for non-positive input
+ *
+ * @example
+ * ```typescript
+ * floorPowerOfTwo(5);     // 4
+ * floorPowerOfTwo(8);     // 8
+ * floorPowerOfTwo(1);     // 1
+ * floorPowerOfTwo(0);     // 0
+ * ```
+ *
+ * @see {@link ceilPowerOfTwo} - Smallest power of two ≥ value
+ * @see {@link roundToPowerOfTwo} - Nearest power of two
+ * @category Arithmetic
+ * @since 0.9.0
+ */
+export function floorPowerOfTwo(value: number): number {
+ if (value <= 0) return 0;
+ return 2 ** Math.floor(log(value) / LN_2);
+}
+
+/**
  * Snaps to grid with offset.
  * @param value - Value to snap
  * @param gridSize - Size of grid cells
@@ -146,6 +209,10 @@ export function snapToGrid(value: number, gridSize: number, offset: number = 0):
 
 /**
  * Gets fractional part.
+ * @remarks
+ * Returns NaN for non-finite inputs (NaN, ±Infinity) because
+ * `Math.floor` returns ±Infinity for ±Infinity and NaN for NaN.
+ *
  * @param value - Value to get fraction from
  * @returns Fractional part (always positive)
  *

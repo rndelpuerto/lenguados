@@ -21,6 +21,11 @@ import { isNearZero } from '../scalar/comparison';
 
 /**
  * Floored modulo (strict).
+ *
+ * @remarks
+ * Uses `isNearZero(divisor)` with EPSILON tolerance (1e-10) to detect
+ * zero divisors, not an exact `=== 0` check. Values like 1e-11 will throw.
+ *
  * @param dividend - Value to divide
  * @param divisor - Divisor
  * @returns Floored remainder

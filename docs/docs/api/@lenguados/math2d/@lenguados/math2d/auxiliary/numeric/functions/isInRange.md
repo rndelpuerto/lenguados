@@ -2,7 +2,7 @@
 
 > **isInRange**(`value`, `min`, `max`): `boolean`
 
-Defined in: [src/auxiliary/numeric/guards.ts:122](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/numeric/guards.ts#L122)
+Defined in: [src/auxiliary/numeric/guards.ts:149](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/auxiliary/numeric/guards.ts#L149)
 
 Tests if value is in range [min, max].
 
@@ -40,6 +40,10 @@ isInRange(0, 0, 10); // true (on boundary)
 isInRange(11, 0, 10); // false
 isInRange(-1, 0, 10); // false
 ```
+
+## See
+
+inRange For epsilon-tolerant range checking
 
 ## Since
 

@@ -15,7 +15,7 @@ describe('Edge Case Properties', () => {
    fc.assert(
     fc.property(arbSmallVector2, (v) => {
      const added = Vector2.add(v, v);
-     return added.nearEquals(Vector2.scale(v, 2), 1e-10);
+     return added.nearEquals(Vector2.multiplyScalar(v, 2), 1e-10);
     }),
    );
   });

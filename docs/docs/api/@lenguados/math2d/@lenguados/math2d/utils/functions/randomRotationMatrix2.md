@@ -2,7 +2,7 @@
 
 > **randomRotationMatrix2**(`out`, `source`): [`Matrix2`](../../core/classes/Matrix2.md)
 
-Defined in: [src/utils/random.ts:251](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/utils/random.ts#L251)
+Defined in: [src/utils/random.ts:253](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/utils/random.ts#L253)
 
 Generates a random 2x2 rotation matrix.
 

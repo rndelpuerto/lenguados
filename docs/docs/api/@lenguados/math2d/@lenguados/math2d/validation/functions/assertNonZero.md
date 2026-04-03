@@ -2,7 +2,7 @@
 
 > **assertNonZero**(`value`, `name?`): `void`
 
-Defined in: [src/validation/assert.ts:201](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/validation/assert.ts#L201)
+Defined in: [src/validation/assert.ts:210](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/validation/assert.ts#L210)
 
 Asserts that a value is not zero.
 
@@ -31,7 +31,7 @@ No-op when assertions are disabled.
 
 ## Throws
 
-If assertions enabled and value is exactly zero
+If assertions enabled and value is zero or NaN
 
 ## Example
 

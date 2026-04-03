@@ -19,6 +19,7 @@ For basic guards like `isFinite`, `isNaN`, `isSafeInteger`, use
 
 ## Guards
 
+- [flushDenormal](functions/flushDenormal.md)
 - [isDenormal](functions/isDenormal.md)
 - [isInfinity](functions/isInfinity.md)
 - [isInRange](functions/isInRange.md)

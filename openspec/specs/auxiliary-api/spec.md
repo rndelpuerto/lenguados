@@ -141,3 +141,34 @@ The `deterministic-kernels.ts` module SHALL import the `SinCos` interface from `
 ## NOTE: lerpSafe Relocation — REJECTED by Adversarial Review
 
 The original proposal (R-LERPSAFE-LOC) to move `lerpSafe` from `numeric/safety.ts` to `scalar/interpolation.ts` has been **rejected**. `lerpSafe` is a safety function whose defining characteristic is the divisor guard, not the interpolation operation. Its peers are `sqrtSafe`, `divideSafe`, and other `*Safe` functions in `numeric/safety.ts`. Moving it would break the safety-family module cohesion. The function remains in its current location with no changes.
+
+---
+
+## Changes from math2d-comprehensive-audit (2026-03-20)
+
+## MODIFIED Requirements
+
+### Requirement: angleBisector documentation fix
+
+The JSDoc example for `angleBisector` SHALL document the correct result. With the `(-PI, PI]` convention (matching IEEE 754, MATLAB, Unity, Box2D), `angleBisector(0, Math.PI)` returns `Math.PI / 2` because `angleDifference(0, PI) = PI` (CCW half-turn), giving bisector at `0 + PI*0.5 = PI/2`.
+
+#### Scenario: angleBisector(0, PI) actual behavior
+
+- **GIVEN** `a = 0` and `b = Math.PI`
+- **WHEN** `angleBisector(a, b)` is called
+- **THEN** the result SHALL be approximately `Math.PI / 2` (because `angleDifference(0, PI) = PI`, then `normalizeRadians(0 + PI*0.5) = PI/2`)
+
+#### Scenario: JSDoc example matches implementation
+
+- **WHEN** the JSDoc for `angleBisector` is inspected
+- **THEN** all example outputs SHALL match the actual return values of the function
+
+---
+
+### NOTE: moveTowards, moveTowardsAngle — REVERSED
+
+These additions were proposed but REVERSED during adversarial review. The ratified spec at `openspec/specs/core-types-api/spec.md:649` explicitly rejected `moveTowards` as "a game engine convenience that composes existing mathematical primitives. Pure math libraries (glm, nalgebra, Eigen) do not include this operation." The same reasoning applies to `moveTowardsAngle`.
+
+### NOTE: remapSafe boundary guard — REVERSED
+
+This modification was proposed but REVERSED during adversarial review. The audit claimed `remapSafe` "silently produces Infinity" for degenerate ranges. This is factually incorrect — the actual code at `auxiliary/scalar/arithmetic.ts:169` already contains `if (inRange === 0) return outMin;`. The function already handles degenerate input correctly.

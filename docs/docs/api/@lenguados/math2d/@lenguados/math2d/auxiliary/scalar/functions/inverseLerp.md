@@ -2,7 +2,7 @@
 
 > **inverseLerp**(`a`, `b`, `value`): `number`
 
-Defined in: [src/auxiliary/scalar/interpolation.ts:92](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/scalar/interpolation.ts#L92)
+Defined in: [src/auxiliary/scalar/interpolation.ts:93](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/auxiliary/scalar/interpolation.ts#L93)
 
 Inverse linear interpolation (strict).
 Returns t such that lerp(a, b, t) = value.

@@ -168,6 +168,12 @@ Re-exports [assertRotation2Like](validation/functions/assertRotation2Like.md)
 
 ---
 
+### assertRotation2Normalized
+
+Re-exports [assertRotation2Normalized](validation/functions/assertRotation2Normalized.md)
+
+---
+
 ### assertSafeInteger
 
 Re-exports [assertSafeInteger](validation/functions/assertSafeInteger.md)
@@ -210,6 +216,12 @@ Re-exports [atan2](deterministic/functions/atan2.md)
 
 ---
 
+### ceilPowerOfTwo
+
+Re-exports [ceilPowerOfTwo](auxiliary/numeric/functions/ceilPowerOfTwo.md)
+
+---
+
 ### clamp
 
 Re-exports [clamp](auxiliary/scalar/functions/clamp.md)
@@ -237,6 +249,18 @@ Re-exports [compensatedProduct](auxiliary/numeric/functions/compensatedProduct.m
 ### Complex
 
 Re-exports [Complex](core/classes/Complex.md)
+
+---
+
+### ComplexEigendecomposition
+
+Re-exports [ComplexEigendecomposition](types/interfaces/ComplexEigendecomposition.md)
+
+---
+
+### ComplexEigenvalues
+
+Re-exports [ComplexEigenvalues](types/interfaces/ComplexEigenvalues.md)
 
 ---
 
@@ -288,9 +312,15 @@ Re-exports [divideSafe](auxiliary/numeric/functions/divideSafe.md)
 
 ---
 
-### E
+### EigendecomposeResult
 
-Re-exports [E](auxiliary/scalar/variables/E.md)
+Re-exports [EigendecomposeResult](types/type-aliases/EigendecomposeResult.md)
+
+---
+
+### EigenvalueResult
+
+Re-exports [EigenvalueResult](types/type-aliases/EigenvalueResult.md)
 
 ---
 
@@ -360,6 +390,18 @@ Re-exports [flooredModUnchecked](auxiliary/numeric/functions/flooredModUnchecked
 
 ---
 
+### floorPowerOfTwo
+
+Re-exports [floorPowerOfTwo](auxiliary/numeric/functions/floorPowerOfTwo.md)
+
+---
+
+### flushDenormal
+
+Re-exports [flushDenormal](auxiliary/numeric/functions/flushDenormal.md)
+
+---
+
 ### fract
 
 Re-exports [fract](auxiliary/numeric/functions/fract.md)
@@ -405,18 +447,6 @@ Re-exports [freezeTransform2](core/functions/freezeTransform2.md)
 ### freezeVector2
 
 Re-exports [freezeVector2](core/functions/freezeVector2.md)
-
----
-
-### GOLDEN_RATIO
-
-Re-exports [GOLDEN_RATIO](auxiliary/scalar/variables/GOLDEN_RATIO.md)
-
----
-
-### GOLDEN_RATIO_CONJUGATE
-
-Re-exports [GOLDEN_RATIO_CONJUGATE](auxiliary/scalar/variables/GOLDEN_RATIO_CONJUGATE.md)
 
 ---
 
@@ -564,12 +594,6 @@ Re-exports [isVector2Like](types/functions/isVector2Like.md)
 
 ---
 
-### ITERATIVE_TOLERANCE
-
-Re-exports [ITERATIVE_TOLERANCE](auxiliary/scalar/variables/ITERATIVE_TOLERANCE.md)
-
----
-
 ### lerp
 
 Re-exports [lerp](auxiliary/scalar/functions/lerp.md)
@@ -579,6 +603,12 @@ Re-exports [lerp](auxiliary/scalar/functions/lerp.md)
 ### lerpAngle
 
 Re-exports [lerpAngle](auxiliary/angle/functions/lerpAngle.md)
+
+---
+
+### lerpAngleClamped
+
+Re-exports [lerpAngleClamped](auxiliary/angle/functions/lerpAngleClamped.md)
 
 ---
 
@@ -657,12 +687,6 @@ Re-exports [Matrix3](core/classes/Matrix3.md)
 ### Matrix3Like
 
 Re-exports [Matrix3Like](types/interfaces/Matrix3Like.md)
-
----
-
-### MAX_SAFE_INTEGER_F64
-
-Re-exports [MAX_SAFE_INTEGER_F64](auxiliary/scalar/variables/MAX_SAFE_INTEGER_F64.md)
 
 ---
 
@@ -852,6 +876,12 @@ Re-exports [ReadonlyRotation2Like](types/interfaces/ReadonlyRotation2Like.md)
 
 ---
 
+### ReadonlySinCos
+
+Re-exports [ReadonlySinCos](types/interfaces/ReadonlySinCos.md)
+
+---
+
 ### ReadonlyTransform2
 
 Re-exports [ReadonlyTransform2](core/type-aliases/ReadonlyTransform2.md)
@@ -873,6 +903,18 @@ Re-exports [ReadonlyVector2](core/type-aliases/ReadonlyVector2.md)
 ### ReadonlyVector2Like
 
 Re-exports [ReadonlyVector2Like](types/interfaces/ReadonlyVector2Like.md)
+
+---
+
+### RealEigendecomposition
+
+Re-exports [RealEigendecomposition](types/interfaces/RealEigendecomposition.md)
+
+---
+
+### RealEigenvalues
+
+Re-exports [RealEigenvalues](types/interfaces/RealEigenvalues.md)
 
 ---
 
@@ -980,13 +1022,13 @@ Re-exports [sin](deterministic/functions/sin.md)
 
 ### sinCos
 
-Re-exports [sinCos](deterministic/functions/sinCos.md)
+Re-exports [sinCos](auxiliary/angle/functions/sinCos.md)
 
 ---
 
 ### SinCos
 
-Re-exports [SinCos](auxiliary/angle/interfaces/SinCos.md)
+Re-exports [SinCos](types/interfaces/SinCos.md)
 
 ---
 

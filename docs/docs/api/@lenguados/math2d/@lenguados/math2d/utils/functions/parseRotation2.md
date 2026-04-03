@@ -2,7 +2,7 @@
 
 > **parseRotation2**(`string_`, `out`): [`Rotation2`](../../core/classes/Rotation2.md)
 
-Defined in: [src/utils/parse.ts:197](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/utils/parse.ts#L197)
+Defined in: [src/utils/parse.ts:209](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/utils/parse.ts#L209)
 
 Parses a string representation of a 2D rotation.
 

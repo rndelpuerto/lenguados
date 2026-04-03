@@ -1,8 +1,8 @@
 # Function: assertIntervalLike()
 
-> **assertIntervalLike**(`value`, `name?`): `void`
+> **assertIntervalLike**(`value`, `name?`): `asserts value is IntervalLike`
 
-Defined in: [src/validation/assert.ts:921](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/validation/assert.ts#L921)
+Defined in: [src/validation/assert.ts:983](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/validation/assert.ts#L983)
 
 Asserts that an object has valid Interval-like shape with finite bounds.
 
@@ -22,13 +22,14 @@ Object name for error messages (optional)
 
 ## Returns
 
-`void`
+`asserts value is IntervalLike`
 
 ## Remarks
 
 Validates that object has `min` and `max` numeric properties that are finite.
 Also validates that min ≤ max.
-No-op when assertions are disabled.
+No-op when assertions are disabled. In production builds, this function
+is eliminated via DCE. For runtime shape validation, use `isIntervalLike()`.
 
 ## Throws
 

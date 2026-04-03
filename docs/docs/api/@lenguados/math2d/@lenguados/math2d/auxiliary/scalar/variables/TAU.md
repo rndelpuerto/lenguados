@@ -2,7 +2,7 @@
 
 > `const` **TAU**: `number`
 
-Defined in: [src/auxiliary/scalar/constants.ts:97](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/scalar/constants.ts#L97)
+Defined in: [src/auxiliary/scalar/constants.ts:66](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/auxiliary/scalar/constants.ts#L66)
 
 Mathematical constant τ (tau) = 2π ≈ 6.28318530717959.
 

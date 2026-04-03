@@ -2,7 +2,7 @@
 
 > **compare**(`a`, `b`, `epsilon`): `-1` \| `0` \| `1`
 
-Defined in: [src/auxiliary/scalar/comparison.ts:260](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/scalar/comparison.ts#L260)
+Defined in: [src/auxiliary/scalar/comparison.ts:281](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/auxiliary/scalar/comparison.ts#L281)
 
 Compares two values with tolerance.
 
@@ -36,6 +36,10 @@ Tolerance (default: EPSILON)
 
 This provides a three-way comparison suitable for sorting or ordering.
 Values within epsilon of each other are considered equal (returns 0).
+
+## Throws
+
+If epsilon is negative or NaN
 
 ## Example
 

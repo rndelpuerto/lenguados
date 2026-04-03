@@ -85,7 +85,25 @@ Add re-exports for the new type and its helpers.
 - Test all static and instance methods
 - Test edge cases: NaN, Infinity, zero values, near-epsilon
 - Add property-based tests in `test/properties/newtype.property.node.spec.ts`
+- Add custom arbitraries to `test/arbitraries.ts` (see `testing-deep-patterns.md`)
+- Test algebraic invariants: commutativity, identity, inverse, round-trip (see `testing-deep-patterns.md`)
+- Test `*Unchecked` variants produce NaN/Infinity, not throws
+- Use `toBeCloseTo(expected, 10)` for EPSILON-level tolerance
 
-## 7. Update Formatting/Parsing (`src/utils/`)
+## 7. Document with TSDoc (see `tsdoc-conventions.md`)
+
+- Follow canonical tag order and controlled `@category` vocabulary
+- Cross-link triality variants with `@see`
+- Use imperative voice for summaries
+- Place methods in the correct class member section
+
+## 8. Update Formatting/Parsing (`src/utils/`)
 
 Add `formatNewType()` and `parseNewType()` if the type supports string representation.
+
+## Reference Rules
+
+- **API patterns**: `.claude/rules/math2d-patterns.md`
+- **TSDoc**: `.claude/rules/tsdoc-conventions.md`
+- **Architecture**: `.claude/rules/architecture-and-layers.md`
+- **Testing**: `.claude/rules/testing-deep-patterns.md`

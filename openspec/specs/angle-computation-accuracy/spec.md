@@ -8,19 +8,19 @@
 
 **Reference:** Godot `lerp_angle` uses the same `from + angleDifference(from, to) * t` formulation.
 
-**Important boundary note:** The PI-boundary behavior is inherent to the `[-PI, PI)` normalization range. `angleDifference(0, PI) = -PI` because PI is the excluded endpoint of the half-open range. This means `lerpAngle(0, PI, 0.5) = -PI/2` under BOTH old and new formulas — the fix addresses extrapolation, not the PI-boundary sign. Unity produces `+PI/2` for the same inputs because it uses `(-PI, PI]` range convention — this is a different equally valid arbitrary choice, not a correctness issue.
+**Important boundary note:** With the `(-PI, PI]` convention (matching IEEE 754 atan2, MATLAB, Unity, Box2D), `angleDifference(0, PI) = PI` and `lerpAngle(0, PI, 0.5) = PI/2`. The anti-symmetry breaks at PI: both `angleDifference(0, PI)` and `angleDifference(PI, 0)` return `+PI`. This is inherent to any half-open interval and matches the CCW-positive convention.
 
 #### Scenario: Midpoint interpolation across PI boundary (inherent convention)
 
 - **GIVEN** `from = 0` and `to = PI`
 - **WHEN** `lerpAngle(from, to, 0.5)` is called
-- **THEN** the result SHALL be `-PI / 2` (this is inherent to the `[-PI, PI)` range: `angleDifference(0, PI) = -PI`, so `0 + (-PI) * 0.5 = -PI/2`). This is NOT a bug — it reflects the half-open range convention.
+- **THEN** the result SHALL be `PI / 2` (with `(-PI, PI]` convention: `angleDifference(0, PI) = PI`, so `0 + PI * 0.5 = PI/2`). This reflects the CCW-positive convention.
 
 #### Scenario: Midpoint interpolation within non-boundary range
 
 - **GIVEN** `from = 0` and `to = PI / 2`
 - **WHEN** `lerpAngle(from, to, 0.5)` is called
-- **THEN** the result SHALL be `PI / 4` (no boundary ambiguity for angles well within `[-PI, PI)`)
+- **THEN** the result SHALL be `PI / 4` (no boundary ambiguity for angles well within `(-PI, PI]`)
 
 #### Scenario: Interpolation at endpoints is exact
 
@@ -38,7 +38,7 @@
 
 ### Requirement: angleDifference anti-symmetry
 
-`angleDifference` SHALL satisfy the anti-symmetry property `angleDifference(a, b) = -angleDifference(b, a)` for all inputs, including the PI boundary. The current implementation maps both `PI` and `-PI` to `-PI` via the half-open `[-PI, PI)` range, causing `angleDifference(0, PI)` and `angleDifference(PI, 0)` to both return `-PI`. The fix SHALL document this as a known boundary condition of the `[-PI, PI)` representation and, where feasible, adjust the implementation so that the anti-symmetry holds for non-boundary inputs.
+`angleDifference` SHALL satisfy the anti-symmetry property `angleDifference(a, b) = -angleDifference(b, a)` for all inputs, including the PI boundary. The current implementation maps both `PI` and `-PI` to `-PI` via the half-open `(-PI, PI]` range, causing `angleDifference(0, PI)` and `angleDifference(PI, 0)` to both return `-PI`. The fix SHALL document this as a known boundary condition of the `(-PI, PI]` representation and, where feasible, adjust the implementation so that the anti-symmetry holds for non-boundary inputs.
 
 **Source:** `packages/math2d/src/auxiliary/angle/operations.ts:109-111`
 
@@ -52,7 +52,7 @@
 
 - **GIVEN** `a = 0` and `b = PI`
 - **WHEN** `angleDifference(a, b)` is called
-- **THEN** the result SHALL be `-PI` (inherent to `[-PI, PI)` range), AND the function documentation SHALL explicitly state that `angleDifference(a, b) = -angleDifference(b, a)` holds for all inputs except when `|to - from|` is an exact multiple of `PI`, where the sign is determined by the `[-PI, PI)` normalization convention
+- **THEN** the result SHALL be `PI` (inherent to `(-PI, PI]` range), AND the function documentation SHALL explicitly state that `angleDifference(a, b) = -angleDifference(b, a)` holds for all inputs except when `|to - from|` is an exact multiple of `PI`, where the sign is determined by the `(-PI, PI]` normalization convention
 
 #### Scenario: Symmetric angles around zero
 
@@ -148,7 +148,7 @@
 
 ### Requirement: clampAngle output range documentation
 
-`clampAngle` SHALL document that it normalizes all input angles to `[-PI, PI)` before clamping, and therefore its return value is always in `[-PI, PI)`. The current implementation silently normalizes but the documentation does not state the output range.
+`clampAngle` SHALL document that it normalizes all input angles to `(-PI, PI]` before clamping, and therefore its return value is always in `(-PI, PI]`. The current implementation silently normalizes but the documentation does not state the output range.
 
 **Source:** `packages/math2d/src/auxiliary/angle/operations.ts:244-261`
 
@@ -156,19 +156,19 @@
 
 - **GIVEN** `angle = 5 * PI / 2`, `min = 0`, `max = PI`
 - **WHEN** `clampAngle(angle, min, max)` is called
-- **THEN** the result SHALL be in `[-PI, PI)` AND the result SHALL equal `PI / 2` (the normalized angle is `PI / 2`, which is within `[0, PI]`)
+- **THEN** the result SHALL be in `(-PI, PI]` AND the result SHALL equal `PI / 2` (the normalized angle is `PI / 2`, which is within `[0, PI]`)
 
 #### Scenario: Documentation states normalization behavior
 
 - **GIVEN** the `clampAngle` JSDoc
 - **WHEN** the documentation is reviewed
-- **THEN** it SHALL state that all input angles (angle, min, max) are normalized to `[-PI, PI)` before clamping, and that the return value is always in `[-PI, PI)`
+- **THEN** it SHALL state that all input angles (angle, min, max) are normalized to `(-PI, PI]` before clamping, and that the return value is always in `(-PI, PI]`
 
 #### Scenario: Clamped output preserves normalization
 
 - **GIVEN** `angle = 3 * PI`, `min = 0`, `max = PI / 2`
 - **WHEN** `clampAngle(angle, min, max)` is called
-- **THEN** the result SHALL be in `[-PI, PI)` (the normalized angle `-PI` is outside `[0, PI/2]`, so the closer boundary is returned, also in `[-PI, PI)`)
+- **THEN** the result SHALL be in `(-PI, PI]` (the normalized angle `-PI` is outside `[0, PI/2]`, so the closer boundary is returned, also in `(-PI, PI]`)
 
 ---
 
@@ -208,7 +208,7 @@
 
 - **GIVEN** `radians = 1e15`
 - **WHEN** `normalizeRadians(radians)` is called
-- **THEN** the result SHALL be a value in `[-PI, PI)`, BUT the documentation SHALL note that for `|radians| > 2^53 / TAU` (approximately `1.4e15`), the modulo operation loses all significant digits and the result is essentially meaningless
+- **THEN** the result SHALL be a value in `(-PI, PI]`, BUT the documentation SHALL note that for `|radians| > 2^53 / TAU` (approximately `1.4e15`), the modulo operation loses all significant digits and the result is essentially meaningless
 
 #### Scenario: Moderate large angles retain useful precision
 
@@ -272,7 +272,7 @@
 
 - **GIVEN** `v1 = (1, 0)` and `v2 = (-1, 0)`
 - **WHEN** `angleFromVectors(1, 0, -1, 0)` is called
-- **THEN** the result SHALL be `PI` or `-PI` (180 degrees, sign determined by `[-PI, PI)` convention)
+- **THEN** the result SHALL be `PI` or `-PI` (180 degrees, sign determined by `(-PI, PI]` convention)
 
 #### Scenario: Improved precision for nearly-parallel vectors
 

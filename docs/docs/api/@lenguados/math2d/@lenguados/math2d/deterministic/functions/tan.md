@@ -2,7 +2,7 @@
 
 > **tan**(`x`): `number`
 
-Defined in: [src/deterministic/deterministic-kernels.ts:478](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/deterministic/deterministic-kernels.ts#L478)
+Defined in: [src/deterministic/deterministic-kernels.ts:502](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/deterministic/deterministic-kernels.ts#L502)
 
 Deterministic tangent function.
 
@@ -19,6 +19,11 @@ Angle in radians
 `number`
 
 tan(x) = sin(x) / cos(x)
+
+## Remarks
+
+Computed as `sin(x) / cos(x)`, so reduced precision near π/2 + nπ
+where cos → 0. No singularity guard; returns ±large values near poles.
 
 ## Example
 

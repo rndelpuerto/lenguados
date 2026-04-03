@@ -246,6 +246,38 @@ describe('scalar/comparison', () => {
   test('compare throws for negative epsilon', () => {
    expect(() => compare(1, 2, -0.1)).toThrow(RangeError);
   });
+
+  test('nearEquals throws for NaN epsilon', () => {
+   expect(() => nearEquals(1, 2, NaN)).toThrow(RangeError);
+  });
+
+  test('isNearZero throws for NaN epsilon', () => {
+   expect(() => isNearZero(0, NaN)).toThrow(RangeError);
+  });
+
+  test('isNearOne throws for NaN epsilon', () => {
+   expect(() => isNearOne(1, NaN)).toThrow(RangeError);
+  });
+
+  test('relativeEquals throws for NaN relativeEpsilon', () => {
+   expect(() => relativeEquals(1, 2, NaN)).toThrow(RangeError);
+  });
+
+  test('lessThan throws for NaN epsilon', () => {
+   expect(() => lessThan(1, 2, NaN)).toThrow(RangeError);
+  });
+
+  test('greaterThan throws for NaN epsilon', () => {
+   expect(() => greaterThan(2, 1, NaN)).toThrow(RangeError);
+  });
+
+  test('inRange throws for NaN epsilon', () => {
+   expect(() => inRange(5, 0, 10, NaN)).toThrow(RangeError);
+  });
+
+  test('compare throws for NaN epsilon', () => {
+   expect(() => compare(1, 2, NaN)).toThrow(RangeError);
+  });
  });
 
  describe('compare NaN sorting', () => {

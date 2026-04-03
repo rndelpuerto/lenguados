@@ -22,6 +22,8 @@ import { EPSILON } from './constants';
  * @param epsilon - Tolerance (default: EPSILON)
  * @returns True if |a - b| <= epsilon
  *
+ * @throws {RangeError} If epsilon is negative or NaN
+ *
  * @example
  * ```typescript
  * nearEquals(1.0, 1.0000000001);          // true (within default epsilon)
@@ -33,8 +35,8 @@ import { EPSILON } from './constants';
  * @since 0.7.0
  */
 export function nearEquals(a: number, b: number, epsilon: number = EPSILON): boolean {
- if (epsilon < 0) {
-  throw new RangeError('nearEquals: epsilon must be non-negative');
+ if (!(epsilon >= 0)) {
+  throw new RangeError('nearEquals: epsilon must be a non-negative number');
  }
  // Fast path: identical values (handles ±Infinity correctly)
  if (a === b) return true;
@@ -54,6 +56,8 @@ export function nearEquals(a: number, b: number, epsilon: number = EPSILON): boo
  * @param epsilon - Tolerance (default: EPSILON)
  * @returns True if |value| <= epsilon
  *
+ * @throws {RangeError} If epsilon is negative or NaN
+ *
  * @example
  * ```typescript
  * isNearZero(0.0000000001);   // true (within default epsilon)
@@ -65,8 +69,8 @@ export function nearEquals(a: number, b: number, epsilon: number = EPSILON): boo
  * @since 0.7.0
  */
 export function isNearZero(value: number, epsilon: number = EPSILON): boolean {
- if (epsilon < 0) {
-  throw new RangeError('isNearZero: epsilon must be non-negative');
+ if (!(epsilon >= 0)) {
+  throw new RangeError('isNearZero: epsilon must be a non-negative number');
  }
  return Math.abs(value) <= epsilon;
 }
@@ -82,6 +86,8 @@ export function isNearZero(value: number, epsilon: number = EPSILON): boolean {
  * @param epsilon - Tolerance (default: EPSILON)
  * @returns True if |value - 1| <= epsilon
  *
+ * @throws {RangeError} If epsilon is negative or NaN
+ *
  * @example
  * ```typescript
  * isNearOne(0.9999999999);   // true (within default epsilon)
@@ -93,42 +99,48 @@ export function isNearZero(value: number, epsilon: number = EPSILON): boolean {
  * @since 0.7.0
  */
 export function isNearOne(value: number, epsilon: number = EPSILON): boolean {
- if (epsilon < 0) {
-  throw new RangeError('isNearOne: epsilon must be non-negative');
+ if (!(epsilon >= 0)) {
+  throw new RangeError('isNearOne: epsilon must be a non-negative number');
  }
  return Math.abs(value - 1) <= epsilon;
 }
 
 /**
- * Tests relative equality: |a-b| <= epsilon * max(|a|, |b|, 1).
- * Better for large numbers.
+ * Tests combined tolerance equality: |a-b| <= epsilon * max(|a|, |b|, 1).
+ * Scales with magnitude for large numbers; uses absolute floor for small numbers.
  *
  * @remarks
+ * Uses the combined absolute+relative tolerance pattern from Christer Ericson's
+ * *Real-Time Collision Detection*: the `max(1, ...)` floor ensures near-zero
+ * values are compared with threshold = `relativeEpsilon` (absolute behavior),
+ * while large values scale proportionally (relative behavior).
+ *
  * Default tolerance is {@link EPSILON} (1e-10), scaled by max(|a|, |b|, 1).
- * Unlike {@link nearEquals} which uses absolute tolerance, this scales with
- * magnitude — better for comparing values across different orders of magnitude.
+ * Unlike {@link nearEquals} which uses pure absolute tolerance, this adapts
+ * to magnitude — better for comparing values across different orders.
  *
  * @param a - First value
  * @param b - Second value
- * @param relativeEpsilon - Relative tolerance fraction
+ * @param relativeEpsilon - Tolerance fraction (scales with magnitude, floors at 1)
  * @returns True if within the scaled tolerance
  *
- * @throws {RangeError} If relativeEpsilon is negative
+ * @throws {RangeError} If relativeEpsilon is negative or NaN
  *
  * @example
  * ```typescript
- * // Relative compare: allows 1% difference
- * relativeEquals(100, 101, 0.01);          // true
- * relativeEquals(1000, 1010, 0.01);        // true
- * relativeEquals(0.001, 0.002, 0.01);      // false (100% difference)
+ * // Large values: scales tolerance with magnitude
+ * relativeEquals(100, 101, 0.01);          // true (scale=101, threshold=1.01)
+ * relativeEquals(1000, 1010, 0.01);        // true (scale=1010, threshold=10.1)
+ * // Small values: floor of 1 makes it behave as absolute comparison
+ * relativeEquals(0.001, 0.002, 0.01);      // true (scale=1, threshold=0.01, diff=0.001)
  * ```
  *
  * @category Comparison
  * @since 0.7.0
  */
 export function relativeEquals(a: number, b: number, relativeEpsilon: number = EPSILON): boolean {
- if (relativeEpsilon < 0) {
-  throw new RangeError('relativeEquals: relativeEpsilon must be non-negative');
+ if (!(relativeEpsilon >= 0)) {
+  throw new RangeError('relativeEquals: relativeEpsilon must be a non-negative number');
  }
 
  // Fast path: identical values (handles ±Infinity correctly)
@@ -152,6 +164,8 @@ export function relativeEquals(a: number, b: number, relativeEpsilon: number = E
  * @param epsilon - Tolerance (default: EPSILON)
  * @returns True if a is less than b beyond tolerance
  *
+ * @throws {RangeError} If epsilon is negative or NaN
+ *
  * @example
  * ```typescript
  * lessThan(1.0, 2.0);                    // true
@@ -163,8 +177,8 @@ export function relativeEquals(a: number, b: number, relativeEpsilon: number = E
  * @since 0.7.0
  */
 export function lessThan(a: number, b: number, epsilon: number = EPSILON): boolean {
- if (epsilon < 0) {
-  throw new RangeError('lessThan: epsilon must be non-negative');
+ if (!(epsilon >= 0)) {
+  throw new RangeError('lessThan: epsilon must be a non-negative number');
  }
  return a < b - epsilon;
 }
@@ -177,6 +191,8 @@ export function lessThan(a: number, b: number, epsilon: number = EPSILON): boole
  * @param epsilon - Tolerance (default: EPSILON)
  * @returns True if a is greater than b beyond tolerance
  *
+ * @throws {RangeError} If epsilon is negative or NaN
+ *
  * @example
  * ```typescript
  * greaterThan(2.0, 1.0);                 // true
@@ -188,8 +204,8 @@ export function lessThan(a: number, b: number, epsilon: number = EPSILON): boole
  * @since 0.7.0
  */
 export function greaterThan(a: number, b: number, epsilon: number = EPSILON): boolean {
- if (epsilon < 0) {
-  throw new RangeError('greaterThan: epsilon must be non-negative');
+ if (!(epsilon >= 0)) {
+  throw new RangeError('greaterThan: epsilon must be a non-negative number');
  }
  return a > b + epsilon;
 }
@@ -208,6 +224,8 @@ export function greaterThan(a: number, b: number, epsilon: number = EPSILON): bo
  * @param epsilon - Tolerance (default: EPSILON)
  * @returns True if value is within range with tolerance
  *
+ * @throws {RangeError} If epsilon is negative or NaN
+ *
  * @example
  * ```typescript
  * inRange(5, 0, 10);                     // true
@@ -218,6 +236,7 @@ export function greaterThan(a: number, b: number, epsilon: number = EPSILON): bo
  * inRange(-0.5, 0, 10, 1);               // true (within custom epsilon)
  * ```
  *
+ * @see {@link isInRange} For exact (non-tolerant) range checking
  * @category Comparison
  * @since 0.7.0
  */
@@ -227,8 +246,8 @@ export function inRange(
  max: number,
  epsilon: number = EPSILON,
 ): boolean {
- if (epsilon < 0) {
-  throw new RangeError('inRange: epsilon must be non-negative');
+ if (!(epsilon >= 0)) {
+  throw new RangeError('inRange: epsilon must be a non-negative number');
  }
  return value >= min - epsilon && value <= max + epsilon;
 }
@@ -245,6 +264,8 @@ export function inRange(
  * @param epsilon - Tolerance (default: EPSILON)
  * @returns -1 if a < b (beyond epsilon), 0 if approximately equal, 1 if a > b (beyond epsilon)
  *
+ * @throws {RangeError} If epsilon is negative or NaN
+ *
  * @example
  * ```typescript
  * compare(1.0, 2.0);           // -1
@@ -258,8 +279,8 @@ export function inRange(
  * @since 0.7.0
  */
 export function compare(a: number, b: number, epsilon: number = EPSILON): -1 | 0 | 1 {
- if (epsilon < 0) {
-  throw new RangeError('compare: epsilon must be non-negative');
+ if (!(epsilon >= 0)) {
+  throw new RangeError('compare: epsilon must be a non-negative number');
  }
  // NaN sorts after everything: NaN > any finite/Infinity
  const aNaN = a !== a;

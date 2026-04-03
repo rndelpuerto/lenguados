@@ -1,0 +1,5 @@
+name: math2d-adversarial-audit
+description: Comprehensive adversarial audit of @lenguados/math2d using 5 specialized agents
+status: completed
+created: 2026-03-22
+type: audit

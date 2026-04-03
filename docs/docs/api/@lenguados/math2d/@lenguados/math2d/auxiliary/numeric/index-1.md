@@ -6,7 +6,7 @@ auxiliary/numeric/index.ts
 
 ## Description
 
-Numeric robustness and safety operations for the Lenguados math2d library
+Numeric robustness and safety operations
 
 ## Remarks
 
@@ -18,6 +18,12 @@ This module provides low-level numeric operations including:
 - Value wrapping and modulo operations
 
 ## Other
+
+### ceilPowerOfTwo
+
+Re-exports [ceilPowerOfTwo](functions/ceilPowerOfTwo.md)
+
+---
 
 ### compensatedProduct
 
@@ -52,6 +58,18 @@ Re-exports [flooredModSafe](functions/flooredModSafe.md)
 ### flooredModUnchecked
 
 Re-exports [flooredModUnchecked](functions/flooredModUnchecked.md)
+
+---
+
+### floorPowerOfTwo
+
+Re-exports [floorPowerOfTwo](functions/floorPowerOfTwo.md)
+
+---
+
+### flushDenormal
+
+Re-exports [flushDenormal](functions/flushDenormal.md)
 
 ---
 

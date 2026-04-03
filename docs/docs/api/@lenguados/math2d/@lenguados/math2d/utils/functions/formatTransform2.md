@@ -2,7 +2,7 @@
 
 > **formatTransform2**(`t`, `format`, `precision?`): `string`
 
-Defined in: [src/utils/parse.ts:669](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/utils/parse.ts#L669)
+Defined in: [src/utils/parse.ts:681](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/utils/parse.ts#L681)
 
 Formats a 2D transform as a string.
 
@@ -10,7 +10,7 @@ Formats a 2D transform as a string.
 
 ### t
 
-[`ReadonlyTransform2`](../../core/type-aliases/ReadonlyTransform2.md)
+[`ReadonlyTransform2Like`](../../types/interfaces/ReadonlyTransform2Like.md)
 
 Transform to format
 

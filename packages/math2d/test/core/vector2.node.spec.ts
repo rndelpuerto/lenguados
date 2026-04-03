@@ -106,11 +106,11 @@ describe('Vector2', () => {
    expectVecClose(Vector2.subtract(new Vector2(3, 4), b), 2, 2);
   });
 
-  it('scale (multiply by scalar)', () => {
+  it('multiplyScalar multiplies by scalar', () => {
    const a = new Vector2(3, 4);
-   a.scale(2);
+   a.multiplyScalar(2);
    expectVecClose(a, 6, 8);
-   expectVecClose(Vector2.scale(new Vector2(3, 4), 2), 6, 8);
+   expectVecClose(Vector2.multiplyScalar(new Vector2(3, 4), 2), 6, 8);
   });
 
   it('divide scalar', () => {
@@ -856,9 +856,9 @@ describe('Vector2', () => {
    expect(v.magnitude()).toBeCloseTo(1, DIGITS);
   });
 
-  it('scale scales by scalar', () => {
+  it('multiplyScalar multiplies by scalar', () => {
    const v = new Vector2(2, 3);
-   v.scale(3);
+   v.multiplyScalar(3);
    expectVecClose(v, 6, 9);
   });
 
@@ -1844,9 +1844,9 @@ describe('Vector2', () => {
  });
 
  describe('Coverage - Instance Scalar Methods', () => {
-  it('scale multiplies vector by scalar', () => {
+  it('multiplyScalar multiplies vector by scalar', () => {
    const v = new Vector2(3, 4);
-   v.scale(2);
+   v.multiplyScalar(2);
    expectVecClose(v, 6, 8, DIGITS);
   });
 
@@ -2259,6 +2259,20 @@ describe('Vector2', () => {
    expect.hasAssertions();
    const v = new Vector2(-3, -4);
    expectVecClose(v.absolute, 3, 4, DIGITS);
+  });
+
+  it('inverted getter returns component-wise reciprocals', () => {
+   expect.hasAssertions();
+   const v = new Vector2(2, 4);
+   expectVecClose(v.inverted, 0.5, 0.25, DIGITS);
+  });
+
+  it('inverted getter with zero component returns Infinity', () => {
+   expect.hasAssertions();
+   const v = new Vector2(0, 5);
+   const inv = v.inverted;
+   expect(inv.x).toBe(Infinity);
+   expect(inv.y).toBeCloseTo(0.2, DIGITS);
   });
 
   it('normalized getter handles zero vector', () => {
@@ -2769,9 +2783,9 @@ describe('Vector2', () => {
  });
 
  describe('Coverage - Static scale', () => {
-  it('scale scales by scalar', () => {
+  it('multiplyScalar multiplies by scalar', () => {
    expect.hasAssertions();
-   const result = Vector2.scale({ x: 2, y: 3 }, 4);
+   const result = Vector2.multiplyScalar({ x: 2, y: 3 }, 4);
    expectVecClose(result, 8, 12, DIGITS);
   });
  });
@@ -3697,6 +3711,48 @@ describe('Vector2', () => {
    const v = new Vector2(1, -1);
    v.reflect({ x: 0, y: 1 });
    expectVecClose(v, 1, 1, DIGITS);
+  });
+ });
+
+ /* ===== Chebyshev (L∞) operations ===== */
+
+ describe('Chebyshev operations', () => {
+  it('chebyshevLength returns max absolute component', () => {
+   expect(Vector2.chebyshevLength({ x: 3, y: -5 })).toBe(5);
+  });
+
+  it('chebyshevLength returns 0 for zero vector', () => {
+   expect(Vector2.chebyshevLength({ x: 0, y: 0 })).toBe(0);
+  });
+
+  it('chebyshevDistance computes L∞ distance', () => {
+   expect(Vector2.chebyshevDistance({ x: 1, y: 2 }, { x: 4, y: 3 })).toBe(3);
+  });
+
+  it('instance chebyshevLength matches static', () => {
+   const v = new Vector2(3, -5);
+   expect(v.chebyshevLength()).toBe(5);
+  });
+
+  it('instance chebyshevDistanceTo matches static', () => {
+   const a = new Vector2(1, 2);
+   expect(a.chebyshevDistanceTo({ x: 4, y: 3 })).toBe(3);
+  });
+ });
+
+ /* ===== directionToUnchecked ===== */
+
+ describe('directionToUnchecked', () => {
+  it('returns unit direction between distinct points', () => {
+   const a = new Vector2(0, 0);
+   const result = a.directionToUnchecked(new Vector2(3, 0));
+   expectVecClose(result, 1, 0);
+  });
+
+  it('returns unit direction for diagonal', () => {
+   const a = new Vector2(0, 0);
+   const result = a.directionToUnchecked(new Vector2(1, 1));
+   expectVecClose(result, Math.SQRT1_2, Math.SQRT1_2);
   });
  });
 });

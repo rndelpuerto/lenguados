@@ -10,7 +10,6 @@
  */
 
 import { sinCos } from '../auxiliary/angle/operations';
-import { divideSafe } from '../auxiliary/numeric/safety';
 import {
  clamp,
  mod as scalarModule,
@@ -24,9 +23,10 @@ import {
 } from '../auxiliary/scalar/comparison';
 import { EPSILON } from '../auxiliary/scalar/constants';
 import { lerp } from '../auxiliary/scalar/interpolation';
-import { hypot } from '../deterministic/deterministic-kernels';
-import { atan2 } from '../deterministic/deterministic-kernels';
+import { atan2, hypot } from '../deterministic/deterministic-kernels';
 import type {
+ EigendecomposeResult,
+ EigenvalueResult,
  Matrix2Like,
  Matrix3Like,
  ReadonlyMatrix2Like,
@@ -147,22 +147,6 @@ export class Matrix2 implements Matrix2Like {
  public static readonly ZERO = freezeMatrix2(new Matrix2(0, 0, 0, 0));
 
  /**
-  * All-ones matrix.
-  * @category Constant
-  * @since 0.7.0
-  */
- public static readonly ONE = freezeMatrix2(new Matrix2(1, 1, 1, 1));
-
- /**
-  * Matrix with all elements set to EPSILON (useful for tolerance comparisons).
-  * @category Constant
-  * @since 0.7.0
-  */
- public static readonly EPSILON_MATRIX = freezeMatrix2(
-  new Matrix2(EPSILON, EPSILON, EPSILON, EPSILON),
- );
-
- /**
   * 90° counter-clockwise rotation.
   * @category Constant
   * @since 0.7.0
@@ -203,20 +187,6 @@ export class Matrix2 implements Matrix2Like {
   * @since 0.7.0
   */
  public static readonly FLIP_XY = freezeMatrix2(new Matrix2(-1, 0, 0, -1));
-
- /**
-  * Uniform scale by 2.
-  * @category Constant
-  * @since 0.7.0
-  */
- public static readonly SCALE_2 = freezeMatrix2(new Matrix2(2, 0, 0, 2));
-
- /**
-  * Uniform scale by 0.5.
-  * @category Constant
-  * @since 0.7.0
-  */
- public static readonly SCALE_HALF = freezeMatrix2(new Matrix2(0.5, 0, 0, 0.5));
 
  /* ======================================================================== */
  /* Static Factories                                                         */
@@ -386,6 +356,44 @@ export class Matrix2 implements Matrix2Like {
  }
 
  /**
+  * Creates a combined rotation + scale matrix in a single pass.
+  *
+  * @remarks
+  * Equivalent to `Matrix2.multiply(Matrix2.fromRotation(angle), Matrix2.fromScale({x: scaleX, y: scaleY}))`
+  * but avoids intermediate allocation and is more precise.
+  * Result: `[cos*sx, -sin*sy; sin*sx, cos*sy]`
+  *
+  * @param angle - Rotation angle in radians
+  * @param scaleX - Horizontal scale factor
+  * @param scaleY - Vertical scale factor
+  * @param out - Optional output matrix
+  * @returns Combined rotation and scale matrix
+  *
+  * @example
+  * ```typescript
+  * const mat = Matrix2.fromAngleScale(Math.PI / 4, 2, 3);
+  * ```
+  *
+  * @category Factory
+  * @since 0.8.0
+  */
+ public static fromAngleScale(
+  angle: number,
+  scaleX: number,
+  scaleY: number,
+  out?: Matrix2,
+ ): Matrix2 {
+  const sc = sinCos(angle);
+
+  return Matrix2.ensureOut(out).set(
+   sc.cos * scaleX,
+   sc.sin * scaleX,
+   -sc.sin * scaleY,
+   sc.cos * scaleY,
+  );
+ }
+
+ /**
   * Creates a shearing matrix.
   *
   * @param shear - Shear factors as Vector2 (x=horizontal, y=vertical)
@@ -535,6 +543,61 @@ export class Matrix2 implements Matrix2Like {
   return Matrix2.ensureOut(out).set(matrix.m00, matrix.m01, matrix.m10, matrix.m11);
  }
 
+ /**
+  * Creates a diagonal matrix from a vector.
+  *
+  * @remarks
+  * Produces the matrix `[diagonal.x, 0; 0, diagonal.y]`.
+  * This is equivalent to {@link fromScale} with a vector argument but
+  * provides a more explicit name for linear-algebra contexts.
+  *
+  * @param diagonal - Diagonal elements as a vector
+  * @param out - Optional output matrix
+  * @returns Diagonal matrix
+  *
+  * @example
+  * ```typescript
+  * const m = Matrix2.fromDiagonal({ x: 2, y: 3 });
+  * // → [2, 0; 0, 3]
+  * ```
+  *
+  * @category Factory
+  * @since 0.9.0
+  */
+ public static fromDiagonal(diagonal: ReadonlyVector2Like, out?: Matrix2): Matrix2 {
+  return Matrix2.ensureOut(out).set(diagonal.x, 0, 0, diagonal.y);
+ }
+
+ /**
+  * Creates a reflection (Householder) matrix about a line through the origin.
+  *
+  * @remarks
+  * Uses the Householder formula `I - 2nnᵀ` where `n` is the unit normal of
+  * the reflection line. The caller must ensure `unitNormal` is normalized;
+  * no internal normalization is performed.
+  *
+  * @param unitNormal - Unit normal of the reflection line (must be normalized)
+  * @param out - Optional output matrix
+  * @returns Reflection matrix
+  *
+  * @example
+  * ```typescript
+  * // Reflect about Y-axis (normal = (1, 0)) — negates x-coordinates
+  * const reflectY = Matrix2.fromReflection({ x: 1, y: 0 });
+  *
+  * // Reflect about X-axis (normal = (0, 1)) — negates y-coordinates
+  * const reflectX = Matrix2.fromReflection({ x: 0, y: 1 });
+  * ```
+  *
+  * @category Factory
+  * @since 0.9.0
+  */
+ public static fromReflection(unitNormal: ReadonlyVector2Like, out?: Matrix2): Matrix2 {
+  const nx = unitNormal.x;
+  const ny = unitNormal.y;
+  return Matrix2.ensureOut(out).set(1 - 2 * nx * nx, -2 * nx * ny, -2 * nx * ny, 1 - 2 * ny * ny);
+ }
+
  /* ======================================================================== */
  /* Static Arithmetic                                                        */
  /* ======================================================================== */
@@ -580,7 +643,7 @@ export class Matrix2 implements Matrix2Like {
   * @example
   * ```typescript
   * const rot = Matrix2.fromRotation(Math.PI / 2); // 90° rotation
-  * const scl = Matrix2.fromScale(2, 2);           // uniform scale
+  * const scl = Matrix2.fromScale(2);               // uniform scale
   * const combined = Matrix2.multiply(rot, scl);   // scale then rotate
   * ```
   *
@@ -621,38 +684,23 @@ export class Matrix2 implements Matrix2Like {
  }
 
  /**
-  * Scales a matrix by a scalar.
+  * Multiplies all matrix components by a scalar.
   *
-  * @param matrix - Matrix to scale
-  * @param scalar - Scale factor
+  * @param matrix - Input matrix
+  * @param scalar - Scalar multiplier
   * @param out - Optional output matrix
-  * @returns Scaled matrix
+  * @returns Matrix with all components multiplied by scalar
   *
   * @category Arithmetic
   * @since 0.7.0
   */
- public static scale(matrix: ReadonlyMatrix2Like, scalar: number, out?: Matrix2): Matrix2 {
+ public static multiplyScalar(matrix: ReadonlyMatrix2Like, scalar: number, out?: Matrix2): Matrix2 {
   return Matrix2.ensureOut(out).set(
    matrix.m00 * scalar,
    matrix.m01 * scalar,
    matrix.m10 * scalar,
    matrix.m11 * scalar,
   );
- }
-
- /**
-  * Alias for {@link scale}. Multiplies all components by a scalar.
-  *
-  * @param matrix - Matrix to scale
-  * @param scalar - Scale factor
-  * @param out - Optional output matrix
-  * @returns Scaled matrix
-  *
-  * @category Arithmetic
-  * @since 0.7.0
-  */
- public static multiplyScalar(matrix: ReadonlyMatrix2Like, scalar: number, out?: Matrix2): Matrix2 {
-  return Matrix2.scale(matrix, scalar, out);
  }
 
  /**
@@ -696,31 +744,31 @@ export class Matrix2 implements Matrix2Like {
  }
 
  /**
-  * Fused multiply-add: `a * scale + b`.
+  * Fused multiply-add: `a * scalar + b`.
   *
   * @remarks
-  * More efficient than separate scale and add operations.
+  * More efficient than separate multiplyScalar and add operations.
   *
-  * @param a - Matrix to scale
-  * @param scale - Scale factor
+  * @param a - Input matrix
+  * @param scalar - Scalar multiplier
   * @param b - Matrix to add
   * @param out - Optional output matrix
-  * @returns Matrix equal to `a * scale + b`
+  * @returns Matrix equal to `a * scalar + b`
   *
   * @category Arithmetic
   * @since 0.7.0
   */
  public static fma(
   a: ReadonlyMatrix2Like,
-  scale: number,
+  scalar: number,
   b: ReadonlyMatrix2Like,
   out?: Matrix2,
  ): Matrix2 {
   return Matrix2.ensureOut(out).set(
-   a.m00 * scale + b.m00,
-   a.m01 * scale + b.m01,
-   a.m10 * scale + b.m10,
-   a.m11 * scale + b.m11,
+   a.m00 * scalar + b.m00,
+   a.m01 * scalar + b.m01,
+   a.m10 * scalar + b.m10,
+   a.m11 * scalar + b.m11,
   );
  }
 
@@ -1002,6 +1050,115 @@ export class Matrix2 implements Matrix2Like {
   */
  public static adjugate(matrix: ReadonlyMatrix2Like, out?: Matrix2): Matrix2 {
   return Matrix2.ensureOut(out).set(matrix.m11, -matrix.m01, -matrix.m10, matrix.m00);
+ }
+
+ /**
+  * Solves the 2×2 linear system `Ax = b` using Cramer's rule.
+  *
+  * @remarks
+  * Matches the Box2D `b2Solve22` pattern. Computes
+  * `x = (1/det(A)) * [A₁₁·bx − A₁₀·by, A₀₀·by − A₀₁·bx]`.
+  *
+  * @param matrix - Coefficient matrix A
+  * @param b - Right-hand side vector
+  * @param out - Optional output vector
+  * @returns Solution vector x
+  * @throws {RangeError} If matrix is singular (determinant near zero)
+  *
+  * @example
+  * ```typescript
+  * // Solve [2 1; 1 3] * x = [5, 7]
+  * const A = new Matrix2(2, 1, 1, 3);
+  * const b = new Vector2(5, 7);
+  * const x = Matrix2.solveLinearSystem(A, b); // → (1.6, 1.8)
+  * ```
+  *
+  * @see {@link solveLinearSystemSafe} - Returns (0,0) instead of throwing
+  * @see {@link solveLinearSystemUnchecked} - No validation, for hot paths
+  *
+  * @category Matrix Operations
+  * @since 0.9.0
+  */
+ public static solveLinearSystem(
+  matrix: ReadonlyMatrix2Like,
+  b: ReadonlyVector2Like,
+  out?: Vector2,
+ ): Vector2 {
+  const det = matrix.m00 * matrix.m11 - matrix.m01 * matrix.m10;
+  if (isNearZero(det)) {
+   throw new RangeError('Matrix2.solveLinearSystem: singular matrix (determinant near zero)');
+  }
+  const invDet = 1 / det;
+  return Vector2.fromValues(
+   (matrix.m11 * b.x - matrix.m10 * b.y) * invDet,
+   (matrix.m00 * b.y - matrix.m01 * b.x) * invDet,
+   out,
+  );
+ }
+
+ /**
+  * Safe linear system solve. Returns (0,0) if matrix is singular.
+  *
+  * @remarks
+  * Uses {@link isNearZero} with default {@link EPSILON} (1e-10) to test the
+  * determinant. Returns the zero vector when |det| ≤ EPSILON.
+  *
+  * @param matrix - Coefficient matrix A
+  * @param b - Right-hand side vector
+  * @param out - Optional output vector
+  * @returns Solution vector, or (0,0) if singular
+  *
+  * @see {@link solveLinearSystem} - Throws for singular matrices
+  *
+  * @category Matrix Operations
+  * @since 0.9.0
+  */
+ public static solveLinearSystemSafe(
+  matrix: ReadonlyMatrix2Like,
+  b: ReadonlyVector2Like,
+  out?: Vector2,
+ ): Vector2 {
+  const det = matrix.m00 * matrix.m11 - matrix.m01 * matrix.m10;
+  if (isNearZero(det)) {
+   return Vector2.fromValues(0, 0, out);
+  }
+  const invDet = 1 / det;
+  return Vector2.fromValues(
+   (matrix.m11 * b.x - matrix.m10 * b.y) * invDet,
+   (matrix.m00 * b.y - matrix.m01 * b.x) * invDet,
+   out,
+  );
+ }
+
+ /**
+  * Unchecked linear system solve for hot paths.
+  *
+  * @remarks
+  * **Precondition:** Matrix must be non-singular (det ≠ 0).
+  * Calling with a singular matrix produces NaN/Infinity components.
+  *
+  * @param matrix - Coefficient matrix A (must be non-singular)
+  * @param b - Right-hand side vector
+  * @param out - Optional output vector
+  * @returns Solution vector
+  *
+  * @see {@link solveLinearSystem} - Throws on singular matrices
+  * @see {@link solveLinearSystemSafe} - Returns fallback on singular matrices
+  *
+  * @category Matrix Operations
+  * @since 0.9.0
+  */
+ public static solveLinearSystemUnchecked(
+  matrix: ReadonlyMatrix2Like,
+  b: ReadonlyVector2Like,
+  out?: Vector2,
+ ): Vector2 {
+  const invDet = 1 / (matrix.m00 * matrix.m11 - matrix.m01 * matrix.m10);
+  return Vector2.fromValues(
+   (matrix.m11 * b.x - matrix.m10 * b.y) * invDet,
+   (matrix.m00 * b.y - matrix.m01 * b.x) * invDet,
+   out,
+  );
  }
 
  /**
@@ -1621,7 +1778,7 @@ export class Matrix2 implements Matrix2Like {
   * Calculates the Frobenius norm of a matrix.
   *
   * @remarks
-  * Uses deterministic sqrt for cross-platform reproducibility.
+  * Uses Math.sqrt which is deterministic per IEEE 754 (correctly rounded to 0.5 ULP).
   *
   * @param matrix - Matrix to calculate norm of
   * @returns Square root of sum of squared elements
@@ -1747,6 +1904,172 @@ export class Matrix2 implements Matrix2Like {
  }
 
  /**
+  * Compute the eigenvalues of a 2x2 matrix via the closed-form characteristic polynomial
+  *
+  * @remarks
+  * For `[[a, b], [c, d]]` the characteristic polynomial is
+  * `lambda^2 - (a+d)*lambda + (ad - bc) = 0`.
+  *
+  * - discriminant >= 0: two real eigenvalues `(trace +/- sqrt(discriminant)) / 2`
+  * - discriminant < 0: complex conjugate pair with `realPart = trace / 2`,
+  *   `imaginaryPart = sqrt(-discriminant) / 2`
+  *
+  * Uses `Math.sqrt` which is deterministic per IEEE 754.
+  *
+  * @param matrix - Source matrix
+  * @returns Discriminated union of real or complex eigenvalue results
+  *
+  * @example
+  * ```typescript
+  * const m = new Matrix2(3, 0, 0, 5);
+  * const result = Matrix2.eigenvalues(m);
+  * if (result.type === 'real') {
+  *   console.log(result.lambda1, result.lambda2); // 5, 3
+  * }
+  * ```
+  *
+  * @category Computed
+  * @since 0.8.0
+  */
+ public static eigenvalues(matrix: ReadonlyMatrix2Like): EigenvalueResult {
+  // Column-major: row 0 = (m00, m10), row 1 = (m01, m11)
+  const a = matrix.m00;
+  const b = matrix.m10;
+  const c = matrix.m01;
+  const d = matrix.m11;
+
+  const trace = a + d;
+  const det = a * d - b * c;
+  const discriminant = trace * trace - 4 * det;
+
+  if (discriminant >= 0) {
+   const sqrtDisc = Math.sqrt(discriminant);
+   return {
+    type: 'real',
+    lambda1: (trace + sqrtDisc) / 2,
+    lambda2: (trace - sqrtDisc) / 2,
+   };
+  }
+
+  return {
+   type: 'complex',
+   realPart: trace / 2,
+   imaginaryPart: Math.sqrt(-discriminant) / 2,
+  };
+ }
+
+ /**
+  * Compute the eigendecomposition of a 2x2 matrix (eigenvalues + eigenvectors)
+  *
+  * @remarks
+  * For real eigenvalues, returns normalized eigenvectors computed from the
+  * null space of `(A - lambda * I)`:
+  * - If `b != 0`: eigenvector is `[b, lambda - a]` (normalized)
+  * - If `c != 0`: eigenvector is `[lambda - d, c]` (normalized)
+  * - If both `b` and `c` are 0: diagonal matrix with eigenvectors `[1,0]`, `[0,1]`
+  *
+  * For complex eigenvalues, no real eigenvectors exist; only the eigenvalues
+  * are returned.
+  *
+  * Uses `Math.sqrt` which is deterministic per IEEE 754.
+  *
+  * @param matrix - Source matrix
+  * @returns Discriminated union of real eigendecomposition or complex eigenvalues
+  *
+  * @example
+  * ```typescript
+  * const m = new Matrix2(2, 1, 1, 2);
+  * const result = Matrix2.eigendecompose(m);
+  * if (result.type === 'real') {
+  *   console.log(result.lambda1, result.v1); // 3, normalized eigenvector
+  * }
+  * ```
+  *
+  * @category Computed
+  * @since 0.8.0
+  */
+ public static eigendecompose(matrix: ReadonlyMatrix2Like): EigendecomposeResult {
+  const eigenvalueResult = Matrix2.eigenvalues(matrix);
+
+  if (eigenvalueResult.type === 'complex') {
+   return {
+    type: 'complex',
+    realPart: eigenvalueResult.realPart,
+    imaginaryPart: eigenvalueResult.imaginaryPart,
+   };
+  }
+
+  // Column-major: row 0 = (m00, m10), row 1 = (m01, m11)
+  const a = matrix.m00;
+  const b = matrix.m10;
+  const c = matrix.m01;
+  const d = matrix.m11;
+
+  // For repeated eigenvalues on a diagonal matrix (scalar multiple of I),
+  // every vector is an eigenvector; return the standard basis.
+  if (b === 0 && c === 0 && eigenvalueResult.lambda1 === eigenvalueResult.lambda2) {
+   return {
+    type: 'real',
+    lambda1: eigenvalueResult.lambda1,
+    v1: new Vector2(1, 0),
+    lambda2: eigenvalueResult.lambda2,
+    v2: new Vector2(0, 1),
+   };
+  }
+
+  const v1 = Matrix2.eigenvectorForValue(a, b, c, d, eigenvalueResult.lambda1);
+  const v2 = Matrix2.eigenvectorForValue(a, b, c, d, eigenvalueResult.lambda2);
+
+  return {
+   type: 'real',
+   lambda1: eigenvalueResult.lambda1,
+   v1,
+   lambda2: eigenvalueResult.lambda2,
+   v2,
+  };
+ }
+
+ /**
+  * Compute a normalized eigenvector for a given eigenvalue of [[a,b],[c,d]].
+  *
+  * @param a - Row 0, Col 0
+  * @param b - Row 0, Col 1
+  * @param c - Row 1, Col 0
+  * @param d - Row 1, Col 1
+  * @param lambda - The eigenvalue
+  * @returns Normalized eigenvector as a Vector2
+  *
+  * @internal
+  */
+ private static eigenvectorForValue(
+  a: number,
+  b: number,
+  c: number,
+  d: number,
+  lambda: number,
+ ): Vector2 {
+  if (b !== 0) {
+   const vx = b;
+   const vy = lambda - a;
+   const length = Math.sqrt(vx * vx + vy * vy);
+   return new Vector2(vx / length, vy / length);
+  }
+
+  if (c !== 0) {
+   const vx = lambda - d;
+   const vy = c;
+   const length = Math.sqrt(vx * vx + vy * vy);
+   return new Vector2(vx / length, vy / length);
+  }
+
+  // Diagonal matrix: eigenvectors are the standard basis
+  if (lambda === a) {
+   return new Vector2(1, 0);
+  }
+  return new Vector2(0, 1);
+ }
+
+ /**
   * Transforms a vector by a matrix.
   *
   * @param matrix - Matrix to transform by
@@ -1783,7 +2106,7 @@ export class Matrix2 implements Matrix2Like {
   *
   * @example
   * ```typescript
-  * const m = Matrix2.fromScale(2, 1);
+  * const m = Matrix2.fromScale({ x: 2, y: 1 });
   * const rotated = Matrix2.rotate(m, Math.PI / 4);
   * ```
   *
@@ -1811,8 +2134,8 @@ export class Matrix2 implements Matrix2Like {
   * @example
   * ```typescript
   * const rotation = Rotation2.fromAngle(Math.PI / 4);
-  * const m1 = Matrix2.fromScale(2, 1);
-  * const m2 = Matrix2.fromScale(1, 2);
+  * const m1 = Matrix2.fromScale({ x: 2, y: 1 });
+  * const m2 = Matrix2.fromScale({ x: 1, y: 2 });
   * // Apply same rotation to both matrices efficiently
   * const r1 = Matrix2.rotateCS(m1, rotation.cos, rotation.sin);
   * const r2 = Matrix2.rotateCS(m2, rotation.cos, rotation.sin);
@@ -1864,7 +2187,7 @@ export class Matrix2 implements Matrix2Like {
   out?: Matrix2,
  ): Matrix2 {
   if (typeof scale === 'number') {
-   return Matrix2.scale(matrix, scale, out);
+   return Matrix2.multiplyScalar(matrix, scale, out);
   }
 
   return Matrix2.ensureOut(out).set(
@@ -2101,7 +2424,7 @@ export class Matrix2 implements Matrix2Like {
   * Calculates the Frobenius norm.
   *
   * @remarks
-  * Uses deterministic sqrt for cross-platform reproducibility.
+  * Uses Math.sqrt which is deterministic per IEEE 754 (correctly rounded to 0.5 ULP).
   *
   * @returns Square root of sum of squared elements
   *
@@ -2137,16 +2460,7 @@ export class Matrix2 implements Matrix2Like {
   * @since 0.7.0
   */
  public isOrthogonal(epsilon: number = EPSILON): boolean {
-  // Check if columns are unit length and orthogonal
-  const col0LengthSq = this.m00 * this.m00 + this.m01 * this.m01;
-  const col1LengthSq = this.m10 * this.m10 + this.m11 * this.m11;
-  const dot = this.m00 * this.m10 + this.m01 * this.m11;
-
-  return (
-   scalarNearEquals(col0LengthSq, 1, epsilon) &&
-   scalarNearEquals(col1LengthSq, 1, epsilon) &&
-   isNearZero(dot, epsilon)
-  );
+  return Matrix2.isOrthogonal(this, epsilon);
  }
 
  /**
@@ -2227,7 +2541,7 @@ export class Matrix2 implements Matrix2Like {
   if (isNearZero(det)) {
    return new Matrix2(); // Return identity for singular matrix
   }
-  const invDet = divideSafe(1, det);
+  const invDet = 1 / det; // Guard above already caught near-zero; no need for divideSafe
   return new Matrix2(this.m11 * invDet, -this.m01 * invDet, -this.m10 * invDet, this.m00 * invDet);
  }
 
@@ -2370,15 +2684,15 @@ export class Matrix2 implements Matrix2Like {
  }
 
  /**
-  * Scales all matrix components by a scalar.
+  * Multiplies all components by a scalar.
   *
-  * @param scalar - Scale factor
+  * @param scalar - Scalar multiplier
   * @returns This matrix for chaining
   *
   * @category Arithmetic
   * @since 0.7.0
   */
- public scale(scalar: number): this {
+ public multiplyScalar(scalar: number): this {
   this.m00 *= scalar;
   this.m01 *= scalar;
   this.m10 *= scalar;
@@ -2421,20 +2735,20 @@ export class Matrix2 implements Matrix2Like {
  }
 
  /**
-  * Fused multiply-add: `this = this * scale + m`.
+  * Fused multiply-add: `this = this * scalar + m`.
   *
-  * @param scale - Scale factor
+  * @param scalar - Scalar multiplier
   * @param m - Matrix to add
   * @returns This matrix for chaining
   *
   * @category Arithmetic
   * @since 0.7.0
   */
- public fma(scale: number, m: ReadonlyMatrix2Like): this {
-  this.m00 = this.m00 * scale + m.m00;
-  this.m01 = this.m01 * scale + m.m01;
-  this.m10 = this.m10 * scale + m.m10;
-  this.m11 = this.m11 * scale + m.m11;
+ public fma(scalar: number, m: ReadonlyMatrix2Like): this {
+  this.m00 = this.m00 * scalar + m.m00;
+  this.m01 = this.m01 * scalar + m.m01;
+  this.m10 = this.m10 * scalar + m.m10;
+  this.m11 = this.m11 * scalar + m.m11;
   return this;
  }
 
@@ -2745,6 +3059,20 @@ export class Matrix2 implements Matrix2Like {
  }
 
  /**
+  * Applies Math.trunc to all elements (rounds towards zero).
+  * @returns This for chaining
+  * @category Transform
+  * @since 0.7.0
+  */
+ public trunc(): this {
+  this.m00 = Math.trunc(this.m00);
+  this.m01 = Math.trunc(this.m01);
+  this.m10 = Math.trunc(this.m10);
+  this.m11 = Math.trunc(this.m11);
+  return this;
+ }
+
+ /**
   * Applies absolute value to all elements.
   * @returns This matrix for chaining
   * @category Transform
@@ -2976,7 +3304,7 @@ export class Matrix2 implements Matrix2Like {
   */
  public scaleBy(scale: ReadonlyVector2Like | number): this {
   if (typeof scale === 'number') {
-   return this.scale(scale);
+   return this.multiplyScalar(scale);
   }
 
   this.m00 *= scale.x;
@@ -3157,12 +3485,7 @@ export class Matrix2 implements Matrix2Like {
   * @since 0.7.0
   */
  public isIdentity(epsilon: number = EPSILON): boolean {
-  return (
-   scalarNearEquals(this.m00, 1, epsilon) &&
-   isNearZero(this.m01, epsilon) &&
-   isNearZero(this.m10, epsilon) &&
-   scalarNearEquals(this.m11, 1, epsilon)
-  );
+  return Matrix2.isIdentity(this, epsilon);
  }
 
  /**
@@ -3172,7 +3495,7 @@ export class Matrix2 implements Matrix2Like {
   * @since 0.7.0
   */
  public isZero(): boolean {
-  return this.m00 === 0 && this.m01 === 0 && this.m10 === 0 && this.m11 === 0;
+  return Matrix2.isZero(this);
  }
 
  /**
@@ -3183,12 +3506,7 @@ export class Matrix2 implements Matrix2Like {
   * @since 0.7.0
   */
  public isNearZero(epsilon: number = EPSILON): boolean {
-  return (
-   isNearZero(this.m00, epsilon) &&
-   isNearZero(this.m01, epsilon) &&
-   isNearZero(this.m10, epsilon) &&
-   isNearZero(this.m11, epsilon)
-  );
+  return Matrix2.isNearZero(this, epsilon);
  }
 
  /**
@@ -3198,12 +3516,7 @@ export class Matrix2 implements Matrix2Like {
   * @since 0.7.0
   */
  public isFinite(): boolean {
-  return (
-   Number.isFinite(this.m00) &&
-   Number.isFinite(this.m01) &&
-   Number.isFinite(this.m10) &&
-   Number.isFinite(this.m11)
-  );
+  return Matrix2.isFinite(this);
  }
 
  /**
@@ -3213,12 +3526,7 @@ export class Matrix2 implements Matrix2Like {
   * @since 0.7.0
   */
  public hasNaN(): boolean {
-  return (
-   Number.isNaN(this.m00) ||
-   Number.isNaN(this.m01) ||
-   Number.isNaN(this.m10) ||
-   Number.isNaN(this.m11)
-  );
+  return Matrix2.hasNaN(this);
  }
 
  /**
@@ -3242,7 +3550,7 @@ export class Matrix2 implements Matrix2Like {
   * @since 0.7.0
   */
  public isSymmetric(epsilon: number = EPSILON): boolean {
-  return relativeEquals(this.m01, this.m10, epsilon);
+  return Matrix2.isSymmetric(this, epsilon);
  }
 
  /**
@@ -3256,11 +3564,7 @@ export class Matrix2 implements Matrix2Like {
   * @since 0.7.0
   */
  public isSkewSymmetric(epsilon: number = EPSILON): boolean {
-  return (
-   isNearZero(this.m00, epsilon) &&
-   isNearZero(this.m11, epsilon) &&
-   relativeEquals(this.m01, -this.m10, epsilon)
-  );
+  return Matrix2.isSkewSymmetric(this, epsilon);
  }
 
  /**
@@ -3271,7 +3575,7 @@ export class Matrix2 implements Matrix2Like {
   * @since 0.7.0
   */
  public isDiagonal(epsilon: number = EPSILON): boolean {
-  return isNearZero(this.m01, epsilon) && isNearZero(this.m10, epsilon);
+  return Matrix2.isDiagonal(this, epsilon);
  }
 
  /* ======================================================================== */
@@ -3333,17 +3637,6 @@ export class Matrix2 implements Matrix2Like {
   this.m10 = lerp(this.m10, other.m10, factor);
   this.m11 = lerp(this.m11, other.m11, factor);
   return this;
- }
-
- /**
-  * Alias for {@link scale}. Multiplies all components by a scalar.
-  * @param scalar - Scale factor
-  * @returns This matrix for chaining
-  * @category Arithmetic
-  * @since 0.7.0
-  */
- public multiplyScalar(scalar: number): this {
-  return this.scale(scalar);
  }
 
  /* ======================================================================== */
@@ -3477,22 +3770,6 @@ export class Matrix2 implements Matrix2Like {
  public toString(precision = 4): string {
   const p = (n: number) => n.toFixed(precision);
   return `Matrix2(\n  ${p(this.m00)}, ${p(this.m10)}\n  ${p(this.m01)}, ${p(this.m11)}\n)`;
- }
-
- /* ------ Transform ------ */
-
- /**
-  * Applies Math.trunc to all elements (rounds towards zero).
-  * @returns This for chaining
-  * @category Transform
-  * @since 0.7.0
-  */
- public trunc(): this {
-  this.m00 = Math.trunc(this.m00);
-  this.m01 = Math.trunc(this.m01);
-  this.m10 = Math.trunc(this.m10);
-  this.m11 = Math.trunc(this.m11);
-  return this;
  }
 
  /**

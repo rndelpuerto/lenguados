@@ -185,4 +185,29 @@ describe('Rotation2 Properties', () => {
    );
   });
  });
+
+ describe('fromMatrix2 Round-Trip', () => {
+  it('should preserve angle: fromMatrix2(toMatrix2(r)) ≈ r', () => {
+   fc.assert(
+    fc.property(arbAngle, (angle) => {
+     const original = Rotation2.fromAngle(angle);
+     const matrix = original.toMatrix2();
+     const recovered = Rotation2.fromMatrix2(matrix);
+     return recovered.nearEquals(original, TEST_TOLERANCE);
+    }),
+   );
+  });
+
+  it('should preserve unit length after fromMatrix2', () => {
+   fc.assert(
+    fc.property(arbAngle, (angle) => {
+     const rot = Rotation2.fromAngle(angle);
+     const matrix = rot.toMatrix2();
+     const recovered = Rotation2.fromMatrix2(matrix);
+     const magnitudeSq = recovered.cos * recovered.cos + recovered.sin * recovered.sin;
+     return Math.abs(magnitudeSq - 1) < 1e-14;
+    }),
+   );
+  });
+ });
 });

@@ -2,7 +2,7 @@
 
 > **lerpClamped**(`a`, `b`, `t`): `number`
 
-Defined in: [src/auxiliary/scalar/interpolation.ts:64](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/scalar/interpolation.ts#L64)
+Defined in: [src/auxiliary/scalar/interpolation.ts:65](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/auxiliary/scalar/interpolation.ts#L65)
 
 Clamped linear interpolation.
 Clamps t to [0, 1] before interpolating.

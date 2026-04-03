@@ -2,7 +2,7 @@
 
 > **lerpAngle**(`from`, `to`, `t`): `number`
 
-Defined in: [src/auxiliary/angle/interpolation.ts:33](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/angle/interpolation.ts#L33)
+Defined in: [src/auxiliary/angle/interpolation.ts:34](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/auxiliary/angle/interpolation.ts#L34)
 
 Interpolates between angles using shortest path.
 
@@ -35,7 +35,7 @@ Interpolated angle
 ## Remarks
 
 Works for any real t (not only [0, 1]). Extrapolation continues
-linearly in angle space and may produce values outside [-PI, PI).
+linearly in angle space and may produce values outside (-PI, PI].
 
 ## Example
 

@@ -2,7 +2,7 @@
 
 > **formatMatrix3**(`m`, `format`, `precision?`): `string`
 
-Defined in: [src/utils/parse.ts:519](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/utils/parse.ts#L519)
+Defined in: [src/utils/parse.ts:531](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/utils/parse.ts#L531)
 
 Formats a 3x3 matrix as a string.
 
@@ -10,7 +10,7 @@ Formats a 3x3 matrix as a string.
 
 ### m
 
-[`ReadonlyMatrix3`](../../core/type-aliases/ReadonlyMatrix3.md)
+[`ReadonlyMatrix3Like`](../../types/interfaces/ReadonlyMatrix3Like.md)
 
 Matrix to format
 

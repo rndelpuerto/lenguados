@@ -255,9 +255,9 @@ describe('utils/parse', () => {
    expect(formatMatrix3(m)).toBe('1,0,0,0,1,0,0,0,1');
   });
 
-  it('formats as nested', () => {
+  it('formats as nested with outer brackets', () => {
    const m = new Matrix3(1, 0, 0, 0, 1, 0, 0, 0, 1);
-   expect(formatMatrix3(m, 'nested')).toContain('[1,0,0]');
+   expect(formatMatrix3(m, 'nested')).toBe('[[1,0,0],[0,1,0],[0,0,1]]');
   });
  });
 

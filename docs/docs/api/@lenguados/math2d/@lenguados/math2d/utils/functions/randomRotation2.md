@@ -2,7 +2,7 @@
 
 > **randomRotation2**(`out`, `source`): [`Rotation2`](../../core/classes/Rotation2.md)
 
-Defined in: [src/utils/random.ts:226](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/utils/random.ts#L226)
+Defined in: [src/utils/random.ts:228](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/utils/random.ts#L228)
 
 Generates a random 2D rotation.
 

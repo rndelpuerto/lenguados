@@ -24,6 +24,7 @@ import {
  assertPositive,
  assertRange,
  assertRotation2,
+ assertRotation2Normalized,
  assertRotation2Like,
  assertSafeInteger,
  assertTransform2,
@@ -119,6 +120,14 @@ describe('Validation Assert Module', () => {
 
   it('includes parameter name in error', () => {
    expect(() => assertNonZero(0, 'divisor')).toThrow(/divisor/);
+  });
+
+  it('rejects NaN (NaN is not in any valid numeric domain)', () => {
+   expect(() => assertNonZero(NaN)).toThrow(/must not be zero/);
+  });
+
+  it('accepts small non-zero values (not NaN)', () => {
+   expect(() => assertNonZero(0.001)).not.toThrow();
   });
  });
 
@@ -250,6 +259,33 @@ describe('Validation Assert Module', () => {
 
   it('includes rotation name in error', () => {
    expect(() => assertRotation2(NaN, 0, 'rot')).toThrow(/rot\.cos/);
+  });
+ });
+
+ describe('assertRotation2Normalized', () => {
+  it('accepts valid unit rotation', () => {
+   expect(() => assertRotation2Normalized(1, 0)).not.toThrow();
+   expect(() => assertRotation2Normalized(0, 1)).not.toThrow();
+   expect(() => assertRotation2Normalized(0.6, 0.8)).not.toThrow();
+  });
+
+  it('rejects non-unit rotation', () => {
+   expect(() => assertRotation2Normalized(2, 0)).toThrow(/cos²\+sin² ≈ 1/);
+  });
+
+  it('accepts nearly-unit within tolerance', () => {
+   const cos = 0.6;
+   const sin = 0.8 + 1e-11;
+   expect(() => assertRotation2Normalized(cos, sin)).not.toThrow();
+  });
+
+  it('rejects NaN components', () => {
+   expect(() => assertRotation2Normalized(NaN, 0)).toThrow(/cos must be finite/);
+   expect(() => assertRotation2Normalized(0, NaN)).toThrow(/sin must be finite/);
+  });
+
+  it('includes rotation name in error', () => {
+   expect(() => assertRotation2Normalized(2, 0, 1e-10, 'rot')).toThrow(/rot\./);
   });
  });
 

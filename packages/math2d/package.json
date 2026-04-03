@@ -59,26 +59,15 @@
     "import": "./lib/esm/validation/assert.production.js"
    }
   },
-  "./deterministic/precision-math": {
-   "types": "./lib/@types/deterministic/precision-math.d.ts",
+  "./deterministic": {
+   "types": "./lib/@types/deterministic/deterministic-kernels.d.ts",
    "development": {
-    "require": "./lib/cjs/deterministic/precision-math.development.js",
-    "import": "./lib/esm/deterministic/precision-math.development.js"
+    "require": "./lib/cjs/deterministic/deterministic-kernels.development.js",
+    "import": "./lib/esm/deterministic/deterministic-kernels.development.js"
    },
    "default": {
-    "require": "./lib/cjs/deterministic/precision-math.production.js",
-    "import": "./lib/esm/deterministic/precision-math.production.js"
-   }
-  },
-  "./deterministic/rounding-control": {
-   "types": "./lib/@types/deterministic/rounding-control.d.ts",
-   "development": {
-    "require": "./lib/cjs/deterministic/rounding-control.development.js",
-    "import": "./lib/esm/deterministic/rounding-control.development.js"
-   },
-   "default": {
-    "require": "./lib/cjs/deterministic/rounding-control.production.js",
-    "import": "./lib/esm/deterministic/rounding-control.production.js"
+    "require": "./lib/cjs/deterministic/deterministic-kernels.production.js",
+    "import": "./lib/esm/deterministic/deterministic-kernels.production.js"
    }
   },
   "./utils/random": {

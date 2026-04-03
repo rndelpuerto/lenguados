@@ -6,7 +6,7 @@ auxiliary/angle/index.ts
 
 ## Description
 
-Angular mathematical operations for the Lenguados math2d library
+Angular mathematical operations
 
 ## Remarks
 
@@ -80,6 +80,12 @@ Re-exports [lerpAngle](functions/lerpAngle.md)
 
 ---
 
+### lerpAngleClamped
+
+Re-exports [lerpAngleClamped](functions/lerpAngleClamped.md)
+
+---
+
 ### normalizeDegrees
 
 Re-exports [normalizeDegrees](functions/normalizeDegrees.md)
@@ -124,7 +130,7 @@ Re-exports [sinCos](functions/sinCos.md)
 
 ### SinCos
 
-Re-exports [SinCos](interfaces/SinCos.md)
+Re-exports [SinCos](../../types/interfaces/SinCos.md)
 
 ---
 

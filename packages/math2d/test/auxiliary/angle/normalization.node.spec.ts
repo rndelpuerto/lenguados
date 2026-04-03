@@ -17,18 +17,18 @@ const TAU = Math.PI * 2;
 
 describe('angle/normalization', () => {
  describe('normalizeRadians', () => {
-  test('normalizes to [-π, π)', () => {
+  test('normalizes to (-π, π]', () => {
    expect(normalizeRadians(0)).toBeCloseTo(0);
-   // Math.PI wraps to -Math.PI since range is [-π, π)
-   expect(normalizeRadians(Math.PI)).toBeCloseTo(-Math.PI);
+   // Math.PI stays as Math.PI since range is (-π, π]
+   expect(normalizeRadians(Math.PI)).toBeCloseTo(Math.PI);
    expect(normalizeRadians(Math.PI + 0.1)).toBeCloseTo(-Math.PI + 0.1);
-   expect(normalizeRadians(-Math.PI)).toBeCloseTo(-Math.PI);
+   expect(normalizeRadians(-Math.PI)).toBeCloseTo(Math.PI);
   });
 
   test('handles large angles', () => {
-   // 5π = 2*TAU + π, which wraps to -π
-   expect(normalizeRadians(5 * Math.PI)).toBeCloseTo(-Math.PI);
-   expect(normalizeRadians(-5 * Math.PI)).toBeCloseTo(-Math.PI);
+   // 5π = 2*TAU + π, which wraps to π
+   expect(normalizeRadians(5 * Math.PI)).toBeCloseTo(Math.PI);
+   expect(normalizeRadians(-5 * Math.PI)).toBeCloseTo(Math.PI);
   });
  });
 
@@ -45,18 +45,18 @@ describe('angle/normalization', () => {
  });
 
  describe('normalizeDegrees', () => {
-  test('normalizes to [-180, 180)', () => {
+  test('normalizes to (-180, 180]', () => {
    expect(normalizeDegrees(0)).toBeCloseTo(0);
-   // 180 wraps to -180 since range is [-180, 180)
-   expect(normalizeDegrees(180)).toBeCloseTo(-180);
+   // 180 stays as 180 since range is (-180, 180]
+   expect(normalizeDegrees(180)).toBeCloseTo(180);
    expect(normalizeDegrees(181)).toBeCloseTo(-179);
-   expect(normalizeDegrees(-180)).toBeCloseTo(-180);
+   expect(normalizeDegrees(-180)).toBeCloseTo(180);
   });
 
   test('handles large angles', () => {
-   // 900 = 2*360 + 180, which wraps to -180
-   expect(normalizeDegrees(900)).toBeCloseTo(-180);
-   expect(normalizeDegrees(-900)).toBeCloseTo(-180);
+   // 900 = 2*360 + 180, which wraps to 180
+   expect(normalizeDegrees(900)).toBeCloseTo(180);
+   expect(normalizeDegrees(-900)).toBeCloseTo(180);
   });
  });
 

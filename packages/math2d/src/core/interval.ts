@@ -10,7 +10,12 @@
  */
 
 import { divideSafe, sqrtSafe } from '../auxiliary/numeric/safety';
-import { clamp, saturate } from '../auxiliary/scalar/arithmetic';
+import {
+ clamp,
+ mod as scalarModule,
+ saturate,
+ sign as scalarSign,
+} from '../auxiliary/scalar/arithmetic';
 import {
  isNearZero,
  nearEquals as scalarNearEquals,
@@ -109,6 +114,20 @@ export class Interval implements IntervalLike {
  }
 
  /**
+  * Direct assignment without validation. Used by static methods that
+  * have already computed valid min/max values.
+  *
+  * @param minValue - Lower bound
+  * @param maxValue - Upper bound
+  * @returns This for chaining
+  */
+ private setDirect(minValue: number, maxValue: number): this {
+  this.min = minValue;
+  this.max = maxValue;
+  return this;
+ }
+
+ /**
   * Validates interval bounds. Allows ±Infinity but rejects NaN.
   * @remarks Infinity is valid for intervals like [0, +∞).
   *
@@ -196,13 +215,6 @@ export class Interval implements IntervalLike {
  ) as ReadonlyInterval;
 
  /**
-  * Percentage interval [0, 100].
-  * @category Constant
-  * @since 0.7.0
-  */
- public static readonly PERCENT = Object.freeze(new Interval(0, 100)) as ReadonlyInterval;
-
- /**
   * Degrees interval [0, 360].
   * @category Constant
   * @since 0.7.0
@@ -227,12 +239,9 @@ export class Interval implements IntervalLike {
   * @param max - Upper bound of the interval. @defaultValue `0`
   */
  constructor(min = 0, max = 0) {
-  // Initialize with validated values
-  const sanitizedMin = Interval.sanitize(min, 'Interval.constructor:min');
-  const sanitizedMax = Interval.sanitize(max, 'Interval.constructor:max');
-  Interval.assertOrder(sanitizedMin, sanitizedMax, 'Interval.constructor');
-  this.min = sanitizedMin;
-  this.max = sanitizedMax;
+  this.min = min;
+  this.max = max;
+  // Pure math: no assertions — Infinity/NaN are valid IEEE 754 values
  }
 
  /* ======================================================================== */
@@ -257,7 +266,7 @@ export class Interval implements IntervalLike {
   */
  public static fromValue(value: number, out?: Interval): Interval {
   const sanitized = this.sanitize(value, 'Interval.fromValue:value');
-  return this.ensureOut(out).set(sanitized, sanitized);
+  return this.ensureOut(out).setDirect(sanitized, sanitized);
  }
 
  /**
@@ -287,7 +296,7 @@ export class Interval implements IntervalLike {
   if (sanitizedRadius < 0) {
    throw new RangeError('Interval.fromCenterRadius: radius must be non-negative');
   }
-  return this.ensureOut(out).set(
+  return this.ensureOut(out).setDirect(
    sanitizedCenter - sanitizedRadius,
    sanitizedCenter + sanitizedRadius,
   );
@@ -324,7 +333,7 @@ export class Interval implements IntervalLike {
   }
   const minValue = this.sanitize(array[offset]!, 'Interval.fromArray:min');
   const maxValue = this.sanitize(array[offset + 1]!, 'Interval.fromArray:max');
-  return this.ensureOut(out).set(minValue, maxValue);
+  return this.ensureOut(out).setDirect(minValue, maxValue);
  }
 
  /**
@@ -343,10 +352,10 @@ export class Interval implements IntervalLike {
   * @category Factory
   * @since 0.7.0
   */
- public static fromObject(object: IntervalLike, out?: Interval): Interval {
+ public static fromObject(object: ReadonlyIntervalLike, out?: Interval): Interval {
   const minValue = this.sanitize(object.min, 'Interval.fromObject:min');
   const maxValue = this.sanitize(object.max, 'Interval.fromObject:max');
-  return this.ensureOut(out).set(minValue, maxValue);
+  return this.ensureOut(out).setDirect(minValue, maxValue);
  }
 
  /**
@@ -371,7 +380,7 @@ export class Interval implements IntervalLike {
   const minValue = this.sanitize(min, 'Interval.fromValues:min');
   const maxValue = this.sanitize(max, 'Interval.fromValues:max');
   this.assertOrder(minValue, maxValue, 'Interval.fromValues');
-  return this.ensureOut(out).set(minValue, maxValue);
+  return this.ensureOut(out).setDirect(minValue, maxValue);
  }
 
  /**
@@ -416,7 +425,7 @@ export class Interval implements IntervalLike {
   * @since 0.7.0
   */
  public static clone(source: ReadonlyIntervalLike, out?: Interval): Interval {
-  return this.ensureOut(out).set(source.min, source.max);
+  return this.ensureOut(out).setDirect(source.min, source.max);
  }
 
  /**
@@ -436,7 +445,7 @@ export class Interval implements IntervalLike {
   * @since 0.7.0
   */
  public static copy(source: ReadonlyIntervalLike, destination: Interval): Interval {
-  return destination.set(source.min, source.max);
+  return destination.setDirect(source.min, source.max);
  }
 
  /* ======================================================================== */
@@ -454,7 +463,7 @@ export class Interval implements IntervalLike {
   * @since 0.7.0
   */
  public static add(a: ReadonlyIntervalLike, b: ReadonlyIntervalLike, out?: Interval): Interval {
-  return Interval.ensureOut(out).set(a.min + b.min, a.max + b.max);
+  return Interval.ensureOut(out).setDirect(a.min + b.min, a.max + b.max);
  }
 
  /**
@@ -472,7 +481,7 @@ export class Interval implements IntervalLike {
   b: ReadonlyIntervalLike,
   out?: Interval,
  ): Interval {
-  return Interval.ensureOut(out).set(a.min - b.max, a.max - b.min);
+  return Interval.ensureOut(out).setDirect(a.min - b.max, a.max - b.min);
  }
 
  /**
@@ -494,93 +503,101 @@ export class Interval implements IntervalLike {
   const p1 = a.min * b.max;
   const p2 = a.max * b.min;
   const p3 = a.max * b.max;
-  return Interval.ensureOut(out).set(Math.min(p0, p1, p2, p3), Math.max(p0, p1, p2, p3));
+  return Interval.ensureOut(out).setDirect(Math.min(p0, p1, p2, p3), Math.max(p0, p1, p2, p3));
  }
 
  /**
-  * Scales an interval.
-  * @param interval - Interval to scale
-  * @param scalar - Scale factor
+  * Multiplies an interval's bounds by a scalar.
+  * @param interval - Input interval
+  * @param scalar - Scalar multiplier
   * @param out - Optional output interval
-  * @returns Scaled interval
+  * @returns Interval with bounds multiplied by scalar
   *
   * @category Arithmetic
   * @since 0.7.0
   */
- public static scale(interval: ReadonlyIntervalLike, scalar: number, out?: Interval): Interval {
+ public static multiplyScalar(
+  interval: ReadonlyIntervalLike,
+  scalar: number,
+  out?: Interval,
+ ): Interval {
   if (scalar >= 0) {
-   return Interval.ensureOut(out).set(interval.min * scalar, interval.max * scalar);
+   return Interval.ensureOut(out).setDirect(interval.min * scalar, interval.max * scalar);
   }
-  return Interval.ensureOut(out).set(interval.max * scalar, interval.min * scalar);
+  return Interval.ensureOut(out).setDirect(interval.max * scalar, interval.min * scalar);
  }
 
  /**
-  * Divides an interval by a scalar.
-  * @param interval - Interval to divide
-  * @param scalar - Scalar to divide by (must not be zero)
+  * Divides an interval's bounds by a scalar.
+  * @param interval - Input interval
+  * @param scalar - Scalar divisor (must not be zero)
   * @param out - Optional output interval
-  * @returns Divided interval
+  * @returns Interval with bounds divided by scalar
   *
   * @throws {RangeError} If scalar is zero
   *
   * @category Arithmetic
   * @since 0.7.0
   */
- public static divide(interval: ReadonlyIntervalLike, scalar: number, out?: Interval): Interval {
-  if (scalar === 0) {
-   throw new RangeError('Interval.divide: cannot divide by zero');
-  }
-  return Interval.scale(interval, 1 / scalar, out);
- }
-
- /**
-  * Divides an interval by a scalar (safe version).
-  * @param interval - Interval to divide
-  * @param scalar - Scalar to divide by
-  * @param out - Optional output interval
-  * @returns Divided interval, or ZERO if scalar is near zero
-  *
-  * @see {@link divide} - Throws on zero scalar
-  *
-  * @category Arithmetic
-  * @since 0.7.0
-  */
- public static divideSafe(
+ public static divideScalar(
   interval: ReadonlyIntervalLike,
   scalar: number,
   out?: Interval,
  ): Interval {
   if (scalar === 0) {
-   return Interval.ensureOut(out).set(0, 0);
+   throw new RangeError('Interval.divideScalar: cannot divide by zero');
   }
-  return Interval.scale(interval, 1 / scalar, out);
+  return Interval.multiplyScalar(interval, 1 / scalar, out);
  }
 
  /**
-  * Divides an interval by a scalar without validation (for hot paths).
+  * Divides an interval's bounds by a scalar (safe version).
+  * @param interval - Input interval
+  * @param scalar - Scalar divisor
+  * @param out - Optional output interval
+  * @returns Interval with bounds divided by scalar, or ZERO if scalar is zero
+  *
+  * @see {@link divideScalar} - Throws on zero scalar
+  *
+  * @category Arithmetic
+  * @since 0.7.0
+  */
+ public static divideScalarSafe(
+  interval: ReadonlyIntervalLike,
+  scalar: number,
+  out?: Interval,
+ ): Interval {
+  if (scalar === 0) {
+   return Interval.ensureOut(out).setDirect(0, 0);
+  }
+  return Interval.multiplyScalar(interval, 1 / scalar, out);
+ }
+
+ /**
+  * Divides an interval's bounds by a scalar without validation (for hot paths).
   *
   * @remarks
   * **WARNING:** This method performs no validation.
   * - If scalar is zero, the result will contain Infinity/-Infinity or NaN.
   * - Use only when you can guarantee non-zero scalar.
   *
-  * @param interval - Interval to divide
-  * @param scalar - Scalar to divide by (must not be zero)
+  * @param interval - Input interval
+  * @param scalar - Scalar divisor (must not be zero)
   * @param out - Optional output interval
-  * @returns Divided interval
+  * @returns Interval with bounds divided by scalar
   *
-  * @see {@link divide} - Throws on zero scalar
-  * @see {@link divideSafe} - Returns ZERO on zero scalar
+  * @see {@link divideScalar} - Throws on zero scalar
+  * @see {@link divideScalarSafe} - Returns ZERO on zero scalar
   *
   * @category Arithmetic
   * @since 0.7.0
   */
- public static divideUnchecked(
+ public static divideScalarUnchecked(
   interval: ReadonlyIntervalLike,
   scalar: number,
   out?: Interval,
  ): Interval {
-  return Interval.scale(interval, 1 / scalar, out);
+  return Interval.multiplyScalar(interval, 1 / scalar, out);
  }
 
  /**
@@ -593,7 +610,7 @@ export class Interval implements IntervalLike {
   * @since 0.7.0
   */
  public static negate(interval: ReadonlyIntervalLike, out?: Interval): Interval {
-  return Interval.ensureOut(out).set(-interval.max, -interval.min);
+  return Interval.ensureOut(out).setDirect(-interval.max, -interval.min);
  }
 
  /**
@@ -621,12 +638,12 @@ export class Interval implements IntervalLike {
   */
  public static abs(interval: ReadonlyIntervalLike, out?: Interval): Interval {
   if (interval.min >= 0) {
-   return Interval.ensureOut(out).set(interval.min, interval.max);
+   return Interval.ensureOut(out).setDirect(interval.min, interval.max);
   }
   if (interval.max <= 0) {
-   return Interval.ensureOut(out).set(-interval.max, -interval.min);
+   return Interval.ensureOut(out).setDirect(-interval.max, -interval.min);
   }
-  return Interval.ensureOut(out).set(0, Math.max(-interval.min, interval.max));
+  return Interval.ensureOut(out).setDirect(0, Math.max(-interval.min, interval.max));
  }
 
  /**
@@ -640,13 +657,19 @@ export class Interval implements IntervalLike {
   */
  public static square(interval: ReadonlyIntervalLike, out?: Interval): Interval {
   if (interval.min >= 0) {
-   return Interval.ensureOut(out).set(interval.min * interval.min, interval.max * interval.max);
+   return Interval.ensureOut(out).setDirect(
+    interval.min * interval.min,
+    interval.max * interval.max,
+   );
   }
   if (interval.max <= 0) {
-   return Interval.ensureOut(out).set(interval.max * interval.max, interval.min * interval.min);
+   return Interval.ensureOut(out).setDirect(
+    interval.max * interval.max,
+    interval.min * interval.min,
+   );
   }
   const extreme = Math.max(interval.min * interval.min, interval.max * interval.max);
-  return Interval.ensureOut(out).set(0, extreme);
+  return Interval.ensureOut(out).setDirect(0, extreme);
  }
 
  /**
@@ -663,7 +686,7 @@ export class Interval implements IntervalLike {
   if (interval.min < 0) {
    throw new RangeError('Interval.sqrt: interval contains negative values');
   }
-  return Interval.ensureOut(out).set(sqrtSafe(interval.min), sqrtSafe(interval.max));
+  return Interval.ensureOut(out).setDirect(sqrtSafe(interval.min), sqrtSafe(interval.max));
  }
 
  /**
@@ -680,10 +703,10 @@ export class Interval implements IntervalLike {
   */
  public static sqrtSafe(interval: ReadonlyIntervalLike, out?: Interval): Interval {
   if (interval.max < 0) {
-   return Interval.ensureOut(out).set(0, 0);
+   return Interval.ensureOut(out).setDirect(0, 0);
   }
   const safeMin = interval.min < 0 ? 0 : sqrtSafe(interval.min);
-  return Interval.ensureOut(out).set(safeMin, sqrtSafe(interval.max));
+  return Interval.ensureOut(out).setDirect(safeMin, sqrtSafe(interval.max));
  }
 
  /**
@@ -706,7 +729,7 @@ export class Interval implements IntervalLike {
   * @since 0.7.0
   */
  public static sqrtUnchecked(interval: ReadonlyIntervalLike, out?: Interval): Interval {
-  return Interval.ensureOut(out).set(Math.sqrt(interval.min), Math.sqrt(interval.max));
+  return Interval.ensureOut(out).setDirect(Math.sqrt(interval.min), Math.sqrt(interval.max));
  }
 
  /**
@@ -725,7 +748,10 @@ export class Interval implements IntervalLike {
   }
   const recipMin = 1 / interval.min;
   const recipMax = 1 / interval.max;
-  return Interval.ensureOut(out).set(Math.min(recipMin, recipMax), Math.max(recipMin, recipMax));
+  return Interval.ensureOut(out).setDirect(
+   Math.min(recipMin, recipMax),
+   Math.max(recipMin, recipMax),
+  );
  }
 
  /**
@@ -741,11 +767,14 @@ export class Interval implements IntervalLike {
   */
  public static reciprocalSafe(interval: ReadonlyIntervalLike, out?: Interval): Interval {
   if (interval.min <= 0 && interval.max >= 0) {
-   return Interval.ensureOut(out).set(0, 0);
+   return Interval.ensureOut(out).setDirect(0, 0);
   }
   const recipMin = 1 / interval.min;
   const recipMax = 1 / interval.max;
-  return Interval.ensureOut(out).set(Math.min(recipMin, recipMax), Math.max(recipMin, recipMax));
+  return Interval.ensureOut(out).setDirect(
+   Math.min(recipMin, recipMax),
+   Math.max(recipMin, recipMax),
+  );
  }
 
  /**
@@ -770,7 +799,150 @@ export class Interval implements IntervalLike {
  public static reciprocalUnchecked(interval: ReadonlyIntervalLike, out?: Interval): Interval {
   const recipMin = 1 / interval.min;
   const recipMax = 1 / interval.max;
-  return Interval.ensureOut(out).set(Math.min(recipMin, recipMax), Math.max(recipMin, recipMax));
+  return Interval.ensureOut(out).setDirect(
+   Math.min(recipMin, recipMax),
+   Math.max(recipMin, recipMax),
+  );
+ }
+
+ /* ======================================================================== */
+ /* Static Component-wise                                                    */
+ /* ======================================================================== */
+
+ /**
+  * Applies Math.floor to both bounds.
+  * @param interval - Input interval
+  * @param out - Optional output interval
+  * @returns Interval with floored bounds
+  *
+  * @category Transform
+  * @since 0.8.0
+  */
+ public static floor(interval: ReadonlyIntervalLike, out?: Interval): Interval {
+  return Interval.ensureOut(out).setDirect(Math.floor(interval.min), Math.floor(interval.max));
+ }
+
+ /**
+  * Applies Math.ceil to both bounds.
+  * @param interval - Input interval
+  * @param out - Optional output interval
+  * @returns Interval with ceiled bounds
+  *
+  * @category Transform
+  * @since 0.8.0
+  */
+ public static ceil(interval: ReadonlyIntervalLike, out?: Interval): Interval {
+  return Interval.ensureOut(out).setDirect(Math.ceil(interval.min), Math.ceil(interval.max));
+ }
+
+ /**
+  * Applies Math.round to both bounds.
+  * @param interval - Input interval
+  * @param out - Optional output interval
+  * @returns Interval with rounded bounds
+  *
+  * @category Transform
+  * @since 0.8.0
+  */
+ public static round(interval: ReadonlyIntervalLike, out?: Interval): Interval {
+  return Interval.ensureOut(out).setDirect(Math.round(interval.min), Math.round(interval.max));
+ }
+
+ /**
+  * Applies Math.trunc to both bounds.
+  * @param interval - Input interval
+  * @param out - Optional output interval
+  * @returns Interval with truncated bounds
+  *
+  * @category Transform
+  * @since 0.8.0
+  */
+ public static trunc(interval: ReadonlyIntervalLike, out?: Interval): Interval {
+  return Interval.ensureOut(out).setDirect(Math.trunc(interval.min), Math.trunc(interval.max));
+ }
+
+ /**
+  * Component-wise sign of both bounds.
+  * @param interval - Input interval
+  * @param out - Optional output interval
+  * @returns Interval with sign of each bound (-1, 0, or 1)
+  *
+  * @category Transform
+  * @since 0.8.0
+  */
+ public static sign(interval: ReadonlyIntervalLike, out?: Interval): Interval {
+  return Interval.ensureOut(out).setDirect(scalarSign(interval.min), scalarSign(interval.max));
+ }
+
+ /**
+  * Component-wise minimum of two intervals.
+  * @param a - First interval
+  * @param b - Second interval
+  * @param out - Optional output interval
+  * @returns Interval with per-bound minima
+  *
+  * @category Constraint
+  * @since 0.8.0
+  */
+ public static min(a: ReadonlyIntervalLike, b: ReadonlyIntervalLike, out?: Interval): Interval {
+  return Interval.ensureOut(out).setDirect(Math.min(a.min, b.min), Math.min(a.max, b.max));
+ }
+
+ /**
+  * Component-wise maximum of two intervals.
+  * @param a - First interval
+  * @param b - Second interval
+  * @param out - Optional output interval
+  * @returns Interval with per-bound maxima
+  *
+  * @category Constraint
+  * @since 0.8.0
+  */
+ public static max(a: ReadonlyIntervalLike, b: ReadonlyIntervalLike, out?: Interval): Interval {
+  return Interval.ensureOut(out).setDirect(Math.max(a.min, b.min), Math.max(a.max, b.max));
+ }
+
+ /**
+  * Clamps bounds between min and max intervals.
+  * @param interval - Input interval
+  * @param minI - Per-bound minima
+  * @param maxI - Per-bound maxima
+  * @param out - Optional output interval
+  * @returns Clamped interval
+  *
+  * @category Constraint
+  * @since 0.8.0
+  */
+ public static clamp(
+  interval: ReadonlyIntervalLike,
+  minI: ReadonlyIntervalLike,
+  maxI: ReadonlyIntervalLike,
+  out?: Interval,
+ ): Interval {
+  return Interval.ensureOut(out).setDirect(
+   clamp(interval.min, minI.min, maxI.min),
+   clamp(interval.max, minI.max, maxI.max),
+  );
+ }
+
+ /**
+  * Component-wise modulo of two intervals.
+  *
+  * @remarks
+  * This is component-wise modulo (applied to min and max independently), NOT
+  * interval-theoretic modulo. The result may not enclose all possible modulo
+  * values of points within the interval.
+  *
+  * @param a - Dividend interval
+  * @param b - Divisor interval
+  * @param out - Optional output interval
+  * @returns Interval with per-bound remainder
+  *
+  * @category Arithmetic
+  * @since 0.8.0
+  */
+ public static mod(a: ReadonlyIntervalLike, b: ReadonlyIntervalLike, out?: Interval): Interval {
+  return Interval.ensureOut(out).setDirect(scalarModule(a.min, b.min), scalarModule(a.max, b.max));
  }
 
  /* ======================================================================== */
@@ -799,7 +971,7 @@ export class Interval implements IntervalLike {
   t: number,
   out?: Interval,
  ): Interval {
-  return Interval.ensureOut(out).set(lerp(a.min, b.min, t), lerp(a.max, b.max, t));
+  return Interval.ensureOut(out).setDirect(lerp(a.min, b.min, t), lerp(a.max, b.max, t));
  }
 
  /**
@@ -870,7 +1042,7 @@ export class Interval implements IntervalLike {
   t: number,
   out?: Interval,
  ): Interval {
-  const smoothT = smoothStep(0, 1, saturate(t));
+  const smoothT = smoothStep(0, 1, t);
   return Interval.lerp(a, b, smoothT, out);
  }
 
@@ -1066,6 +1238,30 @@ export class Interval implements IntervalLike {
  }
 
  /**
+  * Returns the gap distance between two intervals.
+  *
+  * @remarks
+  * If the intervals overlap, the distance is zero. Otherwise, the distance
+  * is the length of the gap between the closest endpoints.
+  *
+  * @param a - First interval
+  * @param b - Second interval
+  * @returns Non-negative distance between intervals (0 if overlapping)
+  *
+  * @example
+  * ```typescript
+  * Interval.distance({ min: 0, max: 3 }, { min: 5, max: 8 }); // 2
+  * Interval.distance({ min: 0, max: 5 }, { min: 3, max: 8 }); // 0 (overlapping)
+  * ```
+  *
+  * @category Set Operations
+  * @since 0.9.0
+  */
+ public static distance(a: ReadonlyIntervalLike, b: ReadonlyIntervalLike): number {
+  return Math.max(0, Math.max(a.min - b.max, b.min - a.max));
+ }
+
+ /**
   * Tests if both bounds are finite numbers.
   * @param interval - Interval to test
   * @returns True if both bounds are finite
@@ -1230,7 +1426,7 @@ export class Interval implements IntervalLike {
    }
   }
 
-  return this.ensureOut(out).set(minValue, maxValue);
+  return this.ensureOut(out).setDirect(minValue, maxValue);
  }
 
  /**
@@ -1251,7 +1447,7 @@ export class Interval implements IntervalLike {
   * @since 0.7.0
   */
  public static union(a: ReadonlyIntervalLike, b: ReadonlyIntervalLike, out?: Interval): Interval {
-  return Interval.ensureOut(out).set(Math.min(a.min, b.min), Math.max(a.max, b.max));
+  return Interval.ensureOut(out).setDirect(Math.min(a.min, b.min), Math.max(a.max, b.max));
  }
 
  /**
@@ -1285,7 +1481,7 @@ export class Interval implements IntervalLike {
   const newMin = Math.max(a.min, b.min);
   const newMax = Math.min(a.max, b.max);
   if (newMin <= newMax) {
-   return Interval.ensureOut(out).set(newMin, newMax);
+   return Interval.ensureOut(out).setDirect(newMin, newMax);
   }
   return undefined;
  }
@@ -1305,7 +1501,36 @@ export class Interval implements IntervalLike {
   if (delta < 0) {
    throw new RangeError('Interval.expand: delta must be non-negative');
   }
-  return Interval.ensureOut(out).set(interval.min - delta, interval.max + delta);
+  return Interval.ensureOut(out).setDirect(interval.min - delta, interval.max + delta);
+ }
+
+ /**
+  * Returns the smallest interval that contains both the original interval and a value.
+  *
+  * @remarks
+  * If the value is already within the interval, the result is the original interval
+  * unchanged. Otherwise, the interval is expanded on the appropriate side.
+  *
+  * @param interval - Source interval
+  * @param value - Value to enclose
+  * @param out - Optional output interval
+  * @returns Interval expanded to include the value
+  *
+  * @example
+  * ```typescript
+  * Interval.enclosing({ min: 2, max: 5 }, 8);  // [2, 8]
+  * Interval.enclosing({ min: 2, max: 5 }, 0);  // [0, 5]
+  * Interval.enclosing({ min: 2, max: 5 }, 3);  // [2, 5] (already contained)
+  * ```
+  *
+  * @category Set Operations
+  * @since 0.9.0
+  */
+ public static enclosing(interval: ReadonlyIntervalLike, value: number, out?: Interval): Interval {
+  return Interval.ensureOut(out).setDirect(
+   Math.min(interval.min, value),
+   Math.max(interval.max, value),
+  );
  }
 
  /**
@@ -1328,9 +1553,9 @@ export class Interval implements IntervalLike {
   const newMax = interval.max - delta;
   if (newMin > newMax) {
    const mid = (interval.min + interval.max) * 0.5;
-   return Interval.ensureOut(out).set(mid, mid);
+   return Interval.ensureOut(out).setDirect(mid, mid);
   }
-  return Interval.ensureOut(out).set(newMin, newMax);
+  return Interval.ensureOut(out).setDirect(newMin, newMax);
  }
 
  /* ======================================================================== */
@@ -1358,6 +1583,11 @@ export class Interval implements IntervalLike {
 
  /**
   * Copies values from another interval.
+  *
+  * @remarks
+  * Trusted fast path — does not validate min <= max. Use set() for validated
+  * assignment from untrusted sources.
+  *
   * @param other - Source interval
   * @returns This for chaining
   *
@@ -1504,6 +1734,97 @@ export class Interval implements IntervalLike {
  }
 
  /* ======================================================================== */
+ /* Instance Component-wise                                                  */
+ /* ======================================================================== */
+
+ /**
+  * Applies Math.floor to both bounds.
+  * @returns This for chaining
+  * @category Transform
+  * @since 0.8.0
+  */
+ floor(): this {
+  this.min = Math.floor(this.min);
+  this.max = Math.floor(this.max);
+  return this;
+ }
+
+ /**
+  * Applies Math.ceil to both bounds.
+  * @returns This for chaining
+  * @category Transform
+  * @since 0.8.0
+  */
+ ceil(): this {
+  this.min = Math.ceil(this.min);
+  this.max = Math.ceil(this.max);
+  return this;
+ }
+
+ /**
+  * Applies Math.round to both bounds.
+  * @returns This for chaining
+  * @category Transform
+  * @since 0.8.0
+  */
+ round(): this {
+  this.min = Math.round(this.min);
+  this.max = Math.round(this.max);
+  return this;
+ }
+
+ /**
+  * Applies Math.trunc to both bounds.
+  * @returns This for chaining
+  * @category Transform
+  * @since 0.8.0
+  */
+ trunc(): this {
+  this.min = Math.trunc(this.min);
+  this.max = Math.trunc(this.max);
+  return this;
+ }
+
+ /**
+  * Component-wise sign of both bounds.
+  * @returns This for chaining
+  * @category Transform
+  * @since 0.8.0
+  */
+ sign(): this {
+  this.min = scalarSign(this.min);
+  this.max = scalarSign(this.max);
+  return this;
+ }
+
+ /**
+  * Clamps bounds between min and max intervals.
+  * @param minI - Per-bound minima
+  * @param maxI - Per-bound maxima
+  * @returns This for chaining
+  * @category Constraint
+  * @since 0.8.0
+  */
+ clamp(minI: ReadonlyIntervalLike, maxI: ReadonlyIntervalLike): this {
+  this.min = clamp(this.min, minI.min, maxI.min);
+  this.max = clamp(this.max, minI.max, maxI.max);
+  return this;
+ }
+
+ /**
+  * Component-wise modulo.
+  * @param other - Divisor interval
+  * @returns This for chaining
+  * @category Arithmetic
+  * @since 0.8.0
+  */
+ mod(other: ReadonlyIntervalLike): this {
+  this.min = scalarModule(this.min, other.min);
+  this.max = scalarModule(this.max, other.max);
+  return this;
+ }
+
+ /* ======================================================================== */
  /* Instance Arithmetic                                                      */
  /* ======================================================================== */
 
@@ -1556,17 +1877,17 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Divides this interval by a scalar in place.
-  * @param scalar - Scalar to divide by
+  * Divides this interval's bounds by a scalar in place.
+  * @param scalar - Scalar divisor
   * @returns This for chaining
   * @throws {RangeError} If scalar is zero
   *
   * @category Arithmetic
   * @since 0.7.0
   */
- divide(scalar: number): this {
+ divideScalar(scalar: number): this {
   if (scalar === 0) {
-   throw new RangeError('Interval.divide: cannot divide by zero');
+   throw new RangeError('Interval.divideScalar: cannot divide by zero');
   }
   const inv = 1 / scalar;
   if (inv >= 0) {
@@ -1582,15 +1903,73 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Scales this interval by a scalar in place.
-  * @param scalar - Scale factor
+  * Divides this interval's bounds by a scalar in place, returning [0, 0] on zero scalar.
+  * @param scalar - Scalar divisor
+  * @returns This for chaining
+  *
+  * @see {@link divideScalar} - Throws on zero
+  *
+  * @category Arithmetic
+  * @since 0.9.0
+  */
+ divideScalarSafe(scalar: number): this {
+  if (scalar === 0) {
+   this.min = 0;
+   this.max = 0;
+   return this;
+  }
+  const inv = 1 / scalar;
+  if (inv >= 0) {
+   this.min *= inv;
+   this.max *= inv;
+  } else {
+   const newMin = this.max * inv;
+   const newMax = this.min * inv;
+   this.min = newMin;
+   this.max = newMax;
+  }
+  return this;
+ }
+
+ /**
+  * Divides this interval's bounds by a scalar in place without validation.
+  *
+  * @remarks
+  * **Precondition:** `scalar ≠ 0`. Calling with zero produces Infinity/NaN.
+  *
+  * @param scalar - Scalar divisor (must be non-zero)
+  * @returns This for chaining
+  *
+  * @see {@link divideScalar} - Throws on zero
+  * @see {@link divideScalarSafe} - Returns [0,0] on zero
+  *
+  * @category Arithmetic
+  * @since 0.9.0
+  */
+ divideScalarUnchecked(scalar: number): this {
+  const inv = 1 / scalar;
+  if (inv >= 0) {
+   this.min *= inv;
+   this.max *= inv;
+  } else {
+   const newMin = this.max * inv;
+   const newMax = this.min * inv;
+   this.min = newMin;
+   this.max = newMax;
+  }
+  return this;
+ }
+
+ /**
+  * Multiplies this interval's bounds by a scalar in place.
+  * @param scalar - Scalar multiplier
   * @returns This for chaining
   *
   * @category Arithmetic
   * @since 0.7.0
   */
- scale(scalar: number): this {
-  const sanitizedScalar = Interval.sanitize(scalar, 'Interval.scale:scalar');
+ multiplyScalar(scalar: number): this {
+  const sanitizedScalar = Interval.sanitize(scalar, 'Interval.multiplyScalar:scalar');
   if (sanitizedScalar >= 0) {
    this.min *= sanitizedScalar;
    this.max *= sanitizedScalar;
@@ -1878,6 +2257,52 @@ export class Interval implements IntervalLike {
  }
 
  /**
+  * Expands this interval to include a value.
+  *
+  * @remarks
+  * If the value is already within the interval, this is a no-op.
+  *
+  * @param value - Value to enclose
+  * @returns This for chaining
+  *
+  * @example
+  * ```typescript
+  * new Interval(2, 5).enclose(8);  // [2, 8]
+  * new Interval(2, 5).enclose(3);  // [2, 5] (no change)
+  * ```
+  *
+  * @category Set Operations
+  * @since 0.9.0
+  */
+ enclose(value: number): this {
+  this.min = Math.min(this.min, value);
+  this.max = Math.max(this.max, value);
+  return this;
+ }
+
+ /**
+  * Returns the gap distance between this interval and another.
+  *
+  * @remarks
+  * If the intervals overlap, the distance is zero.
+  *
+  * @param other - Other interval
+  * @returns Non-negative distance (0 if overlapping)
+  *
+  * @example
+  * ```typescript
+  * new Interval(0, 3).distanceTo({ min: 5, max: 8 }); // 2
+  * new Interval(0, 5).distanceTo({ min: 3, max: 8 }); // 0
+  * ```
+  *
+  * @category Set Operations
+  * @since 0.9.0
+  */
+ distanceTo(other: ReadonlyIntervalLike): number {
+  return Interval.distance(this, other);
+ }
+
+ /**
   * Exact equality (bit-identical).
   *
   * @remarks
@@ -2046,7 +2471,7 @@ export class Interval implements IntervalLike {
   * @since 0.7.0
   */
  smoothStep(other: ReadonlyIntervalLike, t: number): this {
-  const smoothT = smoothStep(0, 1, saturate(t));
+  const smoothT = smoothStep(0, 1, t);
   return this.lerp(other, smoothT);
  }
 

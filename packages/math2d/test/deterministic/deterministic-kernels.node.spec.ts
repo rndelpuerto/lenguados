@@ -18,56 +18,14 @@ import {
  log,
  logKernelSafe,
  pow,
- pow2,
  sin,
  sinCos,
- sqrtSafe,
  tan,
 } from '../../src/deterministic/deterministic-kernels';
 
 const PI = Math.PI;
 
 describe('DeterministicKernels L0 Functions', () => {
- describe('pow2', () => {
-  it('should compute 2^n for normal exponents', () => {
-   expect(pow2(0)).toBe(1);
-   expect(pow2(1)).toBe(2);
-   expect(pow2(10)).toBe(1024);
-   expect(pow2(-1)).toBe(0.5);
-  });
-
-  it('should handle n = -1022 (smallest normal exponent)', () => {
-   expect(pow2(-1022)).toBe(2.2250738585072014e-308);
-  });
-
-  it('should handle n = -1023 (first subnormal)', () => {
-   const result = pow2(-1023);
-   expect(result).toBe(5e-324 * Math.pow(2, 1074 - 1023));
-   expect(result).toBeGreaterThan(0);
-   expect(result).toBeLessThan(pow2(-1022));
-  });
-
-  it('should handle n = -1074 (smallest subnormal, 5e-324)', () => {
-   expect(pow2(-1074)).toBe(5e-324);
-  });
-
-  it('should handle n = 1023 (largest finite)', () => {
-   expect(pow2(1023)).toBe(8.98846567431158e307);
-  });
- });
-
- describe('sqrtSafe', () => {
-  it('should return 0 for negative values', () => {
-   expect(sqrtSafe(-1)).toBe(0);
-   expect(sqrtSafe(-100)).toBe(0);
-   expect(sqrtSafe(0)).toBe(0);
-  });
-
-  it('should compute sqrt for positive values', () => {
-   expect(sqrtSafe(4)).toBeCloseTo(2, 14);
-  });
- });
-
  describe('sin', () => {
   it('should compute sine correctly at key angles', () => {
    expect(sin(0)).toBeCloseTo(0, 14);

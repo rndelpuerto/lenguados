@@ -2,7 +2,7 @@
 
 > **assertPositive**(`value`, `name?`): `void`
 
-Defined in: [src/validation/assert.ts:267](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/validation/assert.ts#L267)
+Defined in: [src/validation/assert.ts:276](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/validation/assert.ts#L276)
 
 Asserts that a value is strictly positive (> 0).
 
@@ -31,7 +31,7 @@ No-op when assertions are disabled.
 
 ## Throws
 
-If assertions enabled and value ≤ 0
+If assertions enabled and value is ≤ 0 or NaN
 
 ## Example
 

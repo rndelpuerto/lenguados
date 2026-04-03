@@ -10,6 +10,8 @@ Rounding and quantization operations
 
 ## Arithmetic
 
+- [ceilPowerOfTwo](functions/ceilPowerOfTwo.md)
+- [floorPowerOfTwo](functions/floorPowerOfTwo.md)
 - [fract](functions/fract.md)
 - [roundToInt](functions/roundToInt.md)
 - [roundToMultiple](functions/roundToMultiple.md)

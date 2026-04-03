@@ -62,6 +62,23 @@ describe('Transform2', () => {
   });
  });
 
+ describe('constructor purity (IEEE 754)', () => {
+  it('constructor has no own assertFinite — error comes from Rotation2.fromAngle, not Transform2', () => {
+   // The constructor no longer has a direct assertFinite call (Constructor Purity rule).
+   // In dev mode, Rotation2.fromAngle validates the angle as a method (not constructor) —
+   // so the error label is 'Rotation2.fromAngle:angle', not 'Transform2.constructor:rotation'.
+   const position = new Vector2(1, 2);
+   expect(() => new Transform2(position, NaN)).toThrow(/Rotation2\.fromAngle/);
+   expect(() => new Transform2(position, NaN)).not.toThrow(/Transform2\.constructor/);
+  });
+
+  it('still constructs correctly for valid inputs', () => {
+   const t = new Transform2(new Vector2(3, 4), Math.PI / 4);
+   expect(t.position.x).toBeCloseTo(3, DIGITS);
+   expect(t.rotation.angle).toBeCloseTo(Math.PI / 4, DIGITS);
+  });
+ });
+
  describe('Transform application', () => {
   it('transformPoint applies scale, rotate, translate', () => {
    const transform = Transform2.fromValues(10, 5, Math.PI / 2, 2, 1);
@@ -1627,5 +1644,87 @@ describe('Transform2.premultiply', () => {
   const b = new Transform2({ x: 1, y: 1 }, 0, { x: 1, y: 1 });
   const result = b.premultiply(a);
   expect(result).toBe(b);
+ });
+
+ describe('Symbol.iterator', () => {
+  it('yields 6 components in correct order', () => {
+   const t = new Transform2({ x: 1, y: 2 }, Math.PI / 2, { x: 3, y: 4 });
+   const components = [...t];
+   expect(components[0]).toBe(1);
+   expect(components[1]).toBe(2);
+   expect(components[2]).toBeCloseTo(0, DIGITS);
+   expect(components[3]).toBeCloseTo(1, DIGITS);
+   expect(components[4]).toBe(3);
+   expect(components[5]).toBe(4);
+  });
+
+  it('supports destructuring', () => {
+   const t = Transform2.IDENTITY;
+   const [px, py, rc, rs, sx, sy] = t;
+   expect(px).toBe(0);
+   expect(py).toBe(0);
+   expect(rc).toBe(1);
+   expect(rs).toBe(0);
+   expect(sx).toBe(1);
+   expect(sy).toBe(1);
+  });
+
+  it('COMPONENT_COUNT matches iterator length', () => {
+   const t = new Transform2({ x: 1, y: 2 }, 0.5, { x: 3, y: 4 });
+   expect([...t].length).toBe(Transform2.COMPONENT_COUNT);
+   expect(Transform2.COMPONENT_COUNT).toBe(6);
+  });
+
+  it('ELEMENT_COUNT matches toArray length', () => {
+   const t = new Transform2({ x: 1, y: 2 }, 0.5, { x: 3, y: 4 });
+   expect(t.toArray().length).toBe(Transform2.ELEMENT_COUNT);
+   expect(Transform2.ELEMENT_COUNT).toBe(5);
+  });
+ });
+
+ /* ===== Instance inverseTransformPointSafe ===== */
+
+ describe('Instance inverseTransformPointSafe', () => {
+  it('identity transform returns point unchanged', () => {
+   const t = Transform2.IDENTITY;
+   const result = t.inverseTransformPointSafe({ x: 5, y: 7 });
+   expectVecClose(result, 5, 7);
+  });
+
+  it('returns (0, 0) for non-invertible transform (zero scale)', () => {
+   const t = new Transform2({ x: 0, y: 0 }, 0, { x: 0, y: 0 });
+   const result = t.inverseTransformPointSafe({ x: 5, y: 5 });
+   expectVecClose(result, 0, 0);
+  });
+
+  it('reverses a valid transformation', () => {
+   const t = new Transform2({ x: 10, y: 5 }, 0, { x: 2, y: 2 });
+   const world = t.transformPoint({ x: 1, y: 1 });
+   const local = t.inverseTransformPointSafe(world);
+   expectVecClose(local, 1, 1);
+  });
+ });
+
+ /* ===== Instance inverseTransformVectorSafe ===== */
+
+ describe('Instance inverseTransformVectorSafe', () => {
+  it('identity transform returns vector unchanged', () => {
+   const t = Transform2.IDENTITY;
+   const result = t.inverseTransformVectorSafe({ x: 3, y: -2 });
+   expectVecClose(result, 3, -2);
+  });
+
+  it('returns (0, 0) for non-invertible transform (zero scale)', () => {
+   const t = new Transform2({ x: 0, y: 0 }, 0, { x: 0, y: 0 });
+   const result = t.inverseTransformVectorSafe({ x: 5, y: 5 });
+   expectVecClose(result, 0, 0);
+  });
+
+  it('reverses a valid vector transformation', () => {
+   const t = new Transform2({ x: 100, y: 50 }, 0, { x: 2, y: 2 });
+   const world = t.transformVector({ x: 1, y: 0 });
+   const local = t.inverseTransformVectorSafe(world);
+   expectVecClose(local, 1, 0);
+  });
  });
 });

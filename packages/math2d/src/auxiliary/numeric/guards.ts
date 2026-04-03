@@ -102,6 +102,32 @@ export function isDenormal(value: number): boolean {
 }
 
 /**
+ * Flushes denormal (subnormal) values to zero.
+ *
+ * @remarks
+ * Denormal numbers cause 10–100x performance penalties on some CPUs
+ * (x86 without FTZ/DAZ flags). This function is a numerical hygiene
+ * utility for physics loops that may produce denormal intermediates.
+ *
+ * @param value - Value to flush
+ * @returns The value unchanged if normal, or 0 if denormal
+ *
+ * @example
+ * ```typescript
+ * flushDenormal(5e-324);   // 0 (denormal flushed)
+ * flushDenormal(1.5);      // 1.5 (normal, unchanged)
+ * flushDenormal(0);        // 0 (zero is not denormal)
+ * ```
+ *
+ * @see {@link isDenormal} - For testing without flushing
+ * @category Guards
+ * @since 0.9.0
+ */
+export function flushDenormal(value: number): number {
+ return isDenormal(value) ? 0 : value;
+}
+
+/**
  * Tests if value is in range [min, max].
  * @param value - Value to test
  * @param min - Lower bound (inclusive)
@@ -116,6 +142,7 @@ export function isDenormal(value: number): boolean {
  * isInRange(-1, 0, 10);      // false
  * ```
  *
+ * @see {@link inRange} For epsilon-tolerant range checking
  * @category Guards
  * @since 0.7.0
  */

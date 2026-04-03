@@ -2,7 +2,7 @@
 
 > **assertMatrix2**(`m00`, `m01`, `m10`, `m11`, `name?`): `void`
 
-Defined in: [src/validation/assert.ts:441](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/validation/assert.ts#L441)
+Defined in: [src/validation/assert.ts:450](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/validation/assert.ts#L450)
 
 Asserts that Matrix2-like elements are finite.
 

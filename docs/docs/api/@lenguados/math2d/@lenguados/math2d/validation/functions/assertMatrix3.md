@@ -2,7 +2,7 @@
 
 > **assertMatrix3**(`m00`, `m01`, `m02`, `m10`, `m11`, `m12`, `m20`, `m21`, `m22`, `name?`): `void`
 
-Defined in: [src/validation/assert.ts:498](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/validation/assert.ts#L498)
+Defined in: [src/validation/assert.ts:507](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/validation/assert.ts#L507)
 
 Asserts that Matrix3-like elements are finite.
 

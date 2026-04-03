@@ -1,6 +1,6 @@
 # Class: Transform2
 
-Defined in: [src/core/transform2.ts:119](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L119)
+Defined in: [src/core/transform2.ts:119](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L119)
 
 Decomposed 2D affine transform applied in Scale → Rotate → Translate order.
 
@@ -19,9 +19,9 @@ Decomposed 2D affine transform applied in Scale → Rotate → Translate order.
 ```typescript
 // Create and compose transforms
 const t = new Transform2();
-t.setPosition(10, 20)
- .setRotation(Math.PI / 4)
- .setScale(2, 2);
+t.position.set(10, 20);
+t.rotation.setAngle(Math.PI / 4);
+t.scale.set(2, 2);
 
 // Apply to a point
 const worldPoint = Transform2.transformPoint(t, localPoint);
@@ -41,7 +41,7 @@ const worldPoint = Transform2.transformPoint(t, localPoint);
 
 > **new Transform2**(`position?`, `rotation?`, `scale?`): `Transform2`
 
-Defined in: [src/core/transform2.ts:216](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L216)
+Defined in: [src/core/transform2.ts:224](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L224)
 
 Creates a new Transform2 with the given position, rotation, and scale.
 
@@ -87,7 +87,7 @@ Initial scale factors.
 
 > `readonly` **rotation**: [`Rotation2`](Rotation2.md)
 
-Defined in: [src/core/transform2.ts:151](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L151)
+Defined in: [src/core/transform2.ts:151](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L151)
 
 The rotation component. Use rotation.angle, rotation.angleDegrees, etc.
 for convenient access, or rotation.cos/sin for direct component access.
@@ -129,7 +129,7 @@ transform.rotation.multiply(other.rotation);
 
 > **get** **direction**(): [`Vector2`](Vector2.md)
 
-Defined in: [src/core/transform2.ts:1963](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L1963)
+Defined in: [src/core/transform2.ts:2193](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L2193)
 
 Returns the rotation as a unit Vector2 (direction).
 
@@ -151,7 +151,7 @@ Direction vector
 
 > **get** **inverted**(): `Transform2`
 
-Defined in: [src/core/transform2.ts:1952](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L1952)
+Defined in: [src/core/transform2.ts:2182](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L2182)
 
 Returns the inverse without modifying this transform.
 
@@ -173,7 +173,7 @@ New inverse transform
 
 > **get** **rotationDegrees**(): `number`
 
-Defined in: [src/core/transform2.ts:1975](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L1975)
+Defined in: [src/core/transform2.ts:2205](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L2205)
 
 Returns the rotation in degrees.
 
@@ -193,7 +193,7 @@ Rotation in degrees
 
 > **inverse**(): `this`
 
-Defined in: [src/core/transform2.ts:1770](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L1770)
+Defined in: [src/core/transform2.ts:2018](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L2018)
 
 Inverts this transform in place.
 
@@ -227,7 +227,7 @@ If scale.x or scale.y is near zero
 
 > **inverseSafe**(): `this`
 
-Defined in: [src/core/transform2.ts:1802](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L1802)
+Defined in: [src/core/transform2.ts:2035](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L2035)
 
 Inverts this transform in place, setting to identity if non-invertible.
 
@@ -251,7 +251,7 @@ This for chaining
 
 > **inverseUnchecked**(): `this`
 
-Defined in: [src/core/transform2.ts:1823](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L1823)
+Defined in: [src/core/transform2.ts:2056](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L2056)
 
 Inverts this transform in place without validation.
 
@@ -275,7 +275,7 @@ This for chaining
 
 > **multiply**(`other`): `this`
 
-Defined in: [src/core/transform2.ts:1731](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L1731)
+Defined in: [src/core/transform2.ts:1949](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L1949)
 
 Multiplies with another transform (composition) in place.
 
@@ -299,11 +299,54 @@ This for chaining
 
 ---
 
+### premultiply()
+
+> **premultiply**(`other`): `this`
+
+Defined in: [src/core/transform2.ts:1993](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L1993)
+
+Premultiplies this transform by another: `this = other × this`.
+
+#### Parameters
+
+##### other
+
+[`ReadonlyTransform2`](../type-aliases/ReadonlyTransform2.md)
+
+Transform to premultiply by
+
+#### Returns
+
+`this`
+
+This for chaining
+
+#### Remarks
+
+Since transform composition is non-commutative, both multiplication orders
+are required for algebraic completeness. [multiply](#multiply-2) computes
+`this = this × other`, while `premultiply` computes `this = other × this`.
+
+**Allocation note:** This method internally allocates a temporary `Transform2`
+via `Transform2.multiply()`. For hot paths where allocation pressure matters,
+use [Transform2.multiply(a, b, out)](#multiply-2) with a
+pre-allocated `out` parameter instead.
+
+#### See
+
+[multiply](#multiply-2) - Computes `this = this × other`
+
+#### Since
+
+0.8.0
+
+---
+
 ### inverse()
 
 > `static` **inverse**(`transform`, `out?`): `Transform2`
 
-Defined in: [src/core/transform2.ts:577](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L577)
+Defined in: [src/core/transform2.ts:601](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L601)
 
 Calculates the inverse of a transform.
 
@@ -357,7 +400,7 @@ If scale.x or scale.y is near zero (non-invertible)
 
 > `static` **inverseSafe**(`transform`, `out?`): `Transform2`
 
-Defined in: [src/core/transform2.ts:622](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L622)
+Defined in: [src/core/transform2.ts:631](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L631)
 
 Calculates the inverse of a transform, returning identity if non-invertible.
 
@@ -404,7 +447,7 @@ approximation. Use [inverseTransformPoint](#inversetransformpoint-2) for exact p
 
 > `static` **inverseUnchecked**(`transform`, `out?`): `Transform2`
 
-Defined in: [src/core/transform2.ts:669](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L669)
+Defined in: [src/core/transform2.ts:663](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L663)
 
 Calculates the inverse of a transform without validation.
 
@@ -451,7 +494,7 @@ approximation. Use [inverseTransformPoint](#inversetransformpoint-2) for exact p
 
 > `static` **multiply**(`a`, `b`, `out?`): `Transform2`
 
-Defined in: [src/core/transform2.ts:531](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L531)
+Defined in: [src/core/transform2.ts:549](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L549)
 
 Multiplies two transforms: applies b in the local space of a.
 
@@ -518,7 +561,7 @@ only position and rotation (no scale) to avoid this issue entirely.
 
 > **exactEquals**(`other`): `boolean`
 
-Defined in: [src/core/transform2.ts:1857](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L1857)
+Defined in: [src/core/transform2.ts:2092](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L2092)
 
 Exact equality (bit-identical).
 
@@ -550,7 +593,7 @@ Use [nearEquals](#nearequals-2) for comparing results of floating-point operatio
 
 > **hasInfinity**(): `boolean`
 
-Defined in: [src/core/transform2.ts:1908](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L1908)
+Defined in: [src/core/transform2.ts:2143](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L2143)
 
 Returns true if any component is infinite (±Infinity).
 
@@ -570,7 +613,7 @@ True if any ±Infinity value exists
 
 > **hasNaN**(): `boolean`
 
-Defined in: [src/core/transform2.ts:1897](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L1897)
+Defined in: [src/core/transform2.ts:2132](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L2132)
 
 Returns true if any component is NaN.
 
@@ -590,7 +633,7 @@ True if any NaN value exists
 
 > **hasNegativeScale**(): `boolean`
 
-Defined in: [src/core/transform2.ts:1425](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L1425)
+Defined in: [src/core/transform2.ts:1547](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L1547)
 
 Tests if scale has negative components.
 
@@ -610,7 +653,7 @@ True if any scale component is negative
 
 > **hasUniformScale**(`epsilon`): `boolean`
 
-Defined in: [src/core/transform2.ts:1414](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L1414)
+Defined in: [src/core/transform2.ts:1536](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L1536)
 
 Tests if scale is uniform (x equals y).
 
@@ -642,7 +685,7 @@ Uses relative tolerance for comparing scale components.
 
 > **isFinite**(): `boolean`
 
-Defined in: [src/core/transform2.ts:1886](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L1886)
+Defined in: [src/core/transform2.ts:2121](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L2121)
 
 Returns true if all components are finite.
 
@@ -662,7 +705,7 @@ True if no NaN or Infinity values
 
 > **isIdentity**(`epsilon`): `boolean`
 
-Defined in: [src/core/transform2.ts:1932](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L1932)
+Defined in: [src/core/transform2.ts:2167](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L2167)
 
 Tests if this transform is identity.
 
@@ -690,7 +733,7 @@ True if identity
 
 > **isInvertible**(`epsilon`): `boolean`
 
-Defined in: [src/core/transform2.ts:1920](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L1920)
+Defined in: [src/core/transform2.ts:2155](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L2155)
 
 Tests if this transform is invertible.
 
@@ -718,7 +761,7 @@ True if transform can be inverted (non-zero scale)
 
 > **nearEquals**(`other`, `epsilon`): `boolean`
 
-Defined in: [src/core/transform2.ts:1875](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L1875)
+Defined in: [src/core/transform2.ts:2110](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L2110)
 
 Approximate equality using relative tolerance for position and scale.
 
@@ -761,7 +804,7 @@ since angles are bounded to a fixed range.
 
 > `static` **exactEquals**(`a`, `b`): `boolean`
 
-Defined in: [src/core/transform2.ts:1152](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L1152)
+Defined in: [src/core/transform2.ts:1274](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L1274)
 
 Exact equality (bit-identical).
 
@@ -799,7 +842,7 @@ Use [nearEquals](#nearequals-2) for comparing results of floating-point operatio
 
 > `static` **hasInfinity**(`transform`): `boolean`
 
-Defined in: [src/core/transform2.ts:1252](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L1252)
+Defined in: [src/core/transform2.ts:1374](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L1374)
 
 Tests if any component is infinite (±Infinity).
 
@@ -831,7 +874,7 @@ Distinguishes infinity from NaN. Use [isFinite](#isfinite-2) to check for both.
 
 > `static` **hasNaN**(`transform`): `boolean`
 
-Defined in: [src/core/transform2.ts:1234](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L1234)
+Defined in: [src/core/transform2.ts:1356](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L1356)
 
 Tests if any component is NaN.
 
@@ -859,7 +902,7 @@ True if any component is NaN
 
 > `static` **hasNegativeScale**(`transform`): `boolean`
 
-Defined in: [src/core/transform2.ts:1318](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L1318)
+Defined in: [src/core/transform2.ts:1440](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L1440)
 
 Tests if transform has negative scale components.
 
@@ -894,7 +937,7 @@ Transform2.hasNegativeScale({ position: ..., rotation: 0, scale: { x: 1, y: 1 } 
 
 > `static` **hasUniformScale**(`transform`, `epsilon`): `boolean`
 
-Defined in: [src/core/transform2.ts:1297](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L1297)
+Defined in: [src/core/transform2.ts:1419](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L1419)
 
 Tests if transform has uniform scale.
 
@@ -939,7 +982,7 @@ Transform2.hasUniformScale({ position: ..., rotation: 0, scale: { x: 2, y: 3 } }
 
 > `static` **isFinite**(`transform`): `boolean`
 
-Defined in: [src/core/transform2.ts:1218](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L1218)
+Defined in: [src/core/transform2.ts:1340](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L1340)
 
 Tests if both position and scale components are finite.
 
@@ -967,7 +1010,7 @@ True if all components are finite
 
 > `static` **isIdentity**(`transform`, `epsilon`): `boolean`
 
-Defined in: [src/core/transform2.ts:1201](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L1201)
+Defined in: [src/core/transform2.ts:1323](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L1323)
 
 Tests if a transform is the identity.
 
@@ -1006,7 +1049,7 @@ rotation ≈ identity, and scale ≈ (1,1).
 
 > `static` **isInvertible**(`transform`, `epsilon`): `boolean`
 
-Defined in: [src/core/transform2.ts:1274](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L1274)
+Defined in: [src/core/transform2.ts:1396](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L1396)
 
 Tests if transform is invertible (has non-zero scale).
 
@@ -1049,7 +1092,7 @@ This follows the Eigen C++ convention for matrix invertibility.
 
 > `static` **nearEquals**(`a`, `b`, `epsilon`): `boolean`
 
-Defined in: [src/core/transform2.ts:1175](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L1175)
+Defined in: [src/core/transform2.ts:1297](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L1297)
 
 Approximate equality using relative tolerance for position and scale.
 
@@ -1098,7 +1141,7 @@ since angles are bounded to a fixed range.
 
 > **determinant**(): `number`
 
-Defined in: [src/core/transform2.ts:1436](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L1436)
+Defined in: [src/core/transform2.ts:1558](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L1558)
 
 Returns the determinant (scale.x \* scale.y).
 
@@ -1118,7 +1161,7 @@ Determinant value
 
 > `static` **determinant**(`transform`): `number`
 
-Defined in: [src/core/transform2.ts:1335](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L1335)
+Defined in: [src/core/transform2.ts:1457](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L1457)
 
 Returns the determinant (scale.x \* scale.y).
 
@@ -1148,13 +1191,28 @@ Transform2.determinant({ position: ..., rotation: 0, scale: { x: 2, y: 3 } }); /
 
 ## Constant
 
+### COMPONENT_COUNT
+
+> `readonly` `static` **COMPONENT_COUNT**: `6` = `6`
+
+Defined in: [src/core/transform2.ts:197](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L197)
+
+Number of raw components yielded by Symbol.iterator (px, py, cos, sin, sx, sy).
+
+#### Since
+
+0.8.0
+
+---
+
 ### ELEMENT_COUNT
 
 > `readonly` `static` **ELEMENT_COUNT**: `5` = `5`
 
-Defined in: [src/core/transform2.ts:189](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L189)
+Defined in: [src/core/transform2.ts:190](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L190)
 
-Number of elements when serialized to an array (x, y, angle, sx, sy).
+Number of elements when serialized via toArray() (x, y, angle, sx, sy).
+See [COMPONENT_COUNT](#component_count) for raw component count from Symbol.iterator.
 
 #### Since
 
@@ -1166,7 +1224,7 @@ Number of elements when serialized to an array (x, y, angle, sx, sy).
 
 > `readonly` `static` **FLIP_X**: [`ReadonlyTransform2`](../type-aliases/ReadonlyTransform2.md)
 
-Defined in: [src/core/transform2.ts:196](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L196)
+Defined in: [src/core/transform2.ts:204](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L204)
 
 Flip horizontally (scale.x = -1).
 
@@ -1180,7 +1238,7 @@ Flip horizontally (scale.x = -1).
 
 > `readonly` `static` **FLIP_Y**: [`ReadonlyTransform2`](../type-aliases/ReadonlyTransform2.md)
 
-Defined in: [src/core/transform2.ts:203](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L203)
+Defined in: [src/core/transform2.ts:211](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L211)
 
 Flip vertically (scale.y = -1).
 
@@ -1194,7 +1252,7 @@ Flip vertically (scale.y = -1).
 
 > `readonly` `static` **IDENTITY**: [`ReadonlyTransform2`](../type-aliases/ReadonlyTransform2.md)
 
-Defined in: [src/core/transform2.ts:182](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L182)
+Defined in: [src/core/transform2.ts:182](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L182)
 
 Identity transform (no transformation).
 
@@ -1204,11 +1262,47 @@ Identity transform (no transformation).
 
 ## Conversion
 
+### \[iterator\]()
+
+> **\[iterator\]**(): `IterableIterator`\<`number`\>
+
+Defined in: [src/core/transform2.ts:2393](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L2393)
+
+Iterator yielding the 6 numeric components of this transform.
+
+#### Returns
+
+`IterableIterator`\<`number`\>
+
+Iterator yielding position.x, position.y, rotation.cos, rotation.sin, scale.x, scale.y
+
+#### Remarks
+
+Yields components in the order: `[position.x, position.y, rotation.cos, rotation.sin, scale.x, scale.y]`.
+
+**Note:** These components represent semantically heterogeneous quantities
+(position, rotation, scale). This iterator is primarily useful for serialization
+and array-buffer interop, not for mathematical operations on the raw components.
+
+#### Example
+
+```typescript
+const t = new Transform2({ x: 1, y: 2 }, { cos: 0, sin: 1 }, { x: 3, y: 4 });
+const components = [...t]; // [1, 2, 0, 1, 3, 4]
+const [px, py, rc, rs, sx, sy] = t;
+```
+
+#### Since
+
+0.7.0
+
+---
+
 ### clone()
 
 > **clone**(): `Transform2`
 
-Defined in: [src/core/transform2.ts:2157](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L2157)
+Defined in: [src/core/transform2.ts:2417](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L2417)
 
 Creates a deep copy of this transform.
 
@@ -1237,7 +1331,7 @@ copy.identity(); // Original unchanged
 
 > **toArray**\<`T`\>(`out?`, `offset?`): `T` \| \[`number`, `number`, `number`, `number`, `number`\]
 
-Defined in: [src/core/transform2.ts:2079](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L2079)
+Defined in: [src/core/transform2.ts:2308](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L2308)
 
 Converts the transform to a flat array [px, py, rotation, sx, sy].
 
@@ -1289,7 +1383,7 @@ const arr = t.toArray();
 
 > **toJSON**(): [`Transform2Like`](../../types/interfaces/Transform2Like.md)
 
-Defined in: [src/core/transform2.ts:2116](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L2116)
+Defined in: [src/core/transform2.ts:2345](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L2345)
 
 Converts the transform to a JSON-serializable object.
 Called automatically by JSON.stringify().
@@ -1319,7 +1413,7 @@ const json = JSON.stringify(t);
 
 > **toMatrix3**(`out?`): [`Matrix3`](Matrix3.md)
 
-Defined in: [src/core/transform2.ts:1452](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L1452)
+Defined in: [src/core/transform2.ts:1574](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L1574)
 
 Converts this transform to a 3x3 matrix.
 
@@ -1347,7 +1441,7 @@ Matrix3 representation
 
 > **toObject**(): [`Transform2Like`](../../types/interfaces/Transform2Like.md)
 
-Defined in: [src/core/transform2.ts:2055](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L2055)
+Defined in: [src/core/transform2.ts:2284](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L2284)
 
 Converts the transform to a plain object.
 
@@ -1379,7 +1473,7 @@ const obj = t.toObject();
 
 > **toRotation2**(`out?`): [`Rotation2`](Rotation2.md)
 
-Defined in: [src/core/transform2.ts:1477](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L1477)
+Defined in: [src/core/transform2.ts:1599](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L1599)
 
 Converts this transform's rotation to a Rotation2.
 
@@ -1421,7 +1515,7 @@ Vector2.rotateCS(v2, rot.cos, rot.sin, out2);
 
 > **toString**(`precision`): `string`
 
-Defined in: [src/core/transform2.ts:2136](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L2136)
+Defined in: [src/core/transform2.ts:2365](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L2365)
 
 Creates a human-readable string representation.
 Shows position, rotation (in degrees), and scale.
@@ -1458,7 +1552,7 @@ console.log(t.toString());
 
 > `static` **clone**(`source`, `out?`): `Transform2`
 
-Defined in: [src/core/transform2.ts:430](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L430)
+Defined in: [src/core/transform2.ts:448](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L448)
 
 Creates a deep copy of a transform.
 
@@ -1503,7 +1597,7 @@ Transform2.clone(original, out);
 
 > `static` **copy**(`source`, `destination`): `Transform2`
 
-Defined in: [src/core/transform2.ts:484](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L484)
+Defined in: [src/core/transform2.ts:502](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L502)
 
 Copies values from source into destination (alloc-free).
 
@@ -1546,7 +1640,7 @@ Transform2.copy(source, destination);
 
 > `static` **fromArray**(`array`, `offset`, `out?`): `Transform2`
 
-Defined in: [src/core/transform2.ts:454](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L454)
+Defined in: [src/core/transform2.ts:472](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L472)
 
 Creates a transform from a flat array [px, py, rotation, sx, sy].
 
@@ -1600,7 +1694,7 @@ Transform2.fromArray([100, 50, Math.PI / 4, 2, 2]); // pos=(100,50), rot=45°, s
 
 > `static` **fromComponents**(`position`, `rotation`, `scale`, `out?`): `Transform2`
 
-Defined in: [src/core/transform2.ts:325](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L325)
+Defined in: [src/core/transform2.ts:339](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L339)
 
 Creates a transform from components.
 
@@ -1614,7 +1708,7 @@ Position vector
 
 ##### rotation
 
-Rotation (angle in radians or Rotation2Like object with cos/sin)
+Rotation (angle in radians, or a unit-length Rotation2Like with cos/sin)
 
 `number` | [`ReadonlyRotation2Like`](../../types/interfaces/ReadonlyRotation2Like.md)
 
@@ -1638,8 +1732,9 @@ Transform from components
 
 #### Remarks
 
-When passing a `ReadonlyRotation2Like` object, the angle is computed using
-`atan2(rotation.sin, rotation.cos)`.
+When passing a `ReadonlyRotation2Like` object, `cos` and `sin` are copied directly
+to avoid the lossy `atan2 → sinCos` roundtrip. The caller **must** ensure the
+object is unit-length (`cos² + sin² = 1`); no normalization is performed.
 
 #### Example
 
@@ -1662,7 +1757,7 @@ const t2 = Transform2.fromComponents({ x: 0, y: 0 }, rot, 1);
 
 > `static` **fromMatrix3**(`matrix`, `out?`): `Transform2`
 
-Defined in: [src/core/transform2.ts:291](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L291)
+Defined in: [src/core/transform2.ts:304](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L304)
 
 Creates a transform from a 3x3 matrix.
 
@@ -1686,6 +1781,11 @@ Optional output transform
 
 Decomposed transform
 
+#### Remarks
+
+Negative scale is lost during decomposition because Matrix3.getScale()
+uses hypot which always returns positive values.
+
 #### Example
 
 ```typescript
@@ -1707,7 +1807,7 @@ Transform2.fromMatrix3(matrix, out);
 
 > `static` **fromObject**(`object`, `out?`): `Transform2`
 
-Defined in: [src/core/transform2.ts:396](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L396)
+Defined in: [src/core/transform2.ts:414](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L414)
 
 Creates a transform from a plain object.
 
@@ -1715,7 +1815,7 @@ Creates a transform from a plain object.
 
 ##### object
 
-[`Transform2Like`](../../types/interfaces/Transform2Like.md)
+[`ReadonlyTransform2Like`](../../types/interfaces/ReadonlyTransform2Like.md)
 
 Object with position, rotation, and scale
 
@@ -1752,7 +1852,7 @@ Transform2.fromObject(obj, out);
 
 > `static` **fromPose**(`x`, `y`, `angle`, `out?`): `Transform2`
 
-Defined in: [src/core/transform2.ts:369](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L369)
+Defined in: [src/core/transform2.ts:387](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L387)
 
 Creates a transform from a 2D pose (position + angle, uniform scale = 1).
 
@@ -1805,7 +1905,7 @@ const t = Transform2.fromPose(100, 50, Math.PI / 4);
 
 > `static` **fromValues**(`x`, `y`, `rotation`, `scaleX`, `scaleY`, `out?`): `Transform2`
 
-Defined in: [src/core/transform2.ts:257](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L257)
+Defined in: [src/core/transform2.ts:265](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L265)
 
 Creates a transform from explicit values.
 
@@ -1874,7 +1974,7 @@ Transform2.fromValues(5, 5, 0, 1, 1, out);
 
 > **lerp**(`other`, `t`): `this`
 
-Defined in: [src/core/transform2.ts:1992](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L1992)
+Defined in: [src/core/transform2.ts:2222](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L2222)
 
 Linear interpolation towards another transform in place.
 
@@ -1908,7 +2008,7 @@ This for chaining
 
 > **lerpClamped**(`other`, `t`): `this`
 
-Defined in: [src/core/transform2.ts:2011](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L2011)
+Defined in: [src/core/transform2.ts:2241](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L2241)
 
 Linear interpolation with t clamped to [0, 1].
 
@@ -1942,7 +2042,7 @@ This for chaining
 
 > **smoothStep**(`other`, `t`): `this`
 
-Defined in: [src/core/transform2.ts:2028](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L2028)
+Defined in: [src/core/transform2.ts:2258](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L2258)
 
 Smooth interpolation with another transform in place.
 
@@ -1980,7 +2080,7 @@ Uses Hermite smoothStep for ease-in-out effect.
 
 > `static` **lerp**(`a`, `b`, `t`, `out?`): `Transform2`
 
-Defined in: [src/core/transform2.ts:1069](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L1069)
+Defined in: [src/core/transform2.ts:1192](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L1192)
 
 Linear interpolation between two transforms.
 
@@ -2002,7 +2102,7 @@ End transform
 
 `number`
 
-Interpolation factor [0, 1], clamped
+Interpolation factor [0, 1], not clamped, allows extrapolation
 
 ##### out?
 
@@ -2026,7 +2126,7 @@ Interpolated transform
 
 > `static` **lerpClamped**(`a`, `b`, `t`, `out?`): `Transform2`
 
-Defined in: [src/core/transform2.ts:1093](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L1093)
+Defined in: [src/core/transform2.ts:1216](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L1216)
 
 Linear interpolation with t clamped to [0, 1].
 
@@ -2072,7 +2172,7 @@ Interpolated transform
 
 > `static` **smoothStep**(`a`, `b`, `t`, `out?`): `Transform2`
 
-Defined in: [src/core/transform2.ts:1125](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L1125)
+Defined in: [src/core/transform2.ts:1248](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L1248)
 
 Smooth interpolation between two transforms using smoothStep easing.
 
@@ -2131,7 +2231,7 @@ const smooth = Transform2.smoothStep(a, b, 0.5); // Smooth transition
 
 > **copy**(`other`): `this`
 
-Defined in: [src/core/transform2.ts:1375](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L1375)
+Defined in: [src/core/transform2.ts:1497](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L1497)
 
 Copies values from another transform.
 
@@ -2159,7 +2259,7 @@ This for chaining
 
 > **identity**(): `this`
 
-Defined in: [src/core/transform2.ts:1389](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L1389)
+Defined in: [src/core/transform2.ts:1511](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L1511)
 
 Resets to identity transform.
 
@@ -2179,7 +2279,7 @@ This for chaining
 
 > **set**(`position`, `rotation`, `scale`): `this`
 
-Defined in: [src/core/transform2.ts:1353](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L1353)
+Defined in: [src/core/transform2.ts:1475](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L1475)
 
 Sets all transform components.
 
@@ -2219,7 +2319,7 @@ This for chaining
 
 > **setFromMatrix3**(`matrix`): `this`
 
-Defined in: [src/core/transform2.ts:1491](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L1491)
+Defined in: [src/core/transform2.ts:1613](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L1613)
 
 Sets this transform from a 3x3 matrix.
 
@@ -2247,7 +2347,7 @@ This for chaining
 
 > `readonly` **position**: [`Vector2`](Vector2.md)
 
-Defined in: [src/core/transform2.ts:124](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L124)
+Defined in: [src/core/transform2.ts:124](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L124)
 
 #### Implementation of
 
@@ -2259,7 +2359,7 @@ Defined in: [src/core/transform2.ts:124](https://github.com/rndelpuerto/lenguado
 
 > `readonly` **scale**: [`Vector2`](Vector2.md)
 
-Defined in: [src/core/transform2.ts:152](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L152)
+Defined in: [src/core/transform2.ts:152](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L152)
 
 #### Implementation of
 
@@ -2267,11 +2367,91 @@ Defined in: [src/core/transform2.ts:152](https://github.com/rndelpuerto/lenguado
 
 ## Transform
 
+### inverseTransformDirection()
+
+> **inverseTransformDirection**(`direction`, `out?`): [`Vector2`](Vector2.md)
+
+Defined in: [src/core/transform2.ts:1730](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L1730)
+
+Inverse transforms a direction by applying inverse rotation only.
+
+#### Parameters
+
+##### direction
+
+[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
+
+Direction vector to inverse transform
+
+##### out?
+
+[`Vector2`](Vector2.md)
+
+Optional output vector
+
+#### Returns
+
+[`Vector2`](Vector2.md)
+
+Inverse-rotated direction vector
+
+#### Since
+
+0.8.0
+
+---
+
+### inverseTransformDirectionCS()
+
+> **inverseTransformDirectionCS**(`cos`, `sin`, `direction`, `out?`): [`Vector2`](Vector2.md)
+
+Defined in: [src/core/transform2.ts:1745](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L1745)
+
+Inverse transforms a direction using precomputed cos/sin values.
+
+#### Parameters
+
+##### cos
+
+`number`
+
+Precomputed cosine
+
+##### sin
+
+`number`
+
+Precomputed sine
+
+##### direction
+
+[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
+
+Direction vector to inverse transform
+
+##### out?
+
+[`Vector2`](Vector2.md)
+
+Optional output vector
+
+#### Returns
+
+[`Vector2`](Vector2.md)
+
+Inverse-rotated direction vector
+
+#### Since
+
+0.8.0
+
+---
+
 ### inverseTransformPoint()
 
 > **inverseTransformPoint**(`point`, `out?`): [`Vector2`](Vector2.md)
 
-Defined in: [src/core/transform2.ts:1576](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L1576)
+Defined in: [src/core/transform2.ts:1764](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L1764)
 
 Inverse transforms a point.
 
@@ -2309,7 +2489,7 @@ If transform is not invertible
 
 > **inverseTransformPointCS**(`point`, `cos`, `sin`, `out?`): [`Vector2`](Vector2.md)
 
-Defined in: [src/core/transform2.ts:1591](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L1591)
+Defined in: [src/core/transform2.ts:1794](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L1794)
 
 Inverse transforms a point using precomputed cos/sin values.
 
@@ -2351,11 +2531,49 @@ Inverse transformed point
 
 ---
 
+### inverseTransformPointSafe()
+
+> **inverseTransformPointSafe**(`point`, `out?`): [`Vector2`](Vector2.md)
+
+Defined in: [src/core/transform2.ts:1779](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L1779)
+
+Inverse transforms a point, returning (0, 0) if non-invertible.
+
+#### Parameters
+
+##### point
+
+[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
+
+Point to inverse transform
+
+##### out?
+
+[`Vector2`](Vector2.md)
+
+Optional output vector
+
+#### Returns
+
+[`Vector2`](Vector2.md)
+
+Inverse transformed point, or (0, 0) if non-invertible
+
+#### See
+
+[inverseTransformPoint](#inversetransformpoint-2) - Throws on non-invertible
+
+#### Since
+
+0.9.0
+
+---
+
 ### inverseTransformVector()
 
 > **inverseTransformVector**(`vector`, `out?`): [`Vector2`](Vector2.md)
 
-Defined in: [src/core/transform2.ts:1615](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L1615)
+Defined in: [src/core/transform2.ts:1818](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L1818)
 
 Inverse transforms a vector (ignores translation).
 
@@ -2398,7 +2616,7 @@ If transform is not invertible
 
 > **inverseTransformVectorCS**(`vector`, `cos`, `sin`, `out?`): [`Vector2`](Vector2.md)
 
-Defined in: [src/core/transform2.ts:1630](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L1630)
+Defined in: [src/core/transform2.ts:1848](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L1848)
 
 Inverse transforms a vector using precomputed cos/sin values.
 
@@ -2440,11 +2658,129 @@ Inverse transformed vector
 
 ---
 
+### inverseTransformVectorSafe()
+
+> **inverseTransformVectorSafe**(`vector`, `out?`): [`Vector2`](Vector2.md)
+
+Defined in: [src/core/transform2.ts:1833](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L1833)
+
+Inverse transforms a vector, returning (0, 0) if non-invertible.
+
+#### Parameters
+
+##### vector
+
+[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
+
+Vector to inverse transform
+
+##### out?
+
+[`Vector2`](Vector2.md)
+
+Optional output vector
+
+#### Returns
+
+[`Vector2`](Vector2.md)
+
+Inverse transformed vector, or (0, 0) if non-invertible
+
+#### See
+
+[inverseTransformVector](#inversetransformvector-2) - Throws on non-invertible
+
+#### Since
+
+0.9.0
+
+---
+
+### transformDirection()
+
+> **transformDirection**(`direction`, `out?`): [`Vector2`](Vector2.md)
+
+Defined in: [src/core/transform2.ts:1697](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L1697)
+
+Transforms a direction by applying rotation only, ignoring scale and translation.
+
+#### Parameters
+
+##### direction
+
+[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
+
+Direction vector to transform
+
+##### out?
+
+[`Vector2`](Vector2.md)
+
+Optional output vector
+
+#### Returns
+
+[`Vector2`](Vector2.md)
+
+Rotated direction vector
+
+#### Since
+
+0.8.0
+
+---
+
+### transformDirectionCS()
+
+> **transformDirectionCS**(`cos`, `sin`, `direction`, `out?`): [`Vector2`](Vector2.md)
+
+Defined in: [src/core/transform2.ts:1712](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L1712)
+
+Transforms a direction using precomputed cos/sin values.
+
+#### Parameters
+
+##### cos
+
+`number`
+
+Precomputed cosine
+
+##### sin
+
+`number`
+
+Precomputed sine
+
+##### direction
+
+[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
+
+Direction vector to transform
+
+##### out?
+
+[`Vector2`](Vector2.md)
+
+Optional output vector
+
+#### Returns
+
+[`Vector2`](Vector2.md)
+
+Rotated direction vector
+
+#### Since
+
+0.8.0
+
+---
+
 ### transformPoint()
 
 > **transformPoint**(`point`, `out?`): [`Vector2`](Vector2.md)
 
-Defined in: [src/core/transform2.ts:1509](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L1509)
+Defined in: [src/core/transform2.ts:1631](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L1631)
 
 Transforms a point by applying scale, rotation, and translation.
 
@@ -2478,7 +2814,7 @@ Transformed point
 
 > **transformPointCS**(`point`, `cos`, `sin`, `out?`): [`Vector2`](Vector2.md)
 
-Defined in: [src/core/transform2.ts:1531](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L1531)
+Defined in: [src/core/transform2.ts:1653](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L1653)
 
 Transforms a point using precomputed cos/sin values.
 
@@ -2524,7 +2860,7 @@ Transformed point
 
 > **transformPoints**(`points`, `out`): [`Vector2`](Vector2.md)[]
 
-Defined in: [src/core/transform2.ts:1661](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L1661)
+Defined in: [src/core/transform2.ts:1879](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L1879)
 
 Transforms multiple points efficiently (batch operation).
 Calculates sin/cos once and applies to all points.
@@ -2572,7 +2908,7 @@ const worldVertices = transform.transformPoints(vertices);
 
 > **transformVector**(`vector`, `out?`): [`Vector2`](Vector2.md)
 
-Defined in: [src/core/transform2.ts:1544](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L1544)
+Defined in: [src/core/transform2.ts:1666](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L1666)
 
 Transforms a vector (ignores translation).
 
@@ -2606,7 +2942,7 @@ Transformed vector
 
 > **transformVectorCS**(`vector`, `cos`, `sin`, `out?`): [`Vector2`](Vector2.md)
 
-Defined in: [src/core/transform2.ts:1562](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L1562)
+Defined in: [src/core/transform2.ts:1684](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L1684)
 
 Transforms a vector using precomputed cos/sin values.
 
@@ -2652,7 +2988,7 @@ Transformed vector
 
 > **transformVectors**(`vectors`, `out`): [`Vector2`](Vector2.md)[]
 
-Defined in: [src/core/transform2.ts:1698](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L1698)
+Defined in: [src/core/transform2.ts:1916](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L1916)
 
 Transforms multiple vectors efficiently (batch operation).
 Calculates sin/cos once and applies to all vectors.
@@ -2688,11 +3024,109 @@ More efficient than calling transformVector multiple times.
 
 ---
 
+### inverseTransformDirection()
+
+> `static` **inverseTransformDirection**(`transform`, `direction`, `out?`): [`Vector2`](Vector2.md)
+
+Defined in: [src/core/transform2.ts:910](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L910)
+
+Inverse transforms a direction by applying inverse rotation only.
+
+#### Parameters
+
+##### transform
+
+[`ReadonlyTransform2Like`](../../types/interfaces/ReadonlyTransform2Like.md)
+
+Transform whose inverse rotation to apply
+
+##### direction
+
+[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
+
+Direction vector to inverse transform
+
+##### out?
+
+[`Vector2`](Vector2.md)
+
+Optional output vector
+
+#### Returns
+
+[`Vector2`](Vector2.md)
+
+Inverse-rotated direction vector
+
+#### Remarks
+
+Applies the conjugate rotation (negated sin) to the direction.
+Ignores scale and translation.
+
+#### Since
+
+0.8.0
+
+---
+
+### inverseTransformDirectionCS()
+
+> `static` **inverseTransformDirectionCS**(`cos`, `sin`, `direction`, `out?`): [`Vector2`](Vector2.md)
+
+Defined in: [src/core/transform2.ts:942](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L942)
+
+Inverse transforms a direction using precomputed cos/sin values.
+
+#### Parameters
+
+##### cos
+
+`number`
+
+Precomputed cosine of the rotation
+
+##### sin
+
+`number`
+
+Precomputed sine of the rotation (will be negated internally)
+
+##### direction
+
+[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
+
+Direction vector to inverse transform
+
+##### out?
+
+[`Vector2`](Vector2.md)
+
+Optional output vector
+
+#### Returns
+
+[`Vector2`](Vector2.md)
+
+Inverse-rotated direction vector
+
+#### Remarks
+
+Unlike transformPointCS/transformVectorCS, this method omits the transform
+parameter because direction transforms only use rotation (cos/sin), not
+position or scale. Accepting an unused transform parameter would violate
+the Interface Segregation Principle.
+
+#### Since
+
+0.8.0
+
+---
+
 ### inverseTransformPoint()
 
 > `static` **inverseTransformPoint**(`transform`, `point`, `out?`): [`Vector2`](Vector2.md)
 
-Defined in: [src/core/transform2.ts:857](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L857)
+Defined in: [src/core/transform2.ts:980](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L980)
 
 Inverse transforms a point.
 
@@ -2741,7 +3175,7 @@ const local = Transform2.inverseTransformPoint(t, worldPoint); // (1, 2)
 
 #### See
 
-[inverseTransformPointSafe](#inversetransformpointsafe) - Returns (0,0) instead of throwing
+[inverseTransformPointSafe](#inversetransformpointsafe-2) - Returns (0,0) instead of throwing
 
 #### Since
 
@@ -2753,7 +3187,7 @@ const local = Transform2.inverseTransformPoint(t, worldPoint); // (1, 2)
 
 > `static` **inverseTransformPointCS**(`transform`, `point`, `cos`, `sin`, `out?`): [`Vector2`](Vector2.md)
 
-Defined in: [src/core/transform2.ts:931](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L931)
+Defined in: [src/core/transform2.ts:1054](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L1054)
 
 Inverse transforms a point using precomputed cos/sin values (unchecked).
 
@@ -2811,7 +3245,7 @@ Use this method in hot paths where cos/sin are already computed.
 
 > `static` **inverseTransformPointSafe**(`transform`, `point`, `out?`): [`Vector2`](Vector2.md)
 
-Defined in: [src/core/transform2.ts:894](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L894)
+Defined in: [src/core/transform2.ts:1017](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L1017)
 
 Inverse transforms a point, returning (0,0) if scale is near zero.
 
@@ -2859,7 +3293,7 @@ Use when transform may have degenerate scale and you want graceful fallback.
 
 > `static` **inverseTransformVector**(`transform`, `vector`, `out?`): [`Vector2`](Vector2.md)
 
-Defined in: [src/core/transform2.ts:973](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L973)
+Defined in: [src/core/transform2.ts:1096](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L1096)
 
 Inverse transforms a vector (ignores translation).
 
@@ -2908,7 +3342,7 @@ const local = Transform2.inverseTransformVector(t, worldDir); // (1, 0)
 
 #### See
 
-[inverseTransformVectorSafe](#inversetransformvectorsafe) - Returns (0,0) instead of throwing
+[inverseTransformVectorSafe](#inversetransformvectorsafe-2) - Returns (0,0) instead of throwing
 
 #### Since
 
@@ -2920,7 +3354,7 @@ const local = Transform2.inverseTransformVector(t, worldDir); // (1, 0)
 
 > `static` **inverseTransformVectorCS**(`transform`, `vector`, `cos`, `sin`, `out?`): [`Vector2`](Vector2.md)
 
-Defined in: [src/core/transform2.ts:1039](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L1039)
+Defined in: [src/core/transform2.ts:1162](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L1162)
 
 Inverse transforms a vector using precomputed cos/sin values (unchecked).
 
@@ -2978,7 +3412,7 @@ Use this method in hot paths where cos/sin are already computed.
 
 > `static` **inverseTransformVectorSafe**(`transform`, `vector`, `out?`): [`Vector2`](Vector2.md)
 
-Defined in: [src/core/transform2.ts:1004](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L1004)
+Defined in: [src/core/transform2.ts:1127](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L1127)
 
 Inverse transforms a vector, returning (0,0) if scale is near zero.
 
@@ -3018,11 +3452,118 @@ Inverse transformed vector, or (0,0) if scale is near zero
 
 ---
 
+### transformDirection()
+
+> `static` **transformDirection**(`transform`, `direction`, `out?`): [`Vector2`](Vector2.md)
+
+Defined in: [src/core/transform2.ts:851](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L851)
+
+Transforms a direction by applying rotation only, ignoring scale and translation.
+
+#### Parameters
+
+##### transform
+
+[`ReadonlyTransform2Like`](../../types/interfaces/ReadonlyTransform2Like.md)
+
+Transform whose rotation to apply
+
+##### direction
+
+[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
+
+Direction vector to transform
+
+##### out?
+
+[`Vector2`](Vector2.md)
+
+Optional output vector
+
+#### Returns
+
+[`Vector2`](Vector2.md)
+
+Rotated direction vector
+
+#### Remarks
+
+Standard linear algebra operation: extracts and applies the orthogonal
+(rotational) part of an affine transform. Useful for transforming normals
+and direction vectors that should not be affected by scale or translation.
+
+#### Example
+
+```typescript
+const t = new Transform2({ x: 10, y: 0 }, Math.PI / 2, { x: 2, y: 2 });
+const dir = { x: 1, y: 0 };
+Transform2.transformDirection(t, dir); // (0, 1) — rotation only
+```
+
+#### Since
+
+0.8.0
+
+---
+
+### transformDirectionCS()
+
+> `static` **transformDirectionCS**(`cos`, `sin`, `direction`, `out?`): [`Vector2`](Vector2.md)
+
+Defined in: [src/core/transform2.ts:882](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L882)
+
+Transforms a direction using precomputed cos/sin values.
+
+#### Parameters
+
+##### cos
+
+`number`
+
+Precomputed cosine
+
+##### sin
+
+`number`
+
+Precomputed sine
+
+##### direction
+
+[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
+
+Direction vector to transform
+
+##### out?
+
+[`Vector2`](Vector2.md)
+
+Optional output vector
+
+#### Returns
+
+[`Vector2`](Vector2.md)
+
+Rotated direction vector
+
+#### Remarks
+
+Unlike transformPointCS/transformVectorCS, this method omits the transform
+parameter because direction transforms only use rotation (cos/sin), not
+position or scale. Accepting an unused transform parameter would violate
+the Interface Segregation Principle.
+
+#### Since
+
+0.8.0
+
+---
+
 ### transformPoint()
 
 > `static` **transformPoint**(`transform`, `point`, `out?`): [`Vector2`](Vector2.md)
 
-Defined in: [src/core/transform2.ts:714](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L714)
+Defined in: [src/core/transform2.ts:710](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L710)
 
 Transforms a point by a transform (applies scale, rotation, then translation).
 
@@ -3075,7 +3616,7 @@ const result = Transform2.transformPoint(t, p); // (10, 2)
 
 > `static` **transformPointCS**(`transform`, `point`, `cos`, `sin`, `out?`): [`Vector2`](Vector2.md)
 
-Defined in: [src/core/transform2.ts:754](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L754)
+Defined in: [src/core/transform2.ts:750](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L750)
 
 Transforms a point using precomputed cos/sin values.
 
@@ -3141,7 +3682,7 @@ for (const point of points) {
 
 > `static` **transformVector**(`transform`, `vector`, `out?`): [`Vector2`](Vector2.md)
 
-Defined in: [src/core/transform2.ts:792](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L792)
+Defined in: [src/core/transform2.ts:788](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L788)
 
 Transforms a vector by a transform (applies scale and rotation, no translation).
 
@@ -3194,7 +3735,7 @@ const result = Transform2.transformVector(t, v); // (0, 2)
 
 > `static` **transformVectorCS**(`transform`, `vector`, `cos`, `sin`, `out?`): [`Vector2`](Vector2.md)
 
-Defined in: [src/core/transform2.ts:820](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/transform2.ts#L820)
+Defined in: [src/core/transform2.ts:816](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/transform2.ts#L816)
 
 Transforms a vector using precomputed cos/sin values.
 

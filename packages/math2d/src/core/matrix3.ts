@@ -45,6 +45,7 @@ import type {
  ReadonlyMatrix2Like,
  ReadonlyMatrix3Like,
  ReadonlyRotation2Like,
+ ReadonlyTransform2Like,
  ReadonlyVector2Like,
 } from '../types';
 import { assertSafeInteger } from '../validation/assert';
@@ -158,22 +159,6 @@ export class Matrix3 implements Matrix3Like {
  public static readonly ZERO = freezeMatrix3(new Matrix3(0, 0, 0, 0, 0, 0, 0, 0, 0));
 
  /**
-  * All-ones matrix.
-  * @category Constant
-  * @since 0.7.0
-  */
- public static readonly ONE = freezeMatrix3(new Matrix3(1, 1, 1, 1, 1, 1, 1, 1, 1));
-
- /**
-  * Epsilon matrix (EPSILON in all elements).
-  * @category Constant
-  * @since 0.7.0
-  */
- public static readonly EPSILON_MATRIX = freezeMatrix3(
-  new Matrix3(EPSILON, EPSILON, EPSILON, EPSILON, EPSILON, EPSILON, EPSILON, EPSILON, EPSILON),
- );
-
- /**
   * Flip horizontally (mirror across Y axis).
   * @category Constant
   * @since 0.7.0
@@ -214,20 +199,6 @@ export class Matrix3 implements Matrix3Like {
   * @since 0.7.0
   */
  public static readonly ROTATE_270 = freezeMatrix3(new Matrix3(0, -1, 0, 1, 0, 0, 0, 0, 1));
-
- /**
-  * Uniform scale by 2.
-  * @category Constant
-  * @since 0.7.0
-  */
- public static readonly SCALE_2 = freezeMatrix3(new Matrix3(2, 0, 0, 0, 2, 0, 0, 0, 1));
-
- /**
-  * Uniform scale by 0.5.
-  * @category Constant
-  * @since 0.7.0
-  */
- public static readonly SCALE_HALF = freezeMatrix3(new Matrix3(0.5, 0, 0, 0, 0.5, 0, 0, 0, 1));
 
  /* ======================================================================== */
  /* Static Factories                                                         */
@@ -464,6 +435,50 @@ export class Matrix3 implements Matrix3Like {
  }
 
  /**
+  * Creates a reflection matrix about a line passing through the origin with the given normal.
+  *
+  * @remarks
+  * Implements the Householder reflector `I - 2nn^T`:
+  * ```
+  * | 1 - 2*nx*nx   -2*nx*ny      0 |
+  * | -2*nx*ny       1 - 2*ny*ny   0 |
+  * | 0              0              1 |
+  * ```
+  * The normal is assumed to be unit length (no normalization is performed).
+  *
+  * @param normal - Unit normal vector of the reflection line
+  * @param out - Optional output matrix
+  * @returns Reflection matrix
+  *
+  * @example
+  * ```typescript
+  * // Reflect about Y-axis (normal = (1, 0)) — negates x-coordinates
+  * const reflectY = Matrix3.fromReflection({ x: 1, y: 0 });
+  *
+  * // Reflect about X-axis (normal = (0, 1)) — negates y-coordinates
+  * const reflectX = Matrix3.fromReflection({ x: 0, y: 1 });
+  * ```
+  *
+  * @category Factory
+  * @since 0.7.0
+  */
+ public static fromReflection(normal: ReadonlyVector2Like, out?: Matrix3): Matrix3 {
+  const nx = normal.x;
+  const ny = normal.y;
+  return Matrix3.ensureOut(out).set(
+   1 - 2 * nx * nx,
+   -2 * nx * ny,
+   0,
+   -2 * nx * ny,
+   1 - 2 * ny * ny,
+   0,
+   0,
+   0,
+   1,
+  );
+ }
+
+ /**
   * Creates a Matrix3 from a Matrix2 (embeds 2×2 in homogeneous coordinates).
   *
   * @param matrix - Source 2×2 matrix
@@ -527,6 +542,36 @@ export class Matrix3 implements Matrix3Like {
    translation.y,
    1,
   );
+ }
+
+ /**
+  * Creates a matrix from a {@link ReadonlyTransform2Like} directly.
+  *
+  * @remarks
+  * Unlike {@link fromTransform2}, this accepts a single transform object with
+  * position, rotation, and scale properties. The rotation is read as pre-computed
+  * cos/sin values from the transform's rotation component.
+  *
+  * @param transform - Transform with position, rotation, and scale
+  * @param out - Optional output matrix
+  * @returns A Matrix3 encoding Scale -> Rotate -> Translate
+  *
+  * @example
+  * ```typescript
+  * const t = { position: { x: 10, y: 20 }, rotation: { cos: 1, sin: 0 }, scale: { x: 2, y: 2 } };
+  * const m = Matrix3.fromTransform2Like(t);
+  * ```
+  *
+  * @category Factory
+  * @since 0.9.0
+  */
+ public static fromTransform2Like(transform: ReadonlyTransform2Like, out?: Matrix3): Matrix3 {
+  const { cos, sin } = transform.rotation;
+  const sx = transform.scale.x;
+  const sy = transform.scale.y;
+  const tx = transform.position.x;
+  const ty = transform.position.y;
+  return Matrix3.ensureOut(out).set(sx * cos, sx * sin, 0, -sy * sin, sy * cos, 0, tx, ty, 1);
  }
 
  /**
@@ -762,25 +807,25 @@ export class Matrix3 implements Matrix3Like {
  /**
   * Adds a scalar to all elements.
   *
-  * @param m - Source matrix
-  * @param s - Scalar to add
+  * @param matrix - Source matrix
+  * @param scalar - Scalar to add
   * @param out - Optional output matrix
   * @returns Matrix with scalar added to each element
   *
   * @category Arithmetic
   * @since 0.7.0
   */
- public static addScalar(m: ReadonlyMatrix3Like, s: number, out?: Matrix3): Matrix3 {
+ public static addScalar(matrix: ReadonlyMatrix3Like, scalar: number, out?: Matrix3): Matrix3 {
   return Matrix3.ensureOut(out).set(
-   m.m00 + s,
-   m.m01 + s,
-   m.m02 + s,
-   m.m10 + s,
-   m.m11 + s,
-   m.m12 + s,
-   m.m20 + s,
-   m.m21 + s,
-   m.m22 + s,
+   matrix.m00 + scalar,
+   matrix.m01 + scalar,
+   matrix.m02 + scalar,
+   matrix.m10 + scalar,
+   matrix.m11 + scalar,
+   matrix.m12 + scalar,
+   matrix.m20 + scalar,
+   matrix.m21 + scalar,
+   matrix.m22 + scalar,
   );
  }
 
@@ -812,59 +857,59 @@ export class Matrix3 implements Matrix3Like {
  /**
   * Subtracts a scalar from all elements.
   *
-  * @param m - Source matrix
-  * @param s - Scalar to subtract
+  * @param matrix - Source matrix
+  * @param scalar - Scalar to subtract
   * @param out - Optional output matrix
   * @returns Matrix with scalar subtracted from each element
   *
   * @category Arithmetic
   * @since 0.7.0
   */
- public static subtractScalar(m: ReadonlyMatrix3Like, s: number, out?: Matrix3): Matrix3 {
+ public static subtractScalar(matrix: ReadonlyMatrix3Like, scalar: number, out?: Matrix3): Matrix3 {
   return Matrix3.ensureOut(out).set(
-   m.m00 - s,
-   m.m01 - s,
-   m.m02 - s,
-   m.m10 - s,
-   m.m11 - s,
-   m.m12 - s,
-   m.m20 - s,
-   m.m21 - s,
-   m.m22 - s,
+   matrix.m00 - scalar,
+   matrix.m01 - scalar,
+   matrix.m02 - scalar,
+   matrix.m10 - scalar,
+   matrix.m11 - scalar,
+   matrix.m12 - scalar,
+   matrix.m20 - scalar,
+   matrix.m21 - scalar,
+   matrix.m22 - scalar,
   );
  }
 
  /**
-  * Fused multiply-add: `a * scale + b`.
+  * Fused multiply-add: `a * scalar + b`.
   *
   * @remarks
-  * More efficient than separate scale and add operations.
+  * More efficient than separate multiplyScalar and add operations.
   *
-  * @param a - Matrix to scale
-  * @param scale - Scale factor
+  * @param a - Input matrix
+  * @param scalar - Scalar multiplier
   * @param b - Matrix to add
   * @param out - Optional output matrix
-  * @returns Matrix equal to `a * scale + b`
+  * @returns Matrix equal to `a * scalar + b`
   *
   * @category Arithmetic
   * @since 0.7.0
   */
  public static fma(
   a: ReadonlyMatrix3Like,
-  scale: number,
+  scalar: number,
   b: ReadonlyMatrix3Like,
   out?: Matrix3,
  ): Matrix3 {
   return Matrix3.ensureOut(out).set(
-   a.m00 * scale + b.m00,
-   a.m01 * scale + b.m01,
-   a.m02 * scale + b.m02,
-   a.m10 * scale + b.m10,
-   a.m11 * scale + b.m11,
-   a.m12 * scale + b.m12,
-   a.m20 * scale + b.m20,
-   a.m21 * scale + b.m21,
-   a.m22 * scale + b.m22,
+   a.m00 * scalar + b.m00,
+   a.m01 * scalar + b.m01,
+   a.m02 * scalar + b.m02,
+   a.m10 * scalar + b.m10,
+   a.m11 * scalar + b.m11,
+   a.m12 * scalar + b.m12,
+   a.m20 * scalar + b.m20,
+   a.m21 * scalar + b.m21,
+   a.m22 * scalar + b.m22,
   );
  }
 
@@ -878,7 +923,7 @@ export class Matrix3 implements Matrix3Like {
   *
   * @example
   * ```typescript
-  * const translate = Matrix3.fromTranslation(10, 20);
+  * const translate = Matrix3.fromTranslation({ x: 10, y: 20 });
   * const rotate = Matrix3.fromRotation(Math.PI / 4);
   * const combined = Matrix3.multiply(translate, rotate); // rotate then translate
   * ```
@@ -927,17 +972,17 @@ export class Matrix3 implements Matrix3Like {
  }
 
  /**
-  * Scales all elements by a scalar.
+  * Multiplies all matrix elements by a scalar.
   *
   * @param matrix - Source matrix
-  * @param scalar - Scale factor
+  * @param scalar - Scalar multiplier
   * @param out - Optional output matrix
-  * @returns Scaled matrix
+  * @returns Matrix with all elements multiplied by scalar
   *
   * @category Arithmetic
   * @since 0.7.0
   */
- public static scale(matrix: ReadonlyMatrix3Like, scalar: number, out?: Matrix3): Matrix3 {
+ public static multiplyScalar(matrix: ReadonlyMatrix3Like, scalar: number, out?: Matrix3): Matrix3 {
   return Matrix3.ensureOut(out).set(
    matrix.m00 * scalar,
    matrix.m01 * scalar,
@@ -949,21 +994,6 @@ export class Matrix3 implements Matrix3Like {
    matrix.m21 * scalar,
    matrix.m22 * scalar,
   );
- }
-
- /**
-  * Alias for scale - multiplies all elements by a scalar.
-  *
-  * @param matrix - Source matrix
-  * @param scalar - Scale factor
-  * @param out - Optional output matrix
-  * @returns Scaled matrix
-  *
-  * @category Arithmetic
-  * @since 0.7.0
-  */
- public static multiplyScalar(matrix: ReadonlyMatrix3Like, scalar: number, out?: Matrix3): Matrix3 {
-  return Matrix3.scale(matrix, scalar, out);
  }
 
  /**
@@ -996,7 +1026,7 @@ export class Matrix3 implements Matrix3Like {
    throw new RangeError('Matrix3.divideScalar: cannot divide by zero or near-zero scalar');
   }
   const inv = 1 / scalar;
-  return Matrix3.scale(matrix, inv, out);
+  return Matrix3.multiplyScalar(matrix, inv, out);
  }
 
  /**
@@ -1027,7 +1057,7 @@ export class Matrix3 implements Matrix3Like {
    return Matrix3.ensureOut(out).set(0, 0, 0, 0, 0, 0, 0, 0, 0);
   }
   const inv = 1 / scalar;
-  return Matrix3.scale(matrix, inv, out);
+  return Matrix3.multiplyScalar(matrix, inv, out);
  }
 
  /**
@@ -1053,7 +1083,7 @@ export class Matrix3 implements Matrix3Like {
   out?: Matrix3,
  ): Matrix3 {
   const inv = 1 / scalar;
-  return Matrix3.scale(matrix, inv, out);
+  return Matrix3.multiplyScalar(matrix, inv, out);
  }
 
  /**
@@ -2152,6 +2182,295 @@ export class Matrix3 implements Matrix3Like {
  }
 
  /**
+  * Optimized inverse for affine matrices (bottom row is [0, 0, 1]).
+  *
+  * @remarks
+  * Exploits the affine structure to compute the inverse using only the upper-left
+  * 2x2 block and translation, avoiding the full 3x3 cofactor expansion.
+  * Throws if the matrix is not affine or if the 2x2 determinant is near zero.
+  *
+  * @param matrix - Affine matrix to invert
+  * @param out - Optional output matrix
+  * @returns Inverted affine matrix
+  * @throws {RangeError} If matrix is not affine or is singular
+  *
+  * @example
+  * ```typescript
+  * const m = Matrix3.fromTransform2({ x: 10, y: 20 }, Math.PI / 4, 2);
+  * const inv = Matrix3.inverseAffine(m); // efficient affine inverse
+  * ```
+  *
+  * @see {@link inverseAffineSafe} - Returns identity if not affine or singular
+  * @see {@link inverseAffineUnchecked} - No validation
+  *
+  * @category Matrix Operations
+  * @since 0.9.0
+  */
+ public static inverseAffine(matrix: ReadonlyMatrix3Like, out?: Matrix3): Matrix3 {
+  if (!Matrix3.isAffine(matrix)) {
+   throw new RangeError('Matrix3.inverseAffine: matrix is not affine');
+  }
+
+  const a = matrix.m00;
+  const b = matrix.m10;
+  const c = matrix.m01;
+  const d = matrix.m11;
+  const tx = matrix.m20;
+  const ty = matrix.m21;
+
+  const det = a * d - b * c;
+  if (isNearZero(det)) {
+   throw new RangeError('Matrix3.inverseAffine: matrix is singular');
+  }
+
+  const invDet = 1 / det;
+  return Matrix3.ensureOut(out).set(
+   d * invDet,
+   -c * invDet,
+   0,
+   -b * invDet,
+   a * invDet,
+   0,
+   (b * ty - d * tx) * invDet,
+   (c * tx - a * ty) * invDet,
+   1,
+  );
+ }
+
+ /**
+  * Safe optimized inverse for affine matrices.
+  *
+  * @remarks
+  * Returns identity if the matrix is not affine or if the 2x2 determinant is
+  * near zero (singular).
+  *
+  * @param matrix - Affine matrix to invert
+  * @param out - Optional output matrix
+  * @returns Inverted affine matrix or identity if not affine/singular
+  *
+  * @example
+  * ```typescript
+  * Matrix3.inverseAffineSafe(affineMatrix);  // efficient affine inverse
+  * Matrix3.inverseAffineSafe(singularMatrix); // identity (fallback)
+  * ```
+  *
+  * @see {@link inverseAffine} - Throws on non-affine or singular
+  *
+  * @category Matrix Operations
+  * @since 0.9.0
+  */
+ public static inverseAffineSafe(matrix: ReadonlyMatrix3Like, out?: Matrix3): Matrix3 {
+  if (!Matrix3.isAffine(matrix)) {
+   return Matrix3.ensureOut(out).identity();
+  }
+
+  const a = matrix.m00;
+  const b = matrix.m10;
+  const c = matrix.m01;
+  const d = matrix.m11;
+  const tx = matrix.m20;
+  const ty = matrix.m21;
+
+  const det = a * d - b * c;
+  if (isNearZero(det)) {
+   return Matrix3.ensureOut(out).identity();
+  }
+
+  const invDet = 1 / det;
+  return Matrix3.ensureOut(out).set(
+   d * invDet,
+   -c * invDet,
+   0,
+   -b * invDet,
+   a * invDet,
+   0,
+   (b * ty - d * tx) * invDet,
+   (c * tx - a * ty) * invDet,
+   1,
+  );
+ }
+
+ /**
+  * Unchecked optimized inverse for affine matrices.
+  *
+  * @remarks
+  * **Precondition:** Matrix must be affine and invertible. No validation is performed.
+  * Calling with a non-affine or singular matrix produces incorrect results.
+  *
+  * @param matrix - Affine matrix to invert
+  * @param out - Optional output matrix
+  * @returns Inverted affine matrix
+  *
+  * @see {@link inverseAffine} - Throws on non-affine or singular
+  * @see {@link inverseAffineSafe} - Returns fallback on non-affine or singular
+  *
+  * @category Matrix Operations
+  * @since 0.9.0
+  */
+ public static inverseAffineUnchecked(matrix: ReadonlyMatrix3Like, out?: Matrix3): Matrix3 {
+  const a = matrix.m00;
+  const b = matrix.m10;
+  const c = matrix.m01;
+  const d = matrix.m11;
+  const tx = matrix.m20;
+  const ty = matrix.m21;
+
+  const det = a * d - b * c;
+  const invDet = 1 / det;
+  return Matrix3.ensureOut(out).set(
+   d * invDet,
+   -c * invDet,
+   0,
+   -b * invDet,
+   a * invDet,
+   0,
+   (b * ty - d * tx) * invDet,
+   (c * tx - a * ty) * invDet,
+   1,
+  );
+ }
+
+ /**
+  * Solve the linear system Ax = b using Cramer's rule
+  *
+  * @remarks
+  * Uses {@link isNearZero} with default {@link EPSILON} (1e-10) to test the
+  * determinant. Throws when |det| ≤ EPSILON.
+  *
+  * @param matrix - Coefficient matrix A
+  * @param b - Right-hand side vector as [b0, b1, b2]
+  * @returns Solution tuple [x0, x1, x2]
+  * @throws {RangeError} If matrix is singular (determinant near zero)
+  *
+  * @example
+  * ```typescript
+  * // Solve [2 0 0; 0 3 0; 0 0 4] * x = [6, 9, 8]
+  * const A = new Matrix3(2, 0, 0, 0, 3, 0, 0, 0, 4);
+  * const x = Matrix3.solveLinearSystem(A, [6, 9, 8]); // → [3, 3, 2]
+  * ```
+  *
+  * @see {@link solveLinearSystemSafe} - Returns [0, 0, 0] instead of throwing
+  * @see {@link solveLinearSystemUnchecked} - No validation, for hot paths
+  *
+  * @category Matrix Operations
+  * @since 0.8.0
+  */
+ public static solveLinearSystem(
+  matrix: ReadonlyMatrix3Like,
+  b: readonly [number, number, number],
+ ): [number, number, number] {
+  const det =
+   matrix.m00 * (matrix.m11 * matrix.m22 - matrix.m12 * matrix.m21) -
+   matrix.m10 * (matrix.m01 * matrix.m22 - matrix.m02 * matrix.m21) +
+   matrix.m20 * (matrix.m01 * matrix.m12 - matrix.m02 * matrix.m11);
+  if (isNearZero(det)) {
+   throw new RangeError('Matrix3.solveLinearSystem: singular matrix (determinant near zero)');
+  }
+  const invDet = 1 / det;
+  return [
+   (b[0] * (matrix.m11 * matrix.m22 - matrix.m12 * matrix.m21) -
+    matrix.m10 * (b[1] * matrix.m22 - b[2] * matrix.m21) +
+    matrix.m20 * (b[1] * matrix.m12 - b[2] * matrix.m11)) *
+    invDet,
+   (matrix.m00 * (b[1] * matrix.m22 - b[2] * matrix.m21) -
+    b[0] * (matrix.m01 * matrix.m22 - matrix.m02 * matrix.m21) +
+    matrix.m20 * (matrix.m01 * b[2] - matrix.m02 * b[1])) *
+    invDet,
+   (matrix.m00 * (matrix.m11 * b[2] - matrix.m12 * b[1]) -
+    matrix.m10 * (matrix.m01 * b[2] - matrix.m02 * b[1]) +
+    b[0] * (matrix.m01 * matrix.m12 - matrix.m02 * matrix.m11)) *
+    invDet,
+  ];
+ }
+
+ /**
+  * Safe linear system solve. Returns [0, 0, 0] if matrix is singular
+  *
+  * @remarks
+  * Uses {@link isNearZero} with default {@link EPSILON} (1e-10) to test the
+  * determinant. Returns the zero tuple when |det| ≤ EPSILON.
+  *
+  * @param matrix - Coefficient matrix A
+  * @param b - Right-hand side vector as [b0, b1, b2]
+  * @returns Solution tuple, or [0, 0, 0] if singular
+  *
+  * @see {@link solveLinearSystem} - Throws for singular matrices
+  * @see {@link solveLinearSystemUnchecked} - No validation, for hot paths
+  *
+  * @category Matrix Operations
+  * @since 0.8.0
+  */
+ public static solveLinearSystemSafe(
+  matrix: ReadonlyMatrix3Like,
+  b: readonly [number, number, number],
+ ): [number, number, number] {
+  const det =
+   matrix.m00 * (matrix.m11 * matrix.m22 - matrix.m12 * matrix.m21) -
+   matrix.m10 * (matrix.m01 * matrix.m22 - matrix.m02 * matrix.m21) +
+   matrix.m20 * (matrix.m01 * matrix.m12 - matrix.m02 * matrix.m11);
+  if (isNearZero(det)) {
+   return [0, 0, 0];
+  }
+  const invDet = 1 / det;
+  return [
+   (b[0] * (matrix.m11 * matrix.m22 - matrix.m12 * matrix.m21) -
+    matrix.m10 * (b[1] * matrix.m22 - b[2] * matrix.m21) +
+    matrix.m20 * (b[1] * matrix.m12 - b[2] * matrix.m11)) *
+    invDet,
+   (matrix.m00 * (b[1] * matrix.m22 - b[2] * matrix.m21) -
+    b[0] * (matrix.m01 * matrix.m22 - matrix.m02 * matrix.m21) +
+    matrix.m20 * (matrix.m01 * b[2] - matrix.m02 * b[1])) *
+    invDet,
+   (matrix.m00 * (matrix.m11 * b[2] - matrix.m12 * b[1]) -
+    matrix.m10 * (matrix.m01 * b[2] - matrix.m02 * b[1]) +
+    b[0] * (matrix.m01 * matrix.m12 - matrix.m02 * matrix.m11)) *
+    invDet,
+  ];
+ }
+
+ /**
+  * Unchecked linear system solve for hot paths
+  *
+  * @remarks
+  * **Precondition:** Matrix must be non-singular (det ≠ 0).
+  * Calling with a singular matrix produces NaN/Infinity components.
+  *
+  * @param matrix - Coefficient matrix A (must be non-singular)
+  * @param b - Right-hand side vector as [b0, b1, b2]
+  * @returns Solution tuple [x0, x1, x2]
+  *
+  * @see {@link solveLinearSystem} - Throws on singular matrices
+  * @see {@link solveLinearSystemSafe} - Returns fallback on singular matrices
+  *
+  * @category Matrix Operations
+  * @since 0.8.0
+  */
+ public static solveLinearSystemUnchecked(
+  matrix: ReadonlyMatrix3Like,
+  b: readonly [number, number, number],
+ ): [number, number, number] {
+  const invDet =
+   1 /
+   (matrix.m00 * (matrix.m11 * matrix.m22 - matrix.m12 * matrix.m21) -
+    matrix.m10 * (matrix.m01 * matrix.m22 - matrix.m02 * matrix.m21) +
+    matrix.m20 * (matrix.m01 * matrix.m12 - matrix.m02 * matrix.m11));
+  return [
+   (b[0] * (matrix.m11 * matrix.m22 - matrix.m12 * matrix.m21) -
+    matrix.m10 * (b[1] * matrix.m22 - b[2] * matrix.m21) +
+    matrix.m20 * (b[1] * matrix.m12 - b[2] * matrix.m11)) *
+    invDet,
+   (matrix.m00 * (b[1] * matrix.m22 - b[2] * matrix.m21) -
+    b[0] * (matrix.m01 * matrix.m22 - matrix.m02 * matrix.m21) +
+    matrix.m20 * (matrix.m01 * b[2] - matrix.m02 * b[1])) *
+    invDet,
+   (matrix.m00 * (matrix.m11 * b[2] - matrix.m12 * b[1]) -
+    matrix.m10 * (matrix.m01 * b[2] - matrix.m02 * b[1]) +
+    b[0] * (matrix.m01 * matrix.m12 - matrix.m02 * matrix.m11)) *
+    invDet,
+  ];
+ }
+
+ /**
   * Transforms a point by the matrix (applies translation).
   *
   * @param matrix - Transform matrix
@@ -2366,7 +2685,7 @@ export class Matrix3 implements Matrix3Like {
   *
   * @example
   * ```typescript
-  * const m = Matrix3.fromTranslation(100, 50);
+  * const m = Matrix3.fromTranslation({ x: 100, y: 50 });
   * const rotated = Matrix3.rotate(m, Math.PI / 4);
   * ```
   *
@@ -2394,8 +2713,8 @@ export class Matrix3 implements Matrix3Like {
   * @example
   * ```typescript
   * const rotation = Rotation2.fromAngle(Math.PI / 4);
-  * const m1 = Matrix3.fromTranslation(100, 50);
-  * const m2 = Matrix3.fromTranslation(200, 100);
+  * const m1 = Matrix3.fromTranslation({ x: 100, y: 50 });
+  * const m2 = Matrix3.fromTranslation({ x: 200, y: 100 });
   * // Apply same rotation to both matrices efficiently
   * const r1 = Matrix3.rotateCS(m1, rotation.cos, rotation.sin);
   * const r2 = Matrix3.rotateCS(m2, rotation.cos, rotation.sin);
@@ -2444,7 +2763,7 @@ export class Matrix3 implements Matrix3Like {
   *
   * @example
   * ```typescript
-  * const m = Matrix3.fromTranslation(100, 50);
+  * const m = Matrix3.fromTranslation({ x: 100, y: 50 });
   * const scaled = Matrix3.scaleBy(m, { x: 2, y: 0.5 });
   * ```
   *
@@ -2741,6 +3060,31 @@ export class Matrix3 implements Matrix3Like {
   */
  public zero(): this {
   return this.set(0, 0, 0, 0, 0, 0, 0, 0, 0);
+ }
+
+ /**
+  * Sets the translation components of this matrix.
+  *
+  * @remarks
+  * Only modifies m20 and m21 (the translation column), leaving all other
+  * elements unchanged.
+  *
+  * @param translation - Translation vector
+  * @returns This for chaining
+  *
+  * @example
+  * ```typescript
+  * const m = Matrix3.fromRotation(Math.PI / 4);
+  * m.setTranslation({ x: 100, y: 50 });
+  * ```
+  *
+  * @category Mutator
+  * @since 0.9.0
+  */
+ public setTranslation(translation: ReadonlyVector2Like): this {
+  this.m20 = translation.x;
+  this.m21 = translation.y;
+  return this;
  }
 
  /* ======================================================================== */
@@ -3142,15 +3486,15 @@ export class Matrix3 implements Matrix3Like {
  }
 
  /**
-  * Scales all elements by a scalar.
+  * Multiplies all elements by a scalar.
   *
-  * @param scalar - Scale factor
+  * @param scalar - Scalar multiplier
   * @returns This for chaining
   *
   * @category Arithmetic
   * @since 0.7.0
   */
- public scale(scalar: number): this {
+ public multiplyScalar(scalar: number): this {
   this.m00 *= scalar;
   this.m01 *= scalar;
   this.m02 *= scalar;
@@ -3161,19 +3505,6 @@ export class Matrix3 implements Matrix3Like {
   this.m21 *= scalar;
   this.m22 *= scalar;
   return this;
- }
-
- /**
-  * Alias for scale.
-  *
-  * @param scalar - Scale factor
-  * @returns This for chaining
-  *
-  * @category Arithmetic
-  * @since 0.7.0
-  */
- public multiplyScalar(scalar: number): this {
-  return this.scale(scalar);
  }
 
  /**
@@ -3221,25 +3552,25 @@ export class Matrix3 implements Matrix3Like {
  }
 
  /**
-  * Fused multiply-add: `this = this * scale + m`.
+  * Fused multiply-add: `this = this * scalar + m`.
   *
-  * @param scale - Scale factor
+  * @param scalar - Scalar multiplier
   * @param m - Matrix to add
   * @returns This for chaining
   *
   * @category Arithmetic
   * @since 0.7.0
   */
- public fma(scale: number, m: ReadonlyMatrix3Like): this {
-  this.m00 = this.m00 * scale + m.m00;
-  this.m01 = this.m01 * scale + m.m01;
-  this.m02 = this.m02 * scale + m.m02;
-  this.m10 = this.m10 * scale + m.m10;
-  this.m11 = this.m11 * scale + m.m11;
-  this.m12 = this.m12 * scale + m.m12;
-  this.m20 = this.m20 * scale + m.m20;
-  this.m21 = this.m21 * scale + m.m21;
-  this.m22 = this.m22 * scale + m.m22;
+ public fma(scalar: number, m: ReadonlyMatrix3Like): this {
+  this.m00 = this.m00 * scalar + m.m00;
+  this.m01 = this.m01 * scalar + m.m01;
+  this.m02 = this.m02 * scalar + m.m02;
+  this.m10 = this.m10 * scalar + m.m10;
+  this.m11 = this.m11 * scalar + m.m11;
+  this.m12 = this.m12 * scalar + m.m12;
+  this.m20 = this.m20 * scalar + m.m20;
+  this.m21 = this.m21 * scalar + m.m21;
+  this.m22 = this.m22 * scalar + m.m22;
   return this;
  }
 
@@ -3271,7 +3602,7 @@ export class Matrix3 implements Matrix3Like {
    throw new RangeError('Matrix3.divideScalar: cannot divide by zero or near-zero scalar');
   }
   const invScalar = 1 / scalar;
-  return this.scale(invScalar);
+  return this.multiplyScalar(invScalar);
  }
 
  /**
@@ -3296,7 +3627,7 @@ export class Matrix3 implements Matrix3Like {
    return this.zero();
   }
   const invScalar = 1 / scalar;
-  return this.scale(invScalar);
+  return this.multiplyScalar(invScalar);
  }
 
  /**
@@ -3316,7 +3647,7 @@ export class Matrix3 implements Matrix3Like {
   */
  public divideScalarUnchecked(scalar: number): this {
   const invScalar = 1 / scalar;
-  return this.scale(invScalar);
+  return this.multiplyScalar(invScalar);
  }
 
  /* ======================================================================== */
@@ -3480,6 +3811,137 @@ export class Matrix3 implements Matrix3Like {
    c20 * invDet,
    c21 * invDet,
    c22 * invDet,
+  );
+ }
+
+ /**
+  * Inverts this affine matrix in place using an optimized path.
+  *
+  * @returns This for chaining
+  * @throws {RangeError} If matrix is not affine or is singular
+  *
+  * @example
+  * ```typescript
+  * Matrix3.fromTransform2({ x: 10, y: 20 }, Math.PI / 4, 2).inverseAffine();
+  * ```
+  *
+  * @see {@link inverseAffineSafe} - Returns identity if not affine or singular
+  * @see {@link inverseAffineUnchecked} - No validation
+  *
+  * @category Matrix Operations
+  * @since 0.9.0
+  */
+ public inverseAffine(): this {
+  if (!this.isAffine()) {
+   throw new RangeError('Matrix3.inverseAffine: matrix is not affine');
+  }
+
+  const a = this.m00;
+  const b = this.m10;
+  const c = this.m01;
+  const d = this.m11;
+  const tx = this.m20;
+  const ty = this.m21;
+
+  const det = a * d - b * c;
+  if (isNearZero(det)) {
+   throw new RangeError('Matrix3.inverseAffine: matrix is singular');
+  }
+
+  const invDet = 1 / det;
+  return this.set(
+   d * invDet,
+   -c * invDet,
+   0,
+   -b * invDet,
+   a * invDet,
+   0,
+   (b * ty - d * tx) * invDet,
+   (c * tx - a * ty) * invDet,
+   1,
+  );
+ }
+
+ /**
+  * Inverts this affine matrix in place (safe version).
+  *
+  * @returns This for chaining (returns identity if not affine or singular)
+  *
+  * @example
+  * ```typescript
+  * Matrix3.fromTransform2({ x: 10, y: 20 }, Math.PI / 4, 2).inverseAffineSafe();
+  * ```
+  *
+  * @see {@link inverseAffine} - Throws on non-affine or singular
+  *
+  * @category Matrix Operations
+  * @since 0.9.0
+  */
+ public inverseAffineSafe(): this {
+  if (!this.isAffine()) {
+   return this.identity();
+  }
+
+  const a = this.m00;
+  const b = this.m10;
+  const c = this.m01;
+  const d = this.m11;
+  const tx = this.m20;
+  const ty = this.m21;
+
+  const det = a * d - b * c;
+  if (isNearZero(det)) {
+   return this.identity();
+  }
+
+  const invDet = 1 / det;
+  return this.set(
+   d * invDet,
+   -c * invDet,
+   0,
+   -b * invDet,
+   a * invDet,
+   0,
+   (b * ty - d * tx) * invDet,
+   (c * tx - a * ty) * invDet,
+   1,
+  );
+ }
+
+ /**
+  * Inverts this affine matrix in place (unchecked version).
+  *
+  * @remarks
+  * **Precondition:** Matrix must be affine and invertible. No validation is performed.
+  *
+  * @returns This for chaining
+  *
+  * @see {@link inverseAffine} - Throws on non-affine or singular
+  * @see {@link inverseAffineSafe} - Returns identity on non-affine or singular
+  *
+  * @category Matrix Operations
+  * @since 0.9.0
+  */
+ public inverseAffineUnchecked(): this {
+  const a = this.m00;
+  const b = this.m10;
+  const c = this.m01;
+  const d = this.m11;
+  const tx = this.m20;
+  const ty = this.m21;
+
+  const det = a * d - b * c;
+  const invDet = 1 / det;
+  return this.set(
+   d * invDet,
+   -c * invDet,
+   0,
+   -b * invDet,
+   a * invDet,
+   0,
+   (b * ty - d * tx) * invDet,
+   (c * tx - a * ty) * invDet,
+   1,
   );
  }
 
@@ -4191,17 +4653,7 @@ export class Matrix3 implements Matrix3Like {
   * @since 0.7.0
   */
  public isIdentity(epsilon: number = EPSILON): boolean {
-  return (
-   scalarNearEquals(this.m00, 1, epsilon) &&
-   isNearZero(this.m01, epsilon) &&
-   isNearZero(this.m02, epsilon) &&
-   isNearZero(this.m10, epsilon) &&
-   scalarNearEquals(this.m11, 1, epsilon) &&
-   isNearZero(this.m12, epsilon) &&
-   isNearZero(this.m20, epsilon) &&
-   isNearZero(this.m21, epsilon) &&
-   scalarNearEquals(this.m22, 1, epsilon)
-  );
+  return Matrix3.isIdentity(this, epsilon);
  }
 
  /**
@@ -4213,17 +4665,7 @@ export class Matrix3 implements Matrix3Like {
   * @since 0.7.0
   */
  public isZero(): boolean {
-  return (
-   this.m00 === 0 &&
-   this.m01 === 0 &&
-   this.m02 === 0 &&
-   this.m10 === 0 &&
-   this.m11 === 0 &&
-   this.m12 === 0 &&
-   this.m20 === 0 &&
-   this.m21 === 0 &&
-   this.m22 === 0
-  );
+  return Matrix3.isZero(this);
  }
 
  /**
@@ -4236,17 +4678,7 @@ export class Matrix3 implements Matrix3Like {
   * @since 0.7.0
   */
  public isNearZero(epsilon: number = EPSILON): boolean {
-  return (
-   isNearZero(this.m00, epsilon) &&
-   isNearZero(this.m01, epsilon) &&
-   isNearZero(this.m02, epsilon) &&
-   isNearZero(this.m10, epsilon) &&
-   isNearZero(this.m11, epsilon) &&
-   isNearZero(this.m12, epsilon) &&
-   isNearZero(this.m20, epsilon) &&
-   isNearZero(this.m21, epsilon) &&
-   isNearZero(this.m22, epsilon)
-  );
+  return Matrix3.isNearZero(this, epsilon);
  }
 
  /**
@@ -4258,17 +4690,7 @@ export class Matrix3 implements Matrix3Like {
   * @since 0.7.0
   */
  public isFinite(): boolean {
-  return (
-   Number.isFinite(this.m00) &&
-   Number.isFinite(this.m01) &&
-   Number.isFinite(this.m02) &&
-   Number.isFinite(this.m10) &&
-   Number.isFinite(this.m11) &&
-   Number.isFinite(this.m12) &&
-   Number.isFinite(this.m20) &&
-   Number.isFinite(this.m21) &&
-   Number.isFinite(this.m22)
-  );
+  return Matrix3.isFinite(this);
  }
 
  /**
@@ -4280,17 +4702,7 @@ export class Matrix3 implements Matrix3Like {
   * @since 0.7.0
   */
  public hasNaN(): boolean {
-  return (
-   Number.isNaN(this.m00) ||
-   Number.isNaN(this.m01) ||
-   Number.isNaN(this.m02) ||
-   Number.isNaN(this.m10) ||
-   Number.isNaN(this.m11) ||
-   Number.isNaN(this.m12) ||
-   Number.isNaN(this.m20) ||
-   Number.isNaN(this.m21) ||
-   Number.isNaN(this.m22)
-  );
+  return Matrix3.hasNaN(this);
  }
 
  /**
@@ -4318,11 +4730,7 @@ export class Matrix3 implements Matrix3Like {
   * @since 0.7.0
   */
  public isSymmetric(epsilon: number = EPSILON): boolean {
-  return (
-   relativeEquals(this.m01, this.m10, epsilon) &&
-   relativeEquals(this.m02, this.m20, epsilon) &&
-   relativeEquals(this.m12, this.m21, epsilon)
-  );
+  return Matrix3.isSymmetric(this, epsilon);
  }
 
  /**
@@ -4338,14 +4746,7 @@ export class Matrix3 implements Matrix3Like {
   * @since 0.7.0
   */
  public isSkewSymmetric(epsilon: number = EPSILON): boolean {
-  return (
-   isNearZero(this.m00, epsilon) &&
-   isNearZero(this.m11, epsilon) &&
-   isNearZero(this.m22, epsilon) &&
-   relativeEquals(this.m01, -this.m10, epsilon) &&
-   relativeEquals(this.m02, -this.m20, epsilon) &&
-   relativeEquals(this.m12, -this.m21, epsilon)
-  );
+  return Matrix3.isSkewSymmetric(this, epsilon);
  }
 
  /**
@@ -4358,14 +4759,7 @@ export class Matrix3 implements Matrix3Like {
   * @since 0.7.0
   */
  public isDiagonal(epsilon: number = EPSILON): boolean {
-  return (
-   isNearZero(this.m01, epsilon) &&
-   isNearZero(this.m02, epsilon) &&
-   isNearZero(this.m10, epsilon) &&
-   isNearZero(this.m12, epsilon) &&
-   isNearZero(this.m20, epsilon) &&
-   isNearZero(this.m21, epsilon)
-  );
+  return Matrix3.isDiagonal(this, epsilon);
  }
 
  /**
@@ -4378,23 +4772,7 @@ export class Matrix3 implements Matrix3Like {
   * @since 0.7.0
   */
  public isOrthogonal(epsilon: number = EPSILON): boolean {
-  // Check if columns are unit length and mutually orthogonal
-  const col0LengthSq = this.m00 * this.m00 + this.m01 * this.m01 + this.m02 * this.m02;
-  const col1LengthSq = this.m10 * this.m10 + this.m11 * this.m11 + this.m12 * this.m12;
-  const col2LengthSq = this.m20 * this.m20 + this.m21 * this.m21 + this.m22 * this.m22;
-
-  const dot01 = this.m00 * this.m10 + this.m01 * this.m11 + this.m02 * this.m12;
-  const dot02 = this.m00 * this.m20 + this.m01 * this.m21 + this.m02 * this.m22;
-  const dot12 = this.m10 * this.m20 + this.m11 * this.m21 + this.m12 * this.m22;
-
-  return (
-   scalarNearEquals(col0LengthSq, 1, epsilon) &&
-   scalarNearEquals(col1LengthSq, 1, epsilon) &&
-   scalarNearEquals(col2LengthSq, 1, epsilon) &&
-   isNearZero(dot01, epsilon) &&
-   isNearZero(dot02, epsilon) &&
-   isNearZero(dot12, epsilon)
-  );
+  return Matrix3.isOrthogonal(this, epsilon);
  }
 
  /* ======================================================================== */

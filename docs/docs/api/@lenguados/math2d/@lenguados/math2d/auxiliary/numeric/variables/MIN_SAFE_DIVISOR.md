@@ -2,7 +2,7 @@
 
 > `const` **MIN_SAFE_DIVISOR**: `1e-10` = `1e-10`
 
-Defined in: [src/auxiliary/numeric/safety.ts:38](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/numeric/safety.ts#L38)
+Defined in: [src/auxiliary/numeric/safety.ts:38](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/auxiliary/numeric/safety.ts#L38)
 
 Minimum safe value for division operations.
 Below this value, division results may produce numerically degenerate outputs

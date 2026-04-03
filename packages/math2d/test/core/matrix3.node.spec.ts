@@ -7,6 +7,7 @@
 import { describe, expect, it } from '@jest/globals';
 
 import { Matrix3 } from '../../src/core/matrix3';
+import { Transform2 } from '../../src/core/transform2';
 import { Vector2 } from '../../src/core/vector2';
 
 // DIGITS = 10 matches EPSILON = 1e-10 — the library's documented tolerance
@@ -339,10 +340,10 @@ describe('Matrix3', () => {
    expect(r1.m11).toBeCloseTo(r2.m11);
   });
 
-  it('scale scales all matrix elements', () => {
+  it('multiplyScalar scales all matrix elements', () => {
    expect.hasAssertions();
    const m = new Matrix3();
-   m.scale(2);
+   m.multiplyScalar(2);
    expect(m.m00).toBe(2);
    expect(m.m11).toBe(2);
   });
@@ -739,9 +740,9 @@ describe('Matrix3', () => {
    expect(result.m00).toBe(3);
   });
 
-  it('scale scales matrix by scalar', () => {
+  it('multiplyScalar scales matrix by scalar', () => {
    const m = new Matrix3(1, 2, 3, 4, 5, 6, 7, 8, 9);
-   const result = Matrix3.scale(m, 2);
+   const result = Matrix3.multiplyScalar(m, 2);
    expect(result.m00).toBe(2);
   });
  });
@@ -754,9 +755,9 @@ describe('Matrix3', () => {
    expect(inv.m11).toBeCloseTo(0.25);
   });
 
-  it('scale instance method scales all elements', () => {
+  it('multiplyScalar instance method scales all elements', () => {
    const m = new Matrix3(1, 0, 0, 0, 1, 0, 0, 0, 1);
-   m.scale(2);
+   m.multiplyScalar(2);
    expect(m.m00).toBe(2);
    expect(m.m11).toBe(2);
   });
@@ -852,10 +853,10 @@ describe('Matrix3', () => {
    expect(a.m00).toBeCloseTo(6);
   });
 
-  it('scale mutates this and returns this', () => {
+  it('multiplyScalar mutates this and returns this', () => {
    expect.hasAssertions();
    const m = new Matrix3(1, 1, 1, 1, 1, 1, 1, 1, 1);
-   const result = m.scale(2);
+   const result = m.multiplyScalar(2);
    expect(result).toBe(m);
    expect(m.m00).toBe(2);
   });
@@ -1151,10 +1152,10 @@ describe('Matrix3', () => {
    expect(a.m00).toBe(4);
   });
 
-  it('scale without out returns this', () => {
+  it('multiplyScalar without out returns this', () => {
    expect.hasAssertions();
    const a = new Matrix3(1, 0, 0, 0, 1, 0, 0, 0, 1);
-   const result = a.scale(2);
+   const result = a.multiplyScalar(2);
    expect(result).toBe(a);
    expect(a.m00).toBe(2);
   });
@@ -1824,30 +1825,9 @@ describe('Matrix3', () => {
  });
 
  describe('Constants', () => {
-  it('ONE is all ones matrix', () => {
-   expect(Matrix3.ONE.m00).toBe(1);
-   expect(Matrix3.ONE.m01).toBe(1);
-   expect(Matrix3.ONE.m22).toBe(1);
-  });
-
-  it('EPSILON_MATRIX has epsilon values', () => {
-   expect(Matrix3.EPSILON_MATRIX.m00).toBeGreaterThan(0);
-   expect(Matrix3.EPSILON_MATRIX.m00).toBeLessThan(1e-6);
-  });
-
   it('FLIP_XY flips both axes', () => {
    expect(Matrix3.FLIP_XY.m00).toBe(-1);
    expect(Matrix3.FLIP_XY.m11).toBe(-1);
-  });
-
-  it('SCALE_2 scales by 2', () => {
-   expect(Matrix3.SCALE_2.m00).toBe(2);
-   expect(Matrix3.SCALE_2.m11).toBe(2);
-  });
-
-  it('SCALE_HALF scales by 0.5', () => {
-   expect(Matrix3.SCALE_HALF.m00).toBe(0.5);
-   expect(Matrix3.SCALE_HALF.m11).toBe(0.5);
   });
  });
 
@@ -2341,9 +2321,9 @@ describe('Matrix3', () => {
  });
 
  describe('Coverage - Instance scale', () => {
-  it('scale scales all elements', () => {
+  it('multiplyScalar scales all elements', () => {
    const m = new Matrix3();
-   m.scale(2);
+   m.multiplyScalar(2);
    expect(m.m00).toBe(2);
    expect(m.m11).toBe(2);
   });
@@ -3056,5 +3036,255 @@ describe('Matrix3 Safe/Unchecked variants', () => {
   expect(m.m10).toBeCloseTo(4, DIGITS);
   expect(m.m11).toBeCloseTo(5, DIGITS);
   expect(m.m22).toBeCloseTo(9, DIGITS);
+ });
+
+ describe('Matrix3.fromReflection', () => {
+  it('reflects about Y-axis (normal = (1, 0)) — negates x-coordinates', () => {
+   const m = Matrix3.fromReflection({ x: 1, y: 0 });
+   expect(m.m00).toBeCloseTo(-1, DIGITS);
+   expect(m.m01).toBeCloseTo(0, DIGITS);
+   expect(m.m10).toBeCloseTo(0, DIGITS);
+   expect(m.m11).toBeCloseTo(1, DIGITS);
+   expect(m.m22).toBeCloseTo(1, DIGITS);
+  });
+
+  it('reflects about X-axis (normal = (0, 1)) — negates y-coordinates', () => {
+   const m = Matrix3.fromReflection({ x: 0, y: 1 });
+   expect(m.m00).toBeCloseTo(1, DIGITS);
+   expect(m.m01).toBeCloseTo(0, DIGITS);
+   expect(m.m10).toBeCloseTo(0, DIGITS);
+   expect(m.m11).toBeCloseTo(-1, DIGITS);
+   expect(m.m22).toBeCloseTo(1, DIGITS);
+  });
+
+  it('reflects about diagonal (normal = (√2/2, √2/2))', () => {
+   const m = Matrix3.fromReflection({ x: Math.SQRT1_2, y: Math.SQRT1_2 });
+   expect(m.m00).toBeCloseTo(0, DIGITS);
+   expect(m.m01).toBeCloseTo(-1, DIGITS);
+   expect(m.m10).toBeCloseTo(-1, DIGITS);
+   expect(m.m11).toBeCloseTo(0, DIGITS);
+  });
+
+  it('out parameter avoids allocation', () => {
+   const out = new Matrix3();
+   const result = Matrix3.fromReflection({ x: 1, y: 0 }, out);
+   expect(result).toBe(out);
+  });
+ });
+
+ /* ===== inverseAffine (3 tiers) ===== */
+
+ describe('inverseAffine', () => {
+  it('inverse of identity is identity', () => {
+   const result = Matrix3.inverseAffine(Matrix3.IDENTITY);
+   expect(result.m00).toBeCloseTo(1, DIGITS);
+   expect(result.m11).toBeCloseTo(1, DIGITS);
+   expect(result.m20).toBeCloseTo(0, DIGITS);
+   expect(result.m21).toBeCloseTo(0, DIGITS);
+   expect(result.m22).toBeCloseTo(1, DIGITS);
+  });
+
+  it('inverse of translation negates translation', () => {
+   const m = Matrix3.fromTranslation(new Vector2(10, 20));
+   const inv = Matrix3.inverseAffine(m);
+   expect(inv.m20).toBeCloseTo(-10, DIGITS);
+   expect(inv.m21).toBeCloseTo(-20, DIGITS);
+  });
+
+  it('throws on non-affine matrix', () => {
+   const m = new Matrix3();
+   m.set(1, 0, 0, 0, 1, 0, 0, 0, 2); // m22 ≠ 1
+   expect(() => Matrix3.inverseAffine(m)).toThrow(RangeError);
+  });
+
+  it('throws on singular affine matrix', () => {
+   const m = new Matrix3();
+   m.set(0, 0, 0, 0, 0, 0, 0, 0, 1); // zero upper-left
+   expect(() => Matrix3.inverseAffine(m)).toThrow(RangeError);
+  });
+ });
+
+ describe('inverseAffineSafe', () => {
+  it('returns identity for non-affine matrix', () => {
+   const m = new Matrix3();
+   m.set(1, 0, 0, 0, 1, 0, 0, 0, 2);
+   const result = Matrix3.inverseAffineSafe(m);
+   expect(result.m00).toBeCloseTo(1, DIGITS);
+   expect(result.m11).toBeCloseTo(1, DIGITS);
+   expect(result.m20).toBeCloseTo(0, DIGITS);
+   expect(result.m21).toBeCloseTo(0, DIGITS);
+  });
+
+  it('returns identity for singular affine matrix', () => {
+   const m = new Matrix3();
+   m.set(0, 0, 0, 0, 0, 0, 0, 0, 1);
+   const result = Matrix3.inverseAffineSafe(m);
+   expect(result.m00).toBeCloseTo(1, DIGITS);
+   expect(result.m11).toBeCloseTo(1, DIGITS);
+  });
+
+  it('returns correct inverse for valid affine matrix', () => {
+   const m = Matrix3.fromTranslation(new Vector2(5, 10));
+   const inv = Matrix3.inverseAffineSafe(m);
+   expect(inv.m20).toBeCloseTo(-5, DIGITS);
+   expect(inv.m21).toBeCloseTo(-10, DIGITS);
+  });
+ });
+
+ describe('inverseAffineUnchecked', () => {
+  it('inverse of identity is identity', () => {
+   const result = Matrix3.inverseAffineUnchecked(Matrix3.IDENTITY);
+   expect(result.m00).toBeCloseTo(1, DIGITS);
+   expect(result.m11).toBeCloseTo(1, DIGITS);
+   expect(result.m20).toBeCloseTo(0, DIGITS);
+   expect(result.m21).toBeCloseTo(0, DIGITS);
+  });
+ });
+
+ /* ===== instance inverseAffine variants ===== */
+
+ describe('instance inverseAffine', () => {
+  it('mutates in place and chains', () => {
+   const m = Matrix3.fromTranslation(new Vector2(10, 20));
+   expect(m.inverseAffine()).toBe(m);
+   expect(m.m20).toBeCloseTo(-10, DIGITS);
+   expect(m.m21).toBeCloseTo(-20, DIGITS);
+  });
+
+  it('instance inverseAffineSafe returns identity for singular', () => {
+   const m = new Matrix3();
+   m.set(0, 0, 0, 0, 0, 0, 0, 0, 1);
+   expect(m.inverseAffineSafe()).toBe(m);
+   expect(m.m00).toBeCloseTo(1, DIGITS);
+   expect(m.m11).toBeCloseTo(1, DIGITS);
+  });
+
+  it('instance inverseAffineUnchecked mutates in place', () => {
+   const m = Matrix3.fromTranslation(new Vector2(3, 7));
+   expect(m.inverseAffineUnchecked()).toBe(m);
+   expect(m.m20).toBeCloseTo(-3, DIGITS);
+   expect(m.m21).toBeCloseTo(-7, DIGITS);
+  });
+ });
+
+ /* ===== fromTransform2Like ===== */
+
+ describe('fromTransform2Like', () => {
+  it('produces same result as fromTransform2', () => {
+   const t = new Transform2(new Vector2(10, 20), Math.PI / 4, new Vector2(2, 2));
+   const fromLike = Matrix3.fromTransform2Like(t);
+   const fromDirect = Matrix3.fromTransform2(new Vector2(10, 20), Math.PI / 4, new Vector2(2, 2));
+   expect(fromLike.m00).toBeCloseTo(fromDirect.m00, DIGITS);
+   expect(fromLike.m01).toBeCloseTo(fromDirect.m01, DIGITS);
+   expect(fromLike.m10).toBeCloseTo(fromDirect.m10, DIGITS);
+   expect(fromLike.m11).toBeCloseTo(fromDirect.m11, DIGITS);
+   expect(fromLike.m20).toBeCloseTo(fromDirect.m20, DIGITS);
+   expect(fromLike.m21).toBeCloseTo(fromDirect.m21, DIGITS);
+  });
+
+  it('identity transform produces identity matrix', () => {
+   const t = Transform2.IDENTITY;
+   const m = Matrix3.fromTransform2Like(t);
+   expect(m.m00).toBeCloseTo(1, DIGITS);
+   expect(m.m11).toBeCloseTo(1, DIGITS);
+   expect(m.m20).toBeCloseTo(0, DIGITS);
+   expect(m.m21).toBeCloseTo(0, DIGITS);
+  });
+ });
+
+ /* ===== setTranslation ===== */
+
+ describe('setTranslation', () => {
+  it('modifies only m20 and m21', () => {
+   const m = Matrix3.fromRotation(Math.PI / 4);
+   const origM00 = m.m00;
+   const origM01 = m.m01;
+   m.setTranslation({ x: 100, y: 50 });
+   expect(m.m20).toBe(100);
+   expect(m.m21).toBe(50);
+   expect(m.m00).toBe(origM00);
+   expect(m.m01).toBe(origM01);
+  });
+
+  it('returns this for chaining', () => {
+   const m = new Matrix3();
+   expect(m.setTranslation({ x: 1, y: 2 })).toBe(m);
+  });
+ });
+
+ /* ===== solveLinearSystem (3 tiers) ===== */
+
+ describe('solveLinearSystem', () => {
+  it('solves identity system', () => {
+   expect.hasAssertions();
+   const result = Matrix3.solveLinearSystem(Matrix3.IDENTITY, [3, 5, 7]);
+   expect(result[0]).toBeCloseTo(3, DIGITS);
+   expect(result[1]).toBeCloseTo(5, DIGITS);
+   expect(result[2]).toBeCloseTo(7, DIGITS);
+  });
+
+  it('solves non-trivial system with roundtrip verification', () => {
+   expect.hasAssertions();
+   // A = [2 1 0; 1 3 1; 0 1 2], b = [5, 10, 7]
+   const A = new Matrix3(2, 1, 0, 1, 3, 1, 0, 1, 2);
+   const b: [number, number, number] = [5, 10, 7];
+   const x = Matrix3.solveLinearSystem(A, b);
+
+   // Verify A * x ≈ b (roundtrip)
+   const b0 = A.m00 * x[0] + A.m10 * x[1] + A.m20 * x[2];
+   const b1 = A.m01 * x[0] + A.m11 * x[1] + A.m21 * x[2];
+   const b2 = A.m02 * x[0] + A.m12 * x[1] + A.m22 * x[2];
+   expect(b0).toBeCloseTo(b[0], DIGITS);
+   expect(b1).toBeCloseTo(b[1], DIGITS);
+   expect(b2).toBeCloseTo(b[2], DIGITS);
+  });
+
+  it('throws on singular matrix', () => {
+   expect.hasAssertions();
+   // Rows are linearly dependent: row2 = row0 + row1
+   const singular = new Matrix3(1, 0, 1, 0, 1, 1, 0, 0, 0);
+   expect(() => Matrix3.solveLinearSystem(singular, [1, 2, 3])).toThrow(RangeError);
+  });
+ });
+
+ describe('solveLinearSystemSafe', () => {
+  it('returns [0,0,0] for singular matrix', () => {
+   expect.hasAssertions();
+   const singular = new Matrix3(1, 0, 1, 0, 1, 1, 0, 0, 0);
+   const result = Matrix3.solveLinearSystemSafe(singular, [1, 2, 3]);
+   expect(result[0]).toBe(0);
+   expect(result[1]).toBe(0);
+   expect(result[2]).toBe(0);
+  });
+
+  it('solves non-singular system normally', () => {
+   expect.hasAssertions();
+   const result = Matrix3.solveLinearSystemSafe(Matrix3.IDENTITY, [3, 5, 7]);
+   expect(result[0]).toBeCloseTo(3, DIGITS);
+   expect(result[1]).toBeCloseTo(5, DIGITS);
+   expect(result[2]).toBeCloseTo(7, DIGITS);
+  });
+ });
+
+ describe('solveLinearSystemUnchecked', () => {
+  it('solves identity system', () => {
+   expect.hasAssertions();
+   const result = Matrix3.solveLinearSystemUnchecked(Matrix3.IDENTITY, [7, 11, 13]);
+   expect(result[0]).toBeCloseTo(7, DIGITS);
+   expect(result[1]).toBeCloseTo(11, DIGITS);
+   expect(result[2]).toBeCloseTo(13, DIGITS);
+  });
+
+  it('singular matrix produces NaN or Infinity (GIGO contract — never throws)', () => {
+   // All-zero matrix has determinant 0 — singular
+   const singular = new Matrix3(0, 0, 0, 0, 0, 0, 0, 0, 0);
+   let result!: [number, number, number];
+   expect(() => {
+    result = Matrix3.solveLinearSystemUnchecked(singular, [1, 2, 3]);
+   }).not.toThrow();
+   // At least one component must be NaN or non-finite (division by zero det)
+   const hasNaNOrInfinity = result.some((v) => Number.isNaN(v) || !Number.isFinite(v));
+   expect(hasNaNOrInfinity).toBe(true);
+  });
  });
 });

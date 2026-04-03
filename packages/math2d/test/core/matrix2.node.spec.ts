@@ -164,9 +164,9 @@ describe('Matrix2', () => {
    expect(A.exactEquals(new Matrix2(4, 4, 4, 4))).toBe(true);
   });
 
-  it('scale mutates instance', () => {
+  it('multiplyScalar mutates instance', () => {
    const m = new Matrix2(1, 2, 3, 4);
-   m.scale(2);
+   m.multiplyScalar(2);
    expect(m.exactEquals(new Matrix2(2, 4, 6, 8))).toBe(true);
   });
 
@@ -233,7 +233,7 @@ describe('Matrix2', () => {
 
   it('multiplyScalar static returns new matrix', () => {
    const m = new Matrix2(1, 2, 3, 4);
-   const scaled = Matrix2.scale(m, 3);
+   const scaled = Matrix2.multiplyScalar(m, 3);
    expect(scaled.m00).toBe(3);
    expect(scaled.m11).toBe(12);
    expect(m.m00).toBe(1); // original unchanged
@@ -311,9 +311,9 @@ describe('Matrix2', () => {
    expect(m.m11).toBe(2);
   });
 
-  it('scale scales matrix', () => {
+  it('multiplyScalar scales matrix', () => {
    const m = new Matrix2(1, 2, 3, 4);
-   m.scale(2);
+   m.multiplyScalar(2);
    expect(m.m00).toBe(2);
    expect(m.m11).toBe(8);
   });
@@ -461,7 +461,7 @@ describe('Matrix2', () => {
  describe('Instance Methods - Full Coverage', () => {
   it('multiplyScalar scales all elements', () => {
    const m = new Matrix2(1, 2, 3, 4);
-   m.scale(2);
+   m.multiplyScalar(2);
    expect(m.m00).toBe(2);
    expect(m.m11).toBe(8);
   });
@@ -568,9 +568,9 @@ describe('Matrix2', () => {
  });
 
  describe('Matrix Operations Extended', () => {
-  it('scale multiplies all components by scalar', () => {
+  it('multiplyScalar multiplies all components by scalar', () => {
    const m = new Matrix2(1, 2, 3, 4);
-   m.scale(2);
+   m.multiplyScalar(2);
    expect(m.m00).toBe(2);
    expect(m.m11).toBe(8);
   });
@@ -823,9 +823,9 @@ describe('Matrix2', () => {
    expect(a.m00).toBe(23);
   });
 
-  it('scale scales all components', () => {
+  it('multiplyScalar scales all components', () => {
    const m = new Matrix2(1, 2, 3, 4);
-   m.scale(2);
+   m.multiplyScalar(2);
    expect(m.m00).toBe(2);
    expect(m.m11).toBe(8);
   });
@@ -1058,13 +1058,6 @@ describe('Matrix2', () => {
    expect(result.m01).toBe(2);
    expect(result.m10).toBe(3);
    expect(result.m11).toBe(4);
-  });
-
-  it('multiplyScalar is alias for scale', () => {
-   const m = new Matrix2(1, 2, 3, 4);
-   const result = Matrix2.multiplyScalar(m, 3);
-   expect(result.m00).toBe(3);
-   expect(result.m11).toBe(12);
   });
  });
 
@@ -1317,13 +1310,6 @@ describe('Matrix2', () => {
    const result = Matrix2.divideScalarUnchecked(m, 10);
    expect(result.m00).toBe(1);
    expect(result.m11).toBe(4);
-  });
-
-  it('multiplyScalar is alias for scale', () => {
-   const m = new Matrix2(1, 2, 3, 4);
-   m.multiplyScalar(3);
-   expect(m.m00).toBe(3);
-   expect(m.m11).toBe(12);
   });
  });
 
@@ -1613,30 +1599,6 @@ describe('Matrix2', () => {
    expect(flipped.x).toBe(-1);
    expect(flipped.y).toBe(-1);
   });
-
-  it('SCALE_2 scales by 2', () => {
-   const scaled = Matrix2.SCALE_2.transformVector(new Vector2(3, 4));
-   expect(scaled.x).toBe(6);
-   expect(scaled.y).toBe(8);
-  });
-
-  it('SCALE_HALF scales by 0.5', () => {
-   const scaled = Matrix2.SCALE_HALF.transformVector(new Vector2(4, 6));
-   expect(scaled.x).toBe(2);
-   expect(scaled.y).toBe(3);
-  });
-
-  it('ONE is all-ones matrix', () => {
-   expect(Matrix2.ONE.m00).toBe(1);
-   expect(Matrix2.ONE.m01).toBe(1);
-   expect(Matrix2.ONE.m10).toBe(1);
-   expect(Matrix2.ONE.m11).toBe(1);
-  });
-
-  it('EPSILON_MATRIX contains epsilon values', () => {
-   expect(Matrix2.EPSILON_MATRIX.m00).toBeGreaterThan(0);
-   expect(Matrix2.EPSILON_MATRIX.m00).toBeLessThan(0.001);
-  });
  });
 
  describe('Additional Interpolation Coverage', () => {
@@ -1847,9 +1809,9 @@ describe('Matrix2', () => {
  });
 
  describe('Coverage - Static scale', () => {
-  it('static scale scales all components', () => {
+  it('static multiplyScalar scales all components', () => {
    const m = new Matrix2(1, 2, 3, 4);
-   const result = Matrix2.scale(m, 2);
+   const result = Matrix2.multiplyScalar(m, 2);
    expect(result.m00).toBe(2);
    expect(result.m01).toBe(4);
    expect(result.m10).toBe(6);
@@ -1859,7 +1821,7 @@ describe('Matrix2', () => {
   it('static scale with out parameter', () => {
    const m = new Matrix2(1, 2, 3, 4);
    const out = new Matrix2();
-   const result = Matrix2.scale(m, 3, out);
+   const result = Matrix2.multiplyScalar(m, 3, out);
    expect(result).toBe(out);
    expect(out.m00).toBe(3);
   });
@@ -1936,6 +1898,45 @@ describe('Matrix2', () => {
    const m = Matrix2.fromRotation(Math.PI / 2);
    expect(m.m00).toBeCloseTo(0, DIGITS);
    expect(m.m01).toBeCloseTo(1, DIGITS);
+  });
+ });
+
+ describe('fromAngleScale', () => {
+  it('identity rotation with uniform scale', () => {
+   const mat = Matrix2.fromAngleScale(0, 2, 2);
+   const expected = Matrix2.fromScale(2);
+   expect(mat.m00).toBeCloseTo(expected.m00, 10);
+   expect(mat.m01).toBeCloseTo(expected.m01, 10);
+   expect(mat.m10).toBeCloseTo(expected.m10, 10);
+   expect(mat.m11).toBeCloseTo(expected.m11, 10);
+  });
+
+  it('90-degree rotation with no scale', () => {
+   const mat = Matrix2.fromAngleScale(Math.PI / 2, 1, 1);
+   const expected = Matrix2.fromRotation(Math.PI / 2);
+   expect(mat.m00).toBeCloseTo(expected.m00, 10);
+   expect(mat.m01).toBeCloseTo(expected.m01, 10);
+   expect(mat.m10).toBeCloseTo(expected.m10, 10);
+   expect(mat.m11).toBeCloseTo(expected.m11, 10);
+  });
+
+  it('combined rotation and non-uniform scale', () => {
+   const angle = Math.PI / 4;
+   const mat = Matrix2.fromAngleScale(angle, 2, 3);
+   const expected = Matrix2.multiply(
+    Matrix2.fromRotation(angle),
+    Matrix2.fromScale({ x: 2, y: 3 }),
+   );
+   expect(mat.m00).toBeCloseTo(expected.m00, 10);
+   expect(mat.m01).toBeCloseTo(expected.m01, 10);
+   expect(mat.m10).toBeCloseTo(expected.m10, 10);
+   expect(mat.m11).toBeCloseTo(expected.m11, 10);
+  });
+
+  it('supports out parameter', () => {
+   const out = new Matrix2();
+   const result = Matrix2.fromAngleScale(Math.PI / 6, 1, 1, out);
+   expect(result).toBe(out);
   });
  });
 
@@ -2457,9 +2458,9 @@ describe('Matrix2', () => {
    expect(r.m11).toBe(2 * 7 + 4 * 8);
   });
 
-  it('scale multiplies all components by scalar', () => {
+  it('multiplyScalar multiplies all components by scalar', () => {
    const m = new Matrix2(1, 2, 3, 4);
-   const r = Matrix2.scale(m, 2.5);
+   const r = Matrix2.multiplyScalar(m, 2.5);
    expect(r.m00).toBe(2.5);
    expect(r.m01).toBe(5);
    expect(r.m10).toBe(7.5);
@@ -2648,5 +2649,321 @@ describe('Matrix2 Safe/Unchecked variants', () => {
   expect(m.m01).toBeCloseTo(3, DIGITS);
   expect(m.m10).toBeCloseTo(4, DIGITS);
   expect(m.m11).toBeCloseTo(5, DIGITS);
+ });
+
+ /* ===== fromDiagonal ===== */
+
+ describe('fromDiagonal', () => {
+  it('creates diagonal matrix', () => {
+   const m = Matrix2.fromDiagonal({ x: 2, y: 3 });
+   expect(m.m00).toBe(2);
+   expect(m.m11).toBe(3);
+   expect(m.m01).toBe(0);
+   expect(m.m10).toBe(0);
+  });
+ });
+
+ /* ===== fromReflection ===== */
+
+ describe('fromReflection', () => {
+  it('reflection about Y-axis (normal = (1,0)) negates x', () => {
+   const m = Matrix2.fromReflection({ x: 1, y: 0 });
+   // I - 2*n*nT = [[1-2,0],[0,1]] = [[-1,0],[0,1]]
+   expect(m.m00).toBeCloseTo(-1, DIGITS);
+   expect(m.m01).toBeCloseTo(0, DIGITS);
+   expect(m.m10).toBeCloseTo(0, DIGITS);
+   expect(m.m11).toBeCloseTo(1, DIGITS);
+  });
+
+  it('reflection about X-axis (normal = (0,1)) negates y', () => {
+   const m = Matrix2.fromReflection({ x: 0, y: 1 });
+   // I - 2*n*nT = [[1,0],[0,1-2]] = [[1,0],[0,-1]]
+   expect(m.m00).toBeCloseTo(1, DIGITS);
+   expect(m.m01).toBeCloseTo(0, DIGITS);
+   expect(m.m10).toBeCloseTo(0, DIGITS);
+   expect(m.m11).toBeCloseTo(-1, DIGITS);
+  });
+ });
+
+ /* ===== solveLinearSystem (3 tiers) ===== */
+
+ describe('solveLinearSystem', () => {
+  it('solves identity system', () => {
+   const result = Matrix2.solveLinearSystem(Matrix2.IDENTITY, { x: 3, y: 5 });
+   expect(result.x).toBeCloseTo(3, DIGITS);
+   expect(result.y).toBeCloseTo(5, DIGITS);
+  });
+
+  it('solves non-trivial system', () => {
+   // [2 1; 1 3] * x = [5, 7]  →  x = (1.6, 1.8)
+   const A = new Matrix2(2, 1, 1, 3);
+   const b = { x: 5, y: 7 };
+   const x = Matrix2.solveLinearSystem(A, b);
+   expect(x.x).toBeCloseTo(1.6, DIGITS);
+   expect(x.y).toBeCloseTo(1.8, DIGITS);
+  });
+
+  it('throws on singular matrix', () => {
+   const singular = new Matrix2(1, 2, 2, 4); // rows are proportional
+   expect(() => Matrix2.solveLinearSystem(singular, { x: 1, y: 2 })).toThrow(RangeError);
+  });
+ });
+
+ describe('solveLinearSystemSafe', () => {
+  it('returns (0,0) for singular matrix', () => {
+   const singular = new Matrix2(1, 2, 2, 4);
+   const result = Matrix2.solveLinearSystemSafe(singular, { x: 1, y: 2 });
+   expect(result.x).toBe(0);
+   expect(result.y).toBe(0);
+  });
+
+  it('solves non-singular system normally', () => {
+   const result = Matrix2.solveLinearSystemSafe(Matrix2.IDENTITY, { x: 3, y: 5 });
+   expect(result.x).toBeCloseTo(3, DIGITS);
+   expect(result.y).toBeCloseTo(5, DIGITS);
+  });
+ });
+
+ describe('solveLinearSystemUnchecked', () => {
+  it('solves identity system', () => {
+   const result = Matrix2.solveLinearSystemUnchecked(Matrix2.IDENTITY, { x: 7, y: 11 });
+   expect(result.x).toBeCloseTo(7, DIGITS);
+   expect(result.y).toBeCloseTo(11, DIGITS);
+  });
+
+  it('singular matrix produces NaN or Infinity (GIGO contract — never throws)', () => {
+   // det([[1,2],[2,4]]) = 1*4 - 2*2 = 0 — singular, column-major: m00=1,m01=2,m10=2,m11=4
+   const singular = new Matrix2(1, 2, 2, 4);
+   let result!: { x: number; y: number };
+   expect(() => {
+    result = Matrix2.solveLinearSystemUnchecked(singular, { x: 1, y: 1 });
+   }).not.toThrow();
+   expect(Number.isNaN(result.x) || !Number.isFinite(result.x)).toBe(true);
+  });
+ });
+
+ describe('eigenvalues', () => {
+  it('diagonal matrix [[3,0],[0,5]] has eigenvalues 5 and 3', () => {
+   // Column-major: m00=3, m01=0, m10=0, m11=5
+   const m = new Matrix2(3, 0, 0, 5);
+   const result = Matrix2.eigenvalues(m);
+   expect(result.type).toBe('real');
+   const real = result as { type: 'real'; lambda1: number; lambda2: number };
+   expect(real.lambda1).toBeCloseTo(5, DIGITS);
+   expect(real.lambda2).toBeCloseTo(3, DIGITS);
+  });
+
+  it('symmetric matrix [[2,1],[1,2]] has eigenvalues 3 and 1', () => {
+   // Row form: [[2,1],[1,2]]
+   // Column-major: m00=2, m01=1, m10=1, m11=2
+   const m = new Matrix2(2, 1, 1, 2);
+   const result = Matrix2.eigenvalues(m);
+   expect(result.type).toBe('real');
+   const real = result as { type: 'real'; lambda1: number; lambda2: number };
+   expect(real.lambda1).toBeCloseTo(3, DIGITS);
+   expect(real.lambda2).toBeCloseTo(1, DIGITS);
+  });
+
+  it('rotation matrix has complex eigenvalues', () => {
+   // Rotation by PI/4: cos = sin = sqrt(2)/2
+   const angle = Math.PI / 4;
+   const c = Math.cos(angle);
+   const s = Math.sin(angle);
+   // Row form: [[cos, -sin],[sin, cos]]
+   // Column-major: m00=cos, m01=sin, m10=-sin, m11=cos
+   const m = new Matrix2(c, s, -s, c);
+   const result = Matrix2.eigenvalues(m);
+   expect(result.type).toBe('complex');
+   const complex = result as { type: 'complex'; realPart: number; imaginaryPart: number };
+   expect(complex.realPart).toBeCloseTo(c, DIGITS);
+   expect(complex.imaginaryPart).toBeCloseTo(s, DIGITS);
+  });
+
+  it('identity matrix has repeated eigenvalue 1', () => {
+   const result = Matrix2.eigenvalues(Matrix2.IDENTITY);
+   expect(result.type).toBe('real');
+   const real = result as { type: 'real'; lambda1: number; lambda2: number };
+   expect(real.lambda1).toBeCloseTo(1, DIGITS);
+   expect(real.lambda2).toBeCloseTo(1, DIGITS);
+  });
+
+  it('eigenvalue-trace consistency: lambda1 + lambda2 = trace', () => {
+   const m = new Matrix2(4, 3, 2, 1);
+   const result = Matrix2.eigenvalues(m);
+   const trace = Matrix2.trace(m);
+   expect(result.type).toBe('real');
+   const real = result as { type: 'real'; lambda1: number; lambda2: number };
+   expect(real.lambda1 + real.lambda2).toBeCloseTo(trace, DIGITS);
+  });
+
+  it('eigenvalue-determinant consistency: lambda1 * lambda2 = determinant', () => {
+   const m = new Matrix2(4, 3, 2, 1);
+   const result = Matrix2.eigenvalues(m);
+   const determinant = Matrix2.determinant(m);
+   expect(result.type).toBe('real');
+   const real = result as { type: 'real'; lambda1: number; lambda2: number };
+   expect(real.lambda1 * real.lambda2).toBeCloseTo(determinant, DIGITS);
+  });
+
+  it('complex eigenvalue consistency: realPart^2 + imaginaryPart^2 = determinant', () => {
+   const angle = Math.PI / 3;
+   const c = Math.cos(angle);
+   const s = Math.sin(angle);
+   const m = new Matrix2(c, s, -s, c);
+   const result = Matrix2.eigenvalues(m);
+   const determinant = Matrix2.determinant(m);
+   expect(result.type).toBe('complex');
+   const complex = result as { type: 'complex'; realPart: number; imaginaryPart: number };
+   expect(
+    complex.realPart * complex.realPart + complex.imaginaryPart * complex.imaginaryPart,
+   ).toBeCloseTo(determinant, DIGITS);
+  });
+
+  it('zero matrix has both eigenvalues 0', () => {
+   // All-zero matrix: trace=0, det=0 → eigenvalues both 0
+   const m = new Matrix2(0, 0, 0, 0);
+   const result = Matrix2.eigenvalues(m);
+   expect(result.type).toBe('real');
+   const real = result as { type: 'real'; lambda1: number; lambda2: number };
+   expect(real.lambda1).toBeCloseTo(0, DIGITS);
+   expect(real.lambda2).toBeCloseTo(0, DIGITS);
+  });
+
+  it('Jordan block [[2,0],[1,2]] has repeated eigenvalue 2 (discriminant = 0)', () => {
+   // Row form [[2,1],[0,2]]: col0=[2,0], col1=[1,2] → column-major: m00=2, m01=0, m10=1, m11=2
+   const m = new Matrix2(2, 0, 1, 2);
+   const result = Matrix2.eigenvalues(m);
+   expect(result.type).toBe('real');
+   const real = result as { type: 'real'; lambda1: number; lambda2: number };
+   expect(real.lambda1).toBeCloseTo(2, DIGITS);
+   expect(real.lambda2).toBeCloseTo(2, DIGITS);
+  });
+
+  it('negative diagonal [[-1,0],[0,-2]] has real negative eigenvalues', () => {
+   // column-major: m00=-1, m01=0, m10=0, m11=-2
+   const m = new Matrix2(-1, 0, 0, -2);
+   const result = Matrix2.eigenvalues(m);
+   expect(result.type).toBe('real');
+   const real = result as { type: 'real'; lambda1: number; lambda2: number };
+   // Eigenvalues are -1 and -2 (order: lambda1 >= lambda2 by descending)
+   expect(real.lambda1).toBeCloseTo(-1, DIGITS);
+   expect(real.lambda2).toBeCloseTo(-2, DIGITS);
+   // Consistency checks
+   expect(real.lambda1 + real.lambda2).toBeCloseTo(Matrix2.trace(m), DIGITS);
+   expect(real.lambda1 * real.lambda2).toBeCloseTo(Matrix2.determinant(m), DIGITS);
+  });
+ });
+
+ describe('eigendecompose', () => {
+  it('diagonal matrix [[3,0],[0,5]] has standard basis eigenvectors', () => {
+   const m = new Matrix2(3, 0, 0, 5);
+   const result = Matrix2.eigendecompose(m);
+   expect(result.type).toBe('real');
+   const real = result as {
+    type: 'real';
+    lambda1: number;
+    v1: { x: number; y: number };
+    lambda2: number;
+    v2: { x: number; y: number };
+   };
+   expect(real.lambda1).toBeCloseTo(5, DIGITS);
+   expect(real.lambda2).toBeCloseTo(3, DIGITS);
+   // lambda1=5 corresponds to m11=5, so eigenvector should be [0,1]
+   expect(real.v1.x).toBeCloseTo(0, DIGITS);
+   expect(real.v1.y).toBeCloseTo(1, DIGITS);
+   // lambda2=3 corresponds to m00=3, so eigenvector should be [1,0]
+   expect(real.v2.x).toBeCloseTo(1, DIGITS);
+   expect(real.v2.y).toBeCloseTo(0, DIGITS);
+  });
+
+  it('symmetric matrix [[2,1],[1,2]] has correct eigenvectors', () => {
+   const m = new Matrix2(2, 1, 1, 2);
+   const result = Matrix2.eigendecompose(m);
+   expect(result.type).toBe('real');
+   const real = result as {
+    type: 'real';
+    lambda1: number;
+    v1: { x: number; y: number };
+    lambda2: number;
+    v2: { x: number; y: number };
+   };
+   expect(real.lambda1).toBeCloseTo(3, DIGITS);
+   expect(real.lambda2).toBeCloseTo(1, DIGITS);
+   // Eigenvectors should be normalized
+   const length1 = Math.sqrt(real.v1.x * real.v1.x + real.v1.y * real.v1.y);
+   expect(length1).toBeCloseTo(1, DIGITS);
+   const length2 = Math.sqrt(real.v2.x * real.v2.x + real.v2.y * real.v2.y);
+   expect(length2).toBeCloseTo(1, DIGITS);
+  });
+
+  it('rotation matrix returns complex result', () => {
+   const angle = Math.PI / 4;
+   const c = Math.cos(angle);
+   const s = Math.sin(angle);
+   const m = new Matrix2(c, s, -s, c);
+   const result = Matrix2.eigendecompose(m);
+   expect(result.type).toBe('complex');
+   const complex = result as { type: 'complex'; realPart: number; imaginaryPart: number };
+   expect(complex.realPart).toBeCloseTo(c, DIGITS);
+   expect(complex.imaginaryPart).toBeCloseTo(s, DIGITS);
+  });
+
+  it('identity matrix eigendecomposition has repeated eigenvalue 1', () => {
+   const result = Matrix2.eigendecompose(Matrix2.IDENTITY);
+   expect(result.type).toBe('real');
+   const real = result as {
+    type: 'real';
+    lambda1: number;
+    v1: { x: number; y: number };
+    lambda2: number;
+    v2: { x: number; y: number };
+   };
+   expect(real.lambda1).toBeCloseTo(1, DIGITS);
+   expect(real.lambda2).toBeCloseTo(1, DIGITS);
+   // Identity is diagonal, eigenvectors are standard basis
+   expect(real.v1.x).toBeCloseTo(1, DIGITS);
+   expect(real.v1.y).toBeCloseTo(0, DIGITS);
+   expect(real.v2.x).toBeCloseTo(0, DIGITS);
+   expect(real.v2.y).toBeCloseTo(1, DIGITS);
+  });
+
+  it('eigenvectors satisfy A*v = lambda*v', () => {
+   // Non-trivial non-symmetric matrix with real eigenvalues
+   // [[4, 1], [2, 3]] => Row form, column-major: m00=4, m01=2, m10=1, m11=3
+   const m = new Matrix2(4, 2, 1, 3);
+   const result = Matrix2.eigendecompose(m);
+   expect(result.type).toBe('real');
+   const real = result as {
+    type: 'real';
+    lambda1: number;
+    v1: { x: number; y: number };
+    lambda2: number;
+    v2: { x: number; y: number };
+   };
+   // A*v1 should equal lambda1*v1
+   const av1x = m.m00 * real.v1.x + m.m10 * real.v1.y;
+   const av1y = m.m01 * real.v1.x + m.m11 * real.v1.y;
+   expect(av1x).toBeCloseTo(real.lambda1 * real.v1.x, DIGITS);
+   expect(av1y).toBeCloseTo(real.lambda1 * real.v1.y, DIGITS);
+
+   // A*v2 should equal lambda2*v2
+   const av2x = m.m00 * real.v2.x + m.m10 * real.v2.y;
+   const av2y = m.m01 * real.v2.x + m.m11 * real.v2.y;
+   expect(av2x).toBeCloseTo(real.lambda2 * real.v2.x, DIGITS);
+   expect(av2y).toBeCloseTo(real.lambda2 * real.v2.y, DIGITS);
+  });
+
+  it('eigenvectors of symmetric matrix are orthogonal', () => {
+   const m = new Matrix2(2, 1, 1, 2);
+   const result = Matrix2.eigendecompose(m);
+   expect(result.type).toBe('real');
+   const real = result as {
+    type: 'real';
+    v1: { x: number; y: number };
+    v2: { x: number; y: number };
+   };
+   const dot = real.v1.x * real.v2.x + real.v1.y * real.v2.y;
+   expect(dot).toBeCloseTo(0, DIGITS);
+  });
  });
 });

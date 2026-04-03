@@ -1,47 +1,41 @@
 ---
 sidebar_position: 1
+title: 'Getting Started'
+description: 'Install @lenguados/math2d and run your first code'
 ---
 
-# Tutorial Intro
+# Getting Started
 
-Let's discover **Lenguados in less than 5 minutes**.
+**lenguados** is a TypeScript monorepo for a deterministic, extensible 2D physics engine. The core package, `@lenguados/math2d`, provides math primitives with bit-exact cross-platform results, designed for networked game lockstep and high-performance simulations.
 
-## Getting Started
-
-<!-- Get started by **creating a new site**.
-
-Or **try Docusaurus immediately** with **[docusaurus.new](https://docusaurus.new)**.
-
-### What you'll need
-
-- [Node.js](https://nodejs.org/en/download/) version 18.0 or above:
-  - When installing Node.js, you are recommended to check all checkboxes related to dependencies.
-
-## Generate a new site
-
-Generate a new Docusaurus site using the **classic template**.
-
-The classic template will automatically be added to your project after you run the command:
+## Installation
 
 ```bash
-npm init docusaurus@latest my-website classic
+npm install @lenguados/math2d
 ```
 
-You can type this command into Command Prompt, Powershell, Terminal, or any other integrated terminal of your code editor.
+## Quick Example
 
-The command also installs all necessary dependencies you need to run Docusaurus.
+```typescript
+import { Vector2, Transform2, DEG_TO_RAD } from '@lenguados/math2d';
 
-## Start your site
+// Static methods are pure; instance methods mutate `this`
+const position = Vector2.fromValues(10, 20);
+const velocity = Vector2.fromValues(3, 4);
 
-Run the development server:
+// Allocation-free: reuse `position` as output
+Vector2.add(position, velocity, position);
 
-```bash
-cd my-website
-npm run start
+// Fluent instance chaining
+position.add(velocity).multiplyScalar(0.5);
+
+// Decomposed transform (Scale → Rotate → Translate)
+const transform = Transform2.fromValues(5, 10, 45 * DEG_TO_RAD, 1, 1);
+const worldPoint = Transform2.transformPoint(transform, position);
 ```
 
-The `cd` command changes the directory you're working with. In order to work with your newly created Docusaurus site, you'll need to navigate the terminal there.
+## What's Next
 
-The `npm run start` command builds your website locally and serves it through a development server, ready for you to view at http://localhost:3000/.
-
-Open `docs/intro.md` (this page) and edit some lines: the site **reloads automatically** and displays your changes. -->
+- [**math2d**](math2d) — Architecture, design decisions, edge cases, and audit history
+- [**Contributing**](contributing) — TSDoc standard, testing strategy, and design philosophy
+- [**API Reference**](api) — Auto-generated TypeDoc reference for all packages

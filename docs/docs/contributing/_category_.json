@@ -1,0 +1,9 @@
+{
+ "label": "Contributing",
+ "position": 3,
+ "description": "Contribution guides, coding standards, and testing conventions",
+ "link": {
+  "type": "generated-index",
+  "description": "Guides for contributing to the lenguados project."
+ }
+}

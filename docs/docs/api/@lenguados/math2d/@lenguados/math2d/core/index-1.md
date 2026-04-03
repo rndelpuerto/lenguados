@@ -6,7 +6,7 @@ core/index.ts
 
 ## Description
 
-Core 2D mathematical types for the Lenguados math2d library
+Core 2D mathematical types
 
 ## Remarks
 

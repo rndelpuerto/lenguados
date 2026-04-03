@@ -49,7 +49,7 @@ export function clamp(value: number, min: number, max: number): number {
  * @category Arithmetic
  * @since 0.7.0
  */
-export function sign(value: number): number {
+export function sign(value: number): -1 | 0 | 1 {
  if (value > 0) return 1;
  if (value < 0) return -1;
  return 0; // Handles -0, +0, NaN
@@ -165,6 +165,9 @@ export function remapSafe(
  outMin: number,
  outMax: number,
 ): number {
+ // Boundary early-returns for exact endpoint mapping (matching remap)
+ if (value === inMin) return outMin;
+ if (value === inMax) return outMax;
  const inRange = inMax - inMin;
  if (inRange === 0) return outMin;
  const normalized = (value - inMin) / inRange;

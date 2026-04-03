@@ -2,7 +2,7 @@
 
 > **snapToGrid**(`value`, `gridSize`, `offset`): `number`
 
-Defined in: [src/auxiliary/numeric/rounding.ts:141](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/numeric/rounding.ts#L141)
+Defined in: [src/auxiliary/numeric/rounding.ts:204](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/auxiliary/numeric/rounding.ts#L204)
 
 Snaps to grid with offset.
 

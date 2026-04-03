@@ -33,8 +33,8 @@ describe('unwrapAngles', () => {
  test('unwraps with reference', () => {
   const result = unwrapAngles([0, Math.PI], -Math.PI);
   // First element: normalizeRadians(0 - (-PI)) + (-PI) = normalizeRadians(PI) + (-PI)
-  // normalizeRadians(PI) = PI (or -PI at boundary) → close to 0 or -2PI
-  expect(result[0]).toBeCloseTo(-2 * Math.PI, 4);
+  // normalizeRadians(PI) = PI ((-PI, PI] convention), so first = PI + (-PI) = 0
+  expect(result[0]).toBeCloseTo(0, 4);
  });
 
  test('keeps already continuous sequence unchanged', () => {
@@ -141,8 +141,9 @@ describe('AngleUnwrapper', () => {
   uw.next(3);
   uw.reset(Math.PI);
   expect(uw.value).toBe(Math.PI);
-  // Subsequent calls continue from the new reference
-  expect(uw.next(0)).toBeCloseTo(0, 4);
+  // With (-PI, PI] convention, angleDifference(PI, 0) = PI (CCW),
+  // so unwrapping continues: PI + PI = 2*PI
+  expect(uw.next(0)).toBeCloseTo(2 * Math.PI, 4);
  });
 
  describe('NaN/Infinity handling', () => {

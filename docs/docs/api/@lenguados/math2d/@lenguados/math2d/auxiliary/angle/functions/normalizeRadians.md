@@ -2,10 +2,11 @@
 
 > **normalizeRadians**(`radians`): `number`
 
-Defined in: [src/auxiliary/angle/normalization.ts:34](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/angle/normalization.ts#L34)
+Defined in: [src/auxiliary/angle/normalization.ts:39](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/auxiliary/angle/normalization.ts#L39)
 
-Normalizes an angle to [-PI, PI) range.
-Standard signed angle representation.
+Normalizes an angle to (-PI, PI] range.
+Standard signed angle representation matching the mathematical
+principal argument Arg(z) and IEEE 754 atan2 output convention.
 
 ## Parameters
 
@@ -19,9 +20,13 @@ Angle in radians
 
 `number`
 
-Normalized angle in [-PI, PI)
+Normalized angle in (-PI, PI]
 
 ## Remarks
+
+Uses (-PI, PI] (PI included, -PI excluded) — the convention used by
+IEEE 754 atan2, C standard, MATLAB wrapToPi, Unity, Box2D, and Bullet Physics.
+This ensures `normalizeRadians(Math.atan2(y, x)) === Math.atan2(y, x)`.
 
 For very large angles (>1e6 radians), floating-point precision loss in
 the modulo operation may produce results that deviate from the
@@ -31,9 +36,9 @@ mathematically correct normalized value.
 
 ```typescript
 normalizeRadians(0); // 0
-normalizeRadians(Math.PI); // -Math.PI (range is [-PI, PI))
-normalizeRadians(-Math.PI); // -Math.PI
-normalizeRadians(3 * Math.PI); // -Math.PI
+normalizeRadians(Math.PI); // Math.PI (PI is included)
+normalizeRadians(-Math.PI); // Math.PI (-PI maps to PI)
+normalizeRadians(3 * Math.PI); // Math.PI
 normalizeRadians(2 * Math.PI); // 0
 ```
 

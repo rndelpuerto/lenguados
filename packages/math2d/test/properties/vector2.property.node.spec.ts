@@ -86,8 +86,8 @@ describe('Vector2 Properties', () => {
      fc.integer({ min: -100, max: 100 }),
      arbVector2,
      (s, t, v) => {
-      const st_v = Vector2.scale(v, s * t);
-      const s_tv = Vector2.scale(Vector2.scale(v, t), s);
+      const st_v = Vector2.multiplyScalar(v, s * t);
+      const s_tv = Vector2.multiplyScalar(Vector2.multiplyScalar(v, t), s);
       return st_v.nearEquals(s_tv, TEST_TOLERANCE);
      },
     ),
@@ -97,7 +97,7 @@ describe('Vector2 Properties', () => {
   it('should have 1 as identity: 1 * v = v', () => {
    fc.assert(
     fc.property(arbVector2, (v) => {
-     const result = Vector2.scale(v, 1);
+     const result = Vector2.multiplyScalar(v, 1);
      return result.nearEquals(v, TEST_TOLERANCE);
     }),
    );
@@ -106,7 +106,7 @@ describe('Vector2 Properties', () => {
   it('should have 0 as annihilator: 0 * v = 0', () => {
    fc.assert(
     fc.property(arbVector2, (v) => {
-     const result = Vector2.scale(v, 0);
+     const result = Vector2.multiplyScalar(v, 0);
      return result.nearEquals(Vector2.ZERO, TEST_TOLERANCE);
     }),
    );
@@ -115,8 +115,8 @@ describe('Vector2 Properties', () => {
   it('should distribute over vector addition: s * (a + b) = s*a + s*b', () => {
    fc.assert(
     fc.property(fc.integer({ min: -100, max: 100 }), arbVector2, arbVector2, (s, a, b) => {
-     const s_ab = Vector2.scale(Vector2.add(a, b), s);
-     const sa_sb = Vector2.add(Vector2.scale(a, s), Vector2.scale(b, s));
+     const s_ab = Vector2.multiplyScalar(Vector2.add(a, b), s);
+     const sa_sb = Vector2.add(Vector2.multiplyScalar(a, s), Vector2.multiplyScalar(b, s));
      return s_ab.nearEquals(sa_sb, TEST_TOLERANCE);
     }),
    );
@@ -408,7 +408,7 @@ describe('Vector2 NaN/Infinity Propagation', () => {
  it('scale with NaN produces NaN', () => {
   fc.assert(
    fc.property(arbVector2, (v) => {
-    const result = Vector2.scale(v, NaN);
+    const result = Vector2.multiplyScalar(v, NaN);
     return Number.isNaN(result.x) && Number.isNaN(result.y);
    }),
   );

@@ -332,7 +332,7 @@ describe('Rotation2', () => {
   it('toComplex returns equivalent complex number', () => {
    const rot = Rotation2.fromAngle(Math.PI / 4);
    const complex = rot.toComplex();
-   expect(complex.argument()).toBeCloseTo(Math.PI / 4, DIGITS);
+   expect(complex.angle).toBeCloseTo(Math.PI / 4, DIGITS);
   });
 
   it('toMatrix2 returns equivalent rotation matrix', () => {
@@ -427,9 +427,9 @@ describe('Rotation2', () => {
    expect(rot.isIdentity()).toBe(false);
   });
 
-  it('inversed getter returns inverse rotation', () => {
+  it('inverted getter returns inverse rotation', () => {
    const rot = Rotation2.fromAngle(DEG90);
-   const inv = rot.inversed;
+   const inv = rot.inverted;
    expect(inv.angle).toBeCloseTo(-DEG90, DIGITS);
   });
  });
@@ -536,11 +536,36 @@ describe('Rotation2', () => {
    expect(normalized.cos).toBeCloseTo(1, DIGITS);
   });
 
-  it('negated getter returns negated rotation', () => {
+  it('negated getter returns component-wise negated rotation', () => {
    const rot = Rotation2.fromAngle(DEG90);
    const neg = rot.negated;
-   expect(neg.cos).toBeCloseTo(rot.cos, DIGITS);
+   expect(neg.cos).toBeCloseTo(-rot.cos, DIGITS);
    expect(neg.sin).toBeCloseTo(-rot.sin, DIGITS);
+  });
+
+  it('negated returns component-wise negation (-cos, -sin)', () => {
+   const r = Rotation2.fromAngle(Math.PI / 4); // 45 degrees
+   const neg = r.negated;
+   expect(neg.cos).toBeCloseTo(-r.cos);
+   expect(neg.sin).toBeCloseTo(-r.sin);
+  });
+
+  it('negated is different from inversed', () => {
+   const r = Rotation2.fromAngle(Math.PI / 4);
+   const neg = r.negated;
+   const inv = r.inverted;
+   // negated: (-cos, -sin) = theta + pi
+   // inversed: (cos, -sin) = -theta
+   expect(neg.cos).toBeCloseTo(-inv.cos);
+   expect(neg.sin).toBeCloseTo(inv.sin);
+  });
+
+  it('negated represents rotation by theta + pi', () => {
+   const r = Rotation2.fromAngle(Math.PI / 6); // 30 degrees
+   const neg = r.negated;
+   const expected = Rotation2.fromAngle(Math.PI / 6 + Math.PI); // 210 degrees
+   expect(neg.cos).toBeCloseTo(expected.cos);
+   expect(neg.sin).toBeCloseTo(expected.sin);
   });
 
   it('static apply with out parameter', () => {
@@ -638,7 +663,7 @@ describe('Rotation2', () => {
   it('inversed returns negated sin', () => {
    expect.hasAssertions();
    const rot = Rotation2.fromAngle(DEG45);
-   const inv = rot.inversed;
+   const inv = rot.inverted;
    expect(inv.sin).toBeCloseTo(-rot.sin, DIGITS);
    expect(inv.cos).toBeCloseTo(rot.cos, DIGITS);
   });
@@ -764,6 +789,29 @@ describe('Rotation2', () => {
    const recovered = Rotation2.fromMatrix2(matrix);
    expect(recovered.cos).toBeCloseTo(original.cos, DIGITS);
    expect(recovered.sin).toBeCloseTo(original.sin, DIGITS);
+  });
+
+  it('fromMatrix2 precision: direct extraction avoids trig round-trip', () => {
+   // Direct extraction should preserve cos/sin better than atan2+fromAngle
+   const angles = [0.1, 0.7, 1.2, Math.PI / 6, Math.PI / 4, Math.PI / 3, Math.PI / 2, Math.PI];
+   for (const angle of angles) {
+    const original = Rotation2.fromAngle(angle);
+    const matrix = original.toMatrix2();
+    const recovered = Rotation2.fromMatrix2(matrix);
+    // Unit length invariant must hold to very high precision
+    const unitError = Math.abs(recovered.cos * recovered.cos + recovered.sin * recovered.sin - 1);
+    expect(unitError).toBeLessThan(1e-14);
+   }
+  });
+
+  it('fromMatrix2 handles scaled rotation matrix', () => {
+   // A matrix with scaling: m00=2*cos, m01=2*sin — should normalize
+   const cos45 = Math.SQRT1_2;
+   const sin45 = Math.SQRT1_2;
+   const scaledMatrix = { m00: 2 * cos45, m01: 2 * sin45, m10: -2 * sin45, m11: 2 * cos45 };
+   const rot = Rotation2.fromMatrix2(scaledMatrix);
+   expect(rot.cos).toBeCloseTo(cos45, DIGITS);
+   expect(rot.sin).toBeCloseTo(sin45, DIGITS);
   });
 
   it('fromMatrix2 with out parameter', () => {
@@ -900,7 +948,7 @@ describe('Rotation2', () => {
  describe('Coverage - Instance Getters', () => {
   it('inversed getter returns inverse', () => {
    const rot = Rotation2.fromAngle(DEG90);
-   const inv = rot.inversed;
+   const inv = rot.inverted;
    expect(inv.angle).toBeCloseTo(-DEG90, DIGITS);
   });
  });
@@ -971,6 +1019,36 @@ describe('Rotation2', () => {
    const rot = Rotation2.fromAngle(DEG90);
    rot.inverse();
    expect(rot.angle).toBeCloseTo(-DEG90, DIGITS);
+  });
+ });
+
+ describe('Coverage - Static negate', () => {
+  it('static negate returns (-cos, -sin)', () => {
+   const r = Rotation2.fromAngle(Math.PI / 3);
+   const result = Rotation2.negate(r);
+   expect(result.cos).toBeCloseTo(-r.cos);
+   expect(result.sin).toBeCloseTo(-r.sin);
+  });
+
+  it('static negate writes to out parameter', () => {
+   const r = Rotation2.fromAngle(Math.PI / 4);
+   const out = new Rotation2();
+   const result = Rotation2.negate(r, out);
+   expect(result).toBe(out);
+   expect(out.cos).toBeCloseTo(-r.cos);
+   expect(out.sin).toBeCloseTo(-r.sin);
+  });
+ });
+
+ describe('Coverage - Instance negate', () => {
+  it('instance negate mutates in place', () => {
+   const r = Rotation2.fromAngle(Math.PI / 4);
+   const originalCos = r.cos;
+   const originalSin = r.sin;
+   const result = r.negate();
+   expect(result).toBe(r); // returns this
+   expect(r.cos).toBeCloseTo(-originalCos);
+   expect(r.sin).toBeCloseTo(-originalSin);
   });
  });
 
@@ -1412,5 +1490,45 @@ describe('Rotation2.fromCS factory', () => {
   const r = Rotation2.fromCS(2, 0);
   expect(r.cos).toBeCloseTo(1, DIGITS);
   expect(r.sin).toBeCloseTo(0, DIGITS);
+ });
+});
+
+describe('Rotation2.angleBetween', () => {
+ it('identity to quarter turn ≈ π/2', () => {
+  const a = Rotation2.IDENTITY;
+  const b = Rotation2.fromAngle(Math.PI / 2);
+  expect(Rotation2.angleBetween(a, b)).toBeCloseTo(Math.PI / 2, DIGITS);
+ });
+
+ it('quarter turn to identity ≈ -π/2', () => {
+  const a = Rotation2.fromAngle(Math.PI / 2);
+  const b = Rotation2.IDENTITY;
+  expect(Rotation2.angleBetween(a, b)).toBeCloseTo(-Math.PI / 2, DIGITS);
+ });
+
+ it('same rotation gives 0', () => {
+  const a = Rotation2.fromAngle(1.5);
+  expect(Rotation2.angleBetween(a, a)).toBeCloseTo(0, DIGITS);
+ });
+
+ it('opposite rotations give ±π', () => {
+  const a = Rotation2.IDENTITY;
+  const b = Rotation2.fromAngle(Math.PI);
+  expect(Math.abs(Rotation2.angleBetween(a, b))).toBeCloseTo(Math.PI, DIGITS);
+ });
+});
+
+describe('Rotation2.prototype.angleTo', () => {
+ it('delegates to angleBetween', () => {
+  const a = Rotation2.IDENTITY;
+  const b = Rotation2.fromAngle(Math.PI / 2);
+  expect(a.angleTo(b)).toBeCloseTo(Math.PI / 2, DIGITS);
+  expect(a.angleTo(b)).toBe(Rotation2.angleBetween(a, b));
+ });
+
+ it('returns negative for reverse direction', () => {
+  const a = Rotation2.fromAngle(Math.PI / 2);
+  const b = Rotation2.IDENTITY;
+  expect(a.angleTo(b)).toBeCloseTo(-Math.PI / 2, DIGITS);
  });
 });

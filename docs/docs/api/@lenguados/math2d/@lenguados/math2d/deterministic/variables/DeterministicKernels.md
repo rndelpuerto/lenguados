@@ -2,7 +2,7 @@
 
 > `const` **DeterministicKernels**: `object`
 
-Defined in: [src/deterministic/deterministic-kernels.ts:961](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/deterministic/deterministic-kernels.ts#L961)
+Defined in: [src/deterministic/deterministic-kernels.ts:991](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/deterministic/deterministic-kernels.ts#L991)
 
 Deterministic math kernels for L0 cross-platform consistency.
 
@@ -318,6 +318,11 @@ Exponent value
 
 e^x, clamped to finite range
 
+##### Remarks
+
+Returns Number.MAX_VALUE for positive overflow (not Infinity) and 0 for
+negative overflow, maintaining the Safe contract (finite-in/finite-out).
+
 ##### Since
 
 0.9.0
@@ -414,6 +419,39 @@ log(-1); // NaN
 
 0.9.0
 
+#### logKernelSafe()
+
+> **logKernelSafe**: (`x`) => `number`
+
+Safe natural logarithm at the deterministic kernel level (returns 0 for non-positive values).
+
+##### Parameters
+
+###### x
+
+`number`
+
+Value to compute logarithm of
+
+##### Returns
+
+`number`
+
+ln(x) for x > 0, 0 otherwise
+
+##### Remarks
+
+The deterministic layer's single-argument safe log, analogous to [expSafe](../functions/expSafe.md) for `exp`
+and [acosSafe](../functions/acosSafe.md)/[asinSafe](../functions/asinSafe.md) for inverse trig. Intended for consumers who use
+DeterministicKernels directly without the auxiliary layer.
+
+For multi-base support (`logSafe(x, base)`), use `auxiliary/numeric/safety.logSafe` instead,
+which internally delegates to the deterministic [log](../functions/log.md) kernel with its own guard.
+
+##### Since
+
+0.9.0
+
 #### pow()
 
 > **pow**: (`base`, `exponent`) => `number`
@@ -497,7 +535,7 @@ sin(PI); // ~0 (very small due to range reduction)
 
 #### sinCos()
 
-> **sinCos**: (`x`, `out?`) => [`SinCos`](../../auxiliary/angle/interfaces/SinCos.md)
+> **sinCos**: (`x`, `out?`) => [`SinCos`](../../types/interfaces/SinCos.md)
 
 Compute sin and cos simultaneously (more efficient than separate calls).
 
@@ -511,13 +549,13 @@ Angle in radians
 
 ###### out?
 
-[`SinCos`](../../auxiliary/angle/interfaces/SinCos.md)
+[`SinCos`](../../types/interfaces/SinCos.md)
 
 Optional output object to write sin/cos into (zero-allocation)
 
 ##### Returns
 
-[`SinCos`](../../auxiliary/angle/interfaces/SinCos.md)
+[`SinCos`](../../types/interfaces/SinCos.md)
 
 Object with sin and cos values
 
@@ -558,6 +596,11 @@ Angle in radians
 `number`
 
 tan(x) = sin(x) / cos(x)
+
+##### Remarks
+
+Computed as `sin(x) / cos(x)`, so reduced precision near π/2 + nπ
+where cos → 0. No singularity guard; returns ±large values near poles.
 
 ##### Example
 
@@ -614,38 +657,6 @@ config.useNativeMath = true;
 ##### config.useNativeMath
 
 > **useNativeMath**: `boolean` = `false`
-
-## Other
-
-#### logKernelSafe()
-
-> **logKernelSafe**: (`x`) => `number`
-
-**`Internal`**
-
-Kernel-level safe natural logarithm (returns 0 for non-positive values).
-
-##### Parameters
-
-###### x
-
-`number`
-
-Value to compute logarithm of
-
-##### Returns
-
-`number`
-
-ln(x) for x > 0, 0 otherwise
-
-##### Remarks
-
-This is the kernel-level safe variant (single-argument, no base support).
-The public API `logSafe` in `auxiliary/numeric/safety` adds custom base
-support and delegates to this kernel. Both return 0 for non-positive input.
-Not exported from the main index to avoid naming collisions with the
-richer public variant.
 
 ## Remarks
 

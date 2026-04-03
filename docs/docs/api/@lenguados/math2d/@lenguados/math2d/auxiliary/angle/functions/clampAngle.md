@@ -2,7 +2,7 @@
 
 > **clampAngle**(`angle`, `min`, `max`): `number`
 
-Defined in: [src/auxiliary/angle/operations.ts:255](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/angle/operations.ts#L255)
+Defined in: [src/auxiliary/angle/operations.ts:260](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/auxiliary/angle/operations.ts#L260)
 
 Clamps angle to arc between min and max.
 
@@ -30,11 +30,11 @@ Maximum angle
 
 `number`
 
-Clamped angle in [-PI, PI) range
+Clamped angle in (-PI, PI] range
 
 ## Remarks
 
-Clamps to the nearest boundary of the shortest arc between min and max.
+Clamps to the nearest boundary of the CCW arc from min to max.
 
 ## Example
 

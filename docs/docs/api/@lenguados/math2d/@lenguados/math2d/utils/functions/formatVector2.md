@@ -2,7 +2,7 @@
 
 > **formatVector2**(`v`, `format`, `precision?`): `string`
 
-Defined in: [src/utils/parse.ts:146](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/utils/parse.ts#L146)
+Defined in: [src/utils/parse.ts:158](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/utils/parse.ts#L158)
 
 Formats a 2D vector as a string.
 
@@ -10,7 +10,7 @@ Formats a 2D vector as a string.
 
 ### v
 
-[`ReadonlyVector2`](../../core/type-aliases/ReadonlyVector2.md)
+[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
 Vector to format
 

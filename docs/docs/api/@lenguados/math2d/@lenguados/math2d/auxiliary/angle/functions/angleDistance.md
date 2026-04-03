@@ -2,7 +2,7 @@
 
 > **angleDistance**(`a`, `b`): `number`
 
-Defined in: [src/auxiliary/angle/operations.ts:136](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/angle/operations.ts#L136)
+Defined in: [src/auxiliary/angle/operations.ts:135](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/auxiliary/angle/operations.ts#L135)
 
 Absolute shortest-arc distance in radians.
 Always positive, in [0, π].

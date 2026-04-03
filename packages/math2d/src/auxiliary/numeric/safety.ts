@@ -190,6 +190,8 @@ export function logSafe(value: number, base: number = Math.E): number {
  * (Unity, GLM, Eigen, Three.js). Returning a finite fallback like 0 would be
  * mathematically misleading and inconsistent with universal external convention.
  *
+ * Note: 0^(-n) returns 0 (finite fallback per Safe contract, not mathematical Infinity).
+ *
  * @param base - Base value
  * @param exponent - Exponent
  * @returns Result with special case handling
@@ -206,10 +208,11 @@ export function logSafe(value: number, base: number = Math.E): number {
  * @since 0.7.0
  */
 export function powSafe(base: number, exponent: number): number {
- // NaN propagation
+ // IEEE 754 pow semantics (not powr): x^0 = 1 for ANY x, including NaN
+ // See IEEE 754-2019 §9.2.1, C99 §7.12.7.4, ECMAScript Math.pow spec
+ if (exponent === 0) return 1; // Including NaN^0 = 1, 0^0 = 1
+ // NaN propagation for all non-zero exponents
  if (base !== base) return NaN;
- // Handle special cases
- if (exponent === 0) return 1; // Including 0^0 = 1
  if (base === 0) return 0;
  if (base === 1) return 1;
 
@@ -234,6 +237,7 @@ export function powSafe(base: number, exponent: number): number {
  * robustSum(values);  // Closer to 100000 than naive sum
  * ```
  *
+ * @see {@link neumaierSum} For improved accuracy with values of varying magnitudes
  * @category Safety
  * @since 0.7.0
  */
@@ -265,6 +269,7 @@ export function robustSum(values: readonly number[]): number {
  * // Naive sum might give 0 due to rounding
  * ```
  *
+ * @see {@link robustSum} For simpler Kahan summation when values have similar magnitudes
  * @category Safety
  * @since 0.7.0
  */
@@ -296,7 +301,7 @@ export function neumaierSum(values: readonly number[]): number {
  *
  * @remarks
  * Veltkamp splitting multiplies inputs by `2^27 + 1` (~1.34e8).
- * This overflows for `|a|` or `|b|` > ~1.34e291 (`MAX_VALUE / 134217729`).
+ * This overflows for `|a|` or `|b|` > ~1.34e300 (`MAX_VALUE / 134217729`).
  * For such inputs, the error term will be unreliable (Infinity/NaN).
  *
  * @param a - First factor
@@ -309,6 +314,14 @@ export function neumaierSum(values: readonly number[]): number {
  * // result.product: main product
  * // result.error: rounding error
  * const exact = result.product + result.error;
+ * ```
+ *
+ * @example
+ * ```typescript
+ * // High-precision dot product using compensated multiplication
+ * const { product: p1, error: e1 } = compensatedProduct(a.x, b.x);
+ * const { product: p2, error: e2 } = compensatedProduct(a.y, b.y);
+ * const preciseDot = (p1 + p2) + (e1 + e2);
  * ```
  *
  * @category Safety
@@ -344,6 +357,13 @@ export function compensatedProduct(a: number, b: number): { product: number; err
 
 /**
  * Safe linear interpolation that avoids overflow.
+ *
+ * @remarks
+ * The distributive form `a*(1-t) + b*t` trades strict monotonicity for
+ * overflow safety. For inputs where `a` and `b` have the same sign and no
+ * overflow risk, standard {@link lerp} (`a + (b-a)*t`)
+ * preserves monotonicity.
+ *
  * @param a - Start value
  * @param b - End value
  * @param t - Interpolation factor
@@ -378,6 +398,13 @@ export function lerpSafe(a: number, b: number, t: number): number {
  * @remarks
  * Combines validation with clamping. Use when you need to ensure
  * a value is both finite and within a specific range.
+ *
+ * @remarks
+ * The fallback value itself is also clamped to [min, max]. For example,
+ * `sanitizeNumber(NaN, 100, 0, 50)` returns 50 (fallback clamped to max).
+ *
+ * If fallback itself is NaN, the result will be NaN (unlike ensureFinite
+ * which validates the fallback).
  *
  * @param value - Value to sanitize
  * @param fallback - Value to use if input is invalid (default: 0)
@@ -416,6 +443,8 @@ export function sanitizeNumber(
  * @remarks
  * Use when you need to guarantee a finite result from calculations
  * that might produce NaN or Infinity.
+ *
+ * If the fallback itself is non-finite, it is silently replaced with 0.
  *
  * @param value - Value to check
  * @param fallback - Replacement for non-finite values (default: 0)

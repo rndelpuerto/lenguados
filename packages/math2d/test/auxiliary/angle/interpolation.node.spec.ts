@@ -6,7 +6,11 @@
 
 import { describe, expect, it } from '@jest/globals';
 
-import { lerpAngle, smoothStepAngle } from '../../../src/auxiliary/angle/interpolation';
+import {
+ lerpAngle,
+ lerpAngleClamped,
+ smoothStepAngle,
+} from '../../../src/auxiliary/angle/interpolation';
 
 const DIGITS = 5;
 
@@ -44,6 +48,25 @@ describe('angle/interpolation', () => {
 
   it('extrapolates t < 0', () => {
    expect(lerpAngle(0, Math.PI / 2, -1)).toBeCloseTo(-Math.PI / 2, DIGITS);
+  });
+ });
+
+ describe('lerpAngleClamped', () => {
+  it('interpolates normally for t in [0, 1]', () => {
+   expect(lerpAngleClamped(0, Math.PI / 2, 0.5)).toBeCloseTo(Math.PI / 4, DIGITS);
+  });
+
+  it('clamps t > 1 to endpoint', () => {
+   expect(lerpAngleClamped(0, Math.PI / 2, 1.5)).toBeCloseTo(Math.PI / 2, DIGITS);
+  });
+
+  it('clamps t < 0 to start', () => {
+   expect(lerpAngleClamped(0, Math.PI / 2, -0.5)).toBeCloseTo(0, DIGITS);
+  });
+
+  it('uses shortest path like lerpAngle', () => {
+   const result = lerpAngleClamped(0, (3 * Math.PI) / 2, 0.5);
+   expect(result).toBeCloseTo(-Math.PI / 4, DIGITS);
   });
  });
 

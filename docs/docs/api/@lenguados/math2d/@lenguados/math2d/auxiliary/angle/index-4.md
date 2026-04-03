@@ -20,6 +20,8 @@ Angular operations and comparisons
 - [sinCos](functions/sinCos.md)
 - [sinCosNormalized](functions/sinCosNormalized.md)
 
-## Types
+## Other
 
-- [SinCos](interfaces/SinCos.md)
+### SinCos
+
+Re-exports [SinCos](../../types/interfaces/SinCos.md)

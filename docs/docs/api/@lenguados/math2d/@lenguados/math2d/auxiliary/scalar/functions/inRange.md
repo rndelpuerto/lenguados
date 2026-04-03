@@ -2,7 +2,7 @@
 
 > **inRange**(`value`, `min`, `max`, `epsilon`): `boolean`
 
-Defined in: [src/auxiliary/scalar/comparison.ts:224](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/scalar/comparison.ts#L224)
+Defined in: [src/auxiliary/scalar/comparison.ts:243](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/auxiliary/scalar/comparison.ts#L243)
 
 Tests if value is in range [min, max] with epsilon.
 
@@ -45,6 +45,10 @@ Uses epsilon tolerance at both bounds:
 - Lower bound: value >= min - epsilon
 - Upper bound: value <= max + epsilon
 
+## Throws
+
+If epsilon is negative or NaN
+
 ## Example
 
 ```typescript
@@ -55,6 +59,10 @@ inRange(-0.1, 0, 10); // false
 inRange(5, 0, 10, 1); // true
 inRange(-0.5, 0, 10, 1); // true (within custom epsilon)
 ```
+
+## See
+
+isInRange For exact (non-tolerant) range checking
 
 ## Since
 

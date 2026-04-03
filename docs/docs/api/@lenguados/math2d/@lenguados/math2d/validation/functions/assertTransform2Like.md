@@ -1,8 +1,8 @@
 # Function: assertTransform2Like()
 
-> **assertTransform2Like**(`value`, `name?`): `void`
+> **assertTransform2Like**(`value`, `name?`): `asserts value is Transform2Like`
 
-Defined in: [src/validation/assert.ts:961](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/validation/assert.ts#L961)
+Defined in: [src/validation/assert.ts:1024](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/validation/assert.ts#L1024)
 
 Asserts that an object has valid Transform2-like shape.
 
@@ -22,12 +22,13 @@ Object name for error messages (optional)
 
 ## Returns
 
-`void`
+`asserts value is Transform2Like`
 
 ## Remarks
 
 Validates that object has `position` (Vector2-like), `rotation` (Rotation2-like), and `scale` (Vector2-like).
-No-op when assertions are disabled.
+No-op when assertions are disabled. In production builds, this function
+is eliminated via DCE. For runtime shape validation, use `isTransform2Like()`.
 
 ## Throws
 

@@ -19,7 +19,7 @@
  * - All operations use auxiliary modules to maintain DRY principle.
  */
 
-import { sinCos } from '../auxiliary/angle/operations';
+import { angleFromVectors, sinCos } from '../auxiliary/angle/operations';
 import { acosSafe, divideSafe, sqrtSafe } from '../auxiliary/numeric/safety';
 import {
  clamp,
@@ -110,7 +110,7 @@ export { isVector2Like } from '../types';
  * Vector2.add(a, b, existingVector); // Reuse allocation
  *
  * // Instance (mutable, chainable)
- * velocity.add(acceleration).scale(dt);
+ * velocity.add(acceleration).multiplyScalar(dt);
  * ```
  *
  * @category Core
@@ -142,13 +142,6 @@ export class Vector2 implements Vector2Like {
   * @since 0.7.0
   */
  public static readonly ELEMENT_COUNT = 2;
-
- /**
-  * Epsilon vector `(ε, ε)`.
-  * @category Constant
-  * @since 0.7.0
-  */
- public static readonly EPSILON_VECTOR = freezeVector2(new Vector2(EPSILON, EPSILON));
 
  /**
   * The all-ones vector `(1, 1)`.
@@ -320,7 +313,6 @@ export class Vector2 implements Vector2Like {
   * @param object - Plain object with numeric x and y
   * @param out - Optional output vector
   * @returns A Vector2 with the object's components
-  * @throws {Error} If x or y is not finite
   *
   * @example
   * ```typescript
@@ -395,6 +387,7 @@ export class Vector2 implements Vector2Like {
   *
   * @category Arithmetic
   * @since 0.7.0
+  * @deprecated Since 0.8.0. This method has no standard geometric meaning. Will be removed in 1.0.0.
   */
  public static sumComponents(vector: ReadonlyVector2Like): number {
   return vector.x + vector.y;
@@ -476,17 +469,17 @@ export class Vector2 implements Vector2Like {
  }
 
  /**
-  * Scales a vector by a scalar `v * s`.
+  * Multiplies all vector components by a scalar `v * s`.
   *
-  * @param v - Vector to scale
-  * @param s - Scale factor
+  * @param v - Input vector
+  * @param s - Scalar multiplier
   * @param out - Optional output vector
   * @returns Vector equal to `(v.x * s, v.y * s)`
   *
   * @category Arithmetic
   * @since 0.7.0
   */
- public static scale(v: ReadonlyVector2Like, s: number, out?: Vector2): Vector2 {
+ public static multiplyScalar(v: ReadonlyVector2Like, s: number, out?: Vector2): Vector2 {
   return this.ensureOut(out).set(v.x * s, v.y * s);
  }
 
@@ -674,22 +667,22 @@ export class Vector2 implements Vector2Like {
   * @remarks
   * More efficient than separate multiply and add operations.
   *
-  * @param a - Vector to scale
-  * @param scale - Scale factor
+  * @param a - Input vector
+  * @param scalar - Scalar multiplier
   * @param b - Vector to add
   * @param out - Optional output vector
-  * @returns Vector equal to `a * scale + b`
+  * @returns Vector equal to `a * scalar + b`
   *
   * @category Arithmetic
   * @since 0.7.0
   */
  public static fma(
   a: ReadonlyVector2Like,
-  scale: number,
+  scalar: number,
   b: ReadonlyVector2Like,
   out?: Vector2,
  ): Vector2 {
-  return this.ensureOut(out).set(a.x * scale + b.x, a.y * scale + b.y);
+  return this.ensureOut(out).set(a.x * scalar + b.x, a.y * scalar + b.y);
  }
 
  /**
@@ -1188,6 +1181,24 @@ export class Vector2 implements Vector2Like {
  }
 
  /**
+  * Chebyshev length `max(|x|, |y|)` (L∞ norm).
+  *
+  * @remarks
+  * Also known as the L-infinity norm or chessboard norm. Returns the largest
+  * absolute component value, corresponding to the minimum number of king moves
+  * on a chessboard.
+  *
+  * @param v - Vector to measure
+  * @returns The Chebyshev (L∞) norm
+  *
+  * @category Geometry
+  * @since 0.9.0
+  */
+ public static chebyshevLength(v: ReadonlyVector2Like): number {
+  return Math.max(Math.abs(v.x), Math.abs(v.y));
+ }
+
+ /**
   * Euclidean distance between a and b.
   *
   * @param a - First point
@@ -1238,6 +1249,24 @@ export class Vector2 implements Vector2Like {
   */
  public static manhattanDistance(a: ReadonlyVector2Like, b: ReadonlyVector2Like): number {
   return Math.abs(b.x - a.x) + Math.abs(b.y - a.y);
+ }
+
+ /**
+  * Chebyshev (L∞) distance between a and b.
+  *
+  * @remarks
+  * Also known as the chessboard distance. Returns the maximum absolute
+  * difference across components: `max(|ax - bx|, |ay - by|)`.
+  *
+  * @param a - First point
+  * @param b - Second point
+  * @returns The Chebyshev distance
+  *
+  * @category Geometry
+  * @since 0.9.0
+  */
+ public static chebyshevDistance(a: ReadonlyVector2Like, b: ReadonlyVector2Like): number {
+  return Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y));
  }
 
  /* ======================================================================== */
@@ -1325,7 +1354,7 @@ export class Vector2 implements Vector2Like {
  ): Vector2 {
   const dx = to.x - from.x;
   const dy = to.y - from.y;
-  const invLength = 1 / hypot(dx, dy);
+  const invLength = 1 / Math.sqrt(dx * dx + dy * dy);
   return this.ensureOut(out).set(dx * invLength, dy * invLength);
  }
 
@@ -1356,7 +1385,7 @@ export class Vector2 implements Vector2Like {
   * @since 0.7.0
   */
  public static angleTo(a: ReadonlyVector2Like, b: ReadonlyVector2Like): number {
-  return atan2(Vector2.cross(a, b), Vector2.dot(a, b));
+  return angleFromVectors(a.x, a.y, b.x, b.y);
  }
 
  /**
@@ -1609,6 +1638,11 @@ export class Vector2 implements Vector2Like {
   * - If v is zero, the result will be (NaN, NaN).
   * - Use only when you can guarantee the vector has non-zero length.
   *
+  * Uses `Math.sqrt(x*x + y*y)` for magnitude, which is faster than `Math.hypot`
+  * but overflows to `Infinity` for components larger than ~1e154 (since squaring
+  * exceeds `Number.MAX_VALUE`). For vectors with very large components, prefer
+  * {@link normalize} or {@link normalizeSafe} which use overflow-safe magnitude.
+  *
   * @param v - Vector to normalize (must have non-zero length)
   * @param out - Optional output vector
   * @returns Normalized vector
@@ -1728,7 +1762,7 @@ export class Vector2 implements Vector2Like {
   newMagnitude: number,
   out?: Vector2,
  ): Vector2 {
-  const length = hypot(v.x, v.y);
+  const length = Math.sqrt(v.x * v.x + v.y * v.y);
   const scale = newMagnitude / length;
   return this.ensureOut(out).set(v.x * scale, v.y * scale);
  }
@@ -2554,6 +2588,11 @@ export class Vector2 implements Vector2Like {
  /**
   * Tests parallelism: |cross(a, b)| ≤ epsilon.
   *
+  * @remarks
+  * The epsilon is applied to the raw cross product, not normalized by
+  * vector magnitudes. For scale-invariant comparison, normalize both
+  * vectors first.
+  *
   * @param a - First vector
   * @param b - Second vector
   * @param epsilon - Tolerance. @defaultValue `EPSILON`
@@ -2573,6 +2612,11 @@ export class Vector2 implements Vector2Like {
 
  /**
   * Tests perpendicularity: |dot(a, b)| ≤ epsilon.
+  *
+  * @remarks
+  * The epsilon is applied to the raw dot product, not normalized by
+  * vector magnitudes. For scale-invariant comparison, normalize both
+  * vectors first.
   *
   * @param a - First vector
   * @param b - Second vector
@@ -2688,6 +2732,22 @@ export class Vector2 implements Vector2Like {
   */
  public get absolute(): Vector2 {
   return new Vector2(Math.abs(this.x), Math.abs(this.y));
+ }
+
+ /**
+  * Returns a component-wise inverted copy (1/x, 1/y).
+  *
+  * @remarks
+  * A zero component produces ±Infinity (IEEE 754: 1/0 = Infinity).
+  * Use {@link inverse} or {@link inverseSafe} for validated alternatives
+  * that guard against near-zero divisors.
+  *
+  * @returns New inverted vector
+  * @category Accessor
+  * @since 0.8.0
+  */
+ public get inverted(): Vector2 {
+  return new Vector2(1 / this.x, 1 / this.y);
  }
 
  /* ======================================================================== */
@@ -2960,15 +3020,15 @@ export class Vector2 implements Vector2Like {
  }
 
  /**
-  * Scales by scalar.
+  * Multiplies all components by a scalar.
   *
-  * @param s - Scale factor
+  * @param s - Scalar multiplier
   * @returns This for chaining
   *
   * @category Arithmetic
   * @since 0.7.0
   */
- public scale(s: number): this {
+ public multiplyScalar(s: number): this {
   this.x *= s;
   this.y *= s;
   return this;
@@ -3136,16 +3196,16 @@ export class Vector2 implements Vector2Like {
  }
 
  /**
-  * Fused multiply-add: this = this * scale + v.
-  * @param scale - Scale factor
+  * Fused multiply-add: this = this * scalar + v.
+  * @param scalar - Scalar multiplier
   * @param v - Vector to add
   * @returns This for chaining
   * @category Arithmetic
   * @since 0.7.0
   */
- public fma(scale: number, v: ReadonlyVector2Like): this {
-  this.x = this.x * scale + v.x;
-  this.y = this.y * scale + v.y;
+ public fma(scalar: number, v: ReadonlyVector2Like): this {
+  this.x = this.x * scalar + v.x;
+  this.y = this.y * scalar + v.y;
   return this;
  }
 
@@ -3302,6 +3362,16 @@ export class Vector2 implements Vector2Like {
  }
 
  /**
+  * Chebyshev length (L∞ norm).
+  * @returns The Chebyshev norm
+  * @category Geometry
+  * @since 0.9.0
+  */
+ public chebyshevLength(): number {
+  return Math.max(Math.abs(this.x), Math.abs(this.y));
+ }
+
+ /**
   * Euclidean distance to v.
   * @param v - Target vector
   * @returns The Euclidean distance
@@ -3335,10 +3405,23 @@ export class Vector2 implements Vector2Like {
  }
 
  /**
+  * Chebyshev (L∞) distance to v.
+  * @param v - Target vector
+  * @returns The Chebyshev distance
+  * @category Geometry
+  * @since 0.9.0
+  */
+ public chebyshevDistanceTo(v: ReadonlyVector2Like): number {
+  return Vector2.chebyshevDistance(this, v);
+ }
+
+ /**
   * Returns the sum of components x + y.
   * @returns Scalar sum
+  *
   * @category Arithmetic
   * @since 0.7.0
+  * @deprecated Since 0.8.0. This method has no standard geometric meaning. Will be removed in 1.0.0.
   */
  public sumComponents(): number {
   return this.x + this.y;
@@ -3367,6 +3450,26 @@ export class Vector2 implements Vector2Like {
   */
  public directionToSafe(target: ReadonlyVector2Like): Vector2 {
   return Vector2.directionSafe(this, target);
+ }
+
+ /**
+  * Unit direction from this to target without validation.
+  *
+  * @remarks
+  * **Precondition:** `this` and `target` must not be coincident.
+  * Calling with coincident points produces Infinity/NaN.
+  *
+  * @param target - Target vector (must differ from this)
+  * @returns Unit direction vector
+  *
+  * @see {@link directionTo} - Throws on coincident points
+  * @see {@link directionToSafe} - Returns (0,0) on coincident points
+  *
+  * @category Direction
+  * @since 0.9.0
+  */
+ public directionToUnchecked(target: ReadonlyVector2Like): Vector2 {
+  return Vector2.directionUnchecked(this, target);
  }
 
  /**
@@ -3432,7 +3535,7 @@ export class Vector2 implements Vector2Like {
   if (isNearZero(length)) {
    throw new RangeError('Vector2.normalize: cannot normalize zero-length vector');
   }
-  return this.scale(1 / length);
+  return this.multiplyScalar(1 / length);
  }
 
  /**
@@ -3449,7 +3552,7 @@ export class Vector2 implements Vector2Like {
   if (isNearZero(mag)) {
    return this.set(0, 0);
   }
-  return this.scale(1 / mag);
+  return this.multiplyScalar(1 / mag);
  }
 
  /**
@@ -3498,7 +3601,7 @@ export class Vector2 implements Vector2Like {
   if (isNearZero(length)) {
    throw new RangeError('Vector2.setMagnitude: cannot set length on zero vector');
   }
-  return this.scale(newMagnitude / length);
+  return this.multiplyScalar(newMagnitude / length);
  }
 
  /**
@@ -3517,7 +3620,7 @@ export class Vector2 implements Vector2Like {
   if (isNearZero(length)) {
    return this.set(nn, 0);
   }
-  return this.scale(nn / length);
+  return this.multiplyScalar(nn / length);
  }
 
  /**
@@ -3537,8 +3640,8 @@ export class Vector2 implements Vector2Like {
   * @since 0.8.0
   */
  public setMagnitudeUnchecked(newMagnitude: number): this {
-  const length = hypot(this.x, this.y);
-  return this.scale(newMagnitude / length);
+  const length = Math.sqrt(this.x * this.x + this.y * this.y);
+  return this.multiplyScalar(newMagnitude / length);
  }
 
  /**
@@ -3594,7 +3697,7 @@ export class Vector2 implements Vector2Like {
   const length = this.magnitude();
   if (isNearZero(length)) return this;
   const newMagnitude = clamp(length, minLength, maxLength);
-  return this.scale(newMagnitude / length);
+  return this.multiplyScalar(newMagnitude / length);
  }
 
  /**
@@ -3608,7 +3711,7 @@ export class Vector2 implements Vector2Like {
   const lengthSq = this.magnitudeSq();
   if (lengthSq > maxLength * maxLength && lengthSq > 0) {
    const scale = maxLength / sqrtSafe(lengthSq);
-   this.scale(scale);
+   this.multiplyScalar(scale);
   }
   return this;
  }
@@ -4223,6 +4326,7 @@ export class Vector2 implements Vector2Like {
 
  /**
   * Tests parallelism with v.
+  * @remarks See {@link Vector2.isParallel} for scale-dependence note.
   * @param v - Vector to compare
   * @param epsilon - Tolerance
   * @returns True if parallel
@@ -4235,6 +4339,7 @@ export class Vector2 implements Vector2Like {
 
  /**
   * Tests perpendicularity with v.
+  * @remarks See {@link Vector2.isPerpendicular} for scale-dependence note.
   * @param v - Vector to compare
   * @param epsilon - Tolerance
   * @returns True if perpendicular

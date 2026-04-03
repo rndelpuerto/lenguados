@@ -4,6 +4,7 @@
  * @description Angular interpolation operations
  */
 
+import { saturate } from '../scalar/arithmetic';
 import { smoothStep } from '../scalar/interpolation';
 
 import { angleDifference } from './operations';
@@ -13,7 +14,7 @@ import { angleDifference } from './operations';
  *
  * @remarks
  * Works for any real t (not only [0, 1]). Extrapolation continues
- * linearly in angle space and may produce values outside [-PI, PI).
+ * linearly in angle space and may produce values outside (-PI, PI].
  *
  * @param from - Start angle in radians
  * @param to - End angle in radians
@@ -32,6 +33,32 @@ import { angleDifference } from './operations';
  */
 export function lerpAngle(from: number, to: number, t: number): number {
  return from + angleDifference(from, to) * t;
+}
+
+/**
+ * Interpolates between angles using shortest path, clamping t to [0, 1].
+ * Prevents extrapolation beyond the target angles.
+ *
+ * @param from - Start angle in radians
+ * @param to - End angle in radians
+ * @param t - Interpolation factor (clamped to [0, 1])
+ * @returns Interpolated angle along shortest arc
+ *
+ * @example
+ * ```typescript
+ * lerpAngleClamped(0, Math.PI / 2, 0.5);    // Math.PI / 4
+ * lerpAngleClamped(0, Math.PI / 2, 1.5);    // Math.PI / 2 (clamped)
+ * lerpAngleClamped(0, Math.PI / 2, -0.5);   // 0 (clamped)
+ * ```
+ *
+ * @see {@link lerpAngle} - Unclamped variant (allows extrapolation)
+ * @see {@link smoothStepAngle} - Smooth eased variant
+ *
+ * @category Interpolation
+ * @since 0.9.0
+ */
+export function lerpAngleClamped(from: number, to: number, t: number): number {
+ return lerpAngle(from, to, saturate(t));
 }
 
 /**

@@ -2,7 +2,7 @@
 
 > `const` **PI**: `number` = `Math.PI`
 
-Defined in: [src/auxiliary/scalar/constants.ts:84](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/scalar/constants.ts#L84)
+Defined in: [src/auxiliary/scalar/constants.ts:53](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/auxiliary/scalar/constants.ts#L53)
 
 Mathematical constant π (pi) ≈ 3.14159265358979.
 

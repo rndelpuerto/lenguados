@@ -2,7 +2,7 @@
 
 > **isNearOne**(`value`, `epsilon`): `boolean`
 
-Defined in: [src/auxiliary/scalar/comparison.ts:95](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/scalar/comparison.ts#L95)
+Defined in: [src/auxiliary/scalar/comparison.ts:101](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/auxiliary/scalar/comparison.ts#L101)
 
 Tests if value is near one.
 
@@ -30,6 +30,10 @@ True if |value - 1| <= epsilon
 
 Default tolerance is [EPSILON](../variables/EPSILON.md) (1e-10). Commonly used to verify
 normalization constraints (e.g., unit vectors, rotation magnitudes).
+
+## Throws
+
+If epsilon is negative or NaN
 
 ## Example
 

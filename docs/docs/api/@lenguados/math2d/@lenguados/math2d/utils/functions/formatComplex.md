@@ -2,7 +2,7 @@
 
 > **formatComplex**(`c`, `format`, `precision?`): `string`
 
-Defined in: [src/utils/parse.ts:804](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/utils/parse.ts#L804)
+Defined in: [src/utils/parse.ts:816](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/utils/parse.ts#L816)
 
 Formats a complex number as a string.
 
@@ -10,7 +10,7 @@ Formats a complex number as a string.
 
 ### c
 
-[`ReadonlyComplex`](../../core/type-aliases/ReadonlyComplex.md)
+[`ReadonlyComplexLike`](../../types/interfaces/ReadonlyComplexLike.md)
 
 Complex number to format
 

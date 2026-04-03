@@ -82,12 +82,12 @@ describe('Angular Boundary Tests', () => {
   });
 
   describe('Complex', () => {
-   it('argument returns consistent values near ±π', () => {
+   it('angle returns consistent values near ±π', () => {
     const c1 = Complex.fromPolar(1, PI - SMALL_EPSILON);
     const c2 = Complex.fromPolar(1, -PI + SMALL_EPSILON);
     // Args should differ by nearly 2π or be very close
-    const argument1 = Complex.argument(c1);
-    const argument2 = Complex.argument(c2);
+    const argument1 = Complex.angle(c1);
+    const argument2 = Complex.angle(c2);
     const diff = Math.abs(argument1 - argument2);
     expect(diff < TEST_TOLERANCE || Math.abs(diff - 2 * PI) < TEST_TOLERANCE).toBe(true);
    });
@@ -97,7 +97,7 @@ describe('Angular Boundary Tests', () => {
     const c2 = Complex.fromPolar(1, -PI * 0.9);
     const mid = c1.clone().lerp(c2, 0.5);
     // Should go through ±π, not through 0
-    const midArgument = Complex.argument(mid);
+    const midArgument = Complex.angle(mid);
     expect(Math.abs(midArgument)).toBeGreaterThan(PI * 0.8);
    });
   });
@@ -291,7 +291,7 @@ describe('Angular Boundary Tests', () => {
    }
   });
 
-  it('Complex argument is consistent with Rotation2.angle', () => {
+  it('Complex angle is consistent with Rotation2.angle', () => {
    const angles = [0, PI / 4, PI / 2, PI, -PI / 4, -PI / 2, -PI];
 
    for (const angle of angles) {
@@ -299,7 +299,7 @@ describe('Angular Boundary Tests', () => {
     const c = Complex.fromPolar(1, angle);
     // Both should give the same angle (within normalization)
     const rAngle = r.angle;
-    const cAngle = Complex.argument(c);
+    const cAngle = Complex.angle(c);
     const diff = Math.abs(rAngle - cAngle);
     expect(diff < TEST_TOLERANCE || Math.abs(diff - 2 * PI) < TEST_TOLERANCE).toBe(true);
    }

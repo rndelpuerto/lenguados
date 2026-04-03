@@ -2,7 +2,7 @@
 
 > **freezeMatrix3**(`matrix`): [`ReadonlyMatrix3`](../type-aliases/ReadonlyMatrix3.md)
 
-Defined in: [src/core/matrix3.ts:91](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/core/matrix3.ts#L91)
+Defined in: [src/core/matrix3.ts:92](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/core/matrix3.ts#L92)
 
 Permanently freezes a [Matrix3](../classes/Matrix3.md) instance so it can no longer be mutated.
 

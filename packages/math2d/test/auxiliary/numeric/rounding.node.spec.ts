@@ -11,6 +11,8 @@ import {
  roundToPlaces,
  roundToMultiple,
  roundToPowerOfTwo,
+ ceilPowerOfTwo,
+ floorPowerOfTwo,
  snapToGrid,
  fract,
 } from '../../../src/auxiliary/numeric/rounding';
@@ -220,6 +222,59 @@ describe('numeric/rounding', () => {
 
   test('fract(NaN) returns NaN', () => {
    expect(fract(NaN)).toBeNaN();
+  });
+ });
+
+ describe('ceilPowerOfTwo', () => {
+  test('rounds up to nearest power of two', () => {
+   expect(ceilPowerOfTwo(5)).toBe(8);
+  });
+
+  test('returns exact power of two unchanged', () => {
+   expect(ceilPowerOfTwo(8)).toBe(8);
+  });
+
+  test('returns 1 for 1', () => {
+   expect(ceilPowerOfTwo(1)).toBe(1);
+  });
+
+  test('returns 0 for 0 or negative', () => {
+   expect(ceilPowerOfTwo(0)).toBe(0);
+   expect(ceilPowerOfTwo(-3)).toBe(0);
+  });
+
+  test('returns correct value for all exact powers of two (exponents 1-52)', () => {
+   for (let n = 1; n <= 52; n++) {
+    const value = 2 ** n;
+    expect(ceilPowerOfTwo(value)).toBe(value);
+   }
+  });
+
+  test('returns correct value for previously failing exponents (29, 31, 39, 47, 51)', () => {
+   expect(ceilPowerOfTwo(2 ** 29)).toBe(2 ** 29);
+   expect(ceilPowerOfTwo(2 ** 31)).toBe(2 ** 31);
+   expect(ceilPowerOfTwo(2 ** 39)).toBe(2 ** 39);
+   expect(ceilPowerOfTwo(2 ** 47)).toBe(2 ** 47);
+   expect(ceilPowerOfTwo(2 ** 51)).toBe(2 ** 51);
+  });
+ });
+
+ describe('floorPowerOfTwo', () => {
+  test('rounds down to nearest power of two', () => {
+   expect(floorPowerOfTwo(5)).toBe(4);
+  });
+
+  test('returns exact power of two unchanged', () => {
+   expect(floorPowerOfTwo(8)).toBe(8);
+  });
+
+  test('returns 1 for 1', () => {
+   expect(floorPowerOfTwo(1)).toBe(1);
+  });
+
+  test('returns 0 for 0 or negative', () => {
+   expect(floorPowerOfTwo(0)).toBe(0);
+   expect(floorPowerOfTwo(-3)).toBe(0);
   });
  });
 });

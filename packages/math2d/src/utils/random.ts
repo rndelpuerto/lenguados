@@ -35,6 +35,7 @@
  * ```
  */
 
+import { sqrtSafe } from '../auxiliary/numeric/safety';
 import { TAU } from '../auxiliary/scalar/constants';
 import { lerp } from '../auxiliary/scalar/interpolation';
 import { Complex } from '../core/complex';
@@ -42,8 +43,9 @@ import { Interval } from '../core/interval';
 import { Matrix2 } from '../core/matrix2';
 import { Rotation2 } from '../core/rotation2';
 import { Transform2 } from '../core/transform2';
-import { Vector2, type ReadonlyVector2 } from '../core/vector2';
-import { cos, log, sin, sqrtSafe } from '../deterministic/deterministic-kernels';
+import { Vector2 } from '../core/vector2';
+import { cos, log, sin } from '../deterministic/deterministic-kernels';
+import type { ReadonlyVector2Like } from '../types';
 import { assertNonNegative } from '../validation/assert';
 
 import { type RandomSource, getDefaultRandomSource } from './random-source';
@@ -198,7 +200,7 @@ export function randomInCircle(
  // Development assertion: negative radius produces inverted points (likely a bug)
  assertNonNegative(radius, 'randomInCircle:radius');
  randomInUnitCircle(out, source);
- return out.scale(radius);
+ return out.multiplyScalar(radius);
 }
 
 /* ========================================================================== */
@@ -475,8 +477,8 @@ export function randomGaussianVector2(
  * @since 0.7.0
  */
 export function randomOnSegment(
- start: ReadonlyVector2,
- end: ReadonlyVector2,
+ start: ReadonlyVector2Like,
+ end: ReadonlyVector2Like,
  out = new Vector2(),
  source: RandomSource = getDefaultRandomSource(),
 ): Vector2 {
@@ -508,9 +510,9 @@ export function randomOnSegment(
  * @since 0.7.0
  */
 export function randomInTriangle(
- a: ReadonlyVector2,
- b: ReadonlyVector2,
- c: ReadonlyVector2,
+ a: ReadonlyVector2Like,
+ b: ReadonlyVector2Like,
+ c: ReadonlyVector2Like,
  out = new Vector2(),
  source: RandomSource = getDefaultRandomSource(),
 ): Vector2 {
@@ -552,9 +554,9 @@ export function randomInTriangle(
  * @since 0.7.0
  */
 export function randomOnTriangle(
- a: ReadonlyVector2,
- b: ReadonlyVector2,
- c: ReadonlyVector2,
+ a: ReadonlyVector2Like,
+ b: ReadonlyVector2Like,
+ c: ReadonlyVector2Like,
  out = new Vector2(),
  source: RandomSource = getDefaultRandomSource(),
 ): Vector2 {

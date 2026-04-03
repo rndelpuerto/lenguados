@@ -1,8 +1,8 @@
 # Function: assertVector2Like()
 
-> **assertVector2Like**(`value`, `name?`): `void`
+> **assertVector2Like**(`value`, `name?`): `asserts value is Vector2Like`
 
-Defined in: [src/validation/assert.ts:741](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/validation/assert.ts#L741)
+Defined in: [src/validation/assert.ts:798](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/validation/assert.ts#L798)
 
 Asserts that an object has valid Vector2-like shape with finite components.
 
@@ -22,12 +22,13 @@ Object name for error messages (optional)
 
 ## Returns
 
-`void`
+`asserts value is Vector2Like`
 
 ## Remarks
 
 Validates that object has `x` and `y` numeric properties that are finite.
-No-op when assertions are disabled.
+No-op when assertions are disabled. In production builds, this function
+is eliminated via DCE. For runtime shape validation, use `isVector2Like()`.
 
 ## Throws
 

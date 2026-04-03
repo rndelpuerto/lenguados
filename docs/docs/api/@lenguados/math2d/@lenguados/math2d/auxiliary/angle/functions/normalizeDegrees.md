@@ -2,9 +2,9 @@
 
 > **normalizeDegrees**(`degrees`): `number`
 
-Defined in: [src/auxiliary/angle/normalization.ts:77](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/angle/normalization.ts#L77)
+Defined in: [src/auxiliary/angle/normalization.ts:83](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/auxiliary/angle/normalization.ts#L83)
 
-Normalizes degrees to [-180, 180).
+Normalizes degrees to (-180, 180].
 
 ## Parameters
 
@@ -18,16 +18,16 @@ Angle in degrees
 
 `number`
 
-Normalized angle in [-180, 180)
+Normalized angle in (-180, 180]
 
 ## Example
 
 ```typescript
 normalizeDegrees(0); // 0
-normalizeDegrees(180); // -180 (range is [-180, 180))
-normalizeDegrees(-180); // -180
+normalizeDegrees(180); // 180 (180 is included)
+normalizeDegrees(-180); // 180 (-180 maps to 180)
 normalizeDegrees(360); // 0
-normalizeDegrees(540); // -180
+normalizeDegrees(540); // 180
 ```
 
 ## Since

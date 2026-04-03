@@ -1,8 +1,8 @@
 # Function: sinCos()
 
-> **sinCos**(`angle`, `out?`): [`SinCos`](../interfaces/SinCos.md)
+> **sinCos**(`angle`, `out?`): [`SinCos`](../../../types/interfaces/SinCos.md)
 
-Defined in: [src/auxiliary/angle/operations.ts:60](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/angle/operations.ts#L60)
+Defined in: [src/auxiliary/angle/operations.ts:44](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/auxiliary/angle/operations.ts#L44)
 
 Computes sine and cosine of an angle simultaneously.
 Uses deterministic math for cross-platform reproducibility.
@@ -17,13 +17,13 @@ Angle in radians
 
 ### out?
 
-[`SinCos`](../interfaces/SinCos.md)
+[`SinCos`](../../../types/interfaces/SinCos.md)
 
 Optional output object to write sin/cos into (zero-allocation)
 
 ## Returns
 
-[`SinCos`](../interfaces/SinCos.md)
+[`SinCos`](../../../types/interfaces/SinCos.md)
 
 Object with sin and cos properties
 

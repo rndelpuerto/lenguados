@@ -33,6 +33,7 @@ import { saturate } from './arithmetic';
  * @since 0.7.0
  */
 export function lerp(a: number, b: number, t: number): number {
+ if (t === 0) return a;
  if (t === 1) return b;
  return a + (b - a) * t;
 }
@@ -149,6 +150,9 @@ export function inverseLerpUnchecked(a: number, b: number, value: number): numbe
  * @remarks
  * Produces a smooth transition with zero derivatives at the boundaries.
  * Typically used for eased interpolation between 0 and 1.
+ *
+ * When `edge0 === edge1` (degenerate range), falls back to a step function:
+ * returns 0 for `x < edge0`, 1 otherwise.
  *
  * @param edge0 - Lower edge
  * @param edge1 - Upper edge

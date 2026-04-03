@@ -1,8 +1,8 @@
 # Function: assertMatrix3Like()
 
-> **assertMatrix3Like**(`value`, `name?`): `void`
+> **assertMatrix3Like**(`value`, `name?`): `asserts value is Matrix3Like`
 
-Defined in: [src/validation/assert.ts:848](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/validation/assert.ts#L848)
+Defined in: [src/validation/assert.ts:908](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/validation/assert.ts#L908)
 
 Asserts that an object has valid Matrix3-like shape with finite elements.
 
@@ -22,12 +22,13 @@ Object name for error messages (optional)
 
 ## Returns
 
-`void`
+`asserts value is Matrix3Like`
 
 ## Remarks
 
 Validates that object has `m00`..`m22` numeric properties that are finite.
-No-op when assertions are disabled.
+No-op when assertions are disabled. In production builds, this function
+is eliminated via DCE. For runtime shape validation, use `isMatrix3Like()`.
 
 ## Throws
 

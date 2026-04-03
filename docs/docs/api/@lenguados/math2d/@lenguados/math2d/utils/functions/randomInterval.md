@@ -2,7 +2,7 @@
 
 > **randomInterval**(`minBound`, `maxBound`, `out`, `source`): [`Interval`](../../core/classes/Interval.md)
 
-Defined in: [src/utils/random.ts:677](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/utils/random.ts#L677)
+Defined in: [src/utils/random.ts:679](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/utils/random.ts#L679)
 
 Generates a random interval within specified bounds.
 

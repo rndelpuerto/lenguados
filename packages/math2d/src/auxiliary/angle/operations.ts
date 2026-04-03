@@ -47,9 +47,23 @@ export function sinCos(angle: number, out?: SinCos): SinCos {
 
 /**
  * Computes sine and cosine of a normalized angle.
- * Normalizes the angle to [-π, π) before computing.
+ * Normalizes the angle to (-π, π] before computing.
  *
- * @remarks Uses deterministic math (`sin`, `cos` from deterministic-kernels).
+ * @remarks
+ * Uses deterministic math (`sin`, `cos` from deterministic-kernels).
+ *
+ * Prefer this over {@link sinCos} for accumulated angles exceeding ~2²⁰·π
+ * (~3.3e6 radians), where Cody-Waite range reduction loses precision due to
+ * large quadrant numbers `n` in the `n·(π/2)` subtraction. This function
+ * normalizes the angle to (-π, π] first via floating-point modulo
+ * ({@link normalizeRadians}), ensuring the subsequent Cody-Waite reduction
+ * operates on a small angle with `n ≤ 2`.
+ *
+ * **Not Payne-Hanek:** The pre-normalization uses IEEE 754 remainder (`%`),
+ * not arbitrary-precision reduction. For `|angle| > ~2⁵³ / τ` (~1.4e15),
+ * the modulo itself loses all significant digits. In practice, 2D physics
+ * simulations rarely accumulate angles beyond a few thousand radians, so
+ * this is not a concern for typical use cases.
  *
  * @param angle - Angle in radians (will be normalized)
  * @param out - Optional output object to write sin/cos into (zero-allocation)
@@ -75,16 +89,17 @@ export function sinCosNormalized(angle: number, out?: SinCos): SinCos {
 
 /**
  * Signed shortest-arc delta in radians: rotate from `from` to `to`.
- * Result is in [-PI, PI).
+ * Result is in (-PI, PI].
  *
  * @remarks
- * Anti-symmetry breaks at the PI boundary due to the half-open [-PI, PI) range:
- * `angleDifference(0, PI)` and `angleDifference(PI, 0)` both return `-PI`
- * (not `+PI` and `-PI` respectively). This is inherent to the convention.
+ * Anti-symmetry breaks at the PI boundary due to the half-open (-PI, PI] range:
+ * `angleDifference(0, PI)` and `angleDifference(PI, 0)` both return `+PI`
+ * (not `+PI` and `-PI` respectively). This is inherent to the convention and
+ * matches the CCW-positive rotation direction used by the library.
  *
  * @param from - Starting angle in radians
  * @param to - Target angle in radians
- * @returns Signed angle difference in [-PI, PI)
+ * @returns Signed angle difference in (-PI, PI]
  *
  * @example
  * ```typescript
@@ -146,6 +161,12 @@ export function anglesNearEqual(a: number, b: number, epsilon: number = EPSILON)
 /**
  * Calculates angle bisector.
  * Returns angle halfway between a and b (shortest path).
+ *
+ * @remarks
+ * When angles are exactly π apart, the bisector direction is ambiguous —
+ * the result depends on which angle is `a` vs `b` due to the signed
+ * shortest-path computation.
+ *
  * @param a - First angle in radians
  * @param b - Second angle in radians
  * @returns Bisector angle
@@ -172,7 +193,7 @@ export function angleBisector(a: number, b: number): number {
  * Uses counter-clockwise convention. The arc from start to end
  * is traversed in the positive (CCW) direction.
  *
- * When `start === end`, the arc has zero length (a point), not a full circle.
+ * When start === end after normalization, the arc is a single point (not a full circle).
  * Only the exact boundary angle matches (with `inclusive = true`).
  *
  * @param angle - Angle to test
@@ -219,12 +240,12 @@ export function isAngleBetween(
  * Clamps angle to arc between min and max.
  *
  * @remarks
- * Clamps to the nearest boundary of the shortest arc between min and max.
+ * Clamps to the nearest boundary of the CCW arc from min to max.
  *
  * @param angle - Angle to clamp
  * @param min - Minimum angle
  * @param max - Maximum angle
- * @returns Clamped angle in [-PI, PI) range
+ * @returns Clamped angle in (-PI, PI] range
  *
  * @example
  * ```typescript
@@ -237,7 +258,7 @@ export function isAngleBetween(
  * @since 0.7.0
  */
 export function clampAngle(angle: number, min: number, max: number): number {
- // Normalize all angles to [-PI, PI)
+ // Normalize all angles to (-PI, PI]
  const normAngle = normalizeRadians(angle);
  const normMin = normalizeRadians(min);
  const normMax = normalizeRadians(max);
@@ -258,7 +279,10 @@ export function clampAngle(angle: number, min: number, max: number): number {
 /**
  * Computes the directed angle from vector1 to vector2.
  *
- * @remarks Uses deterministic math (`atan2` from deterministic-kernels).
+ * @remarks
+ * Uses deterministic math (`atan2` from deterministic-kernels).
+ *
+ * Returns 0 when either vector is zero, since `atan2(0, 0)` → 0.
  *
  * @param x1 - X component of first vector
  * @param y1 - Y component of first vector

@@ -420,6 +420,93 @@ export function isTransform2Like(value: unknown): value is ReadonlyTransform2Lik
 }
 
 /* ========================================================================== */
+/* Eigenvalue Types                                                            */
+/* ========================================================================== */
+
+/**
+ * Eigenvalue result for a 2x2 matrix with two distinct or repeated real eigenvalues.
+ *
+ * @category Types
+ * @since 0.8.0
+ */
+export interface RealEigenvalues {
+ /** Discriminant tag for real eigenvalues. */
+ readonly type: 'real';
+ /** First eigenvalue (larger or equal). */
+ readonly lambda1: number;
+ /** Second eigenvalue (smaller or equal). */
+ readonly lambda2: number;
+}
+
+/**
+ * Eigenvalue result for a 2x2 matrix with complex conjugate eigenvalues.
+ *
+ * @remarks
+ * The two eigenvalues are `realPart ± imaginaryPart * i`.
+ *
+ * @category Types
+ * @since 0.8.0
+ */
+export interface ComplexEigenvalues {
+ /** Discriminant tag for complex eigenvalues. */
+ readonly type: 'complex';
+ /** Real part of both conjugate eigenvalues. */
+ readonly realPart: number;
+ /** Absolute value of the imaginary part. */
+ readonly imaginaryPart: number;
+}
+
+/**
+ * Discriminated union of eigenvalue results for a 2x2 matrix.
+ *
+ * @category Types
+ * @since 0.8.0
+ */
+export type EigenvalueResult = RealEigenvalues | ComplexEigenvalues;
+
+/**
+ * Eigendecomposition result for a 2x2 matrix with real eigenvalues and eigenvectors.
+ *
+ * @category Types
+ * @since 0.8.0
+ */
+export interface RealEigendecomposition {
+ /** Discriminant tag for real eigendecomposition. */
+ readonly type: 'real';
+ /** First eigenvalue. */
+ readonly lambda1: number;
+ /** Normalized eigenvector corresponding to lambda1. */
+ readonly v1: ReadonlyVector2Like;
+ /** Second eigenvalue. */
+ readonly lambda2: number;
+ /** Normalized eigenvector corresponding to lambda2. */
+ readonly v2: ReadonlyVector2Like;
+}
+
+/**
+ * Eigendecomposition result for a 2x2 matrix with complex eigenvalues (no real eigenvectors).
+ *
+ * @category Types
+ * @since 0.8.0
+ */
+export interface ComplexEigendecomposition {
+ /** Discriminant tag for complex eigendecomposition. */
+ readonly type: 'complex';
+ /** Real part of both conjugate eigenvalues. */
+ readonly realPart: number;
+ /** Absolute value of the imaginary part. */
+ readonly imaginaryPart: number;
+}
+
+/**
+ * Discriminated union of eigendecomposition results for a 2x2 matrix.
+ *
+ * @category Types
+ * @since 0.8.0
+ */
+export type EigendecomposeResult = RealEigendecomposition | ComplexEigendecomposition;
+
+/* ========================================================================== */
 /* SinCos                                                                      */
 /* ========================================================================== */
 
@@ -438,4 +525,22 @@ export interface SinCos {
  sin: number;
  /** Cosine of the angle. */
  cos: number;
+}
+
+/**
+ * Read-only variant of {@link SinCos} for cached angle lookup tables.
+ *
+ * @remarks
+ * Follows the Readonly*Like pattern established by all other value types
+ * (ReadonlyVector2Like, ReadonlyRotation2Like, ReadonlyComplexLike, etc.).
+ * Use when storing pre-computed sin/cos values that should not be mutated.
+ *
+ * @category Types
+ * @since 0.9.0
+ */
+export interface ReadonlySinCos {
+ /** Sine of the angle (read-only). */
+ readonly sin: number;
+ /** Cosine of the angle (read-only). */
+ readonly cos: number;
 }

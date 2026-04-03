@@ -2,7 +2,7 @@
 
 > **isComplexLike**(`value`): `value is ReadonlyComplexLike`
 
-Defined in: [src/types/index.ts:368](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/types/index.ts#L368)
+Defined in: [src/types/index.ts:368](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/types/index.ts#L368)
 
 Type guard to check if value has complex number properties (ComplexLike).
 

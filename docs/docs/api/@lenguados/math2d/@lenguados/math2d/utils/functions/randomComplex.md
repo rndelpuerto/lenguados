@@ -2,7 +2,7 @@
 
 > **randomComplex**(`min`, `max`, `out`, `source`): [`Complex`](../../core/classes/Complex.md)
 
-Defined in: [src/utils/random.ts:615](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/utils/random.ts#L615)
+Defined in: [src/utils/random.ts:617](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/utils/random.ts#L617)
 
 Generates a random complex number with components in range [min, max).
 

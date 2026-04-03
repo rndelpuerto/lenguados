@@ -8,6 +8,48 @@ import { normalizeRadians } from './normalization';
 import { angleDifference } from './operations';
 
 /**
+ * Shared iteration logic for angle unwrapping.
+ * Writes unwrapped values into `output` starting from index 0.
+ *
+ * @param input - Source angles to read from
+ * @param output - Destination array to write unwrapped values into
+ * @param callerName - Name of the calling function (for error messages)
+ * @param reference - Optional continuity reference for the first element
+ * @returns The last unwrapped value (previous)
+ */
+function unwrapIteration(
+ input: number[],
+ output: number[],
+ callerName: string,
+ reference?: number,
+): void {
+ const n = input.length;
+ const first = input[0];
+
+ if (first === undefined) {
+  throw new TypeError(`${callerName}: input array contains holes`);
+ }
+
+ // Initialize first element
+ let previous = reference !== undefined ? normalizeRadians(first - reference) + reference : first;
+
+ output[0] = previous;
+
+ // Unwrap subsequent elements
+ for (let index = 1; index < n; index++) {
+  const current = input[index];
+
+  if (current === undefined) {
+   throw new TypeError(`${callerName}: input array contains holes`);
+  }
+
+  // Step along shortest arc
+  previous = previous + angleDifference(previous, current);
+  output[index] = previous;
+ }
+}
+
+/**
  * Unwraps a sequence of angles into a continuous series by
  * taking shortest-arc steps between consecutive elements.
  *
@@ -27,8 +69,8 @@ import { angleDifference } from './operations';
  * @example
  * ```typescript
  * unwrapAngles([0, 3, -3, 0]);           // [0, 3, 3.28..., 6.28...]
- * unwrapAngles([0, Math.PI, 0]);         // [0, Math.PI, 0] (shortest arc back)
- * unwrapAngles([0, 3, 6], -Math.PI);     // [-6.28..., -3.28..., -0.28...]
+ * unwrapAngles([0, Math.PI, 0]);         // [0, Math.PI, 2 * Math.PI] (continuous CCW)
+ * unwrapAngles([0, 3, 6], -2 * Math.PI);  // [-6.28..., -3.28..., -0.28...]
  * ```
  *
  * @category Normalization
@@ -39,30 +81,7 @@ export function unwrapAngles(angles: number[], reference?: number): number[] {
  if (n === 0) return [];
 
  const result = new Array<number>(n).fill(0);
- const first = angles[0];
-
- if (first === undefined) {
-  throw new TypeError('unwrapAngles: input array contains holes');
- }
-
- // Initialize first element
- let previous = reference !== undefined ? normalizeRadians(first - reference) + reference : first;
-
- result[0] = previous;
-
- // Unwrap subsequent elements
- for (let index = 1; index < n; index++) {
-  const current = angles[index];
-
-  if (current === undefined) {
-   throw new TypeError('unwrapAngles: input array contains holes');
-  }
-
-  // Step along shortest arc
-  previous = previous + angleDifference(previous, current);
-  result[index] = previous;
- }
-
+ unwrapIteration(angles, result, 'unwrapAngles', reference);
  return result;
 }
 
@@ -92,30 +111,7 @@ export function unwrapAnglesInPlace(angles: number[], reference?: number): numbe
  const n = angles.length;
  if (n === 0) return angles;
 
- const first = angles[0];
-
- if (first === undefined) {
-  throw new TypeError('unwrapAnglesInPlace: input array contains holes');
- }
-
- // Initialize first element
- let previous = reference !== undefined ? normalizeRadians(first - reference) + reference : first;
-
- angles[0] = previous;
-
- // Unwrap subsequent elements
- for (let index = 1; index < n; index++) {
-  const current = angles[index];
-
-  if (current === undefined) {
-   throw new TypeError('unwrapAnglesInPlace: input array contains holes');
-  }
-
-  // Step along shortest arc
-  previous = previous + angleDifference(previous, current);
-  angles[index] = previous;
- }
-
+ unwrapIteration(angles, angles, 'unwrapAnglesInPlace', reference);
  return angles;
 }
 
@@ -133,12 +129,12 @@ export function unwrapAnglesInPlace(angles: number[], reference?: number): numbe
  * const unwrapper = new AngleUnwrapper();
  *
  * console.log(unwrapper.next(0));           // 0
- * console.log(unwrapper.next(Math.PI));     // Math.PI
- * console.log(unwrapper.next(0));           // 2 * Math.PI
- * console.log(unwrapper.value);             // 2 * Math.PI
+ * console.log(unwrapper.next(3));           // 3
+ * console.log(unwrapper.next(-3));          // 3.28... (continuous, not jumping to -3)
+ * console.log(unwrapper.value);             // 3.28...
  *
  * unwrapper.reset(0);
- * console.log(unwrapper.next(Math.PI));     // Math.PI
+ * console.log(unwrapper.next(1));           // 1
  * ```
  *
  * @category Normalization

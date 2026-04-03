@@ -2,7 +2,7 @@
 
 > **anglesNearEqual**(`a`, `b`, `epsilon`): `boolean`
 
-Defined in: [src/auxiliary/angle/operations.ts:158](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/angle/operations.ts#L158)
+Defined in: [src/auxiliary/angle/operations.ts:157](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/auxiliary/angle/operations.ts#L157)
 
 Tests if angles are approximately equal.
 

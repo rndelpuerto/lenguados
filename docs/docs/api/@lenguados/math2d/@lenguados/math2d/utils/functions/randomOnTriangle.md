@@ -2,7 +2,7 @@
 
 > **randomOnTriangle**(`a`, `b`, `c`, `out`, `source`): [`Vector2`](../../core/classes/Vector2.md)
 
-Defined in: [src/utils/random.ts:554](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/utils/random.ts#L554)
+Defined in: [src/utils/random.ts:556](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/utils/random.ts#L556)
 
 Generates a random point on a triangle perimeter.
 
@@ -10,19 +10,19 @@ Generates a random point on a triangle perimeter.
 
 ### a
 
-[`ReadonlyVector2`](../../core/type-aliases/ReadonlyVector2.md)
+[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
 First vertex of the triangle
 
 ### b
 
-[`ReadonlyVector2`](../../core/type-aliases/ReadonlyVector2.md)
+[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
 Second vertex of the triangle
 
 ### c
 
-[`ReadonlyVector2`](../../core/type-aliases/ReadonlyVector2.md)
+[`ReadonlyVector2Like`](../../types/interfaces/ReadonlyVector2Like.md)
 
 Third vertex of the triangle
 

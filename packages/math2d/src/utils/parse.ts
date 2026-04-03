@@ -81,6 +81,10 @@ function jsonFixed(n: number, precision: number | undefined): string {
  * - "[x,y]" (with brackets)
  * - "{x:n, y:n}" (JSON-like)
  *
+ * This function only handles finite numeric values. Non-finite values
+ * (NaN, Infinity, -Infinity) serialized via format functions cannot
+ * be round-tripped through parse functions.
+ *
  * @param string_ - Input string to parse
  * @param out - Optional output vector to avoid allocation. Defaults to `new Vector2()`
  * @returns The `out` vector containing the parsed values
@@ -535,11 +539,11 @@ export function formatMatrix3(
   case 'flat':
    return [m.m00, m.m01, m.m02, m.m10, m.m11, m.m12, m.m20, m.m21, m.m22].map(fmt).join(',');
   case 'nested':
-   return [
+   return `[${[
     `[${fmt(m.m00)},${fmt(m.m01)},${fmt(m.m02)}]`,
     `[${fmt(m.m10)},${fmt(m.m11)},${fmt(m.m12)}]`,
     `[${fmt(m.m20)},${fmt(m.m21)},${fmt(m.m22)}]`,
-   ].join(',');
+   ].join(',')}]`;
   case 'json': {
    const object: Record<string, number> = {};
    const values = [m.m00, m.m01, m.m02, m.m10, m.m11, m.m12, m.m20, m.m21, m.m22];

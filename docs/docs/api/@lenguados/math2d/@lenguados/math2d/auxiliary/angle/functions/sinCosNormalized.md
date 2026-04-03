@@ -1,11 +1,11 @@
 # Function: sinCosNormalized()
 
-> **sinCosNormalized**(`angle`, `out?`): [`SinCos`](../interfaces/SinCos.md)
+> **sinCosNormalized**(`angle`, `out?`): [`SinCos`](../../../types/interfaces/SinCos.md)
 
-Defined in: [src/auxiliary/angle/operations.ts:83](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/angle/operations.ts#L83)
+Defined in: [src/auxiliary/angle/operations.ts:81](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/auxiliary/angle/operations.ts#L81)
 
 Computes sine and cosine of a normalized angle.
-Normalizes the angle to [-π, π) before computing.
+Normalizes the angle to (-π, π] before computing.
 
 ## Parameters
 
@@ -17,19 +17,32 @@ Angle in radians (will be normalized)
 
 ### out?
 
-[`SinCos`](../interfaces/SinCos.md)
+[`SinCos`](../../../types/interfaces/SinCos.md)
 
 Optional output object to write sin/cos into (zero-allocation)
 
 ## Returns
 
-[`SinCos`](../interfaces/SinCos.md)
+[`SinCos`](../../../types/interfaces/SinCos.md)
 
 Object with sin and cos properties
 
 ## Remarks
 
 Uses deterministic math (`sin`, `cos` from deterministic-kernels).
+
+Prefer this over [sinCos](sinCos.md) for accumulated angles exceeding ~2²⁰·π
+(~3.3e6 radians), where Cody-Waite range reduction loses precision due to
+large quadrant numbers `n` in the `n·(π/2)` subtraction. This function
+normalizes the angle to (-π, π] first via floating-point modulo
+([normalizeRadians](normalizeRadians.md)), ensuring the subsequent Cody-Waite reduction
+operates on a small angle with `n ≤ 2`.
+
+**Not Payne-Hanek:** The pre-normalization uses IEEE 754 remainder (`%`),
+not arbitrary-precision reduction. For `|angle| > ~2⁵³ / τ` (~1.4e15),
+the modulo itself loses all significant digits. In practice, 2D physics
+simulations rarely accumulate angles beyond a few thousand radians, so
+this is not a concern for typical use cases.
 
 ## Example
 

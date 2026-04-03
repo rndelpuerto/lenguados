@@ -114,9 +114,10 @@ export {
  log,
  pow,
  sin,
- sinCos,
  tan,
 } from './deterministic/deterministic-kernels';
+// Note: sinCos is exported via `export * from './auxiliary/angle'` (which wraps the
+// deterministic kernel). Explicitly re-exporting it here would shadow that export.
 
 // Re-export validation/assertion utilities
 export {
@@ -133,6 +134,7 @@ export {
  assertMatrix2,
  assertMatrix3,
  assertRotation2,
+ assertRotation2Normalized,
  assertComplex,
  assertInterval,
  assertTransform2,

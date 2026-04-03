@@ -2,7 +2,7 @@
 
 > **assertRotation2**(`cos`, `sin`, `name?`): `void`
 
-Defined in: [src/validation/assert.ts:567](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/validation/assert.ts#L567)
+Defined in: [src/validation/assert.ts:576](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/validation/assert.ts#L576)
 
 Asserts that Rotation2-like components are finite.
 

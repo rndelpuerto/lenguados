@@ -2,7 +2,7 @@
 
 > `const` **EPSILON**: `1e-10` = `1e-10`
 
-Defined in: [src/auxiliary/scalar/constants.ts:27](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/scalar/constants.ts#L27)
+Defined in: [src/auxiliary/scalar/constants.ts:27](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/auxiliary/scalar/constants.ts#L27)
 
 Default epsilon for floating-point comparisons.
 

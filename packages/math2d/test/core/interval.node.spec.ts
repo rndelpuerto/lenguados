@@ -14,11 +14,24 @@ const DIGITS = 10;
 
 describe('Interval', () => {
  describe('Factories and setters', () => {
-  it('validates order in constructor and set', () => {
-   expect(() => new Interval(2, 1)).toThrow(RangeError);
+  it('constructor does NOT throw for reversed or NaN inputs (pure math layer)', () => {
+   const reversed = new Interval(2, 1);
+   expect(reversed.min).toBe(2);
+   expect(reversed.max).toBe(1);
+   const nan = new Interval(NaN, 5);
+   expect(nan.min).toBeNaN();
+   expect(nan.max).toBe(5);
+  });
+
+  it('set() validates order (user-facing safety net)', () => {
+   expect(() => new Interval().set(2, 1)).toThrow(RangeError);
    const interval = new Interval().set(0, 5);
    expect(interval.min).toBe(0);
    expect(interval.max).toBe(5);
+  });
+
+  it('fromValues validates order', () => {
+   expect(() => Interval.fromValues(2, 1)).toThrow(RangeError);
   });
 
   it('fromCenterRadius builds symmetric ranges', () => {
@@ -41,9 +54,9 @@ describe('Interval', () => {
    expect(product.max).toBe(8);
   });
 
-  it('divide throws when scalar is zero', () => {
+  it('divideScalarthrows when scalar is zero', () => {
    const a = new Interval(1, 2);
-   expect(() => a.divide(0)).toThrow();
+   expect(() => a.divideScalar(0)).toThrow();
   });
  });
 
@@ -165,9 +178,9 @@ describe('Interval', () => {
    expect(negated.max).toBe(-2);
   });
 
-  it('scale multiplies interval', () => {
+  it('multiplyScalar multiplies interval', () => {
    const interval = new Interval(2, 4);
-   const scaled = interval.scale(3);
+   const scaled = interval.multiplyScalar(3);
    expect(scaled.min).toBe(6);
    expect(scaled.max).toBe(12);
   });
@@ -289,16 +302,16 @@ describe('Interval', () => {
    expect(result.max).toBe(15);
   });
 
-  it('divide divides by scalar', () => {
+  it('divideScalardivides by scalar', () => {
    const a = new Interval(10, 20);
-   const result = a.divide(2);
+   const result = a.divideScalar(2);
    expect(result.min).toBe(5);
    expect(result.max).toBe(10);
   });
 
-  it('scale scales interval', () => {
+  it('multiplyScalar scales interval', () => {
    const a = new Interval(2, 4);
-   const result = a.scale(3);
+   const result = a.multiplyScalar(3);
    expect(result.min).toBe(6);
    expect(result.max).toBe(12);
   });
@@ -351,14 +364,14 @@ describe('Interval', () => {
    expect(result.max).toBe(15);
   });
 
-  it('scale static scales interval', () => {
-   const result = Interval.scale(new Interval(2, 4), 3);
+  it('multiplyScalar static scales interval', () => {
+   const result = Interval.multiplyScalar(new Interval(2, 4), 3);
    expect(result.min).toBe(6);
    expect(result.max).toBe(12);
   });
 
-  it('scale static handles negative scalar', () => {
-   const result = Interval.scale(new Interval(2, 4), -1);
+  it('multiplyScalar static handles negative scalar', () => {
+   const result = Interval.multiplyScalar(new Interval(2, 4), -1);
    expect(result.min).toBe(-4);
    expect(result.max).toBe(-2);
   });
@@ -478,14 +491,14 @@ describe('Interval', () => {
  });
 
  describe('Static Operations Extended', () => {
-  it('scale with positive scalar', () => {
-   const result = Interval.scale(new Interval(1, 2), 3);
+  it('multiplyScalar with positive scalar', () => {
+   const result = Interval.multiplyScalar(new Interval(1, 2), 3);
    expect(result.min).toBe(3);
    expect(result.max).toBe(6);
   });
 
-  it('scale with negative scalar flips bounds', () => {
-   const result = Interval.scale(new Interval(1, 2), -2);
+  it('multiplyScalar with negative scalar flips bounds', () => {
+   const result = Interval.multiplyScalar(new Interval(1, 2), -2);
    expect(result.min).toBe(-4);
    expect(result.max).toBe(-2);
   });
@@ -538,16 +551,16 @@ describe('Interval', () => {
  });
 
  describe('Coverage - Instance Math Operations', () => {
-  it('scale with positive scalar', () => {
+  it('multiplyScalar with positive scalar', () => {
    const index = new Interval(2, 4);
-   const result = index.scale(2);
+   const result = index.multiplyScalar(2);
    expect(result.min).toBe(4);
    expect(result.max).toBe(8);
   });
 
-  it('scale with negative scalar flips min/max', () => {
+  it('multiplyScalar with negative scalar flips min/max', () => {
    const index = new Interval(2, 4);
-   const result = index.scale(-1);
+   const result = index.multiplyScalar(-1);
    expect(result.min).toBe(-4);
    expect(result.max).toBe(-2);
   });
@@ -584,11 +597,6 @@ describe('Interval', () => {
    expect(Interval.UNIT.min).toBe(0);
    expect(Interval.UNIT.max).toBe(1);
   });
-
-  it('PERCENT is [0, 100]', () => {
-   expect(Interval.PERCENT.min).toBe(0);
-   expect(Interval.PERCENT.max).toBe(100);
-  });
  });
 
  describe('Coverage - Static Methods', () => {
@@ -608,18 +616,18 @@ describe('Interval', () => {
  });
 
  describe('Coverage - Instance Scale and Transform', () => {
-  it('scale with positive scalar', () => {
+  it('multiplyScalar with positive scalar', () => {
    expect.hasAssertions();
    const index = new Interval(2, 4);
-   const result = index.scale(2);
+   const result = index.multiplyScalar(2);
    expect(result.min).toBe(4);
    expect(result.max).toBe(8);
   });
 
-  it('scale with negative scalar swaps bounds', () => {
+  it('multiplyScalar with negative scalar swaps bounds', () => {
    expect.hasAssertions();
    const index = new Interval(2, 4);
-   const result = index.scale(-2);
+   const result = index.multiplyScalar(-2);
    expect(result.min).toBe(-8);
    expect(result.max).toBe(-4);
   });
@@ -756,18 +764,18 @@ describe('Interval', () => {
    expect(result.max).toBe(6);
   });
 
-  it('divide by positive scalar', () => {
+  it('divideScalarby positive scalar', () => {
    expect.hasAssertions();
    const a = new Interval(4, 8);
-   const result = a.divide(2);
+   const result = a.divideScalar(2);
    expect(result.min).toBe(2);
    expect(result.max).toBe(4);
   });
 
-  it('divide by negative scalar flips bounds', () => {
+  it('divideScalarby negative scalar flips bounds', () => {
    expect.hasAssertions();
    const a = new Interval(4, 8);
-   const result = a.divide(-2);
+   const result = a.divideScalar(-2);
    expect(result.min).toBe(-4);
    expect(result.max).toBe(-2);
   });
@@ -844,7 +852,7 @@ describe('Interval', () => {
   });
 
   it('isFinite returns false for infinite interval', () => {
-   // Use static method since constructor validates
+   // Use static method to test with non-finite values
    expect(Interval.isFinite({ min: 0, max: Infinity })).toBe(false);
   });
 
@@ -854,7 +862,7 @@ describe('Interval', () => {
   });
 
   it('hasNaN returns true for NaN interval', () => {
-   // Use static method since constructor validates
+   // Use static method to test with non-finite values
    expect(Interval.hasNaN({ min: NaN, max: 10 })).toBe(true);
   });
 
@@ -1092,7 +1100,7 @@ describe('Interval', () => {
   });
 
   it('static scale scales interval', () => {
-   const result = Interval.scale({ min: 1, max: 3 }, 2);
+   const result = Interval.multiplyScalar({ min: 1, max: 3 }, 2);
    expect(result.min).toBe(2);
    expect(result.max).toBe(6);
   });
@@ -1135,9 +1143,9 @@ describe('Interval', () => {
    expect(() => Interval.fromCenterRadius(5, -1)).toThrow();
   });
 
-  it('divide throws for zero scalar', () => {
+  it('divideScalarthrows for zero scalar', () => {
    const a = new Interval(1, 2);
-   expect(() => a.divide(0)).toThrow();
+   expect(() => a.divideScalar(0)).toThrow();
   });
  });
 
@@ -1206,17 +1214,17 @@ describe('Interval', () => {
  });
 
  describe('Coverage - Static scale', () => {
-  it('scale scales interval', () => {
-   const result = Interval.scale(new Interval(5, 10), 2);
+  it('multiplyScalar scales interval', () => {
+   const result = Interval.multiplyScalar(new Interval(5, 10), 2);
    expect(result.min).toBe(10);
    expect(result.max).toBe(20);
   });
  });
 
  describe('Coverage - Instance scale', () => {
-  it('scale scales in place', () => {
+  it('multiplyScalar scales in place', () => {
    const interval = new Interval(5, 10);
-   interval.scale(2);
+   interval.multiplyScalar(2);
    expect(interval.min).toBe(10);
    expect(interval.max).toBe(20);
   });
@@ -1293,10 +1301,10 @@ describe('Interval', () => {
  });
 
  describe('Coverage - Static scale with out', () => {
-  it('scale uses out parameter', () => {
+  it('multiplyScalar uses out parameter', () => {
    const interval = new Interval(2, 4);
    const out = new Interval();
-   const result = Interval.scale(interval, 2, out);
+   const result = Interval.multiplyScalar(interval, 2, out);
    expect(result).toBe(out);
    expect(result.min).toBe(4);
    expect(result.max).toBe(8);
@@ -1374,10 +1382,10 @@ describe('Interval', () => {
   });
  });
 
- describe('divideUnchecked', () => {
+ describe('divideScalarUnchecked', () => {
   it('static divideUnchecked divides interval by scalar', () => {
    const a = new Interval(10, 20);
-   const result = Interval.divideUnchecked(a, 2);
+   const result = Interval.divideScalarUnchecked(a, 2);
    expect(result.min).toBe(5);
    expect(result.max).toBe(10);
   });
@@ -1385,7 +1393,7 @@ describe('Interval', () => {
   it('static divideUnchecked uses out parameter', () => {
    const a = new Interval(4, 8);
    const out = new Interval();
-   const result = Interval.divideUnchecked(a, 2, out);
+   const result = Interval.divideScalarUnchecked(a, 2, out);
    expect(result).toBe(out);
    expect(result.min).toBe(2);
    expect(result.max).toBe(4);
@@ -1393,14 +1401,14 @@ describe('Interval', () => {
 
   it('divideUnchecked returns Infinity when divisor is zero', () => {
    const a = new Interval(4, 8);
-   const result = Interval.divideUnchecked(a, 0);
+   const result = Interval.divideScalarUnchecked(a, 0);
    expect(result.min).toBe(Infinity);
    expect(result.max).toBe(Infinity);
   });
 
   it('divideUnchecked handles negative scalar', () => {
    const a = new Interval(4, 8);
-   const result = Interval.divideUnchecked(a, -2);
+   const result = Interval.divideScalarUnchecked(a, -2);
    expect(result.min).toBe(-4);
    expect(result.max).toBe(-2);
   });
@@ -1542,21 +1550,21 @@ describe('Interval', () => {
   });
  });
 
- describe('Static divide method', () => {
-  it('divide throws on zero scalar', () => {
+ describe('Static divideScalar method', () => {
+  it('divideScalarthrows on zero scalar', () => {
    const interval = new Interval(1, 10);
-   expect(() => Interval.divide(interval, 0)).toThrow(RangeError);
+   expect(() => Interval.divideScalar(interval, 0)).toThrow(RangeError);
   });
 
   it('divideSafe returns zero for zero scalar', () => {
    const interval = new Interval(1, 10);
-   const result = Interval.divideSafe(interval, 0);
+   const result = Interval.divideScalarSafe(interval, 0);
    expect(result.min).toBe(0);
    expect(result.max).toBe(0);
   });
 
-  it('divide divides interval by scalar', () => {
-   const result = Interval.divide({ min: 10, max: 20 }, 2);
+  it('divideScalardivides interval by scalar', () => {
+   const result = Interval.divideScalar({ min: 10, max: 20 }, 2);
    expect(result.min).toBe(5);
    expect(result.max).toBe(10);
   });
@@ -1723,23 +1731,23 @@ describe('Interval', () => {
   });
  });
 
- describe('Coverage - Static divideSafe', () => {
+ describe('Coverage - Static divideScalarSafe', () => {
   it('divideSafe returns ZERO when scalar is near zero', () => {
-   const result = Interval.divideSafe(new Interval(10, 20), 0);
+   const result = Interval.divideScalarSafe(new Interval(10, 20), 0);
    expect(result.min).toBe(0);
    expect(result.max).toBe(0);
   });
 
   it('divideSafe divides when scalar is valid', () => {
-   const result = Interval.divideSafe(new Interval(10, 20), 2);
+   const result = Interval.divideScalarSafe(new Interval(10, 20), 2);
    expect(result.min).toBe(5);
    expect(result.max).toBe(10);
   });
  });
 
- describe('Coverage - Static divideUnchecked', () => {
+ describe('Coverage - Static divideScalarUnchecked', () => {
   it('divideUnchecked divides interval', () => {
-   const result = Interval.divideUnchecked(new Interval(10, 20), 2);
+   const result = Interval.divideScalarUnchecked(new Interval(10, 20), 2);
    expect(result.min).toBe(5);
    expect(result.max).toBe(10);
   });
@@ -1968,10 +1976,11 @@ describe('Interval', () => {
    expect(out.max).toBeCloseTo(3, DIGITS);
   });
 
-  it('static sqrtUnchecked with negative interval is undefined behavior (may throw in dev)', () => {
-   // Unchecked contract: caller guarantees non-negative. Negative input is UB.
-   // In dev mode, Interval.set() asserts min <= max, which fails for NaN.
-   expect(() => Interval.sqrtUnchecked({ min: -4, max: -1 })).toThrow();
+  it('static sqrtUnchecked with negative interval produces NaN (GIGO contract)', () => {
+   // Unchecked contract: caller guarantees non-negative. Negative input produces NaN.
+   const result = Interval.sqrtUnchecked({ min: -4, max: -1 });
+   expect(result.min).toBeNaN();
+   expect(result.max).toBeNaN();
   });
 
   it('instance sqrtUnchecked computes sqrt', () => {
@@ -2176,6 +2185,240 @@ describe('Interval', () => {
    const result = Interval.fromUnsorted(3, 3);
    expect(result.min).toBe(3);
    expect(result.max).toBe(3);
+  });
+ });
+
+ describe('smoothStep (redundant saturate removal)', () => {
+  it('static smoothStep produces correct result at t=0.5', () => {
+   const a = new Interval(0, 10);
+   const b = new Interval(20, 30);
+   const result = Interval.smoothStep(a, b, 0.5);
+   expect(result.min).toBeCloseTo(10, DIGITS);
+   expect(result.max).toBeCloseTo(20, DIGITS);
+  });
+
+  it('static smoothStep clamps t < 0 to edge0', () => {
+   const a = new Interval(0, 10);
+   const b = new Interval(20, 30);
+   const result = Interval.smoothStep(a, b, -1);
+   expect(result.min).toBeCloseTo(0, DIGITS);
+   expect(result.max).toBeCloseTo(10, DIGITS);
+  });
+
+  it('instance smoothStep clamps t > 1 to edge1', () => {
+   const a = new Interval(0, 10);
+   a.smoothStep({ min: 20, max: 30 }, 2);
+   expect(a.min).toBeCloseTo(20, DIGITS);
+   expect(a.max).toBeCloseTo(30, DIGITS);
+  });
+ });
+});
+
+describe('Component-wise operations', () => {
+ describe('Static component-wise', () => {
+  it('floor floors both bounds', () => {
+   const result = Interval.floor({ min: -1.5, max: 2.7 });
+   expect(result.min).toBe(-2);
+   expect(result.max).toBe(2);
+  });
+
+  it('ceil ceils both bounds', () => {
+   const result = Interval.ceil({ min: -1.5, max: 2.7 });
+   expect(result.min).toBe(-1);
+   expect(result.max).toBe(3);
+  });
+
+  it('round rounds both bounds', () => {
+   const result = Interval.round({ min: -1.5, max: 2.4 });
+   expect(result.min).toBe(-1);
+   expect(result.max).toBe(2);
+  });
+
+  it('trunc truncates both bounds', () => {
+   const result = Interval.trunc({ min: -1.9, max: 2.9 });
+   expect(result.min).toBe(-1);
+   expect(result.max).toBe(2);
+  });
+
+  it('sign returns sign of both bounds', () => {
+   const result = Interval.sign({ min: -5, max: 3 });
+   expect(result.min).toBe(-1);
+   expect(result.max).toBe(1);
+  });
+
+  it('min returns per-bound minimum', () => {
+   const result = Interval.min({ min: 1, max: 5 }, { min: 2, max: 3 });
+   expect(result.min).toBe(1);
+   expect(result.max).toBe(3);
+  });
+
+  it('max returns per-bound maximum', () => {
+   const result = Interval.max({ min: 1, max: 5 }, { min: 2, max: 3 });
+   expect(result.min).toBe(2);
+   expect(result.max).toBe(5);
+  });
+
+  it('clamp clamps bounds', () => {
+   const result = Interval.clamp({ min: -10, max: 10 }, { min: 0, max: 0 }, { min: 5, max: 5 });
+   expect(result.min).toBe(0);
+   expect(result.max).toBe(5);
+  });
+
+  it('mod computes per-bound remainder', () => {
+   const result = Interval.mod({ min: 5, max: 7 }, { min: 3, max: 4 });
+   expect(result.min).toBeCloseTo(2);
+   expect(result.max).toBeCloseTo(3);
+  });
+
+  it('writes to out parameter', () => {
+   const out = new Interval();
+   const result = Interval.floor({ min: -1.5, max: 2.7 }, out);
+   expect(result).toBe(out);
+   expect(out.min).toBe(-2);
+   expect(out.max).toBe(2);
+  });
+ });
+
+ describe('Instance component-wise', () => {
+  it('floor mutates and chains', () => {
+   const index = new Interval(-1.5, 2.7);
+   expect(index.floor()).toBe(index);
+   expect(index.min).toBe(-2);
+   expect(index.max).toBe(2);
+  });
+
+  it('ceil mutates and chains', () => {
+   const index = new Interval(-1.5, 2.7);
+   expect(index.ceil()).toBe(index);
+   expect(index.min).toBe(-1);
+   expect(index.max).toBe(3);
+  });
+
+  it('round mutates and chains', () => {
+   const index = new Interval(-1.5, 2.4);
+   expect(index.round()).toBe(index);
+   expect(index.min).toBe(-1);
+   expect(index.max).toBe(2);
+  });
+
+  it('trunc mutates and chains', () => {
+   const index = new Interval(-1.9, 2.9);
+   expect(index.trunc()).toBe(index);
+   expect(index.min).toBe(-1);
+   expect(index.max).toBe(2);
+  });
+
+  it('sign mutates and chains', () => {
+   const index = new Interval(-5, 3);
+   expect(index.sign()).toBe(index);
+   expect(index.min).toBe(-1);
+   expect(index.max).toBe(1);
+  });
+
+  it('clamp mutates and chains', () => {
+   const index = new Interval(-10, 10);
+   expect(index.clamp({ min: 0, max: 0 }, { min: 5, max: 5 })).toBe(index);
+   expect(index.min).toBe(0);
+   expect(index.max).toBe(5);
+  });
+
+  it('mod mutates and chains', () => {
+   const index = new Interval(5, 7);
+   expect(index.mod({ min: 3, max: 4 })).toBe(index);
+   expect(index.min).toBeCloseTo(2);
+   expect(index.max).toBeCloseTo(3);
+  });
+ });
+
+ /* ===== distance ===== */
+
+ describe('distance', () => {
+  it('returns gap between non-overlapping intervals', () => {
+   expect(Interval.distance({ min: 0, max: 3 }, { min: 5, max: 8 })).toBe(2);
+  });
+
+  it('returns 0 for overlapping intervals', () => {
+   expect(Interval.distance({ min: 0, max: 5 }, { min: 3, max: 8 })).toBe(0);
+  });
+
+  it('returns 0 for adjacent intervals', () => {
+   expect(Interval.distance({ min: 0, max: 3 }, { min: 3, max: 5 })).toBe(0);
+  });
+
+  it('instance distanceTo matches static', () => {
+   const a = new Interval(0, 3);
+   expect(a.distanceTo({ min: 5, max: 8 })).toBe(2);
+   expect(a.distanceTo({ min: 2, max: 6 })).toBe(0);
+  });
+ });
+
+ /* ===== enclosing / enclose ===== */
+
+ describe('enclosing', () => {
+  it('expands to include value above max', () => {
+   const result = Interval.enclosing({ min: 2, max: 5 }, 8);
+   expect(result.min).toBe(2);
+   expect(result.max).toBe(8);
+  });
+
+  it('expands to include value below min', () => {
+   const result = Interval.enclosing({ min: 2, max: 5 }, 0);
+   expect(result.min).toBe(0);
+   expect(result.max).toBe(5);
+  });
+
+  it('does not change if value is already contained', () => {
+   const result = Interval.enclosing({ min: 2, max: 5 }, 3);
+   expect(result.min).toBe(2);
+   expect(result.max).toBe(5);
+  });
+
+  it('instance enclose mutates and chains', () => {
+   const interval = new Interval(2, 5);
+   expect(interval.enclose(8)).toBe(interval);
+   expect(interval.min).toBe(2);
+   expect(interval.max).toBe(8);
+  });
+
+  it('instance enclose no-op when contained', () => {
+   const interval = new Interval(2, 5);
+   interval.enclose(3);
+   expect(interval.min).toBe(2);
+   expect(interval.max).toBe(5);
+  });
+ });
+
+ /* ===== divideSafe / divideUnchecked (instance) ===== */
+
+ describe('instance divideScalarSafe', () => {
+  it('dividing by zero sets to [0, 0]', () => {
+   const interval = new Interval(4, 8);
+   expect(interval.divideScalarSafe(0)).toBe(interval);
+   expect(interval.min).toBe(0);
+   expect(interval.max).toBe(0);
+  });
+
+  it('dividing by non-zero works normally', () => {
+   const interval = new Interval(4, 8);
+   interval.divideScalarSafe(2);
+   expect(interval.min).toBeCloseTo(2, DIGITS);
+   expect(interval.max).toBeCloseTo(4, DIGITS);
+  });
+ });
+
+ describe('instance divideScalarUnchecked', () => {
+  it('divides by positive scalar', () => {
+   const interval = new Interval(4, 8);
+   expect(interval.divideScalarUnchecked(2)).toBe(interval);
+   expect(interval.min).toBeCloseTo(2, DIGITS);
+   expect(interval.max).toBeCloseTo(4, DIGITS);
+  });
+
+  it('divides by negative scalar and swaps', () => {
+   const interval = new Interval(4, 8);
+   interval.divideScalarUnchecked(-2);
+   expect(interval.min).toBeCloseTo(-4, DIGITS);
+   expect(interval.max).toBeCloseTo(-2, DIGITS);
   });
  });
 });

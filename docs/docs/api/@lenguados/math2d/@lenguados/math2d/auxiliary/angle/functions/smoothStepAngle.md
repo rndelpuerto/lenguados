@@ -2,7 +2,7 @@
 
 > **smoothStepAngle**(`from`, `to`, `t`): `number`
 
-Defined in: [src/auxiliary/angle/interpolation.ts:53](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/angle/interpolation.ts#L53)
+Defined in: [src/auxiliary/angle/interpolation.ts:80](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/auxiliary/angle/interpolation.ts#L80)
 
 Smooth step interpolation for angles.
 

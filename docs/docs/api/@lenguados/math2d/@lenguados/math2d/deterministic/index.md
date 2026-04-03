@@ -47,6 +47,7 @@ the Remez algorithm for minimax approximation.
 - [expSafe](functions/expSafe.md)
 - [hypot](functions/hypot.md)
 - [log](functions/log.md)
+- [logKernelSafe](functions/logKernelSafe.md)
 - [pow](functions/pow.md)
 - [sin](functions/sin.md)
 - [sinCos](functions/sinCos.md)
@@ -64,10 +65,4 @@ the Remez algorithm for minimax approximation.
 
 ### SinCos
 
-Re-exports [SinCos](../auxiliary/angle/interfaces/SinCos.md)
-
----
-
-### sqrtSafe
-
-Re-exports [sqrtSafe](../auxiliary/numeric/functions/sqrtSafe.md)
+Re-exports [SinCos](../types/interfaces/SinCos.md)

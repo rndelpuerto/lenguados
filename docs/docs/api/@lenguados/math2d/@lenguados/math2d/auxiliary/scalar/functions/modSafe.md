@@ -2,7 +2,7 @@
 
 > **modSafe**(`dividend`, `divisor`): `number`
 
-Defined in: [src/auxiliary/scalar/arithmetic.ts:404](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/scalar/arithmetic.ts#L404)
+Defined in: [src/auxiliary/scalar/arithmetic.ts:407](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/auxiliary/scalar/arithmetic.ts#L407)
 
 Modulo operation that always returns positive result (safe).
 

@@ -16,8 +16,6 @@ import {
 import {
  DEG_TO_RAD as DEG2RAD,
  EPSILON,
- GOLDEN_RATIO,
- GOLDEN_RATIO_CONJUGATE,
  PI,
  RAD_TO_DEG as RAD2DEG,
  TAU,
@@ -58,18 +56,6 @@ describe('Scalar constants', () => {
  it('EPSILON is a small positive number', () => {
   expect(EPSILON).toBeGreaterThan(0);
   expect(EPSILON).toBeLessThan(1e-3);
- });
-
- it('GOLDEN_RATIO equals (1 + sqrt(5)) / 2', () => {
-  expect(GOLDEN_RATIO).toBeCloseTo(1.618033988749895, 14);
- });
-
- it('GOLDEN_RATIO * GOLDEN_RATIO_CONJUGATE equals 1', () => {
-  expect(GOLDEN_RATIO * GOLDEN_RATIO_CONJUGATE).toBeCloseTo(1, 14);
- });
-
- it('GOLDEN_RATIO - 1 equals GOLDEN_RATIO_CONJUGATE', () => {
-  expect(GOLDEN_RATIO - 1).toBeCloseTo(GOLDEN_RATIO_CONJUGATE, 14);
  });
 });
 
@@ -126,6 +112,14 @@ describe('Scalar functions', () => {
 
   it('lerp allows extrapolation for t < 0', () => {
    expect(lerp(0, 10, -0.5)).toBeCloseTo(-5);
+  });
+
+  it('lerp at t=0 returns a exactly, even when b-a overflows', () => {
+   expect(lerp(1e308, -1e308, 0)).toBe(1e308);
+  });
+
+  it('lerp at t=1 returns b exactly, even when b-a overflows', () => {
+   expect(lerp(1e308, -1e308, 1)).toBe(-1e308);
   });
  });
 

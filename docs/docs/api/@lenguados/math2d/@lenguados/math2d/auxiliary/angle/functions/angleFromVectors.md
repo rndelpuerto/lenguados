@@ -2,7 +2,7 @@
 
 > **angleFromVectors**(`x1`, `y1`, `x2`, `y2`): `number`
 
-Defined in: [src/auxiliary/angle/operations.ts:295](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/angle/operations.ts#L295)
+Defined in: [src/auxiliary/angle/operations.ts:303](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/auxiliary/angle/operations.ts#L303)
 
 Computes the directed angle from vector1 to vector2.
 
@@ -41,6 +41,8 @@ Angle from vector1 to vector2
 ## Remarks
 
 Uses deterministic math (`atan2` from deterministic-kernels).
+
+Returns 0 when either vector is zero, since `atan2(0, 0)` → 0.
 
 ## Example
 

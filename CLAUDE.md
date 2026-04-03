@@ -64,7 +64,7 @@ Each package builds via `node ../../scripts/build.mjs` (Rollup), producing CJS +
 
 The main package follows a strict layered architecture (dependencies flow downward only):
 
-1. **auxiliary/** - Primitive scalar/angle/numeric utilities (lerp, clamp, sinCos, safeDivide)
+1. **auxiliary/** - Primitive scalar/angle/numeric utilities (lerp, clamp, sinCos, divideSafe)
 2. **core/** - Math objects: Vector2, Rotation2, Complex, Interval, Matrix2, Matrix3, Transform2
 3. **deterministic/** - fdlibm-based cross-platform deterministic math (sin, cos, sqrt, etc.)
 4. **types/** - `*Like` interfaces (ReadonlyVector2Like, Matrix3Like, etc.) for interop
@@ -105,12 +105,26 @@ The main package follows a strict layered architecture (dependencies flow downwa
 - Conditional exports: `development` vs `default` (production) for tree-shaking validation code
 - `cross-env NODE_ENV=development|production` controls build mode
 
+## Documentation Structure
+
+- **Package root**: `README.md`, `CHANGELOG.md`, `ARCHITECTURE.md` (code map). No `docs/` directory inside packages.
+- **Monorepo root**: `README.md`, `CHANGELOG.md`, `CONTRIBUTING.md`, `ARCHITECTURE.md` (topology), `LICENSE`.
+- **Docs site** (`docs/docs/`): `math2d/` (architecture deep-dive, design decisions, edge cases), `contributing/` (TSDoc standard, testing strategy, design philosophy), `api/` (auto-generated TypeDoc).
+- **Two-level ARCHITECTURE.md**: Root = monorepo topology (30-60 lines). Package = code map (under 200 lines).
+- Full conventions in `.claude/rules/documentation-conventions.md`.
+
 ## Rules & Skills
 
 Rules (`.claude/rules/`) — loaded when working on matching files:
 
-- `math2d-patterns.md` — API design patterns, naming, determinism, layer deps
-- `testing-conventions.md` — Test file naming, structure, coverage
+- `math2d-patterns.md` — API design patterns, naming, allocation control, determinism, triality
+- `tsdoc-conventions.md` — Tag order, @category vocabulary, class member ordering, triality cross-linking
+- `architecture-and-layers.md` — Layer deps, deterministic function classification, validation tiers, design philosophy
+- `build-and-exports.md` — Package.json exports, entry points, module-internals, build output structure
+- `testing-conventions.md` — Test file types, structure, coverage, import conventions
+- `testing-deep-patterns.md` — Tolerance constants, property-based testing, angular equality, dangerous-path testing
+- `code-style.md` — Prettier config, import ordering, file naming, conventional commits
+- `documentation-conventions.md` — File placement, linking, language, edge case docs, interop docs
 
 Skills (`.claude/skills/`) — invoke with `/skill-name`:
 

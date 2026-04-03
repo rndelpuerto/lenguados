@@ -2,7 +2,7 @@
 
 > **randomTransform2**(`out`, `source`): [`Transform2`](../../core/classes/Transform2.md)
 
-Defined in: [src/utils/random.ts:281](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/utils/random.ts#L281)
+Defined in: [src/utils/random.ts:283](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/utils/random.ts#L283)
 
 Generates a random rigid transform (SE(2)).
 

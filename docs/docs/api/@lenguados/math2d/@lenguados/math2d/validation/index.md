@@ -68,6 +68,7 @@ assertFinite(value, 'myParam'); // Throws if NaN/Infinity
 - [assertRange](functions/assertRange.md)
 - [assertRotation2](functions/assertRotation2.md)
 - [assertRotation2Like](functions/assertRotation2Like.md)
+- [assertRotation2Normalized](functions/assertRotation2Normalized.md)
 - [assertSafeInteger](functions/assertSafeInteger.md)
 - [assertTransform2](functions/assertTransform2.md)
 - [assertTransform2Like](functions/assertTransform2Like.md)

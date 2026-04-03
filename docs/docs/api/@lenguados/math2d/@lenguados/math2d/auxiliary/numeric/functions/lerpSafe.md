@@ -2,7 +2,7 @@
 
 > **lerpSafe**(`a`, `b`, `t`): `number`
 
-Defined in: [src/auxiliary/numeric/safety.ts:362](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/numeric/safety.ts#L362)
+Defined in: [src/auxiliary/numeric/safety.ts:382](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/auxiliary/numeric/safety.ts#L382)
 
 Safe linear interpolation that avoids overflow.
 
@@ -31,6 +31,13 @@ Interpolation factor
 `number`
 
 Interpolated value
+
+## Remarks
+
+The distributive form `a*(1-t) + b*t` trades strict monotonicity for
+overflow safety. For inputs where `a` and `b` have the same sign and no
+overflow risk, standard lerp (`a + (b-a)*t`)
+preserves monotonicity.
 
 ## Example
 

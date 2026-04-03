@@ -2,7 +2,7 @@
 
 > **normalizeDegreesPositive**(`degrees`): `number`
 
-Defined in: [src/auxiliary/angle/normalization.ts:98](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/angle/normalization.ts#L98)
+Defined in: [src/auxiliary/angle/normalization.ts:105](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/auxiliary/angle/normalization.ts#L105)
 
 Normalizes degrees to [0, 360).
 

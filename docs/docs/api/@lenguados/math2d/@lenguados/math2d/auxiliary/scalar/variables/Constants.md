@@ -2,7 +2,7 @@
 
 > `const` **Constants**: `object`
 
-Defined in: [src/auxiliary/scalar/constants.ts:282](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/scalar/constants.ts#L282)
+Defined in: [src/auxiliary/scalar/constants.ts:212](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/auxiliary/scalar/constants.ts#L212)
 
 Unified constants object for convenient access.
 
@@ -141,38 +141,6 @@ const radians = turns * TURN_TO_RAD;
 
 ## Mathematical
 
-#### E
-
-> **E**: `number`
-
-Euler's number e ≈ 2.718281828459045.
-
-##### Remarks
-
-Base of natural logarithms. Fundamental in calculus and exponential growth.
-
-##### Constant
-
-##### Since
-
-0.7.0
-
-#### GOLDEN_RATIO_CONJUGATE
-
-> **GOLDEN_RATIO_CONJUGATE**: `number`
-
-Golden Ratio Conjugate Φ ≈ 0.618033988749895.
-
-##### Remarks
-
-Equals 1 / φ or φ - 1.
-
-##### Constant
-
-##### Since
-
-0.7.0
-
 #### LN_2
 
 > **LN_2**: `number`
@@ -219,23 +187,6 @@ Equals 1/√2 = √2/2. Common in rotation calculations (45° sin/cos).
 
 ## Numeric Limits
 
-#### MAX_SAFE_INTEGER_F64
-
-> **MAX_SAFE_INTEGER_F64**: `number`
-
-Maximum safe integer in float64 (2^53 - 1).
-
-##### Remarks
-
-Beyond this value, integer arithmetic becomes imprecise due to
-IEEE 754 double precision limitations.
-
-##### Constant
-
-##### Since
-
-0.7.0
-
 #### SMALLEST_NORMAL
 
 > **SMALLEST_NORMAL**: `2.2250738585072014e-308`
@@ -248,12 +199,6 @@ Numbers smaller than this (but not zero) are denormal/subnormal.
 ##### Since
 
 0.7.0
-
-## Other
-
-#### GOLDEN_RATIO
-
-> **GOLDEN_RATIO**: `number`
 
 ## Tolerance
 
@@ -290,24 +235,6 @@ Square of epsilon for area/volume comparisons.
 
 When comparing areas or squared distances, use EPSILON_SQUARED
 to maintain consistent tolerance behavior.
-
-##### Constant
-
-##### Since
-
-0.7.0
-
-#### ITERATIVE_TOLERANCE
-
-> **ITERATIVE_TOLERANCE**: `0.000001`
-
-Tolerance for iterative angle algorithms.
-
-##### Remarks
-
-Used in iterative angle operations (like constraint solving) where
-a looser tolerance than EPSILON is acceptable for convergence.
-Value of 1e-6 provides good balance between precision and performance.
 
 ##### Constant
 

@@ -7,6 +7,7 @@
 import { describe, expect, it } from '@jest/globals';
 
 import { Complex, freezeComplex } from '../../src/core/complex';
+import { Rotation2 } from '../../src/core/rotation2';
 import { Vector2 } from '../../src/core/vector2';
 
 // DIGITS = 10 matches EPSILON = 1e-10 — the library's documented tolerance
@@ -94,7 +95,7 @@ describe('Complex', () => {
    const b = Complex.fromPolar(2, Math.PI);
    a.slerp(b, 0.5); // Mutates a
    expect(a.magnitude()).toBeCloseTo(1.5, DIGITS);
-   expect(Math.abs(a.argument())).toBeCloseTo(Math.PI / 2, DIGITS);
+   expect(Math.abs(a.angle)).toBeCloseTo(Math.PI / 2, DIGITS);
   });
 
   it('static lerp uses out parameter', () => {
@@ -170,9 +171,9 @@ describe('Complex', () => {
    expect(c.magnitude()).toBeCloseTo(5, DIGITS);
   });
 
-  it('argument returns angle', () => {
+  it('angle returns phase angle', () => {
    const c = new Complex(1, 1);
-   expect(c.argument()).toBeCloseTo(Math.PI / 4, DIGITS);
+   expect(c.angle).toBeCloseTo(Math.PI / 4, DIGITS);
   });
 
   it('normalized getter returns unit complex', () => {
@@ -201,7 +202,7 @@ describe('Complex', () => {
 
   it('scale', () => {
    const c = new Complex(2, 3);
-   const scaled = c.scale(2);
+   const scaled = c.multiplyScalar(2);
    expect(scaled.real).toBe(4);
    expect(scaled.imag).toBe(6);
   });
@@ -326,8 +327,8 @@ describe('Complex', () => {
    expect(Complex.magnitude(new Complex(3, 4))).toBeCloseTo(5, DIGITS);
   });
 
-  it('static argument', () => {
-   expect(Complex.argument(new Complex(1, 1))).toBeCloseTo(Math.PI / 4, DIGITS);
+  it('static angle', () => {
+   expect(Complex.angle(new Complex(1, 1))).toBeCloseTo(Math.PI / 4, DIGITS);
   });
 
   it('static equals', () => {
@@ -575,15 +576,15 @@ describe('Complex', () => {
   });
  });
 
- describe('Coverage - Static magnitude and argument', () => {
+ describe('Coverage - Static magnitude and angle', () => {
   it('static magnitudeSq returns squared magnitude', () => {
    expect(Complex.magnitudeSq(new Complex(3, 4))).toBe(25);
   });
 
-  it('static argument returns angle for various quadrants', () => {
-   expect(Complex.argument(new Complex(1, 0))).toBeCloseTo(0, DIGITS);
-   expect(Complex.argument(new Complex(0, 1))).toBeCloseTo(Math.PI / 2, DIGITS);
-   expect(Complex.argument(new Complex(-1, 0))).toBeCloseTo(Math.PI, DIGITS);
+  it('static angle returns angle for various quadrants', () => {
+   expect(Complex.angle(new Complex(1, 0))).toBeCloseTo(0, DIGITS);
+   expect(Complex.angle(new Complex(0, 1))).toBeCloseTo(Math.PI / 2, DIGITS);
+   expect(Complex.angle(new Complex(-1, 0))).toBeCloseTo(Math.PI, DIGITS);
   });
  });
 
@@ -664,7 +665,7 @@ describe('Complex', () => {
  describe('Coverage - Instance scale', () => {
   it('static scale multiplies by scalar', () => {
    const c = new Complex(2, 3);
-   const result = Complex.scale(c, 2);
+   const result = Complex.multiplyScalar(c, 2);
    expect(result.real).toBe(4);
    expect(result.imag).toBe(6);
   });
@@ -804,7 +805,7 @@ describe('Complex', () => {
    const b = Complex.fromPolar(2, Math.PI);
    const mid = Complex.slerp(a, b, 0.5);
    expect(mid.magnitude()).toBeCloseTo(1.5, DIGITS);
-   expect(Math.abs(mid.argument())).toBeCloseTo(Math.PI / 2, DIGITS);
+   expect(Math.abs(mid.angle)).toBeCloseTo(Math.PI / 2, DIGITS);
   });
 
   it('static slerpClamped clamps t', () => {
@@ -878,7 +879,7 @@ describe('Coverage - slerpClamped', () => {
   const result = Complex.slerpClamped(a, b, 2);
   // t=2 clamped to 1, so result should equal b
   expect(result.magnitude()).toBeCloseTo(2, DIGITS);
-  expect(Math.abs(result.argument())).toBeCloseTo(Math.PI, DIGITS);
+  expect(Math.abs(result.angle)).toBeCloseTo(Math.PI, DIGITS);
  });
 
  it('works like slerp for t in [0, 1]', () => {
@@ -948,14 +949,14 @@ describe('Coverage - fromArray edge cases', () => {
 describe('Coverage - Instance scale (chaining)', () => {
  it('scales complex by scalar in place', () => {
   const c = new Complex(3, 4);
-  c.scale(2);
+  c.multiplyScalar(2);
   expect(c.real).toBe(6);
   expect(c.imag).toBe(8);
  });
 
  it('scale returns this for chaining', () => {
   const c = new Complex(1, 2);
-  const result = c.scale(3);
+  const result = c.multiplyScalar(3);
   expect(result).toBe(c);
  });
 });
@@ -1169,7 +1170,7 @@ describe('Coverage - Static negate', () => {
 describe('Coverage - Static scale', () => {
  it('scale scales by scalar', () => {
   expect.hasAssertions();
-  const result = Complex.scale(new Complex(2, 3), 2);
+  const result = Complex.multiplyScalar(new Complex(2, 3), 2);
   expect(result.real).toBe(4);
   expect(result.imag).toBe(6);
  });
@@ -1244,11 +1245,11 @@ describe('Coverage - Static fromPolar', () => {
  });
 });
 
-describe('Coverage - Instance argument', () => {
- it('argument returns angle', () => {
+describe('Coverage - Instance angle', () => {
+ it('angle returns phase angle', () => {
   expect.hasAssertions();
   const c = new Complex(0, 1);
-  expect(c.argument()).toBeCloseTo(Math.PI / 2, DIGITS);
+  expect(c.angle).toBeCloseTo(Math.PI / 2, DIGITS);
  });
 });
 
@@ -1703,7 +1704,7 @@ describe('Coverage - Instance slerp', () => {
  describe('Coverage - Instance scale method', () => {
   it('scale mutates this complex in place', () => {
    const c = new Complex(3, 4);
-   const result = c.scale(2);
+   const result = c.multiplyScalar(2);
    expect(result).toBe(c); // Returns this
    expect(c.real).toBe(6);
    expect(c.imag).toBe(8);
@@ -2172,7 +2173,7 @@ describe('Complex NaN/Infinity handling', () => {
 
   it('scale multiplies both components', () => {
    const c = new Complex(2, 3);
-   const result = c.scale(2);
+   const result = c.multiplyScalar(2);
    expect(result).toBe(c);
    expect(c.real).toBe(4);
    expect(c.imag).toBe(6);
@@ -2408,6 +2409,58 @@ describe('Instance pow zero-to-negative validation', () => {
  });
 });
 
+describe('Static addScalar / subtractScalar', () => {
+ it('addScalar adds real scalar to real component only', () => {
+  const result = Complex.addScalar(new Complex(3, 4), 2);
+  expect(result.real).toBe(5);
+  expect(result.imag).toBe(4);
+ });
+
+ it('subtractScalar subtracts real scalar from real component only', () => {
+  const result = Complex.subtractScalar(new Complex(3, 4), 2);
+  expect(result.real).toBe(1);
+  expect(result.imag).toBe(4);
+ });
+
+ it('addScalar writes to out parameter', () => {
+  const out = new Complex();
+  const result = Complex.addScalar(new Complex(3, 4), 2, out);
+  expect(result).toBe(out);
+  expect(out.real).toBe(5);
+  expect(out.imag).toBe(4);
+ });
+
+ it('handles NaN and Infinity', () => {
+  expect(Complex.addScalar(new Complex(NaN, 4), 2).real).toBeNaN();
+  expect(Complex.addScalar(new Complex(3, 4), Infinity).real).toBe(Infinity);
+  expect(Complex.subtractScalar(new Complex(3, 4), Infinity).real).toBe(-Infinity);
+ });
+});
+
+describe('Instance addScalar / subtractScalar', () => {
+ it('addScalar mutates real component only and returns this', () => {
+  const c = new Complex(3, 4);
+  const result = c.addScalar(2);
+  expect(result).toBe(c);
+  expect(c.real).toBe(5);
+  expect(c.imag).toBe(4);
+ });
+
+ it('subtractScalar mutates real component only and returns this', () => {
+  const c = new Complex(3, 4);
+  const result = c.subtractScalar(2);
+  expect(result).toBe(c);
+  expect(c.real).toBe(1);
+  expect(c.imag).toBe(4);
+ });
+
+ it('chains correctly', () => {
+  const c = new Complex(1, 2).addScalar(3).subtractScalar(1);
+  expect(c.real).toBe(3);
+  expect(c.imag).toBe(2);
+ });
+});
+
 describe('Static divideScalar tiers', () => {
  it('divideScalar divides by scalar', () => {
   const result = Complex.divideScalar(new Complex(6, 4), 2);
@@ -2494,5 +2547,309 @@ describe('Complex.fromVector2', () => {
   const z = Complex.fromVector2({ x: 1, y: -1 });
   expect(z.real).toBe(1);
   expect(z.imag).toBe(-1);
+ });
+
+ describe('instance smoothStep (redundant saturate removal)', () => {
+  it('produces correct result at t=0.5', () => {
+   const z = new Complex(0, 0);
+   z.smoothStep({ real: 1, imag: 1 }, 0.5);
+   expect(z.real).toBeCloseTo(0.5, DIGITS);
+   expect(z.imag).toBeCloseTo(0.5, DIGITS);
+  });
+
+  it('clamps t < 0 to edge0', () => {
+   const z = new Complex(0, 0);
+   z.smoothStep({ real: 1, imag: 1 }, -1);
+   expect(z.real).toBeCloseTo(0, DIGITS);
+   expect(z.imag).toBeCloseTo(0, DIGITS);
+  });
+
+  it('clamps t > 1 to edge1', () => {
+   const z = new Complex(0, 0);
+   z.smoothStep({ real: 1, imag: 1 }, 2);
+   expect(z.real).toBeCloseTo(1, DIGITS);
+   expect(z.imag).toBeCloseTo(1, DIGITS);
+  });
+ });
+});
+
+describe('Component-wise operations', () => {
+ describe('Static component-wise', () => {
+  it('abs returns absolute values', () => {
+   const result = Complex.abs({ real: -3, imag: -4 });
+   expect(result.real).toBe(3);
+   expect(result.imag).toBe(4);
+  });
+
+  it('floor floors both components', () => {
+   const result = Complex.floor({ real: 1.7, imag: -2.3 });
+   expect(result.real).toBe(1);
+   expect(result.imag).toBe(-3);
+  });
+
+  it('ceil ceils both components', () => {
+   const result = Complex.ceil({ real: 1.2, imag: -2.8 });
+   expect(result.real).toBe(2);
+   expect(result.imag).toBe(-2);
+  });
+
+  it('round rounds both components', () => {
+   const result = Complex.round({ real: 1.5, imag: -2.4 });
+   expect(result.real).toBe(2);
+   expect(result.imag).toBe(-2);
+  });
+
+  it('trunc truncates both components', () => {
+   const result = Complex.trunc({ real: 1.9, imag: -2.9 });
+   expect(result.real).toBe(1);
+   expect(result.imag).toBe(-2);
+  });
+
+  it('sign returns sign of both components', () => {
+   const result = Complex.sign({ real: -5, imag: 3 });
+   expect(result.real).toBe(-1);
+   expect(result.imag).toBe(1);
+  });
+
+  it('min returns per-component minimum', () => {
+   const result = Complex.min({ real: 3, imag: 1 }, { real: 1, imag: 5 });
+   expect(result.real).toBe(1);
+   expect(result.imag).toBe(1);
+  });
+
+  it('max returns per-component maximum', () => {
+   const result = Complex.max({ real: 3, imag: 1 }, { real: 1, imag: 5 });
+   expect(result.real).toBe(3);
+   expect(result.imag).toBe(5);
+  });
+
+  it('clamp clamps components', () => {
+   const result = Complex.clamp({ real: -5, imag: 10 }, { real: 0, imag: 0 }, { real: 3, imag: 3 });
+   expect(result.real).toBe(0);
+   expect(result.imag).toBe(3);
+  });
+
+  it('mod computes component-wise remainder', () => {
+   const result = Complex.mod({ real: 5, imag: 7 }, { real: 3, imag: 4 });
+   expect(result.real).toBeCloseTo(2);
+   expect(result.imag).toBeCloseTo(3);
+  });
+
+  it('handles NaN passthrough', () => {
+   const result = Complex.abs({ real: NaN, imag: 1 });
+   expect(result.real).toBeNaN();
+   expect(result.imag).toBe(1);
+  });
+
+  it('handles Infinity', () => {
+   const result = Complex.floor({ real: Infinity, imag: -Infinity });
+   expect(result.real).toBe(Infinity);
+   expect(result.imag).toBe(-Infinity);
+  });
+
+  it('writes to out parameter', () => {
+   const out = new Complex();
+   const result = Complex.abs({ real: -3, imag: -4 }, out);
+   expect(result).toBe(out);
+   expect(out.real).toBe(3);
+   expect(out.imag).toBe(4);
+  });
+ });
+
+ describe('Instance component-wise', () => {
+  it('abs mutates and chains', () => {
+   const z = new Complex(-3, -4);
+   const result = z.abs();
+   expect(result).toBe(z);
+   expect(z.real).toBe(3);
+   expect(z.imag).toBe(4);
+  });
+
+  it('floor mutates and chains', () => {
+   const z = new Complex(1.7, -2.3);
+   expect(z.floor()).toBe(z);
+   expect(z.real).toBe(1);
+   expect(z.imag).toBe(-3);
+  });
+
+  it('ceil mutates and chains', () => {
+   const z = new Complex(1.2, -2.8);
+   expect(z.ceil()).toBe(z);
+   expect(z.real).toBe(2);
+   expect(z.imag).toBe(-2);
+  });
+
+  it('round mutates and chains', () => {
+   const z = new Complex(1.5, -2.4);
+   expect(z.round()).toBe(z);
+   expect(z.real).toBe(2);
+   expect(z.imag).toBe(-2);
+  });
+
+  it('trunc mutates and chains', () => {
+   const z = new Complex(1.9, -2.9);
+   expect(z.trunc()).toBe(z);
+   expect(z.real).toBe(1);
+   expect(z.imag).toBe(-2);
+  });
+
+  it('sign mutates and chains', () => {
+   const z = new Complex(-5, 3);
+   expect(z.sign()).toBe(z);
+   expect(z.real).toBe(-1);
+   expect(z.imag).toBe(1);
+  });
+
+  it('min mutates and chains', () => {
+   const z = new Complex(3, 5);
+   expect(z.min({ real: 1, imag: 8 })).toBe(z);
+   expect(z.real).toBe(1);
+   expect(z.imag).toBe(5);
+  });
+
+  it('max mutates and chains', () => {
+   const z = new Complex(3, 5);
+   expect(z.max({ real: 1, imag: 8 })).toBe(z);
+   expect(z.real).toBe(3);
+   expect(z.imag).toBe(8);
+  });
+
+  it('clamp mutates and chains', () => {
+   const z = new Complex(-5, 10);
+   expect(z.clamp({ real: 0, imag: 0 }, { real: 3, imag: 3 })).toBe(z);
+   expect(z.real).toBe(0);
+   expect(z.imag).toBe(3);
+  });
+
+  it('mod mutates and chains', () => {
+   const z = new Complex(5, 7);
+   expect(z.mod({ real: 3, imag: 4 })).toBe(z);
+   expect(z.real).toBeCloseTo(2);
+   expect(z.imag).toBeCloseTo(3);
+  });
+ });
+
+ /* ===== fromRotation2 ===== */
+
+ describe('fromRotation2', () => {
+  it('converts identity rotation to (1, 0)', () => {
+   const z = Complex.fromRotation2({ cos: 1, sin: 0 });
+   expect(z.real).toBe(1);
+   expect(z.imag).toBe(0);
+  });
+
+  it('converts quarter-turn rotation', () => {
+   const rot = Rotation2.fromAngle(Math.PI / 2);
+   const z = Complex.fromRotation2(rot);
+   expect(z.real).toBeCloseTo(0, DIGITS);
+   expect(z.imag).toBeCloseTo(1, DIGITS);
+  });
+ });
+
+ /* ===== sqrt (algebraic formula) ===== */
+
+ describe('sqrt', () => {
+  it('sqrt of positive real', () => {
+   const z = Complex.sqrt({ real: 4, imag: 0 });
+   expect(z.real).toBeCloseTo(2, DIGITS);
+   expect(z.imag).toBeCloseTo(0, DIGITS);
+  });
+
+  it('sqrt of negative real (branch cut)', () => {
+   const z = Complex.sqrt({ real: -1, imag: 0 });
+   expect(z.real).toBeCloseTo(0, DIGITS);
+   expect(z.imag).toBeCloseTo(1, DIGITS);
+  });
+
+  it('sqrt of zero', () => {
+   const z = Complex.sqrt({ real: 0, imag: 0 });
+   expect(z.real).toBe(0);
+   expect(z.imag).toBe(0);
+  });
+
+  it('sqrt(z)^2 ≈ z for general complex', () => {
+   const input = { real: 0, imag: 2 };
+   const root = Complex.sqrt(input);
+   // square the root: (a+bi)^2 = a^2-b^2 + 2ab*i
+   const squared = Complex.multiply(root, root);
+   expect(squared.real).toBeCloseTo(input.real, DIGITS);
+   expect(squared.imag).toBeCloseTo(input.imag, DIGITS);
+  });
+
+  it('static and instance sqrt produce identical results', () => {
+   const inputs = [
+    [3, 4],
+    [-1, 0],
+    [0, 1],
+    [-4, 0],
+    [1e-10, 1e-10],
+   ] as const;
+   for (const [re, im] of inputs) {
+    const staticR = Complex.sqrt(new Complex(re, im));
+    const instanceR = new Complex(re, im);
+    instanceR.sqrt();
+    expect(instanceR.real).toBe(staticR.real);
+    expect(instanceR.imag).toBe(staticR.imag);
+   }
+  });
+ });
+
+ /* ===== exp and log ===== */
+
+ describe('exp', () => {
+  it('exp(0) = 1', () => {
+   const z = Complex.exp({ real: 0, imag: 0 });
+   expect(z.real).toBeCloseTo(1, DIGITS);
+   expect(z.imag).toBeCloseTo(0, DIGITS);
+  });
+
+  it('exp(iπ) ≈ -1', () => {
+   const z = Complex.exp({ real: 0, imag: Math.PI });
+   expect(z.real).toBeCloseTo(-1, DIGITS);
+   expect(z.imag).toBeCloseTo(0, DIGITS);
+  });
+ });
+
+ describe('log', () => {
+  it('log(1) = 0', () => {
+   const z = Complex.log({ real: 1, imag: 0 });
+   expect(z.real).toBeCloseTo(0, DIGITS);
+   expect(z.imag).toBeCloseTo(0, DIGITS);
+  });
+ });
+
+ /* ===== toPolar ===== */
+
+ describe('toPolar', () => {
+  it('converts real number to polar', () => {
+   const polar = Complex.toPolar({ real: 3, imag: 0 });
+   expect(polar.magnitude).toBeCloseTo(3, DIGITS);
+   expect(polar.angle).toBeCloseTo(0, DIGITS);
+  });
+
+  it('instance toPolar matches static', () => {
+   const z = new Complex(0, 2);
+   const polar = z.toPolar();
+   expect(polar.magnitude).toBeCloseTo(2, DIGITS);
+   expect(polar.angle).toBeCloseTo(Math.PI / 2, DIGITS);
+  });
+ });
+
+ /* ===== instance exp/log ===== */
+
+ describe('instance exp/log', () => {
+  it('instance exp mutates and chains', () => {
+   const z = new Complex(0, 0);
+   expect(z.exp()).toBe(z);
+   expect(z.real).toBeCloseTo(1, DIGITS);
+   expect(z.imag).toBeCloseTo(0, DIGITS);
+  });
+
+  it('instance log mutates and chains', () => {
+   const z = new Complex(1, 0);
+   expect(z.log()).toBe(z);
+   expect(z.real).toBeCloseTo(0, DIGITS);
+   expect(z.imag).toBeCloseTo(0, DIGITS);
+  });
  });
 });

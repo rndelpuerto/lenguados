@@ -2,7 +2,7 @@
 
 > **parseVector2**(`string_`, `out`): [`Vector2`](../../core/classes/Vector2.md)
 
-Defined in: [src/utils/parse.ts:89](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/utils/parse.ts#L89)
+Defined in: [src/utils/parse.ts:101](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/utils/parse.ts#L101)
 
 Parses a string representation of a 2D vector.
 
@@ -35,6 +35,10 @@ Supported formats:
 - "(x,y)" (with parentheses)
 - "[x,y]" (with brackets)
 - "{x:n, y:n}" (JSON-like)
+
+This function only handles finite numeric values. Non-finite values
+(NaN, Infinity, -Infinity) serialized via format functions cannot
+be round-tripped through parse functions.
 
 ## Throws
 

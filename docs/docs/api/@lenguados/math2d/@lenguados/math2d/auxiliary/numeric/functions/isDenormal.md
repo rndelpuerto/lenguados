@@ -2,7 +2,7 @@
 
 > **isDenormal**(`value`): `boolean`
 
-Defined in: [src/auxiliary/numeric/guards.ts:100](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/numeric/guards.ts#L100)
+Defined in: [src/auxiliary/numeric/guards.ts:100](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/auxiliary/numeric/guards.ts#L100)
 
 Tests if value is a denormal number.
 

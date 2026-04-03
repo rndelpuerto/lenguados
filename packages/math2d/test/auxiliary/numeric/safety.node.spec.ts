@@ -363,8 +363,8 @@ describe('numeric/safety', () => {
    expect(powSafe(NaN, 2)).toBeNaN();
   });
 
-  test('powSafe(NaN, 0) returns NaN (NaN propagation takes priority)', () => {
-   expect(powSafe(NaN, 0)).toBeNaN();
+  test('powSafe(NaN, 0) returns 1 (IEEE 754 pow semantics: x^0 = 1 for any x)', () => {
+   expect(powSafe(NaN, 0)).toBe(1);
   });
 
   test('expSafe(NaN) returns NaN', () => {

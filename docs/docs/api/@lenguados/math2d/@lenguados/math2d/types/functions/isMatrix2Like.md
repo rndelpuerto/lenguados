@@ -2,7 +2,7 @@
 
 > **isMatrix2Like**(`value`): `value is ReadonlyMatrix2Like`
 
-Defined in: [src/types/index.ts:292](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/types/index.ts#L292)
+Defined in: [src/types/index.ts:292](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/types/index.ts#L292)
 
 Type guard to check if value has 2x2 matrix properties (Matrix2Like).
 

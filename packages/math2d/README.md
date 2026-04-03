@@ -1,420 +1,171 @@
 # @lenguados/math2d
 
-## Table of Contents
+[![npm version](https://img.shields.io/npm/v/@lenguados/math2d.svg)](https://www.npmjs.com/package/@lenguados/math2d)
+[![Bundle Size](https://img.shields.io/bundlephobia/minzip/@lenguados/math2d)](https://bundlephobia.com/package/@lenguados/math2d)
+[![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue.svg)](https://www.typescriptlang.org/)
 
-- [Description](#description)
-- [Installation](#installation)
-- [Scripts](#scripts)
-- [API](#api)
-- [Examples](#examples)
-- [Full Spec](#full-spec)
-- [Changelog](#changelog)
+> Core 2D math utilities for the Lenguado physics-engine family.
 
-> Core 2-D math utilities for the Lenguado physics-engine family.
+High-performance, fully-typed TypeScript math primitives with **cross-platform determinism** (fdlibm-based kernels), **zero-allocation** hot-path patterns, and **tree-shakeable validation**.
 
----
+## Highlights
 
-## Description
-
-`@lenguados/math2d` provides a high-performance, fully-typed TypeScript toolkit of fundamental math building-blocks used throughout the Lenguado physics-engine family:
-
-- **Constants**: π, τ, EPSILON, degree↔radian factors.
-- **Scalar utilities**: clamp, sign, lerp, normalize, smoothStep, epsilonEquals, relativeEquals, saturate.
-- **Vector2**: mutable, chainable 2‑D vectors with robust numerics, safe variants, and alloc‑free static helpers.
-- **Matrix2**: 2×2 column‑major matrices with rotation/scale/shear, algebra, inversion & solving.
-
----
+- **7 core types** -- Vector2, Rotation2, Complex, Interval, Matrix2, Matrix3, Transform2
+- **Deterministic math** -- bit-exact sin/cos/atan2/exp/log across all JS engines via fdlibm polynomial kernels
+- **Allocation control** -- static methods with `out` parameter for GC-free hot paths
+- **Strict/Safe/Unchecked triality** -- three error-handling tiers per fallible operation
+- **Rich auxiliary layer** -- scalar, angle, and numeric utilities (clamp, lerp, sinCos, nearEquals, and 100+ more)
 
 ## Installation
 
 ```bash
-npm install --save @lenguados/math2d
-# or
-yarn add @lenguados/math2d
+npm install @lenguados/math2d
 ```
 
----
+## Quick Start
 
-## Scripts
-
-> Follow the [general scripts usage guide](https://github.com/rndelpuerto/lenguados/blob/main/docs/guide/scripts-usage.md) for configuration and how-tos.
-
----
-
-## API
-
-All exports are available as **named** exports from the package root:
-
-```ts
+```typescript
 import {
- PI,
- HALF_PI,
- TAU,
- DEG2RAD,
- RAD2DEG,
- EPSILON,
- clamp,
- sign,
- lerp,
- normalize,
- smoothStep,
- epsilonEquals,
- relativeEquals,
- saturate,
-} from '@lenguados/math2d';
-```
-
-### Vectors & Matrices
-
-```ts
-import {
- // Vector2 + helpers & types
  Vector2,
- freezeVector2,
- isVector2Like,
- type Vector2Like,
- type ReadonlyVector2Like,
- type ReadonlyVector2,
-
- // Matrix2 + helpers & types
- Matrix2,
- freezeMatrix2,
- isMatrix2Like,
- type Matrix2Like,
- type ReadonlyMatrix2,
+ Rotation2,
+ Transform2,
+ Matrix3,
+ lerp,
+ nearEquals,
+ DEG_TO_RAD,
+ sinCos,
 } from '@lenguados/math2d';
+
+// --- Static methods are pure; instance methods mutate `this` ---
+const position = Vector2.fromValues(10, 20);
+const velocity = Vector2.fromValues(3, 4);
+
+// Allocation-free: reuse `position` as output
+Vector2.add(position, velocity, position);
+
+// Fluent instance chaining
+position.add(velocity).multiplyScalar(0.5);
+
+// --- Rotation via decomposed transform (Scale -> Rotate -> Translate) ---
+const transform = Transform2.fromValues(5, 10, 45 * DEG_TO_RAD, 1, 1);
+const worldPoint = Transform2.transformPoint(transform, position);
+
+// --- Pre-computed cos/sin for hot loops ---
+const { cos, sin } = sinCos(45 * DEG_TO_RAD);
+const rotated = Vector2.fromValues(1, 0);
+rotated.rotateCS(cos, sin);
 ```
 
-> **Design notes**
->
-> - **Instances mutate and chain** (ergonomic for gameplay code).
-> - **Static helpers are pure** and accept optional `out` parameters for **alloc‑free** hot paths:
->
->   ```ts
->   const a = new Vector2(1, 2),
->    b = new Vector2(3, 4),
->    out = new Vector2();
->   Vector2.add(a, b, out); // writes into `out` instead of allocating
->   ```
+## API Overview
 
-### Hot Path Optimization Patterns
+All exports are **named** imports from the package root.
 
-For performance-critical code (physics simulation loops, batch processing), the library provides specialized patterns:
+### Core Types
 
-#### CS Methods (Precomputed Cosine/Sine)
+| Type         | Description                                                     |
+| ------------ | --------------------------------------------------------------- |
+| `Vector2`    | Mutable, chainable 2D vector with static pure helpers           |
+| `Rotation2`  | Unit-complex rotation (cos, sin) with CS variants for hot paths |
+| `Complex`    | Full complex arithmetic (exp, log, polar, slerp)                |
+| `Interval`   | Closed interval [min, max] arithmetic and set operations        |
+| `Matrix2`    | 2x2 column-major matrix (rotation, scale, shear, solve)         |
+| `Matrix3`    | 3x3 affine matrix for 2D coordinate transforms                  |
+| `Transform2` | Decomposed SRT (Scale -> Rotate -> Translate) transform         |
 
-When rotating many vectors by the same angle, avoid recomputing `cos`/`sin`:
+Each type includes: `Readonly*` alias, `freeze*()` function, `is*Like()` guard, and `*Like` / `Readonly*Like` structural interfaces.
 
-```ts
-import { sinCos } from '@lenguados/math2d';
+### Auxiliary Layer
 
-// ❌ Slow: computes cos/sin for each vector
-vectors.forEach((v) => v.rotate(angle));
+| Module        | Key Exports                                                                                                         |
+| ------------- | ------------------------------------------------------------------------------------------------------------------- |
+| **Scalar**    | `clamp`, `lerp`, `smoothStep`, `nearEquals`, `inverseLerp`, `sign`, `saturate`, `remap`, `mod`, `pingPong`, `step`  |
+| **Angle**     | `sinCos`, `degreesToRadians`, `normalizeRadians`, `angleDifference`, `lerpAngle`, `angleBisector`, `AngleUnwrapper` |
+| **Numeric**   | `divideSafe`, `reciprocalSafe`, `sqrtSafe`, `robustSum`, `roundToPlaces`, `snapToGrid`, `flushDenormal`             |
+| **Constants** | `PI`, `TAU`, `HALF_PI`, `DEG_TO_RAD`, `RAD_TO_DEG`, `EPSILON`, `MIN_SAFE_DIVISOR`, `SQRT_2`                         |
 
-// ✅ Fast: compute once, reuse
+### Deterministic Kernels
+
+| Export                          | Description                                                  |
+| ------------------------------- | ------------------------------------------------------------ |
+| `sin`, `cos`, `tan`             | fdlibm-based trigonometry (L0 bit-exact)                     |
+| `asin`, `acos`, `atan`, `atan2` | Inverse trig with safe variants (`asinSafe`, `acosSafe`)     |
+| `exp`, `log`, `pow`             | Exponential/logarithmic with safe variants                   |
+| `sinCos`, `hypot`               | Combined/utility functions                                   |
+| `config`                        | `config.useNativeMath` toggle for determinism vs performance |
+
+### Validation
+
+| Export                                                   | Description                           |
+| -------------------------------------------------------- | ------------------------------------- |
+| `setAssertionsEnabled` / `areAssertionsEnabled`          | Control assertion behavior at runtime |
+| `assert`, `assertFinite`, `assertNonZero`, `assertRange` | Scalar assertions                     |
+| `assertVector2`, `assertMatrix2`, `assertRotation2`, ... | Per-type structural assertions        |
+
+Assertions are tree-shakeable: stripped from production builds via conditional exports.
+
+### Utilities
+
+| Export                                                                   | Description                       |
+| ------------------------------------------------------------------------ | --------------------------------- |
+| `randomVector2`, `randomUnitVector2`, `randomOnCircle`, `randomInCircle` | Random generation                 |
+| `SeededRandomSource`                                                     | Deterministic PRNG (xoshiro128++) |
+| `parseVector2`, `formatVector2`, ...                                     | Serialization/parsing per type    |
+
+## Key Concepts
+
+### Triality (Strict / Safe / Unchecked)
+
+Every fallible operation follows the triality pattern. `normalize()` throws on zero-length vectors. `normalizeSafe()` returns a fallback (zero vector). `normalizeUnchecked()` skips validation for hot paths where the caller guarantees valid input.
+
+### Out Parameter
+
+Static methods accept an optional `out` parameter as the last argument to write results into an existing object, avoiding heap allocations. Instance methods mutate `this` and return `this` for chaining.
+
+### CS Variants
+
+Methods ending in `CS` accept pre-computed cosine and sine values. Use `sinCos(angle)` once, then call `rotateCS(cos, sin)` on many vectors to avoid redundant trig in tight loops.
+
+### Apply vs Transform
+
+`apply` is used for operators acting on operands (e.g., `Rotation2.apply(rotation, vector)`). `transform` is used for spatial coordinate transformations (e.g., `Matrix3.transformPoint(matrix, point)`).
+
+## Performance Tips
+
+```typescript
+// 1. Reuse objects with `out` parameter
+const temp = new Vector2();
+for (const entity of entities) {
+ Vector2.add(entity.position, entity.velocity, temp); // no allocation
+ entity.position.copy(temp);
+}
+
+// 2. Pre-compute cos/sin for batch rotations
 const { cos, sin } = sinCos(angle);
-vectors.forEach((v) => v.rotateCS(cos, sin));
-```
+for (const v of vertices) {
+ v.rotateCS(cos, sin); // avoids trig per vertex
+}
 
-Methods ending in `CS` accept precomputed cosine/sine: `rotateCS`, `rotateAroundCS`, `fromRotationCS`.
-
-#### Unchecked Methods
-
-For hot paths where input validity is guaranteed, use `*Unchecked` methods:
-
-```ts
-// ❌ Safe but slower (validates input)
-v.divideScalar(length);
-
-// ✅ Fast (no validation, caller ensures length ≠ 0)
-if (length !== 0) {
- v.divideScalarUnchecked(length);
+// 3. Use Unchecked in validated hot paths
+for (const v of validatedVectors) {
+ v.normalizeUnchecked(); // caller guarantees non-zero magnitude
 }
 ```
 
-Available unchecked methods: `divideScalarUnchecked`, `normalizeUnchecked`.
+## Math Conventions
 
-#### Rotation2 for Batched Rotations
+- Angles in **radians**, **CCW positive**, **Y-up** coordinate system
+- **Column-major** matrices, column-vector convention (`v' = M * v`)
+- Transform order: **Scale -> Rotate -> Translate**
+- Tolerance: `EPSILON = 1e-10`
 
-For repeatedly rotating many points, use `Rotation2` to store cos/sin:
+## Documentation
 
-```ts
-import { Rotation2 } from '@lenguados/math2d';
+- [Architecture](ARCHITECTURE.md) -- layered design and dependency rules
+- [Contributing](https://github.com/rndelpuerto/lenguados/blob/main/CONTRIBUTING.md) -- setup, workflow, API conventions
+- [TSDoc Standard](https://github.com/rndelpuerto/lenguados/blob/main/docs/docs/contributing/tsdoc-standard.md) -- canonical tag order, templates
+- [Changelog](CHANGELOG.md) -- version history
+- [Full Documentation](https://rndelpuerto.github.io/lenguados/docs/) -- docs site with deep-dives, design decisions, and API reference
 
-const rotation = Rotation2.fromAngle(angle);
+## License
 
-// Apply to many vectors efficiently
-vectors.forEach((v) => v.applyRotation(rotation));
-```
-
-### API Consistency: Strict / Safe / Unchecked
-
-Methods that may fail on invalid input follow a consistent naming pattern:
-
-| Variant           | Behavior               | Use Case                    |
-| ----------------- | ---------------------- | --------------------------- |
-| `method`          | Throws on invalid      | Default, catches bugs early |
-| `methodSafe`      | Returns fallback value | Graceful degradation        |
-| `methodUnchecked` | No validation          | Hot paths, caller validates |
-
-Example with `divideScalar`:
-
-```ts
-// Throws RangeError if scalar ≈ 0
-v.divideScalar(scalar);
-
-// Returns (0, 0) if scalar ≈ 0
-v.divideScalarSafe(scalar);
-
-// No check - produces Infinity/NaN if scalar = 0
-v.divideScalarUnchecked(scalar);
-```
-
-### Tolerance Constants
-
-The library uses two distinct tolerance values:
-
-| Constant           | Value   | Purpose                          |
-| ------------------ | ------- | -------------------------------- |
-| `EPSILON`          | `1e-10` | Approximate equality comparisons |
-| `MIN_SAFE_DIVISOR` | `1e-10` | Safe division guard (= EPSILON)  |
-
-```ts
-import { EPSILON } from '@lenguados/math2d';
-import { MIN_SAFE_DIVISOR } from '@lenguados/math2d/auxiliary/numeric/safety';
-
-// EPSILON: "Are these values approximately equal?"
-isNearZero(value, EPSILON);
-
-// MIN_SAFE_DIVISOR: "Is this divisor safe to use?" (equals EPSILON by design)
-divideSafe(a, b, MIN_SAFE_DIVISOR);
-```
-
----
-
-## Examples
-
-### Scalar constants
-
-```ts
-import { PI, TAU, DEG2RAD } from '@lenguados/math2d';
-
-console.log(`π = ${PI}`);
-console.log(`Full circle (τ) = ${TAU}`);
-console.log(`90° in radians = ${90 * DEG2RAD}`);
-```
-
-### Interpolation
-
-```ts
-import { clamp, lerp, smoothStep } from '@lenguados/math2d';
-
-const t = 1.2;
-
-console.log(clamp(t, 0, 1)); // 1
-console.log(lerp(10, 20, 0.5)); // 15
-console.log(smoothStep(0, 1, 0.5)); // ≈ 0.5
-```
-
-### Normalize
-
-```ts
-import { normalize } from '@lenguados/math2d';
-
-console.log(normalize(5, 0, 10)); // → 0.5
-console.log(normalize(-5, 0, 10)); // → 0
-console.log(normalize(15, 0, 10)); // → 1
-```
-
-### Fuzzy comparison
-
-```ts
-import { epsilonEquals, relativeEquals, EPSILON } from '@lenguados/math2d';
-
-// Absolute comparison with EPSILON
-const a = 0.1 + 0.2;
-const b = 0.3;
-
-console.log(epsilonEquals(a, b)); // true
-
-// Relative comparison: allows 1% difference on 100 → threshold = 1
-console.log(relativeEquals(100, 100.5, 0.01)); // → true
-console.log(relativeEquals(100, 102, 0.01)); // → false
-```
-
-### 2‑D vectors (Vector2)
-
-```ts
-import { Vector2 } from '@lenguados/math2d';
-
-// Construct
-const p = new Vector2(3, 4);
-console.log(p.length()); // 5
-
-// Mutable, chainable instance methods
-p.normalize()
- .scale(10)
- .rotate(Math.PI / 4);
-
-// Pure static helper with alloc‑free `out`
-const a = new Vector2(1, 2);
-const b = new Vector2(5, -1);
-const sum = Vector2.add(a, b); // → new Vector2(6, 1)
-const out = new Vector2();
-Vector2.subtract(a, b, out); // → out = (-4, 3)
-
-// Safe vs throwing variants
-const v = new Vector2(1, 1);
-v.divideScalarSafe(0); // → (0,0)   (safe)
-```
-
-> **Tip:** many operations also exist as _safe_ statics, e.g. `Vector2.divideSafe`, `Vector2.normalizeSafe`, etc.
-
-### 2×2 matrices (Matrix2)
-
-```ts
-import { Matrix2, Vector2 } from '@lenguados/math2d';
-
-// Build a rotation and transform a vector (column vector convention)
-const R = Matrix2.fromRotation(Math.PI / 2);
-const v = new Vector2(1, 0);
-const vRot = Matrix2.transformVector(R, v); // → (0, 1)
-
-// Compose transforms (mutable & chainable)
-const M = new Matrix2()
- .setRotation(Math.PI / 3)
- .scale(2, 1)
- .shear(0.1, 0.2);
-
-// Solve A·x = b
-const A = new Matrix2(2, 1, 1, 3);
-const b = new Vector2(5, 7);
-const x = Matrix2.solve(A, b); // → solution vector
-```
-
-> **Conventions:** Matrices are **row‑major** (`m00 m01; m10 m11`) and vectors are treated as **columns** when applying transforms: `v' = M · v`.
-
----
-
-## Full Spec
-
-| Export               | Type     | Description                                                             |
-| -------------------- | -------- | ----------------------------------------------------------------------- |
-| **PI**               | `number` | π (`Math.PI`).                                                          |
-| **HALF_PI**          | `number` | π/2.                                                                    |
-| **TAU**              | `number` | 2π.                                                                     |
-| **DEG2RAD**          | `number` | π/180.                                                                  |
-| **RAD2DEG**          | `number` | 180/π.                                                                  |
-| **EPSILON**          | `number` | Small tolerance for float comparisons.                                  |
-| **clamp()**          | `fn`     | Clamp value to [min, max].                                              |
-| **sign()**           | `fn`     | Returns -1, 0, or +1.                                                   |
-| **lerp()**           | `fn`     | Linear interpolation.                                                   |
-| **normalize()**      | `fn`     | Linear map and clamp from [min, max] to [0, 1].                         |
-| **smoothStep()**     | `fn`     | Smoothstep interpolation with zero derivatives at boundaries.           |
-| **epsilonEquals()**  | `fn`     | Absolute-difference float comparison.                                   |
-| **relativeEquals()** | `fn`     | Relative-tolerance float comparison (scaled by `max(1, \|x\|, \|y\|)`). |
-| **saturate()**       | `fn`     | Clamp to [0, 1].                                                        |
-
-_(New in this release: **Vector2** and **Matrix2**. Additional modules (Matrix3, Transform2, Geometry, Raycast, etc.) will be added in subsequent releases.)_
-
-### Vector2 (class)
-
-> **Summary:** Mutable, chainable 2‑D vector with comprehensive static helpers (pure, optional `out`) and safe variants. Robust numerics (`Math.hypot`), rich geometry/angle ops, interpolation, constraints, projections/reflections, and Box2D‑style cross products.
-
-**Types & helpers**
-
-- `type Vector2Like = { x: number; y: number }`
-- `type ReadonlyVector2Like = { readonly x: number; readonly y: number }`
-- `type ReadonlyVector2 = Readonly<Vector2>`
-- `freezeVector2(v: Vector2): ReadonlyVector2` – permanently freeze a vector instance.
-- `isVector2Like(subject: unknown): subject is ReadonlyVector2Like`
-
-**Static constants**
-
-- `ZERO_VECTOR (0,0)`, `ONE_VECTOR (1,1)`, `NEGATIVE_ONE_VECTOR (-1,-1)`,
-  `EPSILON_VECTOR (EPSILON,EPSILON)`, `INFINITY_VECTOR (+∞,+∞)`, `NEGATIVE_INFINITY_VECTOR (-∞,-∞)`,
-  `UNIT_X_VECTOR (1,0)`, `UNIT_Y_VECTOR (0,1)`, `NEGATIVE_UNIT_X_VECTOR (-1,0)`, `NEGATIVE_UNIT_Y_VECTOR (0,-1)`,
-  `UNIT_DIAGONAL_VECTOR (1/√2,1/√2)`, `NEGATIVE_UNIT_DIAGONAL_VECTOR (-1/√2,-1/√2)`.
-
-**Static API (pure; many accept `out`)**
-
-- **Factories & parsing:** `clone`, `copy`, `fromValues`, `fromArray`, `fromObject`, `fromAngle`, `parse`.
-- **Random:** `random` (unit), `randomOnCircle(radius=1)`, `randomInUnitCircle` (uniform area).
-- **Component arithmetic:** `sumComponents`, `add`, `addScalar`, `sub`, `subScalar`, `multiply`, `multiplyScalar`, `divide`, `divideScalar`, `divideSafe`, `divideScalarSafe`, `mod`, `modScalar`, `negate`, `addScaledVector`.
-- **Interpolation:** `lerp`, `lerpClamped`.
-- **Measures & geometry:** `dot`, `cross`, `cross3` (twice signed area of triangle), `length`, `lengthSq`, `manhattanLength`, `distance`, `distanceSq`, `manhattanDistance`.
-- **Direction & angles:** `direction(from,to)`, `angle(v)`, `angleTo(a,b)`, `angleBetween(a,b)`.
-- **Numeric transforms:** `floor`, `ceil`, `round`, `abs`, `inverse`, `inverseSafe`, `swap`.
-- **Constraints:** `clamp(v,min,max)`, `clampScalar`, `clampLength(min,max)`, `limit(maxLength)`, `min(a,b)`, `max(a,b)`.
-- **Vector transforms:** `normalize`, `normalizeSafe`, `setLength`, `setLengthSafe`, `setAngle`,
-  `project`, `projectOnUnit`, `projectSafe`, `reflect`, `reflectSafe`,
-  `perpendicular(clockwise=false)`, `unitPerpendicular`, `unitPerpendicularSafe`,
-  `rotate`, `rotateCS`, `rotateAround`, `rotateAroundCS`,
-  `midpoint`, `reject`, `crossVS`, `crossSV`.
-- **Comparison & validation:** `isZero`, `nearZero`, `equals`, `nearEquals`, `isUnit`, `isFinite`, `isParallel`, `isPerpendicular`.
-- **Utilities:** `hashCode(v)` (deterministic 32‑bit uint).
-
-**Instance API (mutable & chainable)**
-
-- **Storage & construction:** fields `x`, `y`. Overloads: `(x,y)`, tuple `[x,y]`, POJO `{x,y}`, copy `Vector2`, or no‑arg `(0,0)`.
-- **Swizzles & access:** `getComponent(0|1)`, getters `xy`, `yx`, `xx`, `yy`.
-- **Basic mutators:** `set(x,y)`, `setComponent(0|1,val)`, `setX`, `setY`, `setScalar`, `copy(v)`, `zero()`, `clone()`.
-- **Arithmetic:** `sumComponents()`, `add`, `addScalar`, `sub`, `subScalar`, `multiply`, `multiplyScalar`, `divide`, `divideScalar`, `divideSafe`, `divideScalarSafe`, `mod`, `modScalar`, `negate`, getter `negated`, `addScaledVector`.
-- **Interpolation:** `lerp(end,t)`, `lerpClamped(end,t)`.
-- **Measures:** `dot`, `cross`, `cross3(b,c)`, `length`, `lengthSq`, `manhattanLength`, `distanceTo(v)`, `distanceToSq(v)`, `manhattanDistanceTo(v)`.
-- **Direction & angles:** `directionTo(target)`, `angle()`, `angleTo(v)`, `angleBetween(v)`.
-- **Numeric transforms:** `floor`, `ceil`, `round`, `abs`, getter `absolute`, `inverse`, `inverseSafe`, `swap`.
-- **Constraints:** `clamp(min,max)`, `clampScalar(min,max)`, `clampLength(min,max)`, `limit(maxLen)`, `min(v)`, `max(v)`.
-- **Vector transforms:** `normalize`, `normalizeSafe`, getter `normalized`, `setLength`, `setLengthSafe`, `setAngle`,
-  `project(axis)`, `projectSafe(axis)`, `projectOnUnit(unitAxis)`, `reflect(unitNormal)`, `reflectSafe(normal)`,
-  `perpendicular(clockwise)`, `unitPerpendicular(clockwise)`, `unitPerpendicularSafe(clockwise)`,
-  `rotate(angle)`, `rotateCS(c,s)`, `rotateAround(center,angle)`, `rotateAroundCS(center,c,s)`,
-  `midpoint(v)`, `reject(onto)`, `crossScalarRight(s)`, `crossScalarLeft(s)`.
-- **Comparison & validation:** `isZero`, `nearZero(eps)`, `equals(v)`, `nearEquals(v,eps)`, `isUnit()`, `isFinite()`, `isParallelTo(v,eps)`, `isPerpendicularTo(v,eps)`.
-- **Conversion & representation:** `toJSON()`, `toObject()`, `toArray(out?,offset=0)`, iterator `[Symbol.iterator]`, `toString(precision?)`, `hashCode()`.
-
-### Matrix2 (class, 2×2)
-
-> **Summary:** Row‑major storage (`m00, m01, m10, m11`) with **column‑vector** transform semantics (`v' = M · v`). Includes full algebra, rotation/scale/shear builders, inversion (safe/tolerant), solving `A·x=b`, orthonormalization, and alloc‑free statics.
-
-**Types & helpers**
-
-- `interface Matrix2Like { m00:number; m01:number; m10:number; m11:number }`
-- `type ReadonlyMatrix2 = Readonly<Matrix2>`
-- `freezeMatrix2(m: Matrix2): ReadonlyMatrix2` – permanently freeze a matrix instance.
-- `isMatrix2Like(subject: unknown): subject is Readonly<Matrix2Like>`
-
-**Static constants**
-
-- `IDENTITY_MATRIX`, `ZERO_MATRIX`, `ROT90_CCW_MATRIX`, `ROT90_CW_MATRIX`, `ROT180_MATRIX`.
-
-**Static API (pure; many accept `out`)**
-
-- **Factories:** `clone`, `copy`, `fromValues`, `fromRows`, `fromColumns`,
-  `fromRotation(angle)`, `fromRotationCS(cos,sin)`, `fromScaling(sx,sy)`, `fromShear(shx,shy)`,
-  `fromArray`, `fromObject`, `parse`, `randomRotation()`.
-- **Algebra:** `add`, `sub`, `multiplyComponents` (Hadamard), `multiply` (A×B), `multiplyScalar`, `transpose`, `adjugate`, `determinant`, `trace`,
-  `inverse` (throws on singular), `inverseSafe` (returns zero on singular), `inverseTol(a,epsilon)`.
-- **Solve:** `solve(a,b)`, `solveSafe(a,b[,out])`, `solveTol(a,b,epsilon[,out])`.
-- **Vectors & outer product:** `transformVector(a,v[,out])`, `outerProduct(u,v[,outMatrix])`.
-- **Comparison & validation:** `equals`, `nearEquals`, `isFinite`, `isIdentity`, `isRotation`, `isSingular`.
-- **Utilities:** `frobeniusNorm(a)`, `hashCode(a)`, `angleOfRotation(a)` (≈ `atan2(m10,m00)`).
-
-**Instance API (mutable & chainable)**
-
-- **Storage & construction:** fields `m00,m01,m10,m11`. Overloads: explicit values, tuple `[m00,m01,m10,m11]`, POJO, copy, or no‑arg identity.
-- **Basics:** `set(m00,m01,m10,m11)`, `identity()`, `zero()`, `clone()`, `copy(other)`.
-- **Rows/columns:** `getRow(0|1)`, `setRow(0|1,vec)`, `getColumn(0|1)`, `setColumn(0|1,vec)`.
-- **Numeric transforms:** `floor`, `ceil`, `round`, `abs`.
-- **Algebra (matrix–matrix/scalar):** `add`, `sub`, `multiplyComponents`, `multiply(m)` (**right‑multiply** → `this = this × m`), `premultiply(m)` (**left‑multiply** → `this = m × this`), `multiplyScalar(s)`, `transpose`, `determinant`, `trace`, `inverse` (throws), `inverseSafe`.
-- **Build & compose transforms:** `setRotation(angle)`, `setRotationCS(c,s)`, `setScaling(sx,sy)`, `setShear(shx,shy)`, `rotate(angle)` (post‑multiply), `rotateCS(c,s)`, `scale(sx,sy)` (post‑multiply), `shear(shx,shy)` (post‑multiply).
-- **Vectors & stability:** `transformVector(v)`, `transformVectorInto(v,out)`, `orthonormalize()` (Gram–Schmidt to nearest rotation).
-- **Comparison & validation:** `equals`, `nearEquals`, `isIdentity`, `isRotation`, `isFinite`, `isSingular`, `angle()` (≈ rotation).
-- **Conversion & representation:** `toJSON()`, `toObject()`, `toArray(out?,offset=0)`, iterator, `toString(precision?)`, `hashCode()`.
-
----
-
-## Changelog
-
-All notable changes to this package are documented in the [CHANGELOG](https://github.com/rndelpuerto/lenguados/blob/main/packages/math2d/CHANGELOG.md).
-Version numbering follows [SemVer](https://semver.org/).
+[Apache License 2.0](../../LICENSE)

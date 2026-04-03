@@ -1,6 +1,6 @@
 # Class: AngleUnwrapper
 
-Defined in: [src/auxiliary/angle/unwrapping.ts:147](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/angle/unwrapping.ts#L147)
+Defined in: [src/auxiliary/angle/unwrapping.ts:143](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/auxiliary/angle/unwrapping.ts#L143)
 
 Streaming unwrapper for angles in radians.
 Maintains continuity across calls by accumulating shortest-arc deltas.
@@ -17,12 +17,12 @@ re-anchoring via `reset()` for such use cases.
 const unwrapper = new AngleUnwrapper();
 
 console.log(unwrapper.next(0)); // 0
-console.log(unwrapper.next(Math.PI)); // Math.PI
-console.log(unwrapper.next(0)); // 2 * Math.PI
-console.log(unwrapper.value); // 2 * Math.PI
+console.log(unwrapper.next(3)); // 3
+console.log(unwrapper.next(-3)); // 3.28... (continuous, not jumping to -3)
+console.log(unwrapper.value); // 3.28...
 
 unwrapper.reset(0);
-console.log(unwrapper.next(Math.PI)); // Math.PI
+console.log(unwrapper.next(1)); // 1
 ```
 
 ## Since
@@ -35,7 +35,7 @@ console.log(unwrapper.next(Math.PI)); // Math.PI
 
 > **new AngleUnwrapper**(`initialAngle?`): `AngleUnwrapper`
 
-Defined in: [src/auxiliary/angle/unwrapping.ts:155](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/angle/unwrapping.ts#L155)
+Defined in: [src/auxiliary/angle/unwrapping.ts:151](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/auxiliary/angle/unwrapping.ts#L151)
 
 Creates a new angle unwrapper.
 
@@ -51,6 +51,29 @@ Optional initial angle
 
 `AngleUnwrapper`
 
+## Accessor
+
+### initialized
+
+#### Get Signature
+
+> **get** **initialized**(): `boolean`
+
+Defined in: [src/auxiliary/angle/unwrapping.ts:165](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/auxiliary/angle/unwrapping.ts#L165)
+
+Whether the unwrapper has received at least one angle.
+Distinguishes uninitialized state from "initialized at 0".
+
+##### Since
+
+0.7.0
+
+##### Returns
+
+`boolean`
+
+True if the unwrapper has been initialized
+
 ## Normalization
 
 ### value
@@ -59,7 +82,7 @@ Optional initial angle
 
 > **get** **value**(): `number`
 
-Defined in: [src/auxiliary/angle/unwrapping.ts:198](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/angle/unwrapping.ts#L198)
+Defined in: [src/auxiliary/angle/unwrapping.ts:196](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/auxiliary/angle/unwrapping.ts#L196)
 
 Returns the last unwrapped value.
 
@@ -79,7 +102,7 @@ The last unwrapped value
 
 > **next**(`theta`): `number`
 
-Defined in: [src/auxiliary/angle/unwrapping.ts:180](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/angle/unwrapping.ts#L180)
+Defined in: [src/auxiliary/angle/unwrapping.ts:178](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/auxiliary/angle/unwrapping.ts#L178)
 
 Feeds a new wrapped angle and returns the continuous (unwrapped) value.
 On first call, it initializes to the provided angle.
@@ -108,7 +131,7 @@ Unwrapped angle in radians
 
 > **reset**(`theta?`): `void`
 
-Defined in: [src/auxiliary/angle/unwrapping.ts:209](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/angle/unwrapping.ts#L209)
+Defined in: [src/auxiliary/angle/unwrapping.ts:207](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/auxiliary/angle/unwrapping.ts#L207)
 
 Resets the internal state. If `theta` is provided, sets it as the starting value.
 
@@ -127,22 +150,3 @@ Optional new starting angle
 #### Since
 
 0.7.0
-
-## Other
-
-### initialized
-
-#### Get Signature
-
-> **get** **initialized**(): `boolean`
-
-Defined in: [src/auxiliary/angle/unwrapping.ts:167](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/auxiliary/angle/unwrapping.ts#L167)
-
-Whether the unwrapper has received at least one angle.
-Distinguishes uninitialized state from "initialized at 0".
-
-##### Returns
-
-`boolean`
-
-True if the unwrapper has been initialized

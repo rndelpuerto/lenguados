@@ -26,8 +26,17 @@
  * @see {@link https://www.netlib.org/fdlibm/} - FreeBSD fdlibm reference implementation
  */
 
-import { HALF_PI, PI, QUARTER_PI } from '../auxiliary/scalar/constants';
 import type { SinCos } from '../types';
+
+/**
+ * Local copies of mathematical constants to avoid upward imports from `auxiliary/`.
+ * The deterministic layer must NOT depend on auxiliary (dependencies flow downward only).
+ *
+ * @see {@link auxiliary/scalar/constants.ts} for the canonical definitions.
+ */
+const PI = Math.PI;
+const HALF_PI = Math.PI / 2;
+const QUARTER_PI = Math.PI / 4;
 
 /* ========================================================================== */
 /* Runtime Configuration                                                       */
@@ -169,6 +178,8 @@ const E5 = 4.13813679705723846039e-8; // approximation
  * Shared buffer for IEEE 754 bit manipulation.
  * Using a single buffer avoids allocation overhead.
  * Not reentrant: callers must not nest functions that use this buffer.
+ * Verified call graph: log and pow2 share this buffer. pow calls log then
+ * exp sequentially (safe). exp calls pow2. No nesting occurs.
  * @internal
  */
 const ieeeBuffer = new ArrayBuffer(8);
@@ -180,7 +191,7 @@ const ieeeView = new DataView(ieeeBuffer);
  * @returns 2 raised to the power n
  * @internal
  */
-export function pow2(n: number): number {
+function pow2(n: number): number {
  // Subnormal range: two-step scaling to avoid exponent field underflow
  if (n < -1022) {
   return pow2(-1022) * pow2(n + 1022);
@@ -264,6 +275,15 @@ export function hypot(x: number, y: number): number {
  * @remarks
  * Uses quadrant-based reduction (not octant). Each quadrant is π/2 wide.
  * The reduced value is always in [-π/4, π/4] after adjustment.
+ *
+ * Uses Cody-Waite two-step reduction, which is accurate for |angle| ≤ ~2²⁰·π.
+ * Beyond this range, precision degrades because the quadrant number `n` grows
+ * large, causing cancellation in `x - n·PIO2_HI - n·PIO2_LO`. For larger
+ * angles, {@link sinCosNormalized} pre-normalizes via floating-point modulo
+ * to (-π, π] so that `n ≤ 2` here.
+ *
+ * Note: This function is `@internal` — the precision boundary is documented
+ * on the public {@link sinCos} function.
  *
  * @param x - Angle in radians
  * @returns Tuple of [reduced angle in [-π/4, π/4], quadrant 0-3]
@@ -462,6 +482,10 @@ export function sinCos(x: number, out?: SinCos): SinCos {
 
 /**
  * Deterministic tangent function.
+ *
+ * @remarks
+ * Computed as `sin(x) / cos(x)`, so reduced precision near π/2 + nπ
+ * where cos → 0. No singularity guard; returns ±large values near poles.
  *
  * @param x - Angle in radians
  * @returns tan(x) = sin(x) / cos(x)
@@ -791,19 +815,21 @@ export function log(x: number): number {
 }
 
 /**
- * Kernel-level safe natural logarithm (returns 0 for non-positive values).
+ * Safe natural logarithm at the deterministic kernel level (returns 0 for non-positive values).
  *
  * @remarks
- * This is the kernel-level safe variant (single-argument, no base support).
- * The public API `logSafe` in `auxiliary/numeric/safety` adds custom base
- * support and delegates to this kernel. Both return 0 for non-positive input.
- * Not exported from the main index to avoid naming collisions with the
- * richer public variant.
+ * The deterministic layer's single-argument safe log, analogous to {@link expSafe} for `exp`
+ * and {@link acosSafe}/{@link asinSafe} for inverse trig. Intended for consumers who use
+ * {@link DeterministicKernels} directly without the auxiliary layer.
+ *
+ * For multi-base support (`logSafe(x, base)`), use `auxiliary/numeric/safety.logSafe` instead,
+ * which internally delegates to the deterministic {@link log} kernel with its own guard.
  *
  * @param x - Value to compute logarithm of
  * @returns ln(x) for x > 0, 0 otherwise
  *
- * @internal
+ * @category Arithmetic
+ * @since 0.9.0
  */
 export function logKernelSafe(x: number): number {
  if (x <= 0) return 0;
@@ -873,6 +899,10 @@ export function exp(x: number): number {
 
 /**
  * Safe exponential function (handles extreme values gracefully).
+ *
+ * @remarks
+ * Returns Number.MAX_VALUE for positive overflow (not Infinity) and 0 for
+ * negative overflow, maintaining the Safe contract (finite-in/finite-out).
  *
  * @param x - Exponent value
  * @returns e^x, clamped to finite range
@@ -988,9 +1018,6 @@ export const DeterministicKernels = {
  // Power
  pow,
 } as const;
-
-// Re-export sqrtSafe from numeric/safety for backward compatibility
-export { sqrtSafe } from '../auxiliary/numeric/safety';
 
 // Re-export individual functions for convenience
 export type { SinCos } from '../types';

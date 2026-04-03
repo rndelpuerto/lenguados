@@ -194,7 +194,7 @@ export function assertFinite(value: number, name?: string): void {
  *
  * @param value - Numeric value to validate
  * @param name - Parameter name for error messages (optional)
- * @throws {Error} If assertions enabled and value is exactly zero
+ * @throws {Error} If assertions enabled and value is zero or NaN
  *
  * @example
  * ```typescript
@@ -211,7 +211,7 @@ export function assertNonZero(value: number, name?: string): void {
  /* istanbul ignore next -- DCE: eliminated in production */
  if (!DEV_MODE) return;
  if (!assertionsEnabled) return;
- if (value === 0) {
+ if (value !== value || value === 0) {
   throw new Error(
    `[math2d] ${name ?? 'value'} must not be zero. Use divideSafe() for a fallback value`,
   );
@@ -260,7 +260,7 @@ export function assertRange(value: number, min: number, max: number, name?: stri
  *
  * @param value - Numeric value to validate
  * @param name - Parameter name for error messages (optional)
- * @throws {Error} If assertions enabled and value ≤ 0
+ * @throws {Error} If assertions enabled and value is ≤ 0 or NaN
  *
  * @example
  * ```typescript
@@ -277,7 +277,7 @@ export function assertPositive(value: number, name?: string): void {
  /* istanbul ignore next -- DCE: eliminated in production */
  if (!DEV_MODE) return;
  if (!assertionsEnabled) return;
- if (value <= 0) {
+ if (value !== value || value <= 0) {
   throw new Error(
    `[math2d] ${name ?? 'value'} must be positive (> 0), got ${value}. Use clamp() or saturate() for a safe range`,
   );
@@ -293,7 +293,7 @@ export function assertPositive(value: number, name?: string): void {
  *
  * @param value - Numeric value to validate
  * @param name - Parameter name for error messages (optional)
- * @throws {Error} If assertions enabled and value < 0
+ * @throws {Error} If assertions enabled and value is < 0 or NaN
  *
  * @example
  * ```typescript
@@ -310,7 +310,7 @@ export function assertNonNegative(value: number, name?: string): void {
  /* istanbul ignore next -- DCE: eliminated in production */
  if (!DEV_MODE) return;
  if (!assertionsEnabled) return;
- if (value < 0) {
+ if (value !== value || value < 0) {
   throw new Error(
    `[math2d] ${name ?? 'value'} must be non-negative (>= 0), got ${value}. Use clamp() or saturate() for a safe range`,
   );
@@ -587,6 +587,53 @@ export function assertRotation2(cos: number, sin: number, name?: string): void {
 }
 
 /**
+ * Asserts that Rotation2-like components are finite AND form a unit rotation.
+ *
+ * @remarks
+ * Validates that cos and sin are finite AND that cos² + sin² ≈ 1 within
+ * the given tolerance. Use this for stricter validation than {@link assertRotation2}
+ * when the unit constraint must be enforced.
+ * No-op when assertions are disabled.
+ *
+ * @param cos - Cosine component to validate
+ * @param sin - Sine component to validate
+ * @param tolerance - Maximum deviation of cos²+sin² from 1 (default: 1e-10)
+ * @param name - Rotation name for error messages (optional)
+ * @throws {Error} If assertions enabled and components are not finite or not unit
+ *
+ * @example
+ * ```typescript
+ * assertRotation2Normalized(1, 0); // passes (unit rotation)
+ * assertRotation2Normalized(0.6, 0.8); // passes (cos²+sin² = 1)
+ * assertRotation2Normalized(2, 0); // throws (cos²+sin² = 4)
+ * ```
+ *
+ * @category Assertion
+ * @since 0.8.0
+ */
+export function assertRotation2Normalized(
+ cos: number,
+ sin: number,
+ tolerance = 1e-10,
+ name?: string,
+): void {
+ /* istanbul ignore next -- DCE: eliminated in production */
+ if (!DEV_MODE) return;
+ if (!assertionsEnabled) return;
+ const prefix = name ? `${name}.` : '';
+ if (!Number.isFinite(cos)) {
+  throw new Error(`[math2d] ${prefix}cos must be finite, got ${cos}`);
+ }
+ if (!Number.isFinite(sin)) {
+  throw new Error(`[math2d] ${prefix}sin must be finite, got ${sin}`);
+ }
+ const magSq = cos * cos + sin * sin;
+ if (Math.abs(magSq - 1) > tolerance) {
+  throw new Error(`[math2d] ${prefix}rotation must be unit (cos²+sin² ≈ 1), got ${magSq}`);
+ }
+}
+
+/**
  * Asserts that Complex-like components are finite.
  *
  * @remarks
@@ -730,7 +777,8 @@ export function assertTransform2(
  *
  * @remarks
  * Validates that object has `x` and `y` numeric properties that are finite.
- * No-op when assertions are disabled.
+ * No-op when assertions are disabled. In production builds, this function
+ * is eliminated via DCE. For runtime shape validation, use `isVector2Like()`.
  *
  * @param value - Object to validate
  * @param name - Object name for error messages (optional)
@@ -765,7 +813,8 @@ export function assertVector2Like(value: unknown, name?: string): asserts value 
  *
  * @remarks
  * Validates that object has `cos` and `sin` numeric properties that are finite.
- * No-op when assertions are disabled.
+ * No-op when assertions are disabled. In production builds, this function
+ * is eliminated via DCE. For runtime shape validation, use `isRotation2Like()`.
  *
  * @param value - Object to validate
  * @param name - Object name for error messages (optional)
@@ -800,7 +849,8 @@ export function assertRotation2Like(value: unknown, name?: string): asserts valu
  *
  * @remarks
  * Validates that object has `m00`, `m01`, `m10`, `m11` numeric properties that are finite.
- * No-op when assertions are disabled.
+ * No-op when assertions are disabled. In production builds, this function
+ * is eliminated via DCE. For runtime shape validation, use `isMatrix2Like()`.
  *
  * @param value - Object to validate
  * @param name - Object name for error messages (optional)
@@ -837,7 +887,8 @@ export function assertMatrix2Like(value: unknown, name?: string): asserts value 
  *
  * @remarks
  * Validates that object has `m00`..`m22` numeric properties that are finite.
- * No-op when assertions are disabled.
+ * No-op when assertions are disabled. In production builds, this function
+ * is eliminated via DCE. For runtime shape validation, use `isMatrix3Like()`.
  *
  * @param value - Object to validate
  * @param name - Object name for error messages (optional)
@@ -874,7 +925,8 @@ export function assertMatrix3Like(value: unknown, name?: string): asserts value 
  *
  * @remarks
  * Validates that object has `real` and `imag` numeric properties that are finite.
- * No-op when assertions are disabled.
+ * No-op when assertions are disabled. In production builds, this function
+ * is eliminated via DCE. For runtime shape validation, use `isComplexLike()`.
  *
  * @param value - Object to validate
  * @param name - Object name for error messages (optional)
@@ -910,7 +962,8 @@ export function assertComplexLike(value: unknown, name?: string): asserts value 
  * @remarks
  * Validates that object has `min` and `max` numeric properties that are finite.
  * Also validates that min ≤ max.
- * No-op when assertions are disabled.
+ * No-op when assertions are disabled. In production builds, this function
+ * is eliminated via DCE. For runtime shape validation, use `isIntervalLike()`.
  *
  * @param value - Object to validate
  * @param name - Object name for error messages (optional)
@@ -950,7 +1003,8 @@ export function assertIntervalLike(value: unknown, name?: string): asserts value
  *
  * @remarks
  * Validates that object has `position` (Vector2-like), `rotation` (Rotation2-like), and `scale` (Vector2-like).
- * No-op when assertions are disabled.
+ * No-op when assertions are disabled. In production builds, this function
+ * is eliminated via DCE. For runtime shape validation, use `isTransform2Like()`.
  *
  * @param value - Object to validate
  * @param name - Object name for error messages (optional)

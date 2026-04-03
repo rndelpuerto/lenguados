@@ -166,10 +166,10 @@ describe('Additional Coverage Tests', () => {
   });
  });
 
- describe('Complex instance scale', () => {
-  it('instance scale mutates this', () => {
+ describe('Complex instance multiplyScalar', () => {
+  it('instance multiplyScalar mutates this', () => {
    const c = new Complex(2, 3);
-   c.scale(2);
+   c.multiplyScalar(2);
    expect(c.real).toBe(4);
    expect(c.imag).toBe(6);
   });

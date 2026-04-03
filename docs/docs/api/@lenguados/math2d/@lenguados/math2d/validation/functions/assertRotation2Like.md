@@ -1,8 +1,8 @@
 # Function: assertRotation2Like()
 
-> **assertRotation2Like**(`value`, `name?`): `void`
+> **assertRotation2Like**(`value`, `name?`): `asserts value is Rotation2Like`
 
-Defined in: [src/validation/assert.ts:776](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/validation/assert.ts#L776)
+Defined in: [src/validation/assert.ts:834](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/validation/assert.ts#L834)
 
 Asserts that an object has valid Rotation2-like shape with finite elements.
 
@@ -22,12 +22,13 @@ Object name for error messages (optional)
 
 ## Returns
 
-`void`
+`asserts value is Rotation2Like`
 
 ## Remarks
 
 Validates that object has `cos` and `sin` numeric properties that are finite.
-No-op when assertions are disabled.
+No-op when assertions are disabled. In production builds, this function
+is eliminated via DCE. For runtime shape validation, use `isRotation2Like()`.
 
 ## Throws
 

@@ -6,7 +6,7 @@ auxiliary/scalar/index.ts
 
 ## Description
 
-Scalar mathematical operations for the Lenguados math2d library
+Scalar mathematical operations
 
 ## Remarks
 
@@ -43,12 +43,6 @@ Re-exports [DEG_TO_RAD](variables/DEG_TO_RAD.md)
 
 ---
 
-### E
-
-Re-exports [E](variables/E.md)
-
----
-
 ### EPSILON
 
 Re-exports [EPSILON](variables/EPSILON.md)
@@ -76,18 +70,6 @@ Re-exports [floorDivideSafe](functions/floorDivideSafe.md)
 ### floorDivideUnchecked
 
 Re-exports [floorDivideUnchecked](functions/floorDivideUnchecked.md)
-
----
-
-### GOLDEN_RATIO
-
-Re-exports [GOLDEN_RATIO](variables/GOLDEN_RATIO.md)
-
----
-
-### GOLDEN_RATIO_CONJUGATE
-
-Re-exports [GOLDEN_RATIO_CONJUGATE](variables/GOLDEN_RATIO_CONJUGATE.md)
 
 ---
 
@@ -139,12 +121,6 @@ Re-exports [isNearZero](functions/isNearZero.md)
 
 ---
 
-### ITERATIVE_TOLERANCE
-
-Re-exports [ITERATIVE_TOLERANCE](variables/ITERATIVE_TOLERANCE.md)
-
----
-
 ### lerp
 
 Re-exports [lerp](functions/lerp.md)
@@ -184,12 +160,6 @@ Re-exports [loopSafe](functions/loopSafe.md)
 ### loopUnchecked
 
 Re-exports [loopUnchecked](functions/loopUnchecked.md)
-
----
-
-### MAX_SAFE_INTEGER_F64
-
-Re-exports [MAX_SAFE_INTEGER_F64](variables/MAX_SAFE_INTEGER_F64.md)
 
 ---
 

@@ -1,6 +1,6 @@
 # Interface: ReadonlyIntervalLike
 
-Defined in: [src/types/index.ts:188](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/types/index.ts#L188)
+Defined in: [src/types/index.ts:188](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/types/index.ts#L188)
 
 Readonly interface for intervals.
 
@@ -14,7 +14,7 @@ Readonly interface for intervals.
 
 > `readonly` **max**: `number`
 
-Defined in: [src/types/index.ts:190](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/types/index.ts#L190)
+Defined in: [src/types/index.ts:190](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/types/index.ts#L190)
 
 ---
 
@@ -22,4 +22,4 @@ Defined in: [src/types/index.ts:190](https://github.com/rndelpuerto/lenguados/bl
 
 > `readonly` **min**: `number`
 
-Defined in: [src/types/index.ts:189](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/types/index.ts#L189)
+Defined in: [src/types/index.ts:189](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/types/index.ts#L189)

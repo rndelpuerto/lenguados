@@ -1,8 +1,8 @@
 # Function: assertMatrix2Like()
 
-> **assertMatrix2Like**(`value`, `name?`): `void`
+> **assertMatrix2Like**(`value`, `name?`): `asserts value is Matrix2Like`
 
-Defined in: [src/validation/assert.ts:811](https://github.com/rndelpuerto/lenguados/blob/e49c904206540fad03c397c71567a74238b2435e/packages/math2d/src/validation/assert.ts#L811)
+Defined in: [src/validation/assert.ts:870](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/validation/assert.ts#L870)
 
 Asserts that an object has valid Matrix2-like shape with finite elements.
 
@@ -22,12 +22,13 @@ Object name for error messages (optional)
 
 ## Returns
 
-`void`
+`asserts value is Matrix2Like`
 
 ## Remarks
 
 Validates that object has `m00`, `m01`, `m10`, `m11` numeric properties that are finite.
-No-op when assertions are disabled.
+No-op when assertions are disabled. In production builds, this function
+is eliminated via DCE. For runtime shape validation, use `isMatrix2Like()`.
 
 ## Throws
 
