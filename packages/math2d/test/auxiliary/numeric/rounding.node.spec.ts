@@ -257,6 +257,19 @@ describe('numeric/rounding', () => {
    expect(ceilPowerOfTwo(2 ** 47)).toBe(2 ** 47);
    expect(ceilPowerOfTwo(2 ** 51)).toBe(2 ** 51);
   });
+
+  test('returns next power for values 1 ULP above a power of two', () => {
+   for (const n of [2, 10, 30, 52]) {
+    const pow2 = 2 ** n;
+    const abovePow2 = pow2 + pow2 * Number.EPSILON;
+    expect(abovePow2).toBeGreaterThan(pow2);
+    expect(ceilPowerOfTwo(abovePow2)).toBe(2 ** (n + 1));
+   }
+  });
+
+  test('returns next power for values meaningfully above a power of two', () => {
+   expect(ceilPowerOfTwo(1024 + 1e-8)).toBe(2048);
+  });
  });
 
  describe('floorPowerOfTwo', () => {
@@ -275,6 +288,22 @@ describe('numeric/rounding', () => {
   test('returns 0 for 0 or negative', () => {
    expect(floorPowerOfTwo(0)).toBe(0);
    expect(floorPowerOfTwo(-3)).toBe(0);
+  });
+
+  test('returns correct value for all exact powers of two (exponents 1-52)', () => {
+   for (let n = 1; n <= 52; n++) {
+    const value = 2 ** n;
+    expect(floorPowerOfTwo(value)).toBe(value);
+   }
+  });
+
+  test('returns previous power for values 1 ULP below a power of two', () => {
+   for (const n of [2, 10, 30, 52]) {
+    const pow2 = 2 ** n;
+    const belowPow2 = pow2 - (pow2 * Number.EPSILON) / 2;
+    expect(belowPow2).toBeLessThan(pow2);
+    expect(floorPowerOfTwo(belowPow2)).toBe(2 ** (n - 1));
+   }
   });
  });
 });

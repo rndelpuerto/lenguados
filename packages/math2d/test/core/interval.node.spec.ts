@@ -400,10 +400,18 @@ describe('Interval', () => {
    }
   });
 
+  it('fromArray throws on reversed order (min > max)', () => {
+   expect(() => Interval.fromArray([5, 2])).toThrow(RangeError);
+  });
+
   it('fromObject creates interval from object', () => {
    const result = Interval.fromObject({ min: 3, max: 7 });
    expect(result.min).toBe(3);
    expect(result.max).toBe(7);
+  });
+
+  it('fromObject throws on reversed order (min > max)', () => {
+   expect(() => Interval.fromObject({ min: 5, max: 2 })).toThrow(RangeError);
   });
 
   it('fromCenterRadius throws on negative radius', () => {

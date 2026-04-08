@@ -50,22 +50,22 @@ Both classes are architecturally sound with excellent triality coverage. One con
 
 ## Vector2 — Static Arithmetic
 
-| Export                                                        | Verdict           | Rationale                                                                        |
-| ------------------------------------------------------------- | ----------------- | -------------------------------------------------------------------------------- |
-| `sumComponents`                                               | KEEP (deprecated) | Marked `@deprecated` since 0.8.0; will be removed in 1.0.0; documented correctly |
-| `add`                                                         | KEEP              | Component-wise addition                                                          |
-| `addScalar`                                                   | KEEP              | Broadcasts scalar to both components                                             |
-| `subtract`                                                    | KEEP              | Component-wise subtraction                                                       |
-| `subtractScalar`                                              | KEEP              | Broadcasts scalar subtraction                                                    |
-| `multiply`                                                    | KEEP              | Hadamard product                                                                 |
-| `multiplyScalar`                                              | KEEP              | Scalar multiplication                                                            |
-| `divide` / `divideSafe` / `divideUnchecked`                   | KEEP              | Full triality; near-zero check via `isNearZero`                                  |
-| `divideScalar` / `divideScalarSafe` / `divideScalarUnchecked` | KEEP              | Full triality for scalar divisor                                                 |
-| `negate`                                                      | KEEP              | Unary negation                                                                   |
-| `addScaledVector`                                             | KEEP              | Physics velocity integration pattern `v + a*dt`                                  |
-| `fma`                                                         | KEEP              | Fused multiply-add `a*s + b`                                                     |
-| `mod`                                                         | KEEP              | Component-wise positive modulo via auxiliary `mod`                               |
-| `modScalar`                                                   | KEEP              | Scalar modulo broadcast                                                          |
+| Export                                                        | Verdict | Rationale                                                                       |
+| ------------------------------------------------------------- | ------- | ------------------------------------------------------------------------------- |
+| `sumComponents`                                               | KEEP    | Fundamental scalar reduction; retained as core primitive (deprecation reversed) |
+| `add`                                                         | KEEP    | Component-wise addition                                                         |
+| `addScalar`                                                   | KEEP    | Broadcasts scalar to both components                                            |
+| `subtract`                                                    | KEEP    | Component-wise subtraction                                                      |
+| `subtractScalar`                                              | KEEP    | Broadcasts scalar subtraction                                                   |
+| `multiply`                                                    | KEEP    | Hadamard product                                                                |
+| `multiplyScalar`                                              | KEEP    | Scalar multiplication                                                           |
+| `divide` / `divideSafe` / `divideUnchecked`                   | KEEP    | Full triality; near-zero check via `isNearZero`                                 |
+| `divideScalar` / `divideScalarSafe` / `divideScalarUnchecked` | KEEP    | Full triality for scalar divisor                                                |
+| `negate`                                                      | KEEP    | Unary negation                                                                  |
+| `addScaledVector`                                             | KEEP    | Physics velocity integration pattern `v + a*dt`                                 |
+| `fma`                                                         | KEEP    | Fused multiply-add `a*s + b`                                                    |
+| `mod`                                                         | KEEP    | Component-wise positive modulo via auxiliary `mod`                              |
+| `modScalar`                                                   | KEEP    | Scalar modulo broadcast                                                         |
 
 ## Vector2 — Static Transforms (Component-wise)
 
@@ -98,7 +98,7 @@ Both classes are architecturally sound with excellent triality coverage. One con
 | `magnitude`         | KEEP    | Euclidean norm via deterministic `hypot`         |
 | `magnitudeSq`       | KEEP    | Squared length without sqrt                      |
 | `manhattanLength`   | KEEP    | L1 norm                                          |
-| `chebyshevLength`   | KEEP    | L∞ norm; added in 0.9.0                          |
+| `chebyshevLength`   | KEEP    | L∞ norm; added in 0.7.0                          |
 | `distance`          | KEEP    | Euclidean distance via `hypot`                   |
 | `distanceSquared`   | KEEP    | Avoids sqrt for comparisons                      |
 | `manhattanDistance` | KEEP    | L1 distance                                      |

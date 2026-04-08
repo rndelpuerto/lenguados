@@ -60,6 +60,9 @@ jobs:
    - name: Check code formatting
      run: npm run format:check
 
+   - name: Type-check TypeScript
+     run: npm run typecheck
+
    # ─────────────────────────────────────────────────────────────────────────
    # Testing & Coverage
    # Executes unit tests and captures coverage report.

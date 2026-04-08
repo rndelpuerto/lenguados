@@ -14,7 +14,7 @@ Re-exports [acos](deterministic/functions/acos.md)
 
 ### acosSafe
 
-Re-exports [acosSafe](deterministic/functions/acosSafe.md)
+Re-exports [acosSafe](auxiliary/numeric/functions/acosSafe.md)
 
 ---
 
@@ -68,7 +68,7 @@ Re-exports [asin](deterministic/functions/asin.md)
 
 ### asinSafe
 
-Re-exports [asinSafe](deterministic/functions/asinSafe.md)
+Re-exports [asinSafe](auxiliary/numeric/functions/asinSafe.md)
 
 ---
 
@@ -350,7 +350,7 @@ Re-exports [exp](deterministic/functions/exp.md)
 
 ### expSafe
 
-Re-exports [expSafe](deterministic/functions/expSafe.md)
+Re-exports [expSafe](auxiliary/numeric/functions/expSafe.md)
 
 ---
 

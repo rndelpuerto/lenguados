@@ -1,8 +1,8 @@
 # Function: parseMatrix3()
 
-> **parseMatrix3**(`string_`, `out`): [`Matrix3`](../../core/classes/Matrix3.md)
+> **parseMatrix3**(`string_`, `out?`): [`Matrix3`](../../core/classes/Matrix3.md)
 
-Defined in: [src/utils/parse.ts:445](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/utils/parse.ts#L445)
+Defined in: [src/utils/parse.ts:445](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/utils/parse.ts#L445)
 
 Parses a string representation of a 3x3 matrix.
 
@@ -14,7 +14,7 @@ Parses a string representation of a 3x3 matrix.
 
 Input string to parse
 
-### out
+### out?
 
 [`Matrix3`](../../core/classes/Matrix3.md) = `...`
 

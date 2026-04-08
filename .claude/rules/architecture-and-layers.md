@@ -8,16 +8,18 @@ paths:
 ## Layer Dependency Graph (imports flow downward only)
 
 ```
-Level 0:  deterministic/     (fdlibm kernels, zero deps)
+Level 0:  deterministic/     (fdlibm kernels, type-only dep on types/)
              ↑
-Level 1:  auxiliary/          (scalar, angle, numeric)
+Level 1:  auxiliary/          (scalar, angle, numeric — imports deterministic/, type-only types/)
              ↑
-Level 2:  core/               (Vector2, Rotation2, Complex, Interval, Matrix2, Matrix3, Transform2)
+Level 2:  core/               (Vector2, Rotation2, Complex, Interval, Matrix2, Matrix3, Transform2
+                                — imports auxiliary/, deterministic/, types/, validation/)
              ↑
-Level 3:  utils/              (parsing, formatting, random, performance)
+Level 3:  utils/              (parsing, formatting, random, performance
+                                — imports core/, auxiliary/, deterministic/, types/, validation/)
 
-validation/  → can import any layer (assertion functions reference types)
 types/       → standalone interfaces, no imports from other layers
+validation/  → imports types/ only; imported BY core/ and utils/ (cross-cutting concern)
 ```
 
 **MUST NOT** import upward: auxiliary/ must never import from core/, core/ must never import from utils/.
@@ -33,6 +35,28 @@ types/       → standalone interfaces, no imports from other layers
 `Math.sqrt`, `Math.floor`, `Math.ceil`, `Math.abs`, `Math.min`, `Math.max`, `Math.round`, `Math.trunc`, `Math.sign`
 
 **Runtime toggle**: `config.useNativeMath = true` switches deterministic kernels to native `Math.*` (4x faster, loses cross-platform bit-exactness). Set once at app startup; never toggle mid-computation.
+
+## L0/L1 Safety Boundary
+
+**L0 Kernel Rule**: `deterministic-kernels.ts` contains ONLY pure deterministic replacements for non-deterministic `Math.*` functions. Each kernel accepts any IEEE 754 double and returns the IEEE 754-specified result (including NaN for domain errors). No clamping, no fallbacks, no `*Safe` variants. This mirrors fdlibm's `e_*.c` kernel files.
+
+**L1 Safety Rule**: ALL domain-clamping, overflow-guarding, and fallback-returning functions live in `auxiliary/numeric/safety.ts`. Named `{fn}Safe`. Import raw kernels from L0 and add guards.
+
+**Safe existence criteria** — a Safe variant exists only when the underlying function has a restricted domain or produces non-finite output for finite input:
+
+| Function                                      | Domain Restriction | Safe Variant | Location                              |
+| --------------------------------------------- | ------------------ | ------------ | ------------------------------------- |
+| `acos`                                        | [-1, 1]            | `acosSafe`   | safety.ts                             |
+| `asin`                                        | [-1, 1]            | `asinSafe`   | safety.ts                             |
+| `log`                                         | (0, +inf)          | `logSafe`    | safety.ts                             |
+| `exp`                                         | range overflows    | `expSafe`    | safety.ts                             |
+| `sqrt`                                        | [0, +inf)          | `sqrtSafe`   | safety.ts (uses IEEE 754 `Math.sqrt`) |
+| `pow`                                         | complex edge cases | `powSafe`    | safety.ts                             |
+| `sin`, `cos`, `tan`, `atan`, `atan2`, `hypot` | all reals          | none needed  | —                                     |
+
+**DeterministicKernels namespace rule**: Contains exactly the pure L0 kernel functions plus `config`. No Safe variants. No auxiliary-layer functions.
+
+**Naming standard**: `{fn}Safe` suffix. No `Kernel` infix. No `Unsafe` prefix.
 
 ## Two-Layer Validation
 

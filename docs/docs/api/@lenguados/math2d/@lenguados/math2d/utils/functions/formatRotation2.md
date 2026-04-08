@@ -1,8 +1,8 @@
 # Function: formatRotation2()
 
-> **formatRotation2**(`r`, `format`, `precision?`): `string`
+> **formatRotation2**(`r`, `format?`, `precision?`): `string`
 
-Defined in: [src/utils/parse.ts:278](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/utils/parse.ts#L278)
+Defined in: [src/utils/parse.ts:278](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/utils/parse.ts#L278)
 
 Formats a 2D rotation as a string.
 
@@ -14,11 +14,11 @@ Formats a 2D rotation as a string.
 
 Rotation to format
 
-### format
+### format?
+
+`"json"` \| `"radians"` \| `"degrees"` \| `"components"`
 
 Output format. Defaults to `'radians'`
-
-`"json"` | `"radians"` | `"degrees"` | `"components"`
 
 ### precision?
 

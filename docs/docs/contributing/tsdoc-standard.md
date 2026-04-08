@@ -698,7 +698,7 @@ Always use: `@see {@link Target} - description`
  * @see {@link normalizeUnchecked} - No validation
  *
  * @category Transform
- * @since 0.7.0
+ * @since 0.6.0
  */
 public static normalize(v: ReadonlyVector2Like, out?: Vector2): Vector2 { }
 
@@ -721,7 +721,7 @@ public static normalize(v: ReadonlyVector2Like, out?: Vector2): Vector2 { }
  * @see {@link normalize} - Throws on zero-length vectors
  *
  * @category Transform
- * @since 0.7.0
+ * @since 0.6.0
  */
 public static normalizeSafe(v: ReadonlyVector2Like, out?: Vector2): Vector2 { }
 

@@ -14,6 +14,7 @@ import {
  sqrtSafe,
  acosSafe,
  asinSafe,
+ expSafe,
  robustSum,
  neumaierSum,
  compensatedProduct,
@@ -23,7 +24,6 @@ import {
  MIN_SAFE_DIVISOR,
 } from '../../../src/auxiliary/numeric/safety';
 import { EPSILON } from '../../../src/auxiliary/scalar/constants';
-import { expSafe } from '../../../src/deterministic/deterministic-kernels';
 
 describe('numeric/safety', () => {
  describe('MIN_SAFE_DIVISOR', () => {

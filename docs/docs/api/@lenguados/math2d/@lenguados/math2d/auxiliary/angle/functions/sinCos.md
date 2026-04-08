@@ -2,7 +2,7 @@
 
 > **sinCos**(`angle`, `out?`): [`SinCos`](../../../types/interfaces/SinCos.md)
 
-Defined in: [src/auxiliary/angle/operations.ts:44](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/auxiliary/angle/operations.ts#L44)
+Defined in: [src/auxiliary/angle/operations.ts:44](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/auxiliary/angle/operations.ts#L44)
 
 Computes sine and cosine of an angle simultaneously.
 Uses deterministic math for cross-platform reproducibility.

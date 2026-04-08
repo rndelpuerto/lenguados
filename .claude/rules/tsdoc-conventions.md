@@ -95,6 +95,34 @@ Organize class bodies following ESLint `@typescript-eslint/member-ordering` (two
 
 **Group 2 (instance members):** 7. Instance mutators (arithmetic, transform, normalization) 8. Instance accessors (getters, computed properties) 9. Instance conversion (`to*`, `clone`, `copy`, `equals`)
 
+## @since Version Resolution
+
+The `@since` tag records the first release version that contains a symbol. When adding or updating `@since` tags, follow these rules:
+
+**How to determine the correct version:**
+
+1. Read the current stable version from `packages/math2d/package.json` → `version` field (managed by Lerna).
+2. The `@since` version for any **new** symbol is the **next semver release** after that stable version.
+   - Example: if `package.json` says `0.6.0`, new symbols get `@since 0.7.0`.
+   - Example: if `package.json` says `1.2.0`, new symbols get `@since 1.3.0`.
+3. Never guess or invent version numbers beyond the next release. Do not use placeholder versions like `0.8.0`, `0.9.0`, `1.0.0` for unreleased work.
+
+**When does a symbol get a new `@since`?**
+
+- **New symbol** (method, constant, class, type, export): next release version.
+- **Renamed symbol** (same concept, different name): inherits the `@since` of the predecessor. The rename is documented in `CHANGELOG.md`, not in `@since`.
+- **Refactored symbol** (same name, same concept, internal rewrite): keeps its original `@since`. Internal changes do not change the introduction version.
+- **Drastically changed behavior** (same name, breaking semantic change): gets the next release version, because the API contract changed from the consumer's perspective. Document the behavioral change in `CHANGELOG.md`.
+
+**What NOT to do:**
+
+- Do not assign `@since` versions higher than the next release after the current stable.
+- Do not use `@since` to reference a planned future version (e.g., "will be in 1.0.0").
+- Do not omit `@since` on public exports — it is required per the TSDoc standard.
+- Do not change `@since` on existing symbols during unrelated edits.
+
+**Verification:** Run `node -e "console.log(require('./packages/math2d/package.json').version)"` to confirm the current stable version before assigning `@since` tags.
+
 ## Prohibited Tags
 
 Do not use: `@group`, `@alpha`, `@beta`, `@override` (not in project's ESLint allowed list)

@@ -76,20 +76,20 @@ Each type includes: `Readonly*` alias, `freeze*()` function, `is*Like()` guard, 
 
 ### Auxiliary Layer
 
-| Module        | Key Exports                                                                                                         |
-| ------------- | ------------------------------------------------------------------------------------------------------------------- |
-| **Scalar**    | `clamp`, `lerp`, `smoothStep`, `nearEquals`, `inverseLerp`, `sign`, `saturate`, `remap`, `mod`, `pingPong`, `step`  |
-| **Angle**     | `sinCos`, `degreesToRadians`, `normalizeRadians`, `angleDifference`, `lerpAngle`, `angleBisector`, `AngleUnwrapper` |
-| **Numeric**   | `divideSafe`, `reciprocalSafe`, `sqrtSafe`, `robustSum`, `roundToPlaces`, `snapToGrid`, `flushDenormal`             |
-| **Constants** | `PI`, `TAU`, `HALF_PI`, `DEG_TO_RAD`, `RAD_TO_DEG`, `EPSILON`, `MIN_SAFE_DIVISOR`, `SQRT_2`                         |
+| Module        | Key Exports                                                                                                                                     |
+| ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Scalar**    | `clamp`, `lerp`, `smoothStep`, `nearEquals`, `inverseLerp`, `sign`, `saturate`, `remap`, `mod`, `pingPong`, `step`                              |
+| **Angle**     | `sinCos`, `degreesToRadians`, `normalizeRadians`, `angleDifference`, `lerpAngle`, `angleBisector`, `AngleUnwrapper`                             |
+| **Numeric**   | `divideSafe`, `reciprocalSafe`, `sqrtSafe`, `acosSafe`, `asinSafe`, `expSafe`, `logSafe`, `powSafe`, `robustSum`, `roundToPlaces`, `snapToGrid` |
+| **Constants** | `PI`, `TAU`, `HALF_PI`, `DEG_TO_RAD`, `RAD_TO_DEG`, `EPSILON`, `MIN_SAFE_DIVISOR`, `SQRT_2`                                                     |
 
 ### Deterministic Kernels
 
 | Export                          | Description                                                  |
 | ------------------------------- | ------------------------------------------------------------ |
 | `sin`, `cos`, `tan`             | fdlibm-based trigonometry (L0 bit-exact)                     |
-| `asin`, `acos`, `atan`, `atan2` | Inverse trig with safe variants (`asinSafe`, `acosSafe`)     |
-| `exp`, `log`, `pow`             | Exponential/logarithmic with safe variants                   |
+| `asin`, `acos`, `atan`, `atan2` | Inverse trig (pure IEEE 754 kernels)                         |
+| `exp`, `log`, `pow`             | Exponential/logarithmic (pure IEEE 754 kernels)              |
 | `sinCos`, `hypot`               | Combined/utility functions                                   |
 | `config`                        | `config.useNativeMath` toggle for determinism vs performance |
 

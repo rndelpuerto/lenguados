@@ -2,7 +2,7 @@
 
 > **assertTransform2**(`px`, `py`, `cos`, `sin`, `sx`, `sy`, `name?`): `void`
 
-Defined in: [src/validation/assert.ts:738](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/validation/assert.ts#L738)
+Defined in: [src/validation/assert.ts:738](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/validation/assert.ts#L738)
 
 Asserts that Transform2 components are finite.
 
@@ -74,4 +74,4 @@ function createTransform(px: number, py: number, cos: number, sin: number): Tran
 
 ## Since
 
-0.8.0
+0.7.0

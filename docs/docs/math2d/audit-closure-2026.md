@@ -42,4 +42,4 @@ The `@lenguados/math2d` package was analyzed line by line using control heuristi
 
 ## 2. Process Archive
 
-Both the `fast-check` property tests and the cross-mutability tests were incorporated into the GitHub Actions pipelines. The package guarantees that, as of the present date, there is no performance or fidelity deficit relative to gl-matrix or WebGL graphical standardizations (Column-Major).
+Both the `fast-check` property tests and the cross-mutability tests were incorporated into the GitHub Actions pipelines. The package guarantees that, as of the present date, there is no performance or fidelity deficit relative to industry-standard math libraries or WebGL graphical conventions (Column-Major).

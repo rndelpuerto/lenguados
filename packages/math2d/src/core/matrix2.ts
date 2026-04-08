@@ -45,7 +45,7 @@ import { Vector2 } from './vector2';
  * Readonly view of a {@link Matrix2} instance.
  *
  * @category Types
- * @since 0.7.0
+ * @since 0.6.0
  * @public
  */
 export type ReadonlyMatrix2 = Readonly<Matrix2>;
@@ -71,7 +71,7 @@ export type ReadonlyMatrix2 = Readonly<Matrix2>;
  * ```
  *
  * @category Helpers
- * @since 0.7.0
+ * @since 0.6.0
  */
 export function freezeMatrix2(matrix: Matrix2): ReadonlyMatrix2 {
  return Object.freeze(matrix);
@@ -80,7 +80,7 @@ export function freezeMatrix2(matrix: Matrix2): ReadonlyMatrix2 {
 /**
  * Re-export type guard for a plain object that looks like a 2x2 matrix.
  * @category Helpers
- * @since 0.7.0
+ * @since 0.6.0
  */
 export { isMatrix2Like } from '../types';
 
@@ -110,7 +110,7 @@ export { isMatrix2Like } from '../types';
  * ```
  *
  * @category Core
- * @since 0.7.0
+ * @since 0.6.0
  */
 export class Matrix2 implements Matrix2Like {
  /* ======================================================================== */
@@ -128,7 +128,7 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Identity matrix (no transformation).
   * @category Constant
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public static readonly IDENTITY = freezeMatrix2(new Matrix2(1, 0, 0, 1));
 
@@ -142,28 +142,28 @@ export class Matrix2 implements Matrix2Like {
  /**
   * Zero matrix.
   * @category Constant
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public static readonly ZERO = freezeMatrix2(new Matrix2(0, 0, 0, 0));
 
  /**
   * 90° counter-clockwise rotation.
   * @category Constant
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public static readonly ROTATE_90 = freezeMatrix2(new Matrix2(0, 1, -1, 0));
 
  /**
   * 180° rotation (same as FLIP_XY).
   * @category Constant
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public static readonly ROTATE_180 = freezeMatrix2(new Matrix2(-1, 0, 0, -1));
 
  /**
   * 270° counter-clockwise rotation (same as 90° clockwise).
   * @category Constant
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public static readonly ROTATE_270 = freezeMatrix2(new Matrix2(0, -1, 1, 0));
 
@@ -213,7 +213,7 @@ export class Matrix2 implements Matrix2Like {
   * ```
   *
   * @category Factory
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public static fromValues(
   m00: number,
@@ -243,7 +243,7 @@ export class Matrix2 implements Matrix2Like {
   * ```
   *
   * @category Factory
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public static clone(source: ReadonlyMatrix2Like, out?: Matrix2): Matrix2 {
   return Matrix2.ensureOut(out).set(source.m00, source.m01, source.m10, source.m11);
@@ -264,7 +264,7 @@ export class Matrix2 implements Matrix2Like {
   * ```
   *
   * @category Factory
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public static copy(source: ReadonlyMatrix2Like, destination: Matrix2): Matrix2 {
   return destination.set(source.m00, source.m01, source.m10, source.m11);
@@ -288,7 +288,7 @@ export class Matrix2 implements Matrix2Like {
   * ```
   *
   * @category Factory
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public static fromObject(object: ReadonlyMatrix2Like, out?: Matrix2): Matrix2 {
   return Matrix2.ensureOut(out).set(object.m00, object.m01, object.m10, object.m11);
@@ -320,7 +320,7 @@ export class Matrix2 implements Matrix2Like {
   * ```
   *
   * @category Factory
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public static fromRotation(rotation: ReadonlyRotation2Like | number, out?: Matrix2): Matrix2 {
   if (typeof rotation === 'number') {
@@ -345,7 +345,7 @@ export class Matrix2 implements Matrix2Like {
   * ```
   *
   * @category Factory
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public static fromScale(scale: ReadonlyVector2Like | number, out?: Matrix2): Matrix2 {
   if (typeof scale === 'number') {
@@ -375,7 +375,7 @@ export class Matrix2 implements Matrix2Like {
   * ```
   *
   * @category Factory
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static fromAngleScale(
   angle: number,
@@ -406,7 +406,7 @@ export class Matrix2 implements Matrix2Like {
   * ```
   *
   * @category Factory
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public static fromShear(shear: ReadonlyVector2Like, out?: Matrix2): Matrix2 {
   return Matrix2.ensureOut(out).set(1, shear.y, shear.x, 1);
@@ -432,7 +432,7 @@ export class Matrix2 implements Matrix2Like {
   * ```
   *
   * @category Factory
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public static fromColumns(
   col0: ReadonlyVector2Like,
@@ -462,7 +462,7 @@ export class Matrix2 implements Matrix2Like {
   * ```
   *
   * @category Factory
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public static fromRows(
   row0: ReadonlyVector2Like,
@@ -493,7 +493,7 @@ export class Matrix2 implements Matrix2Like {
   * ```
   *
   * @category Factory
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public static fromArray(
   array: ArrayLike<number>,
@@ -537,7 +537,7 @@ export class Matrix2 implements Matrix2Like {
   * ```
   *
   * @category Factory
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public static fromMatrix2(matrix: ReadonlyMatrix2Like, out?: Matrix2): Matrix2 {
   return Matrix2.ensureOut(out).set(matrix.m00, matrix.m01, matrix.m10, matrix.m11);
@@ -562,7 +562,7 @@ export class Matrix2 implements Matrix2Like {
   * ```
   *
   * @category Factory
-  * @since 0.9.0
+  * @since 0.7.0
   */
  public static fromDiagonal(diagonal: ReadonlyVector2Like, out?: Matrix2): Matrix2 {
   return Matrix2.ensureOut(out).set(diagonal.x, 0, 0, diagonal.y);
@@ -590,7 +590,7 @@ export class Matrix2 implements Matrix2Like {
   * ```
   *
   * @category Factory
-  * @since 0.9.0
+  * @since 0.7.0
   */
  public static fromReflection(unitNormal: ReadonlyVector2Like, out?: Matrix2): Matrix2 {
   const nx = unitNormal.x;
@@ -611,7 +611,7 @@ export class Matrix2 implements Matrix2Like {
   * @returns Matrix with components `(a.mXX + b.mXX)`
   *
   * @category Arithmetic
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public static add(a: ReadonlyMatrix2Like, b: ReadonlyMatrix2Like, out?: Matrix2): Matrix2 {
   return Matrix2.ensureOut(out).set(a.m00 + b.m00, a.m01 + b.m01, a.m10 + b.m10, a.m11 + b.m11);
@@ -626,7 +626,7 @@ export class Matrix2 implements Matrix2Like {
   * @returns Matrix with components `(a.mXX - b.mXX)`
   *
   * @category Arithmetic
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public static subtract(a: ReadonlyMatrix2Like, b: ReadonlyMatrix2Like, out?: Matrix2): Matrix2 {
   return Matrix2.ensureOut(out).set(a.m00 - b.m00, a.m01 - b.m01, a.m10 - b.m10, a.m11 - b.m11);
@@ -648,7 +648,7 @@ export class Matrix2 implements Matrix2Like {
   * ```
   *
   * @category Arithmetic
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public static multiply(a: ReadonlyMatrix2Like, b: ReadonlyMatrix2Like, out?: Matrix2): Matrix2 {
   return Matrix2.ensureOut(out).set(
@@ -673,7 +673,7 @@ export class Matrix2 implements Matrix2Like {
   * @returns `left * right`
   *
   * @category Arithmetic
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public static premultiply(
   left: ReadonlyMatrix2Like,
@@ -692,7 +692,7 @@ export class Matrix2 implements Matrix2Like {
   * @returns Matrix with all components multiplied by scalar
   *
   * @category Arithmetic
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public static multiplyScalar(matrix: ReadonlyMatrix2Like, scalar: number, out?: Matrix2): Matrix2 {
   return Matrix2.ensureOut(out).set(
@@ -930,7 +930,7 @@ export class Matrix2 implements Matrix2Like {
   * @returns Transposed matrix
   *
   * @category Matrix Operations
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public static transpose(matrix: ReadonlyMatrix2Like, out?: Matrix2): Matrix2 {
   return Matrix2.ensureOut(out).set(matrix.m00, matrix.m10, matrix.m01, matrix.m11);
@@ -954,7 +954,7 @@ export class Matrix2 implements Matrix2Like {
   * @see {@link inverseUnchecked} - No validation
   *
   * @category Matrix Operations
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public static inverse(matrix: ReadonlyMatrix2Like, out?: Matrix2): Matrix2 {
   const det = matrix.m00 * matrix.m11 - matrix.m01 * matrix.m10;
@@ -991,7 +991,7 @@ export class Matrix2 implements Matrix2Like {
   * @see {@link inverse} - Throws for singular matrices
   *
   * @category Matrix Operations
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public static inverseSafe(matrix: ReadonlyMatrix2Like, out?: Matrix2): Matrix2 {
   const det = matrix.m00 * matrix.m11 - matrix.m01 * matrix.m10;
@@ -1046,7 +1046,7 @@ export class Matrix2 implements Matrix2Like {
   * @returns Adjugate matrix
   *
   * @category Matrix Operations
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public static adjugate(matrix: ReadonlyMatrix2Like, out?: Matrix2): Matrix2 {
   return Matrix2.ensureOut(out).set(matrix.m11, -matrix.m01, -matrix.m10, matrix.m00);
@@ -1056,8 +1056,7 @@ export class Matrix2 implements Matrix2Like {
   * Solves the 2×2 linear system `Ax = b` using Cramer's rule.
   *
   * @remarks
-  * Matches the Box2D `b2Solve22` pattern. Computes
-  * `x = (1/det(A)) * [A₁₁·bx − A₁₀·by, A₀₀·by − A₀₁·bx]`.
+  * Computes `x = (1/det(A)) * [A₁₁·bx − A₁₀·by, A₀₀·by − A₀₁·bx]`.
   *
   * @param matrix - Coefficient matrix A
   * @param b - Right-hand side vector
@@ -1077,7 +1076,7 @@ export class Matrix2 implements Matrix2Like {
   * @see {@link solveLinearSystemUnchecked} - No validation, for hot paths
   *
   * @category Matrix Operations
-  * @since 0.9.0
+  * @since 0.6.0
   */
  public static solveLinearSystem(
   matrix: ReadonlyMatrix2Like,
@@ -1111,7 +1110,7 @@ export class Matrix2 implements Matrix2Like {
   * @see {@link solveLinearSystem} - Throws for singular matrices
   *
   * @category Matrix Operations
-  * @since 0.9.0
+  * @since 0.6.0
   */
  public static solveLinearSystemSafe(
   matrix: ReadonlyMatrix2Like,
@@ -1146,7 +1145,7 @@ export class Matrix2 implements Matrix2Like {
   * @see {@link solveLinearSystemSafe} - Returns fallback on singular matrices
   *
   * @category Matrix Operations
-  * @since 0.9.0
+  * @since 0.7.0
   */
  public static solveLinearSystemUnchecked(
   matrix: ReadonlyMatrix2Like,
@@ -1194,7 +1193,7 @@ export class Matrix2 implements Matrix2Like {
   * @returns Matrix with floored elements
   *
   * @category Transform
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public static floor(matrix: ReadonlyMatrix2Like, out?: Matrix2): Matrix2 {
   return Matrix2.ensureOut(out).set(
@@ -1213,7 +1212,7 @@ export class Matrix2 implements Matrix2Like {
   * @returns Matrix with ceiled elements
   *
   * @category Transform
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public static ceil(matrix: ReadonlyMatrix2Like, out?: Matrix2): Matrix2 {
   return Matrix2.ensureOut(out).set(
@@ -1232,7 +1231,7 @@ export class Matrix2 implements Matrix2Like {
   * @returns Matrix with rounded elements
   *
   * @category Transform
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public static round(matrix: ReadonlyMatrix2Like, out?: Matrix2): Matrix2 {
   return Matrix2.ensureOut(out).set(
@@ -1270,7 +1269,7 @@ export class Matrix2 implements Matrix2Like {
   * @returns Matrix with absolute values
   *
   * @category Transform
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public static abs(matrix: ReadonlyMatrix2Like, out?: Matrix2): Matrix2 {
   return Matrix2.ensureOut(out).set(
@@ -1505,7 +1504,7 @@ export class Matrix2 implements Matrix2Like {
   * @returns True if all components are exactly identical
   *
   * @category Comparison
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public static exactEquals(a: ReadonlyMatrix2Like, b: ReadonlyMatrix2Like): boolean {
   return a.m00 === b.m00 && a.m01 === b.m01 && a.m10 === b.m10 && a.m11 === b.m11;
@@ -1524,7 +1523,7 @@ export class Matrix2 implements Matrix2Like {
   * @returns True if all component differences are within scaled epsilon
   *
   * @category Comparison
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public static nearEquals(
   a: ReadonlyMatrix2Like,
@@ -1551,7 +1550,7 @@ export class Matrix2 implements Matrix2Like {
   * @returns True if matrix is identity
   *
   * @category Comparison
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public static isIdentity(matrix: ReadonlyMatrix2Like, epsilon: number = EPSILON): boolean {
   return (
@@ -1601,7 +1600,7 @@ export class Matrix2 implements Matrix2Like {
   * @returns True if all components are finite
   *
   * @category Comparison
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public static isFinite(matrix: ReadonlyMatrix2Like): boolean {
   return (
@@ -1704,14 +1703,14 @@ export class Matrix2 implements Matrix2Like {
   *
   * @remarks
   * A matrix is invertible when its determinant is non-zero.
-  * This follows the Eigen C++ convention.
+  * Uses {@link EPSILON} tolerance for the near-zero check.
   *
   * @param matrix - Matrix to test
   * @param epsilon - Tolerance. @defaultValue `EPSILON`
   * @returns True if matrix is invertible (non-singular)
   *
   * @category Comparison
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public static isInvertible(matrix: ReadonlyMatrix2Like, epsilon: number = EPSILON): boolean {
   return !isNearZero(matrix.m00 * matrix.m11 - matrix.m01 * matrix.m10, epsilon);
@@ -1729,7 +1728,7 @@ export class Matrix2 implements Matrix2Like {
   * @returns True if matrix is orthogonal
   *
   * @category Comparison
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public static isOrthogonal(matrix: ReadonlyMatrix2Like, epsilon: number = EPSILON): boolean {
   // Check if columns are unit length and orthogonal
@@ -1755,7 +1754,7 @@ export class Matrix2 implements Matrix2Like {
   * @returns Determinant value
   *
   * @category Computed
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public static determinant(matrix: ReadonlyMatrix2Like): number {
   return matrix.m00 * matrix.m11 - matrix.m01 * matrix.m10;
@@ -1768,7 +1767,7 @@ export class Matrix2 implements Matrix2Like {
   * @returns Sum of diagonal elements (m00 + m11)
   *
   * @category Computed
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public static trace(matrix: ReadonlyMatrix2Like): number {
   return matrix.m00 + matrix.m11;
@@ -1784,7 +1783,7 @@ export class Matrix2 implements Matrix2Like {
   * @returns Square root of sum of squared elements
   *
   * @category Computed
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public static frobeniusNorm(matrix: ReadonlyMatrix2Like): number {
   return Math.sqrt(
@@ -1812,7 +1811,7 @@ export class Matrix2 implements Matrix2Like {
   * ```
   *
   * @category Computed
-  * @since 0.8.0
+  * @since 0.6.0
   */
  public static getRotation(matrix: ReadonlyMatrix2Like): number {
   return atan2(matrix.m01, matrix.m00);
@@ -1837,7 +1836,7 @@ export class Matrix2 implements Matrix2Like {
   * ```
   *
   * @category Computed
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static getScale(matrix: ReadonlyMatrix2Like, out?: Vector2): Vector2 {
   const sx = hypot(matrix.m00, matrix.m01);
@@ -1929,7 +1928,7 @@ export class Matrix2 implements Matrix2Like {
   * ```
   *
   * @category Computed
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static eigenvalues(matrix: ReadonlyMatrix2Like): EigenvalueResult {
   // Column-major: row 0 = (m00, m10), row 1 = (m01, m11)
@@ -1986,7 +1985,7 @@ export class Matrix2 implements Matrix2Like {
   * ```
   *
   * @category Computed
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static eigendecompose(matrix: ReadonlyMatrix2Like): EigendecomposeResult {
   const eigenvalueResult = Matrix2.eigenvalues(matrix);
@@ -2078,7 +2077,7 @@ export class Matrix2 implements Matrix2Like {
   * @returns Transformed vector
   *
   * @category Transform
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public static transformVector(
   matrix: ReadonlyMatrix2Like,
@@ -2111,7 +2110,7 @@ export class Matrix2 implements Matrix2Like {
   * ```
   *
   * @category Transform
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public static rotate(matrix: ReadonlyMatrix2Like, angle: number, out?: Matrix2): Matrix2 {
   const { cos, sin } = sinCos(angle);
@@ -2142,7 +2141,7 @@ export class Matrix2 implements Matrix2Like {
   * ```
   *
   * @category Transform
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public static rotateCS(
   matrix: ReadonlyMatrix2Like,
@@ -2179,7 +2178,7 @@ export class Matrix2 implements Matrix2Like {
   * ```
   *
   * @category Transform
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public static scaleBy(
   matrix: ReadonlyMatrix2Like,
@@ -2310,7 +2309,7 @@ export class Matrix2 implements Matrix2Like {
   * @returns This matrix for chaining
   *
   * @category Mutator
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public set(m00: number, m01: number, m10: number, m11: number): this {
   this.m00 = m00;
@@ -2327,7 +2326,7 @@ export class Matrix2 implements Matrix2Like {
   * @returns This matrix for chaining
   *
   * @category Mutator
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public copy(other: ReadonlyMatrix2): this {
   this.m00 = other.m00;
@@ -2362,7 +2361,7 @@ export class Matrix2 implements Matrix2Like {
   * @returns This matrix for chaining
   *
   * @category Mutator
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public identity(): this {
   this.m00 = 1;
@@ -2378,7 +2377,7 @@ export class Matrix2 implements Matrix2Like {
   * @returns This matrix for chaining
   *
   * @category Mutator
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public zero(): this {
   this.m00 = 0;
@@ -2402,7 +2401,7 @@ export class Matrix2 implements Matrix2Like {
   * @returns Determinant value
   *
   * @category Computed
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public determinant(): number {
   return this.m00 * this.m11 - this.m01 * this.m10;
@@ -2414,7 +2413,7 @@ export class Matrix2 implements Matrix2Like {
   * @returns Sum of diagonal elements
   *
   * @category Computed
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public trace(): number {
   return this.m00 + this.m11;
@@ -2429,7 +2428,7 @@ export class Matrix2 implements Matrix2Like {
   * @returns Square root of sum of squared elements
   *
   * @category Computed
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public frobeniusNorm(): number {
   return Math.sqrt(
@@ -2444,7 +2443,7 @@ export class Matrix2 implements Matrix2Like {
   * @returns True if determinant is non-zero
   *
   * @category Comparison
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public isInvertible(epsilon: number = EPSILON): boolean {
   return !isNearZero(this.determinant(), epsilon);
@@ -2457,7 +2456,7 @@ export class Matrix2 implements Matrix2Like {
   * @returns True if M * M^T = I
   *
   * @category Comparison
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public isOrthogonal(epsilon: number = EPSILON): boolean {
   return Matrix2.isOrthogonal(this, epsilon);
@@ -2472,7 +2471,7 @@ export class Matrix2 implements Matrix2Like {
   * @returns Rotation angle in radians
   *
   * @category Computed
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public getRotation(): number {
   return atan2(this.m01, this.m00);
@@ -2515,7 +2514,7 @@ export class Matrix2 implements Matrix2Like {
   * ```
   *
   * @category Accessor
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public get transposed(): Matrix2 {
   return new Matrix2(this.m00, this.m10, this.m01, this.m11);
@@ -2534,7 +2533,7 @@ export class Matrix2 implements Matrix2Like {
   * ```
   *
   * @category Accessor
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public get inverted(): Matrix2 {
   const det = this.determinant();
@@ -2557,7 +2556,7 @@ export class Matrix2 implements Matrix2Like {
   * ```
   *
   * @category Accessor
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public get negated(): Matrix2 {
   return new Matrix2(-this.m00, -this.m01, -this.m10, -this.m11);
@@ -2568,7 +2567,7 @@ export class Matrix2 implements Matrix2Like {
   * @returns First column vector
   *
   * @category Accessor
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public get column0(): Vector2 {
   return new Vector2(this.m00, this.m01);
@@ -2579,7 +2578,7 @@ export class Matrix2 implements Matrix2Like {
   * @returns Second column vector
   *
   * @category Accessor
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public get column1(): Vector2 {
   return new Vector2(this.m10, this.m11);
@@ -2590,7 +2589,7 @@ export class Matrix2 implements Matrix2Like {
   * @returns First row vector
   *
   * @category Accessor
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public get row0(): Vector2 {
   return new Vector2(this.m00, this.m10);
@@ -2601,7 +2600,7 @@ export class Matrix2 implements Matrix2Like {
   * @returns Second row vector
   *
   * @category Accessor
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public get row1(): Vector2 {
   return new Vector2(this.m01, this.m11);
@@ -2612,7 +2611,7 @@ export class Matrix2 implements Matrix2Like {
   * @returns Diagonal vector (m00, m11)
   *
   * @category Accessor
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public get diagonal(): Vector2 {
   return new Vector2(this.m00, this.m11);
@@ -2629,7 +2628,7 @@ export class Matrix2 implements Matrix2Like {
   * @returns This matrix for chaining
   *
   * @category Arithmetic
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public add(other: ReadonlyMatrix2Like): this {
   this.m00 += other.m00;
@@ -2646,7 +2645,7 @@ export class Matrix2 implements Matrix2Like {
   * @returns This matrix for chaining
   *
   * @category Arithmetic
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public subtract(other: ReadonlyMatrix2Like): this {
   this.m00 -= other.m00;
@@ -2670,7 +2669,7 @@ export class Matrix2 implements Matrix2Like {
   * ```
   *
   * @category Arithmetic
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public multiply(other: ReadonlyMatrix2Like): this {
   const { m00: a00, m01: a01, m10: a10, m11: a11 } = this;
@@ -2690,7 +2689,7 @@ export class Matrix2 implements Matrix2Like {
   * @returns This matrix for chaining
   *
   * @category Arithmetic
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public multiplyScalar(scalar: number): this {
   this.m00 *= scalar;
@@ -2885,7 +2884,7 @@ export class Matrix2 implements Matrix2Like {
   * Transposes the matrix in place.
   * @returns This matrix for chaining
   * @category Matrix Operations
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public transpose(): this {
   const temporary = this.m01;
@@ -2909,7 +2908,7 @@ export class Matrix2 implements Matrix2Like {
   * @see {@link inverseUnchecked} - No validation
   *
   * @category Matrix Operations
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public inverse(): this {
   const det = this.determinant();
@@ -2938,7 +2937,7 @@ export class Matrix2 implements Matrix2Like {
   * @see {@link inverse} - Throws for singular matrices
   *
   * @category Matrix Operations
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public inverseSafe(): this {
   const det = this.determinant();
@@ -2981,7 +2980,7 @@ export class Matrix2 implements Matrix2Like {
   * Calculates the adjugate (adjoint) matrix in place.
   * @returns This matrix for chaining
   * @category Matrix Operations
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public adjugate(): this {
   const r00 = this.m11;
@@ -3020,7 +3019,7 @@ export class Matrix2 implements Matrix2Like {
   * Applies Math.floor to all elements.
   * @returns This matrix for chaining
   * @category Transform
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public floor(): this {
   this.m00 = Math.floor(this.m00);
@@ -3034,7 +3033,7 @@ export class Matrix2 implements Matrix2Like {
   * Applies Math.ceil to all elements.
   * @returns This matrix for chaining
   * @category Transform
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public ceil(): this {
   this.m00 = Math.ceil(this.m00);
@@ -3048,7 +3047,7 @@ export class Matrix2 implements Matrix2Like {
   * Applies Math.round to all elements.
   * @returns This matrix for chaining
   * @category Transform
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public round(): this {
   this.m00 = Math.round(this.m00);
@@ -3076,7 +3075,7 @@ export class Matrix2 implements Matrix2Like {
   * Applies absolute value to all elements.
   * @returns This matrix for chaining
   * @category Transform
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public abs(): this {
   this.m00 = Math.abs(this.m00);
@@ -3179,7 +3178,7 @@ export class Matrix2 implements Matrix2Like {
   * scale.premultiply(rot); // scale is now rot × scale
   * ```
   * @category Arithmetic
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public premultiply(other: ReadonlyMatrix2Like): this {
   const { m00: a00, m01: a01, m10: a10, m11: a11 } = other;
@@ -3245,7 +3244,7 @@ export class Matrix2 implements Matrix2Like {
   * const rotated = mat.transformVector(v); // Vector2(0, 1)
   * ```
   * @category Transform
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public transformVector(vector: ReadonlyVector2Like, out?: Vector2): Vector2 {
   const { x, y } = vector;
@@ -3257,7 +3256,7 @@ export class Matrix2 implements Matrix2Like {
   * @param angle - Angle in radians
   * @returns This matrix for chaining
   * @category Transform
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public rotate(angle: number): this {
   const { cos, sin } = sinCos(angle);
@@ -3283,7 +3282,7 @@ export class Matrix2 implements Matrix2Like {
   * ```
   *
   * @category Transform
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public rotateCS(cos: number, sin: number): this {
   const { m00, m01, m10, m11 } = this;
@@ -3300,7 +3299,7 @@ export class Matrix2 implements Matrix2Like {
   * @param scale - Scale factors (Vector2 or uniform number)
   * @returns This matrix for chaining
   * @category Transform
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public scaleBy(scale: ReadonlyVector2Like | number): this {
   if (typeof scale === 'number') {
@@ -3333,10 +3332,10 @@ export class Matrix2 implements Matrix2Like {
   * const col1 = m.getColumn(1); // Second column
   * ```
   * @category Column/Row
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public getColumn(index: number, out?: Vector2): Vector2 {
-  // Development assertion (Box2D pattern)
+  // Development assertion (catch errors early)
   assertSafeInteger(index, 'Matrix2.getColumn:index');
   if (index === 0) {
    return Vector2.fromValues(this.m00, this.m01, out);
@@ -3361,7 +3360,7 @@ export class Matrix2 implements Matrix2Like {
   * m.setColumn(0, new Vector2(2, 0)); // Set first column
   * ```
   * @category Column/Row
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public setColumn(index: number, column: ReadonlyVector2Like): this {
   // Development assertion
@@ -3394,7 +3393,7 @@ export class Matrix2 implements Matrix2Like {
   * const row1 = m.getRow(1); // Second row
   * ```
   * @category Column/Row
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public getRow(index: number, out?: Vector2): Vector2 {
   // Development assertion
@@ -3422,7 +3421,7 @@ export class Matrix2 implements Matrix2Like {
   * m.setRow(0, new Vector2(2, 0)); // Set first row
   * ```
   * @category Column/Row
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public setRow(index: number, row: ReadonlyVector2Like): this {
   // Development assertion
@@ -3454,7 +3453,7 @@ export class Matrix2 implements Matrix2Like {
   * @returns True if all components are exactly identical
   *
   * @category Comparison
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public exactEquals(other: ReadonlyMatrix2Like): boolean {
   return Matrix2.exactEquals(this, other);
@@ -3471,7 +3470,7 @@ export class Matrix2 implements Matrix2Like {
   * @returns True if all component differences are within scaled epsilon
   *
   * @category Comparison
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public nearEquals(other: ReadonlyMatrix2Like, epsilon: number = EPSILON): boolean {
   return Matrix2.nearEquals(this, other, epsilon);
@@ -3482,7 +3481,7 @@ export class Matrix2 implements Matrix2Like {
   * @param epsilon - Tolerance (default: EPSILON)
   * @returns True if matrix is identity
   * @category Comparison
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public isIdentity(epsilon: number = EPSILON): boolean {
   return Matrix2.isIdentity(this, epsilon);
@@ -3513,7 +3512,7 @@ export class Matrix2 implements Matrix2Like {
   * Tests if all components are finite numbers.
   * @returns True if all components are finite
   * @category Comparison
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public isFinite(): boolean {
   return Matrix2.isFinite(this);
@@ -3657,7 +3656,7 @@ export class Matrix2 implements Matrix2Like {
   * @returns The output array, or a new tuple if no output was provided
   *
   * @category Conversion
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public toArray<T extends ArrayLike<number> & { [index: number]: number }>(
   out?: T,
@@ -3690,7 +3689,7 @@ export class Matrix2 implements Matrix2Like {
   * Converts to a plain object.
   * @returns Object with m00, m01, m10, m11 properties
   * @category Conversion
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public toObject(): Matrix2Like {
   return { m00: this.m00, m01: this.m01, m10: this.m10, m11: this.m11 };
@@ -3700,7 +3699,7 @@ export class Matrix2 implements Matrix2Like {
   * Alias for toObject (JSON serialization).
   * @returns Object with matrix components
   * @category Conversion
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public toJSON(): Matrix2Like {
   return this.toObject();
@@ -3734,7 +3733,7 @@ export class Matrix2 implements Matrix2Like {
   * ```
   *
   * @category Conversion
-  * @since 0.9.0
+  * @since 0.6.0
   */
  public toMatrix3Like(out?: Matrix3Like): Matrix3Like {
   const result = out ?? {
@@ -3765,7 +3764,7 @@ export class Matrix2 implements Matrix2Like {
   * @param precision - Number of decimal places (default: 4)
   * @returns String representation
   * @category Conversion
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public toString(precision = 4): string {
   const p = (n: number) => n.toFixed(precision);
@@ -3776,7 +3775,7 @@ export class Matrix2 implements Matrix2Like {
   * Creates a clone of this matrix.
   * @returns New matrix with same components
   * @category Conversion
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public clone(): Matrix2 {
   return new Matrix2(this.m00, this.m01, this.m10, this.m11);
@@ -3792,7 +3791,7 @@ export class Matrix2 implements Matrix2Like {
   * ```
   *
   * @category Conversion
-  * @since 0.7.0
+  * @since 0.6.0
   */
  public *[Symbol.iterator](): IterableIterator<number> {
   yield this.m00;

@@ -35,9 +35,14 @@ module.exports = {
      for (const line of lines) {
       const tagMatch = line.match(/^\s*\*?\s*@(\w+)/);
       if (tagMatch) {
-       if (tagMatch[1] === 'example') { inExample = true; continue; }
+       if (tagMatch[1] === 'example') {
+        inExample = true;
+        continue;
+       }
        if (inExample) inExample = false;
-      } else if (inExample) { continue; }
+      } else if (inExample) {
+       continue;
+      }
       const match = line.match(/^\s*\*?\s*@see\s+(.+?)(\s*\*\/|\s*$)/);
       if (!match) continue;
 

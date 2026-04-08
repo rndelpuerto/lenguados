@@ -58,7 +58,7 @@ const worldPoint = Transform2.transformPoint(transform, position);
 ```bash
 git clone https://github.com/rndelpuerto/lenguados.git
 cd lenguados
-nvm install   # installs 22.14.0 from .nvmrc
+nvm install   # installs 24.14.1 from .nvmrc
 nvm use
 npm install
 npm run build

@@ -52,7 +52,7 @@ describe('Transform2 Properties', () => {
   // When composing transforms with non-uniform scale + rotation, the math
   // produces shear that Transform2 cannot capture. This is:
   // 1) Documented in Transform2.multiply() JSDoc
-  // 2) Same limitation as Box2D's b2Transform (position + rotation only)
+  // 2) Inherent SRT decomposition limitation (position + rotation only)
   // 3) Solvable via Matrix3 when exact composition is needed
   //
   // Tests use:

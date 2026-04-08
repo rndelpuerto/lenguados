@@ -22,7 +22,7 @@
  *
  * @constant {number}
  * @category Tolerance
- * @since 0.7.0
+ * @since 0.5.0
  */
 export const EPSILON = 1e-10;
 
@@ -48,7 +48,7 @@ export const EPSILON_SQUARED = EPSILON * EPSILON;
  *
  * @constant {number}
  * @category Angular
- * @since 0.7.0
+ * @since 0.5.0
  */
 export const PI = Math.PI;
 
@@ -61,7 +61,7 @@ export const PI = Math.PI;
  *
  * @constant {number}
  * @category Angular
- * @since 0.7.0
+ * @since 0.5.0
  */
 export const TAU = 2 * Math.PI;
 
@@ -70,7 +70,7 @@ export const TAU = 2 * Math.PI;
  *
  * @constant {number}
  * @category Angular
- * @since 0.7.0
+ * @since 0.5.0
  */
 export const HALF_PI = Math.PI / 2;
 
@@ -97,7 +97,7 @@ export const QUARTER_PI = Math.PI / 4;
  *
  * @constant {number}
  * @category Conversion
- * @since 0.7.0
+ * @since 0.5.0
  */
 export const DEG_TO_RAD = Math.PI / 180;
 
@@ -111,7 +111,7 @@ export const DEG_TO_RAD = Math.PI / 180;
  *
  * @constant {number}
  * @category Conversion
- * @since 0.7.0
+ * @since 0.5.0
  */
 export const RAD_TO_DEG = 180 / Math.PI;
 

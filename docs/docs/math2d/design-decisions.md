@@ -13,16 +13,16 @@ This document captures the architectural decisions behind `@lenguados/math2d`, c
 
 ---
 
-## 1. Industry Benchmarks
+## 1. Design Conventions
 
-The API has been aligned against **Box2D**, **Three.js**, **gl-matrix**, and **Unity Mathematics**.
+The API follows established conventions from the broader 2D mathematics, physics simulation, and GPU computing domains.
 
-| Technique / Algorithm | Our Decision                 | Reference Engine           | Rationale                                                                                   |
-| :-------------------- | :--------------------------- | :------------------------- | :------------------------------------------------------------------------------------------ |
-| Smooth Interpolation  | `smoothStep`                 | Unity, Unreal, GLSL        | Standardized Hermite pattern. (`smoothlerp` is a non-standard anti-pattern).                |
-| 2D Rotations          | `Rotation2(cos, sin)` object | Box2D (`b2Rot`)            | Storing only the processed scalars avoids hidden latency in body-update loops.              |
-| Matrix Memory Layout  | Column-Major (1D)            | WebGL, gl-matrix, Three.js | One-to-one compatibility with GPU buffer layouts (`Float32Array` ready for upload).         |
-| Precision Tolerance   | `EPSILON = 1e-10`            | Box2D / Physics engines    | Tolerance required for polygon penetration detection without causing macroscopic jittering. |
+| Technique / Algorithm | Our Decision                 | Convention Source               | Rationale                                                                           |
+| :-------------------- | :--------------------------- | :------------------------------ | :---------------------------------------------------------------------------------- |
+| Smooth Interpolation  | `smoothStep`                 | GLSL spec, HLSL spec            | Standardized Hermite pattern. (`smoothlerp` is a non-standard anti-pattern).        |
+| 2D Rotations          | `Rotation2(cos, sin)` object | Unit complex representation     | Storing only the processed scalars avoids hidden latency in body-update loops.      |
+| Matrix Memory Layout  | Column-Major (1D)            | WebGL / GPU buffer convention   | One-to-one compatibility with GPU buffer layouts (`Float32Array` ready for upload). |
+| Precision Tolerance   | `EPSILON = 1e-10`            | Double-precision best practices | Conservative for double precision; float32 engines typically use `1e-7` to `1e-8`.  |
 
 ---
 
@@ -50,30 +50,30 @@ Based on theoretical failures in abstraction, the following designs have been in
 
 After exhaustive audit, the following architectural contrasts against standardized open-source libraries have been codified.
 
-### ADR-003: Object-Oriented Ergonomics over Raw Typed Arrays (vs gl-matrix)
+### ADR-003: Object-Oriented Ergonomics over Raw Typed Arrays
 
-- **Context:** gl-matrix relies entirely on pre-allocated mutations using raw `Float32Array` values and loose global functions (`vec2.add(out, a, b)`).
+- **Context:** Some math libraries rely entirely on pre-allocated mutations using raw `Float32Array` values and loose global functions (`vec2.add(out, a, b)`).
 - **Decision:** `@lenguados/math2d` retains object-oriented programming (OOP) ergonomics, encapsulating state in instantiable classes (`this.x`, `this.y`). It employs pure static methods and fluent instance methods (`v.add(b)`).
-- **Alternatives Considered:** Pure functional approach with typed arrays (gl-matrix style).
-- **Rationale:** Gains ergonomics without sacrificing performance, facilitating readability for simulation code (Box2D style) rather than strict WebGL buffer-filling style. Static methods still accept an optional `out` parameter for allocation-free hot paths.
+- **Alternatives Considered:** Pure functional approach with typed arrays.
+- **Rationale:** Gains ergonomics without sacrificing performance, facilitating readability for simulation code rather than strict WebGL buffer-filling patterns. Static methods still accept an optional `out` parameter for allocation-free hot paths.
 
-### ADR-004: Explicit Rotation2 Object (vs Three.js)
+### ADR-004: Explicit Rotation2 Object (Unit Complex Representation)
 
-- **Context:** Three.js delegates most of its math to Euler angle-based rotations and 3D quaternions.
+- **Context:** Many libraries store rotations as raw angles or rely on 3D quaternions even for 2D use cases.
 - **Decision:** `@lenguados/math2d` explicitly introduces `Rotation2`, storing `(cos, sin)` internally instead of a floating-point scalar (radian).
 - **Alternatives Considered:** Store rotation as a single radian value (simpler API, smaller memory footprint).
-- **Rationale:** Eliminates costly and unnecessary kernel calls (`Math.cos()`, `Math.sin()`) during the 2D vertex/particle update cycle. This is a direct port of the well-proven Box2D optimization (`b2Rot`).
+- **Rationale:** Eliminates costly and unnecessary kernel calls (`Math.cos()`, `Math.sin()`) during the 2D vertex/particle update cycle. The unit complex number representation is the standard approach for efficient 2D rotation in physics engines and robotics.
 
-### ADR-005: Dual Validation Pipeline (vs Eigen)
+### ADR-005: Dual Validation Pipeline (Strict / Safe / Unchecked)
 
-- **Context:** Eigen (C++) relies on strict C++ typing and compile-time assertions to omit costly NaN/zero-division validation at runtime.
-- **Decision:** JavaScript (V8) lacks these compile-time guarantees. `@lenguados/math2d` implements a dual L0 pipeline: a Safe path that pre-computes division and transformation validations (`divideSafe`, `isNearZero`), and an Unchecked path that requires the consumer to mathematically verify state beforehand to bypass branch-prediction penalties.
+- **Context:** Statically-typed languages (C++, Rust) can leverage compile-time assertions to omit costly NaN/zero-division validation at runtime. JavaScript lacks these compile-time guarantees.
+- **Decision:** `@lenguados/math2d` implements a dual L0 pipeline: a Safe path that pre-computes division and transformation validations (`divideSafe`, `isNearZero`), and an Unchecked path that requires the consumer to mathematically verify state beforehand to bypass branch-prediction penalties.
 - **Alternatives Considered:** Single validation path (always validate), runtime-configurable validation toggle.
 - **Rationale:** The dual-path approach lets simulation code (e.g., physics solvers that guarantee non-zero inputs) run the Unchecked path for 100% linear CPU execution, while application-level code uses the Safe path for robustness.
 
-### ADR-006: Zero-Allocation Mutation (vs Math.js)
+### ADR-006: Zero-Allocation Mutation
 
-- **Context:** Math.js returns new instances for all operations, generating significant garbage collection pressure.
+- **Context:** Immutable math libraries return new instances for all operations, generating significant garbage collection pressure.
 - **Decision:** `@lenguados/math2d` maintains a strict zero-allocation paradigm. Pre-existing instances are rewritten/mutated in-place. Static functions require an optional `out` argument.
 - **Alternatives Considered:** Immutable value objects (functional style), copy-on-write.
 - **Rationale:** In a physics engine running thousands of operations per frame, allocation and GC pauses are unacceptable. Mutation-in-place with optional `out` parameters eliminates allocation overhead entirely while still allowing callers to opt into fresh instances when convenient.
@@ -82,7 +82,7 @@ After exhaustive audit, the following architectural contrasts against standardiz
 
 ## 4. Ratified Policies (2026 Audit)
 
-The following decisions were formalized after an exhaustive line-by-line audit of all 32 source files, verified against 12+ reference libraries (Eigen, NumPy, GLM, Three.js, Box2D, gl-matrix, etc.).
+The following decisions were formalized after an exhaustive line-by-line audit of all 32 source files, verified against academic sources (IEEE 754, fdlibm, numerical analysis literature) and industry best practices.
 
 ### ADR-007: Constructor Purity — No Assertions in Constructors
 

@@ -42,9 +42,14 @@ module.exports = {
      for (const line of lines) {
       const tagMatch = line.match(/^\s*\*?\s*@(\w+)/);
       if (tagMatch) {
-       if (tagMatch[1] === 'example') { inExample = true; continue; }
+       if (tagMatch[1] === 'example') {
+        inExample = true;
+        continue;
+       }
        if (inExample) inExample = false;
-      } else if (inExample) { continue; }
+      } else if (inExample) {
+       continue;
+      }
       const trimmed = line.replace(/^\s*\*?\s*/, '').replace(/\s*$/, '');
 
       // Check @param format: @param name - Description

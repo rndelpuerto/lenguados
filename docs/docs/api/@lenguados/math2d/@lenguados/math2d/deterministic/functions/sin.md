@@ -2,7 +2,7 @@
 
 > **sin**(`x`): `number`
 
-Defined in: [src/deterministic/deterministic-kernels.ts:356](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/deterministic/deterministic-kernels.ts#L356)
+Defined in: [src/deterministic/deterministic-kernels.ts:361](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/deterministic/deterministic-kernels.ts#L361)
 
 Deterministic sine function.
 
@@ -35,4 +35,4 @@ sin(PI); // ~0 (very small due to range reduction)
 
 ## Since
 
-0.8.0
+0.7.0

@@ -55,7 +55,7 @@ export function lerpAngle(from: number, to: number, t: number): number {
  * @see {@link smoothStepAngle} - Smooth eased variant
  *
  * @category Interpolation
- * @since 0.9.0
+ * @since 0.7.0
  */
 export function lerpAngleClamped(from: number, to: number, t: number): number {
  return lerpAngle(from, to, saturate(t));

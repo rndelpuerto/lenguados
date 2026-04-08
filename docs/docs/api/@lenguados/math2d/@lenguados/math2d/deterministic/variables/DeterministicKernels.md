@@ -2,15 +2,15 @@
 
 > `const` **DeterministicKernels**: `object`
 
-Defined in: [src/deterministic/deterministic-kernels.ts:991](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/deterministic/deterministic-kernels.ts#L991)
+Defined in: [src/deterministic/deterministic-kernels.ts:926](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/deterministic/deterministic-kernels.ts#L926)
 
-Deterministic math kernels for L0 cross-platform consistency.
+Pure deterministic math kernels for L0 cross-platform consistency.
 
 ## Type Declaration
 
 ## Arithmetic
 
-#### acos()
+#### acos
 
 > **acos**: (`x`) => `number`
 
@@ -32,7 +32,7 @@ acos(x) in [0, π]
 
 ##### Remarks
 
-Returns NaN for inputs outside [-1, 1]. Use [acosSafe](../functions/acosSafe.md) for automatic clamping.
+Returns NaN for inputs outside [-1, 1]. Use acosSafe for automatic clamping.
 
 ##### Example
 
@@ -44,41 +44,13 @@ acos(-1); // ~3.1416 (π)
 
 ##### See
 
-[acosSafe](../functions/acosSafe.md) — Clamps input to [-1, 1]
+acosSafe — Clamps input to [-1, 1]
 
 ##### Since
 
-0.8.0
+0.7.0
 
-#### acosSafe()
-
-> **acosSafe**: (`x`) => `number`
-
-Safe arccosine that clamps input to [-1, 1].
-
-##### Parameters
-
-###### x
-
-`number`
-
-Any value (will be clamped)
-
-##### Returns
-
-`number`
-
-acos(clamp(x, -1, 1))
-
-##### See
-
-[acos](../functions/acos.md) — Returns NaN for out-of-range inputs
-
-##### Since
-
-0.8.0
-
-#### asin()
+#### asin
 
 > **asin**: (`x`) => `number`
 
@@ -100,7 +72,7 @@ asin(x) in [-π/2, π/2]
 
 ##### Remarks
 
-Returns NaN for inputs outside [-1, 1]. Use [asinSafe](../functions/asinSafe.md) for automatic clamping.
+Returns NaN for inputs outside [-1, 1]. Use asinSafe for automatic clamping.
 
 ##### Example
 
@@ -112,41 +84,13 @@ asin(-1); // ~-1.5708 (-π/2)
 
 ##### See
 
-[asinSafe](../functions/asinSafe.md) — Clamps input to [-1, 1]
+asinSafe — Clamps input to [-1, 1]
 
 ##### Since
 
-0.8.0
+0.7.0
 
-#### asinSafe()
-
-> **asinSafe**: (`x`) => `number`
-
-Safe arcsine that clamps input to [-1, 1].
-
-##### Parameters
-
-###### x
-
-`number`
-
-Any value (will be clamped)
-
-##### Returns
-
-`number`
-
-asin(clamp(x, -1, 1))
-
-##### See
-
-[asin](../functions/asin.md) — Returns NaN for out-of-range inputs
-
-##### Since
-
-0.8.0
-
-#### atan()
+#### atan
 
 > **atan**: (`x`) => `number`
 
@@ -176,9 +120,9 @@ atan(Infinity); // ~1.5708 (π/2)
 
 ##### Since
 
-0.8.0
+0.7.0
 
-#### atan2()
+#### atan2
 
 > **atan2**: (`y`, `x`) => `number`
 
@@ -220,9 +164,9 @@ atan2(-1, 0); // -π/2 (negative Y axis)
 
 ##### Since
 
-0.8.0
+0.7.0
 
-#### cos()
+#### cos
 
 > **cos**: (`x`) => `number`
 
@@ -257,9 +201,9 @@ cos(PI); // -1
 
 ##### Since
 
-0.8.0
+0.7.0
 
-#### exp()
+#### exp
 
 > **exp**: (`x`) => `number`
 
@@ -296,38 +240,9 @@ exp(Infinity); // Infinity
 
 ##### Since
 
-0.9.0
+0.7.0
 
-#### expSafe()
-
-> **expSafe**: (`x`) => `number`
-
-Safe exponential function (handles extreme values gracefully).
-
-##### Parameters
-
-###### x
-
-`number`
-
-Exponent value
-
-##### Returns
-
-`number`
-
-e^x, clamped to finite range
-
-##### Remarks
-
-Returns Number.MAX_VALUE for positive overflow (not Infinity) and 0 for
-negative overflow, maintaining the Safe contract (finite-in/finite-out).
-
-##### Since
-
-0.9.0
-
-#### hypot()
+#### hypot
 
 > **hypot**: (`x`, `y`) => `number`
 
@@ -378,9 +293,9 @@ hypot(Infinity, 5); // Infinity
 
 ##### Since
 
-0.9.0
+0.7.0
 
-#### log()
+#### log
 
 > **log**: (`x`) => `number`
 
@@ -417,42 +332,9 @@ log(-1); // NaN
 
 ##### Since
 
-0.9.0
+0.7.0
 
-#### logKernelSafe()
-
-> **logKernelSafe**: (`x`) => `number`
-
-Safe natural logarithm at the deterministic kernel level (returns 0 for non-positive values).
-
-##### Parameters
-
-###### x
-
-`number`
-
-Value to compute logarithm of
-
-##### Returns
-
-`number`
-
-ln(x) for x > 0, 0 otherwise
-
-##### Remarks
-
-The deterministic layer's single-argument safe log, analogous to [expSafe](../functions/expSafe.md) for `exp`
-and [acosSafe](../functions/acosSafe.md)/[asinSafe](../functions/asinSafe.md) for inverse trig. Intended for consumers who use
-DeterministicKernels directly without the auxiliary layer.
-
-For multi-base support (`logSafe(x, base)`), use `auxiliary/numeric/safety.logSafe` instead,
-which internally delegates to the deterministic [log](../functions/log.md) kernel with its own guard.
-
-##### Since
-
-0.9.0
-
-#### pow()
+#### pow
 
 > **pow**: (`base`, `exponent`) => `number`
 
@@ -494,9 +376,9 @@ pow(2, -1); // 0.5
 
 ##### Since
 
-0.8.0
+0.7.0
 
-#### sin()
+#### sin
 
 > **sin**: (`x`) => `number`
 
@@ -531,9 +413,9 @@ sin(PI); // ~0 (very small due to range reduction)
 
 ##### Since
 
-0.8.0
+0.7.0
 
-#### sinCos()
+#### sinCos
 
 > **sinCos**: (`x`, `out?`) => [`SinCos`](../../types/interfaces/SinCos.md)
 
@@ -575,9 +457,9 @@ const result = sinCos(PI / 4);
 
 ##### Since
 
-0.8.0
+0.7.0
 
-#### tan()
+#### tan
 
 > **tan**: (`x`) => `number`
 
@@ -611,7 +493,7 @@ tan(PI / 4); // ~1
 
 ##### Since
 
-0.8.0
+0.7.0
 
 ## Configuration
 
@@ -652,7 +534,7 @@ config.useNativeMath = true;
 
 ##### Since
 
-0.8.0
+0.7.0
 
 ##### config.useNativeMath
 
@@ -660,10 +542,13 @@ config.useNativeMath = true;
 
 ## Remarks
 
-Contains ONLY functions that are not deterministic in native JavaScript:
+Contains ONLY pure deterministic replacements for non-deterministic `Math.*` functions.
+Each function returns IEEE 754-specified results (including NaN for domain errors).
+No Safe variants — domain clamping and fallback functions live in
+`auxiliary/numeric/safety.ts`.
 
-- Trigonometric: sin, cos, tan, atan, atan2, acos, asin
-- Power: pow (for non-integer exponents)
+- Trigonometric: sin, cos, sinCos, tan, atan, atan2, acos, asin
+- Logarithmic/Exponential: log, exp, pow
 - Hypotenuse: hypot
 
 `Math.sqrt`, `Math.floor`, `Math.ceil`, `Math.abs` are IEEE 754 required
@@ -671,4 +556,4 @@ operations and should be used directly — they are deterministic.
 
 ## Since
 
-0.8.0
+0.7.0

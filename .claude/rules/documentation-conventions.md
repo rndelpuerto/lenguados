@@ -95,6 +95,14 @@ When referencing math2d API names in documentation:
 - Known renames: `.scale()` → `.multiplyScalar()`, `safeDivide` → `divideSafe` (suffix convention)
 - When in doubt, grep the source before documenting
 
+## Version References
+
+When any documentation (`.md`, TSDoc, specs) mentions a library version:
+
+- The maximum allowable version is the **next semver release** after the current stable in `packages/math2d/package.json`.
+- Never reference speculative future versions (e.g., "will be removed in 1.0.0") — use "a future major version" instead.
+- Full version resolution rules for `@since` tags are in `.claude/rules/tsdoc-conventions.md` → **@since Version Resolution**.
+
 ## TSDoc
 
 - Follow the [TSDoc Standard](docs/docs/contributing/tsdoc-standard.md) for all source code documentation

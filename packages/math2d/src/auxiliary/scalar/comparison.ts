@@ -32,7 +32,7 @@ import { EPSILON } from './constants';
  * ```
  *
  * @category Comparison
- * @since 0.7.0
+ * @since 0.5.0
  */
 export function nearEquals(a: number, b: number, epsilon: number = EPSILON): boolean {
  if (!(epsilon >= 0)) {
@@ -110,8 +110,7 @@ export function isNearOne(value: number, epsilon: number = EPSILON): boolean {
  * Scales with magnitude for large numbers; uses absolute floor for small numbers.
  *
  * @remarks
- * Uses the combined absolute+relative tolerance pattern from Christer Ericson's
- * *Real-Time Collision Detection*: the `max(1, ...)` floor ensures near-zero
+ * Uses the combined absolute+relative tolerance pattern: the `max(1, ...)` floor ensures near-zero
  * values are compared with threshold = `relativeEpsilon` (absolute behavior),
  * while large values scale proportionally (relative behavior).
  *
@@ -136,7 +135,7 @@ export function isNearOne(value: number, epsilon: number = EPSILON): boolean {
  * ```
  *
  * @category Comparison
- * @since 0.7.0
+ * @since 0.5.0
  */
 export function relativeEquals(a: number, b: number, relativeEpsilon: number = EPSILON): boolean {
  if (!(relativeEpsilon >= 0)) {

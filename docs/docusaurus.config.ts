@@ -5,6 +5,11 @@ import { themes as prismThemes } from 'prism-react-renderer';
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
 const config: Config = {
+ future: {
+  v4: true,
+  faster: true,
+ },
+
  title: 'Lenguados',
  tagline:
   'Lenguados is a TypeScript‑based, lightweight, deterministic, and extensible 2‑D physics engine.',

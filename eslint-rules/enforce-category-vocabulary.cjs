@@ -55,7 +55,7 @@ const FILE_SCOPE_MAP = {
  'Transform Integration': ['vector2.ts', 'transform2.ts'],
  Direction: ['vector2.ts'],
  Geometry: ['vector2.ts'],
- Constraint: ['vector2.ts'],
+ Constraint: ['vector2.ts', 'complex.ts', 'interval.ts'],
 };
 
 const DEPRECATED_MAP = {
@@ -63,13 +63,13 @@ const DEPRECATED_MAP = {
  'Direction & Angles': 'Direction or Computed',
  'Numeric Transform': 'Transform',
  'Vector Transforms': 'Transform',
- 'Constraints': 'Constraint',
- 'Predicate': 'Comparison',
- 'Serialization': 'Conversion',
- 'Composition': 'Matrix Operations',
+ Constraints: 'Constraint',
+ Predicate: 'Comparison',
+ Serialization: 'Conversion',
+ Composition: 'Matrix Operations',
  'Batch Operations': 'Matrix Operations',
- 'Validation': 'Comparison',
- 'Component': 'Accessor',
+ Validation: 'Comparison',
+ Component: 'Accessor',
 };
 
 module.exports = {
@@ -82,8 +82,7 @@ module.exports = {
   messages: {
    invalidCategory:
     'Invalid @category "{{value}}". Must be one of the controlled vocabulary values defined in DOCUMENTATION_STANDARD.md Section 3.',
-   deprecatedCategory:
-    'Deprecated @category "{{value}}". Replace with: {{replacement}}.',
+   deprecatedCategory: 'Deprecated @category "{{value}}". Replace with: {{replacement}}.',
    fileScopedCategory:
     '@category "{{value}}" is only valid in {{allowedFiles}}. See DOCUMENTATION_STANDARD.md Section 3.',
   },
@@ -104,9 +103,14 @@ module.exports = {
      for (let i = 0; i < lines.length; i++) {
       const tagMatch = lines[i].match(/^\s*\*?\s*@(\w+)/);
       if (tagMatch) {
-       if (tagMatch[1] === 'example') { inExample = true; continue; }
+       if (tagMatch[1] === 'example') {
+        inExample = true;
+        continue;
+       }
        if (inExample) inExample = false;
-      } else if (inExample) { continue; }
+      } else if (inExample) {
+       continue;
+      }
       const match = lines[i].match(/@category\s+(.+?)(\s*\*\/|\s*$)/);
       if (!match) continue;
 

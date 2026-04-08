@@ -101,7 +101,7 @@ Build mode is controlled by environment variable:
 
 Every workspace package MUST include:
 
-- `"engines": { "node": ">=22" }`
+- `"engines": { "node": ">=24" }`
 - `"publishConfig": { "access": "public" }`
 - `"license": "Apache-2.0"`
 - `"sideEffects": false`

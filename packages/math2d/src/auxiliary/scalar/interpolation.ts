@@ -30,7 +30,7 @@ import { saturate } from './arithmetic';
  *
  * @see {@link lerpClamped} — clamped interpolation
  * @category Interpolation
- * @since 0.7.0
+ * @since 0.5.0
  */
 export function lerp(a: number, b: number, t: number): number {
  if (t === 0) return a;
@@ -168,7 +168,7 @@ export function inverseLerpUnchecked(a: number, b: number, value: number): numbe
  * ```
  *
  * @category Interpolation
- * @since 0.7.0
+ * @since 0.5.0
  */
 export function smoothStep(edge0: number, edge1: number, x: number): number {
  const range = edge1 - edge0;

@@ -121,7 +121,7 @@ export function isDenormal(value: number): boolean {
  *
  * @see {@link isDenormal} - For testing without flushing
  * @category Guards
- * @since 0.9.0
+ * @since 0.7.0
  */
 export function flushDenormal(value: number): number {
  return isDenormal(value) ? 0 : value;

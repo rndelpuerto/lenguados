@@ -587,7 +587,7 @@ describe('Rotation2', () => {
  });
 
  describe('Coverage - Constructor and Factories Extended', () => {
-  it('constructor does NOT normalize (Planck.js aligned)', () => {
+  it('constructor does NOT normalize (by design)', () => {
    expect.hasAssertions();
    const rot = new Rotation2(3, 4); // Not unit, NOT normalized by constructor
    // Constructor preserves input values (industry standard)

@@ -54,8 +54,7 @@ function extractTags(commentValue) {
  * Handles ExportNamedDeclaration wrapping (JSDoc is before the export keyword).
  */
 function getJSDocComment(sourceCode, node) {
- const target =
-  node.parent && node.parent.type === 'ExportNamedDeclaration' ? node.parent : node;
+ const target = node.parent && node.parent.type === 'ExportNamedDeclaration' ? node.parent : node;
  const comments = sourceCode.getCommentsBefore(target);
  for (let i = comments.length - 1; i >= 0; i--) {
   const c = comments[i];
@@ -80,12 +79,7 @@ function getNodeName(node) {
 function classifyStaticMethod(name) {
  if (name.endsWith('Safe')) return 'safe';
  if (name.endsWith('Unchecked')) return 'unchecked';
- if (
-  name.startsWith('from') ||
-  name === 'clone' ||
-  name === 'copy'
- )
-  return 'factory';
+ if (name.startsWith('from') || name === 'clone' || name === 'copy') return 'factory';
  return 'static-method';
 }
 
@@ -99,8 +93,7 @@ module.exports = {
  meta: {
   type: 'suggestion',
   docs: {
-   description:
-    'Enforce per-symbol-type tag requirements from DOCUMENTATION_STANDARD.md Section 2',
+   description: 'Enforce per-symbol-type tag requirements from DOCUMENTATION_STANDARD.md Section 2',
   },
   schema: [],
   messages: {

@@ -17,8 +17,8 @@
  *  ────────────────────────────────────────────────────────────────────────────
  *  TypeScript
  *  ──────────
- *  • All `.ts` files (tests and sources) are transpiled on‑the‑fly via ts‑jest
- *    using `tsconfig.test.json` (extends the base tsconfig and adds `types: jest`).
+ *  • All `.ts` files (tests and sources) are transpiled on‑the‑fly via @swc/jest
+ *    (fast, transpile‑only — type checking is handled by `tsc --noEmit` in CI).
  *  • `moduleFileExtensions` restricts Jest to TypeScript only — no `.js` test
  *    files are collected.
  *
@@ -30,25 +30,31 @@
  *    test runner to avoid duplicate work.
  */
 
-import type { JestConfigWithTsJest } from 'ts-jest';
-// import { pathsToModuleNameMapper }   from 'ts-jest';
-// import { compilerOptions }           from './tsconfig.json';
+import type { Config } from 'jest';
 
-const sharedTransform = { '^.+\\.ts$': 'ts-jest' };
+const sharedTransform = {
+ '^.+\\.ts$': [
+  '@swc/jest',
+  {
+   sourceMaps: true,
+   jsc: {
+    parser: { syntax: 'typescript', decorators: false },
+    target: 'es2022',
+   },
+  },
+ ] satisfies [string, Record<string, unknown>],
+};
 
 /**
  * -------------------------------------------------------------------------
  *  Root‑level options inherited by every project
  *  ----------------------------------------------------------------------
  */
-const baseConfig: JestConfigWithTsJest = {
+const baseConfig: Config = {
  moduleFileExtensions: ['ts', 'js', 'json'],
 
- // Use ts‑jest with a dedicated tsconfig for tests
+ // SWC‑based transpilation (fast, no type checking — tsc handles that separately)
  transform: sharedTransform,
-
- // Tell ts‑jest which tsconfig to use for *test files*
- globals: { 'ts-jest': { tsconfig: 'tsconfig.test.json' } },
 
  // Runtime resolution for TypeScript path aliases
  // moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, {

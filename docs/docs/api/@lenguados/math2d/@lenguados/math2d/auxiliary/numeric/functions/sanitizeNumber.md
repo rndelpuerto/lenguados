@@ -1,8 +1,8 @@
 # Function: sanitizeNumber()
 
-> **sanitizeNumber**(`value`, `fallback`, `min`, `max`): `number`
+> **sanitizeNumber**(`value`, `fallback?`, `min?`, `max?`): `number`
 
-Defined in: [src/auxiliary/numeric/safety.ts:428](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/auxiliary/numeric/safety.ts#L428)
+Defined in: [src/auxiliary/numeric/safety.ts:470](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/auxiliary/numeric/safety.ts#L470)
 
 Validates and cleans numeric value.
 
@@ -14,19 +14,19 @@ Validates and cleans numeric value.
 
 Value to sanitize
 
-### fallback
+### fallback?
 
 `number` = `0`
 
 Value to use if input is invalid (default: 0)
 
-### min
+### min?
 
 `number` = `-Number.MAX_VALUE`
 
 Minimum allowed value (default: -Number.MAX_VALUE)
 
-### max
+### max?
 
 `number` = `Number.MAX_VALUE`
 

@@ -43,16 +43,21 @@ All modules use named exports exclusively. Never `export default`.
 
 ## Class Member Ordering (ESLint `@typescript-eslint/member-ordering`)
 
+Follows the ordering defined in `tsdoc-conventions.md` (all source files use this):
+
 ```
-1. public instance fields
-2. public readonly instance fields
-3. private instance fields
-4. private readonly instance fields
-5. private static methods (helpers like ensureOut)
-6. public static readonly fields (constants: ZERO, ONE, etc.)
-7. constructor
-8. public static methods
-9. public instance methods, getters, setters
+Group 1 (declarations — must precede all instance methods):
+1. Private helpers (ensureOut, normalizeComponents)
+2. Public static readonly fields (constants: ZERO, ONE, IDENTITY)
+3. Public static factories (from*)
+4. Public static methods (arithmetic, transform, computed, comparison)
+5. Public instance properties (x, y, cos, sin, etc.)
+6. Constructor
+
+Group 2 (instance members):
+7. Instance mutators (arithmetic, transform, normalization)
+8. Instance accessors (getters, computed properties)
+9. Instance conversion (to*, clone, copy, equals)
 ```
 
 ## Conventional Commits

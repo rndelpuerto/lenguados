@@ -7,16 +7,12 @@ import { describe, expect, it } from '@jest/globals';
 
 import {
  acos,
- acosSafe,
  asin,
- asinSafe,
  atan,
  atan2,
  cos,
  exp,
- expSafe,
  log,
- logKernelSafe,
  pow,
  sin,
  sinCos,
@@ -232,15 +228,6 @@ describe('DeterministicKernels L0 Functions', () => {
   });
  });
 
- describe('acosSafe / asinSafe', () => {
-  it('should clamp out-of-range values', () => {
-   expect(acosSafe(2)).toBeCloseTo(0, 14);
-   expect(acosSafe(-2)).toBeCloseTo(PI, 14);
-   expect(asinSafe(2)).toBeCloseTo(PI / 2, 14);
-   expect(asinSafe(-2)).toBeCloseTo(-PI / 2, 14);
-  });
- });
-
  describe('pow', () => {
   it('should compute integer powers', () => {
    expect(pow(2, 0)).toBe(1);
@@ -313,18 +300,6 @@ describe('DeterministicKernels L0 Functions', () => {
   });
  });
 
- describe('logKernelSafe', () => {
-  it('should return 0 for non-positive values', () => {
-   expect(logKernelSafe(-1)).toBe(0);
-   expect(logKernelSafe(0)).toBe(0);
-   expect(logKernelSafe(-100)).toBe(0);
-  });
-
-  it('should compute log for positive values', () => {
-   expect(logKernelSafe(Math.E)).toBeCloseTo(1, 12);
-  });
- });
-
  describe('exp', () => {
   it('should compute exponential correctly', () => {
    expect(exp(0)).toBe(1);
@@ -358,20 +333,6 @@ describe('DeterministicKernels L0 Functions', () => {
    // Near underflow: should be 0 or a very tiny denormalized number
    expect(result).toBeGreaterThanOrEqual(0);
    expect(result).toBeLessThan(1e-300);
-  });
- });
-
- describe('expSafe', () => {
-  it('should propagate NaN', () => {
-   expect(expSafe(NaN)).toBeNaN();
-  });
-
-  it('should handle overflow gracefully', () => {
-   expect(expSafe(1000)).toBe(Number.MAX_VALUE);
-  });
-
-  it('should compute exp for normal values', () => {
-   expect(expSafe(1)).toBeCloseTo(Math.E, 12);
   });
  });
 

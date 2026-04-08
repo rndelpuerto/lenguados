@@ -20,7 +20,7 @@
  * ```
  *
  * @category Arithmetic
- * @since 0.7.0
+ * @since 0.5.0
  */
 export function clamp(value: number, min: number, max: number): number {
  return value < min ? min : value > max ? max : value;
@@ -47,7 +47,7 @@ export function clamp(value: number, min: number, max: number): number {
  * ```
  *
  * @category Arithmetic
- * @since 0.7.0
+ * @since 0.5.0
  */
 export function sign(value: number): -1 | 0 | 1 {
  if (value > 0) return 1;
@@ -69,7 +69,7 @@ export function sign(value: number): -1 | 0 | 1 {
  * ```
  *
  * @category Arithmetic
- * @since 0.7.0
+ * @since 0.5.0
  */
 export function saturate(value: number): number {
  return clamp(value, 0, 1);

@@ -2,7 +2,7 @@
 
 > `const` **config**: `object`
 
-Defined in: [src/deterministic/deterministic-kernels.ts:78](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/deterministic/deterministic-kernels.ts#L78)
+Defined in: [src/deterministic/deterministic-kernels.ts:83](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/deterministic/deterministic-kernels.ts#L83)
 
 Global configuration for deterministic math execution.
 
@@ -43,4 +43,4 @@ config.useNativeMath = true;
 
 ## Since
 
-0.8.0
+0.7.0

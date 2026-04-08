@@ -6,9 +6,14 @@
  * @remarks
  * ## Purpose
  *
- * This module contains ONLY functions that are NOT deterministic in native JavaScript.
- * Functions like `Math.floor`, `Math.ceil`, `Math.abs` ARE deterministic per IEEE 754
- * and should be used directly.
+ * This module contains ONLY pure deterministic replacements for `Math.*` functions
+ * that are NOT bit-exact across JavaScript engines. Each kernel accepts any IEEE 754
+ * double and returns the IEEE 754-specified result (including NaN for domain errors).
+ * No clamping, no fallbacks, no Safe variants — those belong in
+ * `auxiliary/numeric/safety.ts` (L1).
+ *
+ * Functions like `Math.floor`, `Math.ceil`, `Math.abs`, `Math.sqrt` ARE deterministic
+ * per IEEE 754 and should be used directly.
  *
  * ## Determinism Guarantee: L0 (Bit-Exact Cross-Platform)
  *
@@ -73,7 +78,7 @@ const QUARTER_PI = Math.PI / 4;
  * ```
  *
  * @category Configuration
- * @since 0.8.0
+ * @since 0.7.0
  */
 export const config = {
  useNativeMath: false,
@@ -229,7 +234,7 @@ function pow2(n: number): number {
  *
  * @see {@link https://www.netlib.org/fdlibm/e_hypot.c} - fdlibm hypot source
  * @category Arithmetic
- * @since 0.9.0
+ * @since 0.7.0
  */
 export function hypot(x: number, y: number): number {
  if (config.useNativeMath) return Math.hypot(x, y);
@@ -351,7 +356,7 @@ function kernelCos(x: number): number {
  * ```
  *
  * @category Arithmetic
- * @since 0.8.0
+ * @since 0.7.0
  */
 export function sin(x: number): number {
  if (config.useNativeMath) return Math.sin(x);
@@ -392,7 +397,7 @@ export function sin(x: number): number {
  * ```
  *
  * @category Arithmetic
- * @since 0.8.0
+ * @since 0.7.0
  */
 export function cos(x: number): number {
  if (config.useNativeMath) return Math.cos(x);
@@ -435,7 +440,7 @@ export function cos(x: number): number {
  * ```
  *
  * @category Arithmetic
- * @since 0.8.0
+ * @since 0.7.0
  */
 export function sinCos(x: number, out?: SinCos): SinCos {
  const result = out ?? { sin: 0, cos: 0 };
@@ -497,7 +502,7 @@ export function sinCos(x: number, out?: SinCos): SinCos {
  * ```
  *
  * @category Arithmetic
- * @since 0.8.0
+ * @since 0.7.0
  */
 export function tan(x: number): number {
  if (config.useNativeMath) return Math.tan(x);
@@ -546,7 +551,7 @@ function kernelAtan(x: number): number {
  * ```
  *
  * @category Arithmetic
- * @since 0.8.0
+ * @since 0.7.0
  */
 export function atan(x: number): number {
  if (config.useNativeMath) return Math.atan(x);
@@ -607,7 +612,7 @@ export function atan(x: number): number {
  * ```
  *
  * @category Arithmetic
- * @since 0.8.0
+ * @since 0.7.0
  */
 export function atan2(y: number, x: number): number {
  if (config.useNativeMath) return Math.atan2(y, x);
@@ -669,7 +674,7 @@ export function atan2(y: number, x: number): number {
  *
  * @see {@link acosSafe} — Clamps input to [-1, 1]
  * @category Arithmetic
- * @since 0.8.0
+ * @since 0.7.0
  */
 export function acos(x: number): number {
  if (config.useNativeMath) return Math.acos(x);
@@ -697,7 +702,7 @@ export function acos(x: number): number {
  *
  * @see {@link asinSafe} — Clamps input to [-1, 1]
  * @category Arithmetic
- * @since 0.8.0
+ * @since 0.7.0
  */
 export function asin(x: number): number {
  if (config.useNativeMath) return Math.asin(x);
@@ -705,38 +710,6 @@ export function asin(x: number): number {
  if (x < -1 || x > 1) return NaN;
  // asin(x) = atan2(x, sqrt(1 - x²))
  return atan2(x, Math.sqrt(1 - x * x));
-}
-
-/**
- * Safe arccosine that clamps input to [-1, 1].
- *
- * @param x - Any value (will be clamped)
- * @returns acos(clamp(x, -1, 1))
- *
- * @see {@link acos} — Returns NaN for out-of-range inputs
- * @category Arithmetic
- * @since 0.8.0
- */
-export function acosSafe(x: number): number {
- if (x <= -1) return PI;
- if (x >= 1) return 0;
- return acos(x);
-}
-
-/**
- * Safe arcsine that clamps input to [-1, 1].
- *
- * @param x - Any value (will be clamped)
- * @returns asin(clamp(x, -1, 1))
- *
- * @see {@link asin} — Returns NaN for out-of-range inputs
- * @category Arithmetic
- * @since 0.8.0
- */
-export function asinSafe(x: number): number {
- if (x <= -1) return -PI_2;
- if (x >= 1) return PI_2;
- return asin(x);
 }
 
 /* ========================================================================== */
@@ -763,7 +736,7 @@ export function asinSafe(x: number): number {
  * ```
  *
  * @category Arithmetic
- * @since 0.9.0
+ * @since 0.7.0
  */
 export function log(x: number): number {
  if (config.useNativeMath) return Math.log(x);
@@ -815,28 +788,6 @@ export function log(x: number): number {
 }
 
 /**
- * Safe natural logarithm at the deterministic kernel level (returns 0 for non-positive values).
- *
- * @remarks
- * The deterministic layer's single-argument safe log, analogous to {@link expSafe} for `exp`
- * and {@link acosSafe}/{@link asinSafe} for inverse trig. Intended for consumers who use
- * {@link DeterministicKernels} directly without the auxiliary layer.
- *
- * For multi-base support (`logSafe(x, base)`), use `auxiliary/numeric/safety.logSafe` instead,
- * which internally delegates to the deterministic {@link log} kernel with its own guard.
- *
- * @param x - Value to compute logarithm of
- * @returns ln(x) for x > 0, 0 otherwise
- *
- * @category Arithmetic
- * @since 0.9.0
- */
-export function logKernelSafe(x: number): number {
- if (x <= 0) return 0;
- return log(x);
-}
-
-/**
  * Deterministic exponential function using fdlibm algorithm.
  *
  * @remarks
@@ -856,7 +807,7 @@ export function logKernelSafe(x: number): number {
  * ```
  *
  * @category Arithmetic
- * @since 0.9.0
+ * @since 0.7.0
  */
 export function exp(x: number): number {
  if (config.useNativeMath) return Math.exp(x);
@@ -898,26 +849,6 @@ export function exp(x: number): number {
 }
 
 /**
- * Safe exponential function (handles extreme values gracefully).
- *
- * @remarks
- * Returns Number.MAX_VALUE for positive overflow (not Infinity) and 0 for
- * negative overflow, maintaining the Safe contract (finite-in/finite-out).
- *
- * @param x - Exponent value
- * @returns e^x, clamped to finite range
- *
- * @category Arithmetic
- * @since 0.9.0
- */
-export function expSafe(x: number): number {
- if (x !== x) return NaN;
- const result = exp(x);
- if (!Number.isFinite(result)) return result > 0 ? Number.MAX_VALUE : 0;
- return result;
-}
-
-/**
  * Deterministic power function.
  *
  * @remarks
@@ -937,7 +868,7 @@ export function expSafe(x: number): number {
  * ```
  *
  * @category Arithmetic
- * @since 0.8.0
+ * @since 0.7.0
  */
 export function pow(base: number, exponent: number): number {
  if (config.useNativeMath) return Math.pow(base, exponent);
@@ -974,19 +905,23 @@ export function pow(base: number, exponent: number): number {
 /* ========================================================================== */
 
 /**
- * Deterministic math kernels for L0 cross-platform consistency.
+ * Pure deterministic math kernels for L0 cross-platform consistency.
  *
  * @remarks
- * Contains ONLY functions that are not deterministic in native JavaScript:
- * - Trigonometric: sin, cos, tan, atan, atan2, acos, asin
- * - Power: pow (for non-integer exponents)
+ * Contains ONLY pure deterministic replacements for non-deterministic `Math.*` functions.
+ * Each function returns IEEE 754-specified results (including NaN for domain errors).
+ * No Safe variants — domain clamping and fallback functions live in
+ * `auxiliary/numeric/safety.ts`.
+ *
+ * - Trigonometric: sin, cos, sinCos, tan, atan, atan2, acos, asin
+ * - Logarithmic/Exponential: log, exp, pow
  * - Hypotenuse: hypot
  *
  * `Math.sqrt`, `Math.floor`, `Math.ceil`, `Math.abs` are IEEE 754 required
  * operations and should be used directly — they are deterministic.
  *
  * @category Helpers
- * @since 0.8.0
+ * @since 0.7.0
  */
 export const DeterministicKernels = {
  // Configuration
@@ -997,9 +932,7 @@ export const DeterministicKernels = {
 
  // Logarithm and exponential
  log,
- logKernelSafe,
  exp,
- expSafe,
 
  // Trigonometry
  sin,
@@ -1012,8 +945,6 @@ export const DeterministicKernels = {
  // Inverse trigonometry
  acos,
  asin,
- acosSafe,
- asinSafe,
 
  // Power
  pow,

@@ -1,8 +1,8 @@
 # Function: relativeEquals()
 
-> **relativeEquals**(`a`, `b`, `relativeEpsilon`): `boolean`
+> **relativeEquals**(`a`, `b`, `relativeEpsilon?`): `boolean`
 
-Defined in: [src/auxiliary/scalar/comparison.ts:141](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/auxiliary/scalar/comparison.ts#L141)
+Defined in: [src/auxiliary/scalar/comparison.ts:141](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/auxiliary/scalar/comparison.ts#L141)
 
 Tests combined tolerance equality: |a-b| <= epsilon \* max(|a|, |b|, 1).
 Scales with magnitude for large numbers; uses absolute floor for small numbers.
@@ -21,7 +21,7 @@ First value
 
 Second value
 
-### relativeEpsilon
+### relativeEpsilon?
 
 `number` = `EPSILON`
 
@@ -60,4 +60,4 @@ relativeEquals(0.001, 0.002, 0.01); // true (scale=1, threshold=0.01, diff=0.001
 
 ## Since
 
-0.7.0
+0.5.0

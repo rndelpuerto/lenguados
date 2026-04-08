@@ -25,8 +25,8 @@ common ← math2d ← examples
 
 ## Shared Infrastructure
 
-- **Build**: Each package runs `node ../../scripts/build.mjs` (Rollup 4) → CJS + ESM + types in `lib/`
-- **Testing**: Jest 29 + ts-jest, two environments: `node` (`*.node.spec.ts`) and `jsdom` (`*.dom.spec.ts`)
+- **Build**: Each package runs `node ../../scripts/build.mjs` (Rollup 4 + SWC) → CJS + ESM + types in `lib/`
+- **Testing**: Jest 29 + @swc/jest, two environments: `node` (`*.node.spec.ts`) and `jsdom` (`*.dom.spec.ts`)
 - **Linting**: ESLint 9 (flat config) + Stylelint 16 + Prettier 3, enforced by lint-staged pre-commit hook
 - **CI**: GitHub Actions for PR validation, release via Lerna, docs deploy to GitHub Pages
 - **Docs**: Docusaurus site at `docs/` with `docusaurus-plugin-typedoc` for auto-generated API reference

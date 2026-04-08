@@ -1,6 +1,6 @@
 # Class: MathRandomSource
 
-Defined in: [src/utils/random-source.ts:88](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/utils/random-source.ts#L88)
+Defined in: [src/utils/random-source.ts:88](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/utils/random-source.ts#L88)
 
 Non-deterministic random source backed by `Math.random`.
 
@@ -40,7 +40,7 @@ const index = rng.nextInt(10); // random integer in [0, 10)
 
 > **next**(): `number`
 
-Defined in: [src/utils/random-source.ts:97](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/utils/random-source.ts#L97)
+Defined in: [src/utils/random-source.ts:97](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/utils/random-source.ts#L97)
 
 Generates a random number using Math.random().
 
@@ -64,7 +64,7 @@ A random number in [0, 1)
 
 > **nextInt**(`max`): `number`
 
-Defined in: [src/utils/random-source.ts:110](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/utils/random-source.ts#L110)
+Defined in: [src/utils/random-source.ts:110](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/utils/random-source.ts#L110)
 
 Generates a random integer using Math.random().
 

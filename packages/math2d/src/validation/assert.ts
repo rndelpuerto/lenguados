@@ -4,7 +4,7 @@
  * @description Debug assertions for development-time validation
  *
  * @remarks
- * **Pattern**: Inspired by Box2D/Bullet Physics assertions with compile-time DCE.
+ * **Pattern**: Development-only assertions with compile-time DCE.
  *
  * This module provides debug-only validation that is **completely eliminated**
  * in production builds via Dead Code Elimination (DCE). The `process.env.NODE_ENV`
@@ -609,7 +609,7 @@ export function assertRotation2(cos: number, sin: number, name?: string): void {
  * ```
  *
  * @category Assertion
- * @since 0.8.0
+ * @since 0.7.0
  */
 export function assertRotation2Normalized(
  cos: number,
@@ -654,7 +654,7 @@ export function assertRotation2Normalized(
  * ```
  *
  * @category Assertion
- * @since 0.8.0
+ * @since 0.7.0
  */
 export function assertComplex(real: number, imag: number, name?: string): void {
  /* istanbul ignore next -- DCE: eliminated in production */
@@ -690,7 +690,7 @@ export function assertComplex(real: number, imag: number, name?: string): void {
  * ```
  *
  * @category Assertion
- * @since 0.8.0
+ * @since 0.7.0
  */
 export function assertInterval(min: number, max: number, name?: string): void {
  /* istanbul ignore next -- DCE: eliminated in production */
@@ -733,7 +733,7 @@ export function assertInterval(min: number, max: number, name?: string): void {
  * ```
  *
  * @category Assertion
- * @since 0.8.0
+ * @since 0.7.0
  */
 export function assertTransform2(
  px: number,
@@ -829,7 +829,7 @@ export function assertVector2Like(value: unknown, name?: string): asserts value 
  * ```
  *
  * @category Assertion
- * @since 0.8.0
+ * @since 0.7.0
  */
 export function assertRotation2Like(value: unknown, name?: string): asserts value is Rotation2Like {
  /* istanbul ignore next -- DCE: eliminated in production */
@@ -903,7 +903,7 @@ export function assertMatrix2Like(value: unknown, name?: string): asserts value 
  * ```
  *
  * @category Assertion
- * @since 0.8.0
+ * @since 0.7.0
  */
 export function assertMatrix3Like(value: unknown, name?: string): asserts value is Matrix3Like {
  /* istanbul ignore next -- DCE: eliminated in production */

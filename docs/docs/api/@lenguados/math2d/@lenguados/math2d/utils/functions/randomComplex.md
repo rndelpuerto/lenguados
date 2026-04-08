@@ -1,32 +1,32 @@
 # Function: randomComplex()
 
-> **randomComplex**(`min`, `max`, `out`, `source`): [`Complex`](../../core/classes/Complex.md)
+> **randomComplex**(`min?`, `max?`, `out?`, `source?`): [`Complex`](../../core/classes/Complex.md)
 
-Defined in: [src/utils/random.ts:617](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/utils/random.ts#L617)
+Defined in: [src/utils/random.ts:617](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/utils/random.ts#L617)
 
 Generates a random complex number with components in range [min, max).
 
 ## Parameters
 
-### min
+### min?
 
 `number` = `0`
 
 Minimum component value. Defaults to `0`
 
-### max
+### max?
 
 `number` = `1`
 
 Maximum component value (exclusive). Defaults to `1`
 
-### out
+### out?
 
 [`Complex`](../../core/classes/Complex.md) = `...`
 
 Optional output complex to avoid allocation. Defaults to `new Complex()`
 
-### source
+### source?
 
 [`RandomSource`](../interfaces/RandomSource.md) = `...`
 

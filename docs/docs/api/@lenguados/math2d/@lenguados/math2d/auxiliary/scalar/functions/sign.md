@@ -2,7 +2,7 @@
 
 > **sign**(`value`): `-1` \| `0` \| `1`
 
-Defined in: [src/auxiliary/scalar/arithmetic.ts:52](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/auxiliary/scalar/arithmetic.ts#L52)
+Defined in: [src/auxiliary/scalar/arithmetic.ts:52](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/auxiliary/scalar/arithmetic.ts#L52)
 
 Returns the sign of a number (-1, 0, or 1).
 More robust than Math.sign for special cases.
@@ -39,4 +39,4 @@ sign(NaN); // 0
 
 ## Since
 
-0.7.0
+0.5.0

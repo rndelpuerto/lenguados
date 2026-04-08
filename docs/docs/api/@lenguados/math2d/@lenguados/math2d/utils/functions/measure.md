@@ -2,7 +2,7 @@
 
 > **measure**\<`T`\>(`label`, `function_`): [`Measurement`](../interfaces/Measurement.md)\<`T`\>
 
-Defined in: [src/utils/performance.ts:95](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/utils/performance.ts#L95)
+Defined in: [src/utils/performance.ts:95](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/utils/performance.ts#L95)
 
 Measures a synchronous function, returning its result and duration.
 

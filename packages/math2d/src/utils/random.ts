@@ -4,10 +4,10 @@
  * @description Deterministic random generation utilities for 2D mathematical objects
  *
  * @remarks
- * Implementation based on:
- * - Uniform sampling techniques from "Graphics Gems" series
- * - "Numerical Recipes" for distribution methods
- * - Game Programming Gems for practical random generation
+ * Implementation based on well-established sampling and distribution techniques:
+ * - Polar coordinates with sqrt(r) for uniform area distribution
+ * - Box-Muller transform for Gaussian sampling
+ * - Rejection sampling and barycentric coordinates for bounded regions
  *
  * Distribution guarantees:
  * - Points in/on circles use polar coordinates with sqrt(r) for uniform area distribution

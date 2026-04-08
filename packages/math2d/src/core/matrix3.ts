@@ -563,7 +563,7 @@ export class Matrix3 implements Matrix3Like {
   * ```
   *
   * @category Factory
-  * @since 0.9.0
+  * @since 0.7.0
   */
  public static fromTransform2Like(transform: ReadonlyTransform2Like, out?: Matrix3): Matrix3 {
   const { cos, sin } = transform.rotation;
@@ -1732,7 +1732,7 @@ export class Matrix3 implements Matrix3Like {
   *
   * @remarks
   * A matrix is invertible when its determinant is non-zero.
-  * This follows the Eigen C++ convention.
+  * Uses {@link EPSILON} tolerance for the near-zero check.
   *
   * @param matrix - Matrix to test
   * @param epsilon - Tolerance. @defaultValue `EPSILON`
@@ -2204,7 +2204,7 @@ export class Matrix3 implements Matrix3Like {
   * @see {@link inverseAffineUnchecked} - No validation
   *
   * @category Matrix Operations
-  * @since 0.9.0
+  * @since 0.7.0
   */
  public static inverseAffine(matrix: ReadonlyMatrix3Like, out?: Matrix3): Matrix3 {
   if (!Matrix3.isAffine(matrix)) {
@@ -2257,7 +2257,7 @@ export class Matrix3 implements Matrix3Like {
   * @see {@link inverseAffine} - Throws on non-affine or singular
   *
   * @category Matrix Operations
-  * @since 0.9.0
+  * @since 0.7.0
   */
  public static inverseAffineSafe(matrix: ReadonlyMatrix3Like, out?: Matrix3): Matrix3 {
   if (!Matrix3.isAffine(matrix)) {
@@ -2305,7 +2305,7 @@ export class Matrix3 implements Matrix3Like {
   * @see {@link inverseAffineSafe} - Returns fallback on non-affine or singular
   *
   * @category Matrix Operations
-  * @since 0.9.0
+  * @since 0.7.0
   */
  public static inverseAffineUnchecked(matrix: ReadonlyMatrix3Like, out?: Matrix3): Matrix3 {
   const a = matrix.m00;
@@ -2353,7 +2353,7 @@ export class Matrix3 implements Matrix3Like {
   * @see {@link solveLinearSystemUnchecked} - No validation, for hot paths
   *
   * @category Matrix Operations
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static solveLinearSystem(
   matrix: ReadonlyMatrix3Like,
@@ -2398,7 +2398,7 @@ export class Matrix3 implements Matrix3Like {
   * @see {@link solveLinearSystemUnchecked} - No validation, for hot paths
   *
   * @category Matrix Operations
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static solveLinearSystemSafe(
   matrix: ReadonlyMatrix3Like,
@@ -2443,7 +2443,7 @@ export class Matrix3 implements Matrix3Like {
   * @see {@link solveLinearSystemSafe} - Returns fallback on singular matrices
   *
   * @category Matrix Operations
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static solveLinearSystemUnchecked(
   matrix: ReadonlyMatrix3Like,
@@ -3079,7 +3079,7 @@ export class Matrix3 implements Matrix3Like {
   * ```
   *
   * @category Mutator
-  * @since 0.9.0
+  * @since 0.7.0
   */
  public setTranslation(translation: ReadonlyVector2Like): this {
   this.m20 = translation.x;
@@ -3829,7 +3829,7 @@ export class Matrix3 implements Matrix3Like {
   * @see {@link inverseAffineUnchecked} - No validation
   *
   * @category Matrix Operations
-  * @since 0.9.0
+  * @since 0.7.0
   */
  public inverseAffine(): this {
   if (!this.isAffine()) {
@@ -3875,7 +3875,7 @@ export class Matrix3 implements Matrix3Like {
   * @see {@link inverseAffine} - Throws on non-affine or singular
   *
   * @category Matrix Operations
-  * @since 0.9.0
+  * @since 0.7.0
   */
  public inverseAffineSafe(): this {
   if (!this.isAffine()) {
@@ -3920,7 +3920,7 @@ export class Matrix3 implements Matrix3Like {
   * @see {@link inverseAffineSafe} - Returns identity on non-affine or singular
   *
   * @category Matrix Operations
-  * @since 0.9.0
+  * @since 0.7.0
   */
  public inverseAffineUnchecked(): this {
   const a = this.m00;

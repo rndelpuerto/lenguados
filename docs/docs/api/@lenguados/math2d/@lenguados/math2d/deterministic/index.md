@@ -12,9 +12,14 @@ Deterministic mathematical kernels for L0 cross-platform consistency
 
 ## Purpose
 
-This module contains ONLY functions that are NOT deterministic in native JavaScript.
-Functions like `Math.floor`, `Math.ceil`, `Math.abs` ARE deterministic per IEEE 754
-and should be used directly.
+This module contains ONLY pure deterministic replacements for `Math.*` functions
+that are NOT bit-exact across JavaScript engines. Each kernel accepts any IEEE 754
+double and returns the IEEE 754-specified result (including NaN for domain errors).
+No clamping, no fallbacks, no Safe variants — those belong in
+`auxiliary/numeric/safety.ts` (L1).
+
+Functions like `Math.floor`, `Math.ceil`, `Math.abs`, `Math.sqrt` ARE deterministic
+per IEEE 754 and should be used directly.
 
 ## Determinism Guarantee: L0 (Bit-Exact Cross-Platform)
 
@@ -37,17 +42,13 @@ the Remez algorithm for minimax approximation.
 ## Arithmetic
 
 - [acos](functions/acos.md)
-- [acosSafe](functions/acosSafe.md)
 - [asin](functions/asin.md)
-- [asinSafe](functions/asinSafe.md)
 - [atan](functions/atan.md)
 - [atan2](functions/atan2.md)
 - [cos](functions/cos.md)
 - [exp](functions/exp.md)
-- [expSafe](functions/expSafe.md)
 - [hypot](functions/hypot.md)
 - [log](functions/log.md)
-- [logKernelSafe](functions/logKernelSafe.md)
 - [pow](functions/pow.md)
 - [sin](functions/sin.md)
 - [sinCos](functions/sinCos.md)

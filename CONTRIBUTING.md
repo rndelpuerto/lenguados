@@ -4,7 +4,7 @@ Thank you for your interest in contributing! By submitting code, you agree that 
 
 ## Prerequisites
 
-- **Node.js** 22.14.0 (see `.nvmrc`)
+- **Node.js** 24.14.1 (see `.nvmrc`)
 - **npm** (comes with Node.js)
 - **Git** with SSH or HTTPS access to GitHub
 

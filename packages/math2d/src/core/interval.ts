@@ -290,7 +290,7 @@ export class Interval implements IntervalLike {
  public static fromCenterRadius(center: number, radius: number, out?: Interval): Interval {
   const sanitizedCenter = this.sanitize(center, 'Interval.fromCenterRadius:center');
   const sanitizedRadius = this.sanitize(radius, 'Interval.fromCenterRadius:radius');
-  // Development assertion (Box2D pattern: catch errors early)
+  // Development assertion (catch errors early)
   assertNonNegative(sanitizedRadius, 'Interval.fromCenterRadius:radius');
   // Production throw (always enforced)
   if (sanitizedRadius < 0) {
@@ -309,6 +309,7 @@ export class Interval implements IntervalLike {
   * @param out - Optional output interval
   * @returns Interval from array
   * @throws {RangeError} If offset is out of bounds
+  * @throws {RangeError} If min > max
   *
   * @example
   * ```typescript
@@ -333,6 +334,7 @@ export class Interval implements IntervalLike {
   }
   const minValue = this.sanitize(array[offset]!, 'Interval.fromArray:min');
   const maxValue = this.sanitize(array[offset + 1]!, 'Interval.fromArray:max');
+  this.assertOrder(minValue, maxValue, 'Interval.fromArray');
   return this.ensureOut(out).setDirect(minValue, maxValue);
  }
 
@@ -341,6 +343,7 @@ export class Interval implements IntervalLike {
   * @param object - Object with min and max properties
   * @param out - Optional output interval
   * @returns Interval from object
+  * @throws {RangeError} If min > max
   *
   * @example
   * ```typescript
@@ -355,6 +358,7 @@ export class Interval implements IntervalLike {
  public static fromObject(object: ReadonlyIntervalLike, out?: Interval): Interval {
   const minValue = this.sanitize(object.min, 'Interval.fromObject:min');
   const maxValue = this.sanitize(object.max, 'Interval.fromObject:max');
+  this.assertOrder(minValue, maxValue, 'Interval.fromObject');
   return this.ensureOut(out).setDirect(minValue, maxValue);
  }
 
@@ -401,7 +405,7 @@ export class Interval implements IntervalLike {
   * ```
   *
   * @category Factory
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static fromUnsorted(a: number, b: number, out?: Interval): Interval {
   return Interval.fromValues(Math.min(a, b), Math.max(a, b), out);
@@ -634,7 +638,7 @@ export class Interval implements IntervalLike {
   * ```
   *
   * @category Arithmetic
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static abs(interval: ReadonlyIntervalLike, out?: Interval): Interval {
   if (interval.min >= 0) {
@@ -816,7 +820,7 @@ export class Interval implements IntervalLike {
   * @returns Interval with floored bounds
   *
   * @category Transform
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static floor(interval: ReadonlyIntervalLike, out?: Interval): Interval {
   return Interval.ensureOut(out).setDirect(Math.floor(interval.min), Math.floor(interval.max));
@@ -829,7 +833,7 @@ export class Interval implements IntervalLike {
   * @returns Interval with ceiled bounds
   *
   * @category Transform
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static ceil(interval: ReadonlyIntervalLike, out?: Interval): Interval {
   return Interval.ensureOut(out).setDirect(Math.ceil(interval.min), Math.ceil(interval.max));
@@ -842,7 +846,7 @@ export class Interval implements IntervalLike {
   * @returns Interval with rounded bounds
   *
   * @category Transform
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static round(interval: ReadonlyIntervalLike, out?: Interval): Interval {
   return Interval.ensureOut(out).setDirect(Math.round(interval.min), Math.round(interval.max));
@@ -855,7 +859,7 @@ export class Interval implements IntervalLike {
   * @returns Interval with truncated bounds
   *
   * @category Transform
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static trunc(interval: ReadonlyIntervalLike, out?: Interval): Interval {
   return Interval.ensureOut(out).setDirect(Math.trunc(interval.min), Math.trunc(interval.max));
@@ -868,7 +872,7 @@ export class Interval implements IntervalLike {
   * @returns Interval with sign of each bound (-1, 0, or 1)
   *
   * @category Transform
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static sign(interval: ReadonlyIntervalLike, out?: Interval): Interval {
   return Interval.ensureOut(out).setDirect(scalarSign(interval.min), scalarSign(interval.max));
@@ -882,7 +886,7 @@ export class Interval implements IntervalLike {
   * @returns Interval with per-bound minima
   *
   * @category Constraint
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static min(a: ReadonlyIntervalLike, b: ReadonlyIntervalLike, out?: Interval): Interval {
   return Interval.ensureOut(out).setDirect(Math.min(a.min, b.min), Math.min(a.max, b.max));
@@ -896,7 +900,7 @@ export class Interval implements IntervalLike {
   * @returns Interval with per-bound maxima
   *
   * @category Constraint
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static max(a: ReadonlyIntervalLike, b: ReadonlyIntervalLike, out?: Interval): Interval {
   return Interval.ensureOut(out).setDirect(Math.max(a.min, b.min), Math.max(a.max, b.max));
@@ -911,7 +915,7 @@ export class Interval implements IntervalLike {
   * @returns Clamped interval
   *
   * @category Constraint
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static clamp(
   interval: ReadonlyIntervalLike,
@@ -939,7 +943,7 @@ export class Interval implements IntervalLike {
   * @returns Interval with per-bound remainder
   *
   * @category Arithmetic
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static mod(a: ReadonlyIntervalLike, b: ReadonlyIntervalLike, out?: Interval): Interval {
   return Interval.ensureOut(out).setDirect(scalarModule(a.min, b.min), scalarModule(a.max, b.max));
@@ -1255,7 +1259,7 @@ export class Interval implements IntervalLike {
   * ```
   *
   * @category Set Operations
-  * @since 0.9.0
+  * @since 0.7.0
   */
  public static distance(a: ReadonlyIntervalLike, b: ReadonlyIntervalLike): number {
   return Math.max(0, Math.max(a.min - b.max, b.min - a.max));
@@ -1495,7 +1499,7 @@ export class Interval implements IntervalLike {
   * @throws {RangeError} If delta is negative
   *
   * @category Set Operations
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static expand(interval: ReadonlyIntervalLike, delta: number, out?: Interval): Interval {
   if (delta < 0) {
@@ -1524,7 +1528,7 @@ export class Interval implements IntervalLike {
   * ```
   *
   * @category Set Operations
-  * @since 0.9.0
+  * @since 0.7.0
   */
  public static enclosing(interval: ReadonlyIntervalLike, value: number, out?: Interval): Interval {
   return Interval.ensureOut(out).setDirect(
@@ -1543,7 +1547,7 @@ export class Interval implements IntervalLike {
   * @throws {RangeError} If delta is negative
   *
   * @category Set Operations
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static shrink(interval: ReadonlyIntervalLike, delta: number, out?: Interval): Interval {
   if (delta < 0) {
@@ -1741,7 +1745,7 @@ export class Interval implements IntervalLike {
   * Applies Math.floor to both bounds.
   * @returns This for chaining
   * @category Transform
-  * @since 0.8.0
+  * @since 0.7.0
   */
  floor(): this {
   this.min = Math.floor(this.min);
@@ -1753,7 +1757,7 @@ export class Interval implements IntervalLike {
   * Applies Math.ceil to both bounds.
   * @returns This for chaining
   * @category Transform
-  * @since 0.8.0
+  * @since 0.7.0
   */
  ceil(): this {
   this.min = Math.ceil(this.min);
@@ -1765,7 +1769,7 @@ export class Interval implements IntervalLike {
   * Applies Math.round to both bounds.
   * @returns This for chaining
   * @category Transform
-  * @since 0.8.0
+  * @since 0.7.0
   */
  round(): this {
   this.min = Math.round(this.min);
@@ -1777,7 +1781,7 @@ export class Interval implements IntervalLike {
   * Applies Math.trunc to both bounds.
   * @returns This for chaining
   * @category Transform
-  * @since 0.8.0
+  * @since 0.7.0
   */
  trunc(): this {
   this.min = Math.trunc(this.min);
@@ -1789,7 +1793,7 @@ export class Interval implements IntervalLike {
   * Component-wise sign of both bounds.
   * @returns This for chaining
   * @category Transform
-  * @since 0.8.0
+  * @since 0.7.0
   */
  sign(): this {
   this.min = scalarSign(this.min);
@@ -1803,7 +1807,7 @@ export class Interval implements IntervalLike {
   * @param maxI - Per-bound maxima
   * @returns This for chaining
   * @category Constraint
-  * @since 0.8.0
+  * @since 0.7.0
   */
  clamp(minI: ReadonlyIntervalLike, maxI: ReadonlyIntervalLike): this {
   this.min = clamp(this.min, minI.min, maxI.min);
@@ -1816,7 +1820,7 @@ export class Interval implements IntervalLike {
   * @param other - Divisor interval
   * @returns This for chaining
   * @category Arithmetic
-  * @since 0.8.0
+  * @since 0.7.0
   */
  mod(other: ReadonlyIntervalLike): this {
   this.min = scalarModule(this.min, other.min);
@@ -1910,7 +1914,7 @@ export class Interval implements IntervalLike {
   * @see {@link divideScalar} - Throws on zero
   *
   * @category Arithmetic
-  * @since 0.9.0
+  * @since 0.7.0
   */
  divideScalarSafe(scalar: number): this {
   if (scalar === 0) {
@@ -1944,7 +1948,7 @@ export class Interval implements IntervalLike {
   * @see {@link divideScalarSafe} - Returns [0,0] on zero
   *
   * @category Arithmetic
-  * @since 0.9.0
+  * @since 0.7.0
   */
  divideScalarUnchecked(scalar: number): this {
   const inv = 1 / scalar;
@@ -2002,7 +2006,7 @@ export class Interval implements IntervalLike {
   * @returns This for chaining
   *
   * @category Arithmetic
-  * @since 0.8.0
+  * @since 0.7.0
   */
  abs(): this {
   if (this.min >= 0) {
@@ -2218,7 +2222,7 @@ export class Interval implements IntervalLike {
   * @throws {RangeError} If delta is negative
   *
   * @category Set Operations
-  * @since 0.8.0
+  * @since 0.7.0
   */
  expand(delta: number): this {
   if (delta < 0) {
@@ -2237,7 +2241,7 @@ export class Interval implements IntervalLike {
   * @throws {RangeError} If delta is negative
   *
   * @category Set Operations
-  * @since 0.8.0
+  * @since 0.7.0
   */
  shrink(delta: number): this {
   if (delta < 0) {
@@ -2272,7 +2276,7 @@ export class Interval implements IntervalLike {
   * ```
   *
   * @category Set Operations
-  * @since 0.9.0
+  * @since 0.7.0
   */
  enclose(value: number): this {
   this.min = Math.min(this.min, value);
@@ -2296,7 +2300,7 @@ export class Interval implements IntervalLike {
   * ```
   *
   * @category Set Operations
-  * @since 0.9.0
+  * @since 0.7.0
   */
  distanceTo(other: ReadonlyIntervalLike): number {
   return Interval.distance(this, other);

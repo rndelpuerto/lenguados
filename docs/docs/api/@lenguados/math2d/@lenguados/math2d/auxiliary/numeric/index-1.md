@@ -17,7 +17,19 @@ This module provides low-level numeric operations including:
 - Rounding and quantization operations
 - Value wrapping and modulo operations
 
-## Other
+## References
+
+### acosSafe
+
+Re-exports [acosSafe](functions/acosSafe.md)
+
+---
+
+### asinSafe
+
+Re-exports [asinSafe](functions/asinSafe.md)
+
+---
 
 ### ceilPowerOfTwo
 
@@ -40,6 +52,12 @@ Re-exports [divideSafe](functions/divideSafe.md)
 ### ensureFinite
 
 Re-exports [ensureFinite](functions/ensureFinite.md)
+
+---
+
+### expSafe
+
+Re-exports [expSafe](functions/expSafe.md)
 
 ---
 
@@ -190,15 +208,3 @@ Re-exports [snapToGrid](functions/snapToGrid.md)
 ### sqrtSafe
 
 Re-exports [sqrtSafe](functions/sqrtSafe.md)
-
-## Safety
-
-### acosSafe
-
-Re-exports [acosSafe](../../deterministic/functions/acosSafe.md)
-
----
-
-### asinSafe
-
-Re-exports [asinSafe](../../deterministic/functions/asinSafe.md)

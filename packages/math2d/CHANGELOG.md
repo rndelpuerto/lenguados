@@ -19,6 +19,9 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 - **SeededRandomSource**: Replaced Park-Miller LCG with xoshiro128++ algorithm. Sequences generated with the same seed will produce different values. State is now a 4-element uint32 array. `setState` renamed to `restoreState`, `getState` returns `[s0, s1, s2, s3]`.
   - **Migration**: If you stored seeded sequences for replay, regenerate them. Update `setState(n)` calls to `restoreState([s0, s1, s2, s3])` using saved state from `getState()`.
 
+- **Interval.fromArray / Interval.fromObject**: Now validate `min <= max` order, consistent with `Interval.fromValues()`. Previously, reversed inputs (e.g., `fromArray([5, 2])`) silently created invalid intervals with corrupted `width()`, `contains()`, and `overlaps()` behavior.
+  - **Migration**: Use `Interval.fromUnsorted(a, b)` for data with unknown ordering.
+
 ### Features
 
 - **xoshiro128++**: High-quality PRNG replacing Park-Miller LCG with SplitMix32 seed expansion

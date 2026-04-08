@@ -15,18 +15,12 @@ const ROOT = resolve(__dirname, '..', '..', '..', '..');
 // Import from ESM build (development mode for full API)
 const math2d = await import(resolve(ROOT, 'packages/math2d/lib/esm/index.development.js'));
 
-const {
-  Vector2,
-  Rotation2,
-  Matrix2,
-  Matrix3,
-  Transform2,
-  Complex,
-  Interval,
-} = math2d;
+const { Vector2, Rotation2, Matrix2, Matrix3, Transform2, Complex, Interval } = math2d;
 
 // Import deterministic kernels
-const det = await import(resolve(ROOT, 'packages/math2d/lib/esm/deterministic/deterministic-kernels.development.js'));
+const det = await import(
+ resolve(ROOT, 'packages/math2d/lib/esm/deterministic/deterministic-kernels.development.js')
+);
 const { sin, cos, sqrt, atan2, hypot, sinCos, config, DeterministicKernels } = det;
 
 /* ======================================================================== */
@@ -34,31 +28,31 @@ const { sin, cos, sqrt, atan2, hypot, sinCos, config, DeterministicKernels } = d
 /* ======================================================================== */
 
 function bench(name, fn, iterations = 1_000_000) {
-  // Warmup
-  for (let i = 0; i < 10_000; i++) fn(i);
+ // Warmup
+ for (let i = 0; i < 10_000; i++) fn(i);
 
-  const start = performance.now();
-  for (let i = 0; i < iterations; i++) fn(i);
-  const elapsed = performance.now() - start;
+ const start = performance.now();
+ for (let i = 0; i < iterations; i++) fn(i);
+ const elapsed = performance.now() - start;
 
-  const opsPerMs = (iterations / elapsed).toFixed(0);
-  const nsPerOp = ((elapsed * 1e6) / iterations).toFixed(1);
-  return { name, elapsed: elapsed.toFixed(2), opsPerMs, nsPerOp, iterations };
+ const opsPerMs = (iterations / elapsed).toFixed(0);
+ const nsPerOp = ((elapsed * 1e6) / iterations).toFixed(1);
+ return { name, elapsed: elapsed.toFixed(2), opsPerMs, nsPerOp, iterations };
 }
 
 function printSection(title) {
-  console.log(`\n${'='.repeat(70)}`);
-  console.log(`  ${title}`);
-  console.log('='.repeat(70));
+ console.log(`\n${'='.repeat(70)}`);
+ console.log(`  ${title}`);
+ console.log('='.repeat(70));
 }
 
 function printResult(r) {
-  console.log(`  ${r.name.padEnd(45)} ${r.nsPerOp.padStart(8)} ns/op  (${r.opsPerMs} ops/ms)`);
+ console.log(`  ${r.name.padEnd(45)} ${r.nsPerOp.padStart(8)} ns/op  (${r.opsPerMs} ops/ms)`);
 }
 
 function printComparison(label, a, b) {
-  const ratio = (parseFloat(a.nsPerOp) / parseFloat(b.nsPerOp)).toFixed(2);
-  console.log(`  ${label}: ${a.name} is ${ratio}x vs ${b.name}`);
+ const ratio = (parseFloat(a.nsPerOp) / parseFloat(b.nsPerOp)).toFixed(2);
+ console.log(`  ${label}: ${a.name} is ${ratio}x vs ${b.name}`);
 }
 
 /* ======================================================================== */
@@ -72,7 +66,7 @@ config.useNativeMath = false;
 
 const angles = Array.from({ length: 1000 }, (_, i) => (i / 1000) * Math.PI * 4 - Math.PI * 2);
 let angleIdx = 0;
-const getAngle = () => angles[(angleIdx++) % angles.length];
+const getAngle = () => angles[angleIdx++ % angles.length];
 
 const fdlibmSin = bench('fdlibm sin', (i) => sin(angles[i % 1000]));
 const fdlibmCos = bench('fdlibm cos', (i) => cos(angles[i % 1000]));
@@ -85,9 +79,13 @@ config.useNativeMath = true;
 
 const nativeSin = bench('native Math.sin', (i) => sin(angles[i % 1000]));
 const nativeCos = bench('native Math.cos', (i) => cos(angles[i % 1000]));
-const nativeAtan2 = bench('native Math.atan2', (i) => atan2(angles[i % 1000], angles[(i + 500) % 1000]));
+const nativeAtan2 = bench('native Math.atan2', (i) =>
+ atan2(angles[i % 1000], angles[(i + 500) % 1000]),
+);
 const nativeSqrt = bench('native Math.sqrt', (i) => sqrt(Math.abs(angles[i % 1000]) + 1));
-const nativeHypot = bench('native Math.hypot', (i) => hypot(angles[i % 1000], angles[(i + 1) % 1000]));
+const nativeHypot = bench('native Math.hypot', (i) =>
+ hypot(angles[i % 1000], angles[(i + 1) % 1000]),
+);
 
 // Switch back
 config.useNativeMath = false;
@@ -142,13 +140,13 @@ const angle = Math.PI / 4;
 const { cos: preC, sin: preS } = sinCos(angle);
 
 const rotateAngle = bench('Vector2.rotate(angle) [trig each]', () => {
-  vr.set(1, 0);
-  Vector2.rotate(vr, angle, vr);
+ vr.set(1, 0);
+ Vector2.rotate(vr, angle, vr);
 });
 
 const rotateCS = bench('Vector2.rotateCS(cos, sin) [cached]', () => {
-  vr.set(1, 0);
-  Vector2.rotateCS(vr, preC, preS, vr);
+ vr.set(1, 0);
+ Vector2.rotateCS(vr, preC, preS, vr);
 });
 
 printResult(rotateAngle);
@@ -158,22 +156,32 @@ printComparison('CS speedup', rotateAngle, rotateCS);
 // Determine breakeven with N rotations using same angle
 console.log('\n  Breakeven analysis (same angle applied N times):');
 for (const N of [1, 5, 10, 50, 100]) {
-  const withTrig = bench(`  rotate x${N}`, () => {
-    for (let j = 0; j < N; j++) {
-      vr.set(1, 0);
-      Vector2.rotate(vr, angle, vr);
-    }
-  }, 100_000);
+ const withTrig = bench(
+  `  rotate x${N}`,
+  () => {
+   for (let j = 0; j < N; j++) {
+    vr.set(1, 0);
+    Vector2.rotate(vr, angle, vr);
+   }
+  },
+  100_000,
+ );
 
-  const withCS = bench(`  rotateCS x${N} (1 sinCos)`, () => {
-    const sc = sinCos(angle);
-    for (let j = 0; j < N; j++) {
-      vr.set(1, 0);
-      Vector2.rotateCS(vr, sc.cos, sc.sin, vr);
-    }
-  }, 100_000);
+ const withCS = bench(
+  `  rotateCS x${N} (1 sinCos)`,
+  () => {
+   const sc = sinCos(angle);
+   for (let j = 0; j < N; j++) {
+    vr.set(1, 0);
+    Vector2.rotateCS(vr, sc.cos, sc.sin, vr);
+   }
+  },
+  100_000,
+ );
 
-  console.log(`    N=${String(N).padStart(3)}: rotate=${withTrig.nsPerOp}ns, rotateCS=${withCS.nsPerOp}ns, ratio=${(parseFloat(withTrig.nsPerOp) / parseFloat(withCS.nsPerOp)).toFixed(2)}x`);
+ console.log(
+  `    N=${String(N).padStart(3)}: rotate=${withTrig.nsPerOp}ns, rotateCS=${withCS.nsPerOp}ns, ratio=${(parseFloat(withTrig.nsPerOp) / parseFloat(withCS.nsPerOp)).toFixed(2)}x`,
+ );
 }
 
 /* ======================================================================== */
@@ -186,11 +194,11 @@ const t2 = Transform2.fromValues(10, 20, Math.PI / 6, 2, 2);
 
 const toMatrix3 = bench('Transform2.toMatrix3()', () => t2.toMatrix3());
 const directMatrix3 = bench('Matrix3.fromTRS() [if existed]', () => {
-  const c = t2.rotation.cos;
-  const s = t2.rotation.sin;
-  const sx = t2.scale.x;
-  const sy = t2.scale.y;
-  Matrix3.fromValues(c * sx, s * sx, 0, -s * sy, c * sy, 0, t2.position.x, t2.position.y, 1);
+ const c = t2.rotation.cos;
+ const s = t2.rotation.sin;
+ const sx = t2.scale.x;
+ const sy = t2.scale.y;
+ Matrix3.fromValues(c * sx, s * sx, 0, -s * sy, c * sy, 0, t2.position.x, t2.position.y, 1);
 });
 
 printResult(toMatrix3);
@@ -235,24 +243,34 @@ printSection('14.7 Hidden Class Stability (Constructor Property Order)');
 console.log('  Verifying consistent property initialization across constructors...');
 
 function getPropertyOrder(obj) {
-  return Object.getOwnPropertyNames(obj).join(', ');
+ return Object.getOwnPropertyNames(obj).join(', ');
 }
 
 const types = [
-  { name: 'Vector2', create: () => new Vector2(), fromValues: () => Vector2.fromValues(1, 2) },
-  { name: 'Complex', create: () => new Complex(), fromValues: () => Complex.fromValues(1, 2) },
-  { name: 'Rotation2', create: () => new Rotation2(), fromValues: () => Rotation2.fromAngle(1) },
-  { name: 'Interval', create: () => new Interval(), fromValues: () => Interval.fromValues(0, 1) },
-  { name: 'Matrix2', create: () => new Matrix2(), fromValues: () => Matrix2.fromValues(1, 0, 0, 1) },
-  { name: 'Matrix3', create: () => new Matrix3(), fromValues: () => Matrix3.fromValues(1, 0, 0, 0, 1, 0, 0, 0, 1) },
-  { name: 'Transform2', create: () => new Transform2(), fromValues: () => Transform2.fromValues(1, 2, 0.5, 1, 1) },
+ { name: 'Vector2', create: () => new Vector2(), fromValues: () => Vector2.fromValues(1, 2) },
+ { name: 'Complex', create: () => new Complex(), fromValues: () => Complex.fromValues(1, 2) },
+ { name: 'Rotation2', create: () => new Rotation2(), fromValues: () => Rotation2.fromAngle(1) },
+ { name: 'Interval', create: () => new Interval(), fromValues: () => Interval.fromValues(0, 1) },
+ { name: 'Matrix2', create: () => new Matrix2(), fromValues: () => Matrix2.fromValues(1, 0, 0, 1) },
+ {
+  name: 'Matrix3',
+  create: () => new Matrix3(),
+  fromValues: () => Matrix3.fromValues(1, 0, 0, 0, 1, 0, 0, 0, 1),
+ },
+ {
+  name: 'Transform2',
+  create: () => new Transform2(),
+  fromValues: () => Transform2.fromValues(1, 2, 0.5, 1, 1),
+ },
 ];
 
 for (const t of types) {
-  const createProps = getPropertyOrder(t.create());
-  const fromProps = getPropertyOrder(t.fromValues());
-  const match = createProps === fromProps ? 'STABLE' : 'UNSTABLE';
-  console.log(`  ${t.name.padEnd(12)} create: [${createProps}] vs fromValues: [${fromProps}] → ${match}`);
+ const createProps = getPropertyOrder(t.create());
+ const fromProps = getPropertyOrder(t.fromValues());
+ const match = createProps === fromProps ? 'STABLE' : 'UNSTABLE';
+ console.log(
+  `  ${t.name.padEnd(12)} create: [${createProps}] vs fromValues: [${fromProps}] → ${match}`,
+ );
 }
 
 /* ======================================================================== */

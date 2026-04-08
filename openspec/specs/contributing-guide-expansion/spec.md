@@ -5,7 +5,7 @@
 The root `CONTRIBUTING.md` SHALL contain these sections:
 
 1. **Welcome** — Brief welcome and contribution terms (Apache 2.0)
-2. **Prerequisites** — Required tools: Node.js 22.14.0 (reference .nvmrc), npm, Git
+2. **Prerequisites** — Required tools: Node.js 24.14.1 (reference .nvmrc), npm, Git
 3. **Getting Started** — Clone, nvm install, nvm use, npm install, npm run build, npm test
 4. **Development Workflow** — Branch naming, conventional commits format, PR process
 5. **Commit Conventions** — Conventional commits with type table and examples (feat, fix, docs, refactor, test, chore, perf)

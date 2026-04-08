@@ -1,32 +1,32 @@
 # Function: randomInterval()
 
-> **randomInterval**(`minBound`, `maxBound`, `out`, `source`): [`Interval`](../../core/classes/Interval.md)
+> **randomInterval**(`minBound?`, `maxBound?`, `out?`, `source?`): [`Interval`](../../core/classes/Interval.md)
 
-Defined in: [src/utils/random.ts:679](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/utils/random.ts#L679)
+Defined in: [src/utils/random.ts:679](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/utils/random.ts#L679)
 
 Generates a random interval within specified bounds.
 
 ## Parameters
 
-### minBound
+### minBound?
 
 `number` = `0`
 
 Minimum allowed value for interval.min. Defaults to `0`
 
-### maxBound
+### maxBound?
 
 `number` = `1`
 
 Maximum allowed value for interval.max. Defaults to `1`
 
-### out
+### out?
 
 [`Interval`](../../core/classes/Interval.md) = `...`
 
 Optional output interval to avoid allocation. Defaults to `new Interval()`
 
-### source
+### source?
 
 [`RandomSource`](../interfaces/RandomSource.md) = `...`
 

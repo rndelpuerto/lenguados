@@ -80,19 +80,19 @@ The instance method `moveTowards` SHALL mutate `this` to move towards the target
 
 ---
 
-### Requirement: Vector2.sumComponents is deprecated
+### Requirement: Vector2.sumComponents is retained as a core primitive
 
-`Vector2.sumComponents` SHALL be marked with `@deprecated` JSDoc tag indicating it will be removed in a future version.
+`Vector2.sumComponents` SHALL be a non-deprecated public method. It is a fundamental scalar reduction (component sum) used as a building block for Manhattan norms, barycentric coordinate validation, diagonal matrix traces, and divergence approximations. As math2d is a low-level mathematical library, this primitive is retained for downstream consumers.
 
-#### Scenario: Deprecation warning
+#### Scenario: No deprecation warning
 
 - **WHEN** a user references `Vector2.sumComponents` in TypeScript with strict settings
-- **THEN** the IDE SHALL show a deprecation strikethrough and warning
+- **THEN** the IDE SHALL NOT show a deprecation strikethrough or warning
 
-#### Scenario: Functionality preserved
+#### Scenario: Functionality
 
 - **WHEN** `Vector2.sumComponents({x:3, y:4})` is called
-- **THEN** the result SHALL still be `7` (behavior unchanged during deprecation period)
+- **THEN** the result SHALL be `7`
 
 ---
 

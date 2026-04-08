@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**lenguados** is a TypeScript monorepo for a deterministic, extensible 2D physics engine. It uses npm workspaces + Lerna for package management. Node 22.14.0 (see `.nvmrc`).
+**lenguados** is a TypeScript monorepo for a deterministic, extensible 2D physics engine. It uses npm workspaces + Lerna for package management. Node 24.14.1 (see `.nvmrc`).
 
 ## Common Commands
 
@@ -60,6 +60,10 @@ scripts/     → Shared build scripts (build.mjs, clean.mjs, watch.mjs)
 
 Each package builds via `node ../../scripts/build.mjs` (Rollup), producing CJS + ESM + types in `lib/`.
 
+## @lenguados/math2d — Package Identity (Golden Rule)
+
+`@lenguados/math2d` is the **core/base mathematics package** of this monorepo. It is the foundational package upon which the rest of the engine is built, but it can also be consumed independently. Its API is domain-agnostic and must be comprehensive — if an operation is mathematically well-defined on the types provided, it belongs here. Domain-specific algorithms (collision, dynamics, rendering) belong in other packages. Full rule: `.claude/rules/math2d-identity.md`.
+
 ## @lenguados/math2d Architecture
 
 The main package follows a strict layered architecture (dependencies flow downward only):
@@ -101,7 +105,8 @@ The main package follows a strict layered architecture (dependencies flow downwa
 
 ## Build System
 
-- Rollup bundles each package into CJS (`lib/cjs/`) + ESM (`lib/esm/`) + types (`lib/@types/`)
+- Rollup 4 + SWC (`rollup-plugin-swc3`) bundles each package into CJS (`lib/cjs/`) + ESM (`lib/esm/`) + types (`lib/@types/`)
+- SWC is the unified transpiler: Rollup build (`rollup-plugin-swc3`), Jest tests (`@swc/jest`), and production minification (`swc-minify`)
 - Conditional exports: `development` vs `default` (production) for tree-shaking validation code
 - `cross-env NODE_ENV=development|production` controls build mode
 
@@ -117,6 +122,7 @@ The main package follows a strict layered architecture (dependencies flow downwa
 
 Rules (`.claude/rules/`) — loaded when working on matching files:
 
+- `math2d-identity.md` — **Golden rule**: math2d is a core/base math library, not a physics engine. Defines what belongs and what does not. Applies to all files.
 - `math2d-patterns.md` — API design patterns, naming, allocation control, determinism, triality
 - `tsdoc-conventions.md` — Tag order, @category vocabulary, class member ordering, triality cross-linking
 - `architecture-and-layers.md` — Layer deps, deterministic function classification, validation tiers, design philosophy

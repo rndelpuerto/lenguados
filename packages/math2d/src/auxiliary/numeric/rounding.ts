@@ -150,14 +150,12 @@ export function roundToPowerOfTwo(value: number): number {
  * @see {@link floorPowerOfTwo} - Largest power of two ≤ value
  * @see {@link roundToPowerOfTwo} - Nearest power of two
  * @category Arithmetic
- * @since 0.9.0
+ * @since 0.7.0
  */
 export function ceilPowerOfTwo(value: number): number {
  if (value <= 0) return 0;
- const raw = log(value) / LN_2;
- const rounded = Math.round(raw);
- const log2 = Math.abs(raw - rounded) < 1e-10 ? rounded : raw;
- return 2 ** Math.ceil(log2);
+ const floor = floorPowerOfTwo(value);
+ return floor >= value ? floor : floor * 2;
 }
 
 /**
@@ -176,11 +174,12 @@ export function ceilPowerOfTwo(value: number): number {
  * @see {@link ceilPowerOfTwo} - Smallest power of two ≥ value
  * @see {@link roundToPowerOfTwo} - Nearest power of two
  * @category Arithmetic
- * @since 0.9.0
+ * @since 0.7.0
  */
 export function floorPowerOfTwo(value: number): number {
  if (value <= 0) return 0;
- return 2 ** Math.floor(log(value) / LN_2);
+ const candidate = 2 ** Math.floor(log(value) / LN_2);
+ return candidate > value ? candidate / 2 : candidate;
 }
 
 /**

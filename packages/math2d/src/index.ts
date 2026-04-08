@@ -68,7 +68,7 @@
  * For advanced use cases, additional modules are available via specific imports:
  *
  * ```typescript
- * // Validation - assertions for development (Box2D/Bullet style)
+ * // Validation - assertions for development (tree-shakeable)
  * import { assertFinite, assertVector2, setAssertionsEnabled } from '@lenguados/math2d/validation/assert';
  *
  *
@@ -98,26 +98,24 @@ export * from './core';
 // Re-export deterministic kernels for L0 cross-platform math
 export { DeterministicKernels } from './deterministic/deterministic-kernels';
 
-// Re-export individual functions for convenience
+// Re-export individual pure deterministic kernels (L0).
+// Safe variants (acosSafe, asinSafe, expSafe, etc.) are exported via
+// `export * from './auxiliary/numeric'` from safety.ts (L1).
+// sinCos is exported via `export * from './auxiliary/angle'` (which wraps the kernel).
 export {
  acos,
- acosSafe,
  asin,
- asinSafe,
  atan,
  atan2,
  config,
  cos,
  exp,
- expSafe,
  hypot,
  log,
  pow,
  sin,
  tan,
 } from './deterministic/deterministic-kernels';
-// Note: sinCos is exported via `export * from './auxiliary/angle'` (which wraps the
-// deterministic kernel). Explicitly re-exporting it here would shadow that export.
 
 // Re-export validation/assertion utilities
 export {

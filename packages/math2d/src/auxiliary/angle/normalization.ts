@@ -14,7 +14,7 @@ import { PI, TAU } from '../scalar/constants';
  *
  * @remarks
  * Uses (-PI, PI] (PI included, -PI excluded) — the convention used by
- * IEEE 754 atan2, C standard, MATLAB wrapToPi, Unity, Box2D, and Bullet Physics.
+ * IEEE 754 atan2 and the C standard.
  * This ensures `normalizeRadians(Math.atan2(y, x)) === Math.atan2(y, x)`.
  *
  * For very large angles (>1e6 radians), floating-point precision loss in

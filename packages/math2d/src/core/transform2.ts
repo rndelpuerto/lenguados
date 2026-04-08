@@ -128,8 +128,8 @@ export class Transform2 implements Transform2Like {
   *
   * @remarks
   * The rotation is stored as a separate {@link Rotation2} instance rather than
-  * a raw angle. All rotation logic lives in Rotation2, following Box2D's
-  * b2Transform/b2Rot separation pattern for clean responsibility boundaries.
+  * a raw angle. All rotation logic lives in Rotation2, enforcing clean
+  * separation of concerns between position and orientation.
   *
   * @example
   * ```typescript
@@ -192,7 +192,7 @@ export class Transform2 implements Transform2Like {
  /**
   * Number of raw components yielded by Symbol.iterator (px, py, cos, sin, sx, sy).
   * @category Constant
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static readonly COMPONENT_COUNT = 6;
 
@@ -382,7 +382,7 @@ export class Transform2 implements Transform2Like {
   * ```
   *
   * @category Factory
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static fromPose(x: number, y: number, angle: number, out?: Transform2): Transform2 {
   const target = Transform2.ensureOut(out);
@@ -533,8 +533,8 @@ export class Transform2 implements Transform2Like {
   * );
   * ```
   *
-  * This limitation mirrors Box2D's design, which uses b2Transform with
-  * only position and rotation (no scale) to avoid this issue entirely.
+  * This limitation is inherent to SRT decomposition — rigid-body transforms
+  * that store only position and rotation (no scale) avoid this issue entirely.
   *
   * @param a - First transform (parent/outer transform)
   * @param b - Second transform (child/inner transform)
@@ -584,7 +584,7 @@ export class Transform2 implements Transform2Like {
   * format forces `R_inv · S_inv = R⁻¹ · S⁻¹`. For exact point inverse
   * transformation, use {@link inverseTransformPoint}. For exact full inverse,
   * convert to Matrix3 via {@link toMatrix3} and use {@link Matrix3.inverse}.
-  * This is a common SRT limitation documented by engines such as DigitalRune.
+  * This is a well-known SRT decomposition limitation in computer graphics.
   *
   * @param transform - Transform to invert
   * @param out - Optional output transform
@@ -846,7 +846,7 @@ export class Transform2 implements Transform2Like {
   * ```
   *
   * @category Transform
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static transformDirection(
   transform: ReadonlyTransform2Like,
@@ -877,7 +877,7 @@ export class Transform2 implements Transform2Like {
   * @returns Rotated direction vector
   *
   * @category Transform
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static transformDirectionCS(
   cos: number,
@@ -905,7 +905,7 @@ export class Transform2 implements Transform2Like {
   * @returns Inverse-rotated direction vector
   *
   * @category Transform
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static inverseTransformDirection(
   transform: ReadonlyTransform2Like,
@@ -937,7 +937,7 @@ export class Transform2 implements Transform2Like {
   * @returns Inverse-rotated direction vector
   *
   * @category Transform
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static inverseTransformDirectionCS(
   cos: number,
@@ -1384,7 +1384,7 @@ export class Transform2 implements Transform2Like {
   *
   * @remarks
   * A transform is invertible when both scale components are non-zero.
-  * This follows the Eigen C++ convention for matrix invertibility.
+  * Uses {@link EPSILON} tolerance for the near-zero check.
   *
   * @param transform - Transform to test
   * @param epsilon - Tolerance. @defaultValue `EPSILON`
@@ -1572,7 +1572,7 @@ export class Transform2 implements Transform2Like {
   * @since 0.7.0
   */
  public toMatrix3(out?: Matrix3): Matrix3 {
-  return Matrix3.fromTransform2(this.position, Rotation2.angle(this.rotation), this.scale, out);
+  return Matrix3.fromTransform2Like(this, out);
  }
 
  /**
@@ -1692,7 +1692,7 @@ export class Transform2 implements Transform2Like {
   * @returns Rotated direction vector
   *
   * @category Transform
-  * @since 0.8.0
+  * @since 0.7.0
   */
  transformDirection(direction: ReadonlyVector2Like, out?: Vector2): Vector2 {
   return Transform2.transformDirection(this, direction, out);
@@ -1700,14 +1700,23 @@ export class Transform2 implements Transform2Like {
 
  /**
   * Transforms a direction using precomputed cos/sin values.
+  *
+  * @remarks
+  * Unlike {@link transformPointCS} and {@link transformVectorCS} which take
+  * `(data, cos, sin, out)`, this method takes `(cos, sin, data, out)` because
+  * direction transforms only use rotation, not position or scale.
+  *
   * @param cos - Precomputed cosine
   * @param sin - Precomputed sine
   * @param direction - Direction vector to transform
   * @param out - Optional output vector
   * @returns Rotated direction vector
   *
+  * @see {@link transformPointCS} - Point transform with (point, cos, sin, out) order
+  * @see {@link transformVectorCS} - Vector transform with (vector, cos, sin, out) order
+  *
   * @category Transform
-  * @since 0.8.0
+  * @since 0.7.0
   */
  transformDirectionCS(
   cos: number,
@@ -1725,7 +1734,7 @@ export class Transform2 implements Transform2Like {
   * @returns Inverse-rotated direction vector
   *
   * @category Transform
-  * @since 0.8.0
+  * @since 0.7.0
   */
  inverseTransformDirection(direction: ReadonlyVector2Like, out?: Vector2): Vector2 {
   return Transform2.inverseTransformDirection(this, direction, out);
@@ -1733,14 +1742,22 @@ export class Transform2 implements Transform2Like {
 
  /**
   * Inverse transforms a direction using precomputed cos/sin values.
+  * @remarks
+  * Unlike {@link inverseTransformPointCS} and {@link inverseTransformVectorCS} which take
+  * `(data, cos, sin, out)`, this method takes `(cos, sin, data, out)` because
+  * direction transforms only use rotation, not position or scale.
+  *
   * @param cos - Precomputed cosine
   * @param sin - Precomputed sine
   * @param direction - Direction vector to inverse transform
   * @param out - Optional output vector
   * @returns Inverse-rotated direction vector
   *
+  * @see {@link inverseTransformPointCS} - Point inverse transform with (point, cos, sin, out) order
+  * @see {@link inverseTransformVectorCS} - Vector inverse transform with (vector, cos, sin, out) order
+  *
   * @category Transform
-  * @since 0.8.0
+  * @since 0.7.0
   */
  inverseTransformDirectionCS(
   cos: number,
@@ -1774,7 +1791,7 @@ export class Transform2 implements Transform2Like {
   * @see {@link inverseTransformPoint} - Throws on non-invertible
   *
   * @category Transform
-  * @since 0.9.0
+  * @since 0.7.0
   */
  inverseTransformPointSafe(point: ReadonlyVector2Like, out?: Vector2): Vector2 {
   return Transform2.inverseTransformPointSafe(this, point, out);
@@ -1828,7 +1845,7 @@ export class Transform2 implements Transform2Like {
   * @see {@link inverseTransformVector} - Throws on non-invertible
   *
   * @category Transform
-  * @since 0.9.0
+  * @since 0.7.0
   */
  inverseTransformVectorSafe(vector: ReadonlyVector2Like, out?: Vector2): Vector2 {
   return Transform2.inverseTransformVectorSafe(this, vector, out);
@@ -1988,7 +2005,7 @@ export class Transform2 implements Transform2Like {
   * @see {@link multiply} - Computes `this = this × other`
   *
   * @category Arithmetic
-  * @since 0.8.0
+  * @since 0.7.0
   */
  premultiply(other: ReadonlyTransform2): this {
   const result = Transform2.multiply(other, this);

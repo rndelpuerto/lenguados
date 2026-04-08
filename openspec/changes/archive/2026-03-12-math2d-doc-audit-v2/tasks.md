@@ -55,7 +55,7 @@ Replace invalid @category values using the lookup table in design.md D6. Each ta
 
 ## Phase C: Missing @since Tags (~57 occurrences)
 
-Add `@since 0.8.0` to static class constants that are missing @since. Each constant's single-line JSDoc must be expanded to include the tag.
+Add `@since 0.7.0` to static class constants that are missing @since. Each constant's single-line JSDoc must be expanded to include the tag.
 
 - [x] C1. Add @since to static constants in `core/complex.ts` (~10 constants: ZERO, ONE, I, NEG_I, NEG_ONE, EPSILON_COMPLEX, SQRT2, SQRT2_INV, PI, E)
 - [x] C2. Add @since to static constants in `core/rotation2.ts` (~10 constants: IDENTITY, QUARTER_TURN, HALF_TURN, THREE_QUARTER_TURN, EIGHTH_TURN, TWELFTH_TURN, SIXTEENTH_TURN, NEGATIVE_QUARTER, SIXTH_TURN, etc.)

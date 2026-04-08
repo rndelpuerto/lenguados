@@ -1,6 +1,6 @@
 # Class: SeededRandomSource
 
-Defined in: [src/utils/random-source.ts:213](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/utils/random-source.ts#L213)
+Defined in: [src/utils/random-source.ts:213](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/utils/random-source.ts#L213)
 
 Deterministic random source using xoshiro128++ algorithm.
 
@@ -32,7 +32,7 @@ const b = rng.nextInt(100); // deterministic integer in [0, 100)
 
 > **new SeededRandomSource**(`seed?`): `SeededRandomSource`
 
-Defined in: [src/utils/random-source.ts:221](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/utils/random-source.ts#L221)
+Defined in: [src/utils/random-source.ts:221](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/utils/random-source.ts#L221)
 
 Creates a new seeded random source.
 
@@ -54,7 +54,7 @@ Initial seed value. Defaults to sub-millisecond timestamp
 
 > **getState**(): \[`number`, `number`, `number`, `number`\]
 
-Defined in: [src/utils/random-source.ts:304](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/utils/random-source.ts#L304)
+Defined in: [src/utils/random-source.ts:304](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/utils/random-source.ts#L304)
 
 Returns the current internal state as a 4-element uint32 array.
 
@@ -78,7 +78,7 @@ Useful for saving and restoring random generator state.
 
 > **next**(): `number`
 
-Defined in: [src/utils/random-source.ts:245](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/utils/random-source.ts#L245)
+Defined in: [src/utils/random-source.ts:245](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/utils/random-source.ts#L245)
 
 Generates the next random number.
 
@@ -106,7 +106,7 @@ Uses xoshiro128++ algorithm with 32-bit state for deterministic generation.
 
 > **nextInt**(`max`): `number`
 
-Defined in: [src/utils/random-source.ts:264](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/utils/random-source.ts#L264)
+Defined in: [src/utils/random-source.ts:264](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/utils/random-source.ts#L264)
 
 Generates a random integer in [0, max).
 
@@ -146,7 +146,7 @@ If max is not a positive integer
 
 > **restoreState**(`state`): `void`
 
-Defined in: [src/utils/random-source.ts:318](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/utils/random-source.ts#L318)
+Defined in: [src/utils/random-source.ts:318](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/utils/random-source.ts#L318)
 
 Restores a previously saved state.
 
@@ -176,7 +176,7 @@ If state is not a 4-element array or is all zeros
 
 > **seed**(`seed`): `void`
 
-Defined in: [src/utils/random-source.ts:289](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/utils/random-source.ts#L289)
+Defined in: [src/utils/random-source.ts:289](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/utils/random-source.ts#L289)
 
 Re-seeds the generator using SplitMix32 expansion.
 

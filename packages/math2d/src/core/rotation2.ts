@@ -4,13 +4,13 @@
  * @description Deterministic 2D rotation for physics simulations
  *
  * @remarks
- * ## Design Pattern: Box2D b2Rot
+ * ## Design Pattern: Unit Complex Representation
  *
- * This class follows the proven design from Box2D physics engine:
- * - Stores rotation as `(cos θ, sin θ)` instead of angle
+ * This class stores rotation as `(cos θ, sin θ)` — a unit complex number —
+ * instead of a raw angle. This representation is standard in 2D physics and
+ * robotics because it:
  * - Avoids repeated trigonometric calls
  * - Enables efficient rotation composition via complex multiplication
- * - Used by: Box2D, Planck.js, Rapier2D
  *
  * ## Why (cos, sin) Instead of Angle?
  *
@@ -68,6 +68,7 @@ import { smoothStep } from '../auxiliary/scalar/interpolation';
 import { hypot } from '../deterministic/deterministic-kernels';
 import { atan2 } from '../deterministic/deterministic-kernels';
 import type {
+ ReadonlyComplexLike,
  ReadonlyMatrix2Like,
  ReadonlyRotation2Like,
  ReadonlyVector2Like,
@@ -75,7 +76,7 @@ import type {
 } from '../types';
 import { assert, assertFinite } from '../validation/assert';
 
-import { Complex, type ReadonlyComplex } from './complex';
+import { Complex } from './complex';
 import { Matrix2 } from './matrix2';
 import { Vector2 } from './vector2';
 
@@ -203,9 +204,9 @@ export class Rotation2 implements Rotation2Like {
   * multiplication of two unit rotations).
   *
   * @remarks
-  * Box2D's b2MulRot and nalgebra's UnitComplex::mul both skip normalization
-  * on composition. Normalization is an O(1) maintenance operation that callers
-  * invoke periodically via normalize(), not on every arithmetic operation.
+  * Composition of unit complex numbers preserves unit length by construction.
+  * Normalization is an O(1) maintenance operation that callers invoke
+  * periodically via normalize(), not on every arithmetic operation.
   *
   * @param cos - The cosine component
   * @param sin - The sine component
@@ -468,7 +469,7 @@ export class Rotation2 implements Rotation2Like {
   * @category Factory
   * @since 0.7.0
   */
- public static fromComplex(complex: ReadonlyComplex, out?: Rotation2): Rotation2 {
+ public static fromComplex(complex: ReadonlyComplexLike, out?: Rotation2): Rotation2 {
   const target = Rotation2.ensureOut(out);
   target.cos = complex.real;
   target.sin = complex.imag;
@@ -496,7 +497,7 @@ export class Rotation2 implements Rotation2Like {
   * @category Factory
   * @since 0.7.0
   */
- public static fromComplexSafe(complex: ReadonlyComplex, out?: Rotation2): Rotation2 {
+ public static fromComplexSafe(complex: ReadonlyComplexLike, out?: Rotation2): Rotation2 {
   const target = Rotation2.ensureOut(out);
   target.cos = complex.real;
   target.sin = complex.imag;
@@ -521,7 +522,7 @@ export class Rotation2 implements Rotation2Like {
   * ```
   *
   * @category Factory
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public static fromMatrix2(matrix: ReadonlyMatrix2Like, out?: Rotation2): Rotation2 {
   return Rotation2.ensureOut(out).set(matrix.m00, matrix.m01);
@@ -656,6 +657,14 @@ export class Rotation2 implements Rotation2Like {
 
  /**
   * Normalizes a rotation to ensure cos² + sin² = 1.
+  *
+  * @remarks
+  * Unlike other strict-tier operations, this method does not throw for
+  * zero-magnitude input. Instead, it returns the identity rotation (cos=1, sin=0),
+  * matching the behavior of {@link normalizeSafe}. This is an intentional exception
+  * to the triality pattern: for rotations, identity is always a mathematically
+  * valid fallback.
+  *
   * @param rotation - Rotation to normalize
   * @param out - Optional output rotation
   * @returns Normalized rotation
@@ -666,7 +675,7 @@ export class Rotation2 implements Rotation2Like {
   * const unit = Rotation2.normalize(drifted); // cos² + sin² ≈ 1
   * ```
   *
-  * @see {@link normalizeSafe} - Returns identity on zero magnitude
+  * @see {@link normalizeSafe} - Functionally identical for zero-magnitude input
   * @see {@link normalizeUnchecked} - No validation
   *
   * @category Transform
@@ -1170,7 +1179,7 @@ export class Rotation2 implements Rotation2Like {
   * ```
   *
   * @category Computed
-  * @since 0.9.0
+  * @since 0.7.0
   */
  public static angleBetween(a: ReadonlyRotation2Like, b: ReadonlyRotation2Like): number {
   return atan2(a.cos * b.sin - a.sin * b.cos, a.cos * b.cos + a.sin * b.sin);
@@ -1248,6 +1257,15 @@ export class Rotation2 implements Rotation2Like {
 
  /**
   * Normalizes this rotation to unit length.
+  *
+  * @remarks
+  * Unlike other strict-tier operations, this method does not throw for
+  * zero-magnitude input. Instead, it returns the identity rotation (cos=1, sin=0),
+  * matching the behavior of {@link normalizeSafe}. This is an intentional exception
+  * to the triality pattern: for rotations, identity is always a mathematically
+  * valid fallback, and throwing would force error handling where the only sensible
+  * recovery is using identity.
+  *
   * @returns This for chaining
   *
   * @example
@@ -1256,7 +1274,7 @@ export class Rotation2 implements Rotation2Like {
   * rot.normalize(); // cos² + sin² ≈ 1
   * ```
   *
-  * @see {@link normalizeSafe} - Returns identity on zero magnitude
+  * @see {@link normalizeSafe} - Functionally identical for zero-magnitude input
   * @see {@link normalizeUnchecked} - No validation
   *
   * @category Transform
@@ -1733,7 +1751,7 @@ export class Rotation2 implements Rotation2Like {
   * Returns a normalized version of this rotation (unit length cos² + sin² = 1).
   *
   * @remarks
-  * Since the constructor no longer auto-normalizes (Planck.js aligned),
+  * Since the constructor does not auto-normalize (by design),
   * use this getter to obtain a properly normalized rotation when needed.
   *
   * @returns New normalized rotation
@@ -1760,7 +1778,7 @@ export class Rotation2 implements Rotation2Like {
   *
   * @see {@link Rotation2.angleBetween} - Static equivalent
   * @category Computed
-  * @since 0.9.0
+  * @since 0.7.0
   */
  angleTo(other: ReadonlyRotation2Like): number {
   return Rotation2.angleBetween(this, other);
@@ -1869,7 +1887,7 @@ export class Rotation2 implements Rotation2Like {
   * ```
   *
   * @category Conversion
-  * @since 0.8.0
+  * @since 0.7.0
   */
  public toMatrix2(out?: Matrix2): Matrix2 {
   return Matrix2.fromRotation(this, out);

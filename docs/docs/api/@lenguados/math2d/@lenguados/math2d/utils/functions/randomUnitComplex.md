@@ -1,20 +1,20 @@
 # Function: randomUnitComplex()
 
-> **randomUnitComplex**(`out`, `source`): [`Complex`](../../core/classes/Complex.md)
+> **randomUnitComplex**(`out?`, `source?`): [`Complex`](../../core/classes/Complex.md)
 
-Defined in: [src/utils/random.ts:646](https://github.com/rndelpuerto/lenguados/blob/3df0cd5faf71dfb9a81874ce52cb086af634e3ac/packages/math2d/src/utils/random.ts#L646)
+Defined in: [src/utils/random.ts:646](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/utils/random.ts#L646)
 
 Generates a random unit complex number (on the unit circle).
 
 ## Parameters
 
-### out
+### out?
 
 [`Complex`](../../core/classes/Complex.md) = `...`
 
 Optional output complex to avoid allocation. Defaults to `new Complex()`
 
-### source
+### source?
 
 [`RandomSource`](../interfaces/RandomSource.md) = `...`
 

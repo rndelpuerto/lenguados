@@ -4,17 +4,14 @@ import { fileURLToPath } from 'url';
 import fg from 'fast-glob';
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
-import pluginEsbuild from 'rollup-plugin-esbuild';
 import json from '@rollup/plugin-json';
 import peerDepsExternal from 'rollup-plugin-peer-deps-external';
-import cleanup from 'rollup-plugin-cleanup';
 import filesize from 'rollup-plugin-filesize';
 import polyfillNode from 'rollup-plugin-polyfill-node';
 import { visualizer } from 'rollup-plugin-visualizer';
 import { dts } from 'rollup-plugin-dts';
+import { swc, minify } from 'rollup-plugin-swc3';
 import copy from 'rollup-plugin-copy';
-
-const esbuild = pluginEsbuild.default || pluginEsbuild;
 
 // Compute __dirname in ESM
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -147,18 +144,25 @@ const buildPlugins = (format) => {
  if (format === FormatTypes.TYPES) {
   plugins.push(dts());
  } else {
-  // Transpile + (dev) sourcemap or (prod) minify
+  // Transpile via SWC
   plugins.push(
-   esbuild({
+   swc({
     tsconfig: tsconfigPath,
-    sourceMap: !IS_PRODUCTION,
-    minify: IS_PRODUCTION,
-    target: TARGET_JS,
-    // Compile-time constant for dead code elimination
-    // In production: assertions are completely removed
-    // In development: assertions are active
-    define: {
-     __LENGUADOS_DEV__: IS_PRODUCTION ? 'false' : 'true',
+    sourceMaps: !IS_PRODUCTION,
+    jsc: {
+     target: TARGET_JS,
+     // Compile-time constant for dead code elimination
+     // In production: assertions are completely removed
+     // In development: assertions are active
+     transform: {
+      optimizer: {
+       globals: {
+        vars: {
+         __LENGUADOS_DEV__: IS_PRODUCTION ? 'false' : 'true',
+        },
+       },
+      },
+     },
     },
    }),
   );
@@ -189,7 +193,11 @@ const buildPlugins = (format) => {
 
   // Post-processing in production: cleanup, size report, bundle stats
   if (IS_PRODUCTION) {
-   plugins.push(cleanup(), filesize(), visualizer({ filename: STATS_FILE, open: false }));
+   plugins.push(
+    minify({ compress: true, mangle: true, module: format === FormatTypes.ES_MODULE }),
+    filesize(),
+    visualizer({ filename: STATS_FILE, open: false }),
+   );
   }
  }
 

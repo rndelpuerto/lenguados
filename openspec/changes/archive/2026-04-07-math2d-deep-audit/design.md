@@ -64,7 +64,7 @@ The audit is driven by reading every source line without assumptions and compari
 
 **Decision:** The audit specs define WHAT the post-audit state SHALL be. Breaking changes are explicitly marked in tasks.md. Any export receiving a REMOVE or RENAME verdict is a **BREAKING** change per semver. All breaking changes are batched into a single major version bump.
 
-**Rationale:** Incremental removals/renames fragment the changelog and force consumers to migrate repeatedly. A single breaking release (e.g., v1.0.0) is cleaner and communicates stability.
+**Rationale:** Incremental removals/renames fragment the changelog and force consumers to migrate repeatedly. A single breaking release (e.g., a future major version) is cleaner and communicates stability.
 
 ### D5: Synergy validation via dependency tracing
 

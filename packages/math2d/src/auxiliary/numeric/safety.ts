@@ -12,8 +12,9 @@
  * JavaScript engines are delegated to deterministic-kernels.
  */
 
-import { acosSafe, asinSafe, log, pow } from '../../deterministic/deterministic-kernels';
+import { acos, asin, exp, log, pow } from '../../deterministic/deterministic-kernels';
 import { clamp } from '../scalar/arithmetic';
+import { HALF_PI, PI } from '../scalar/constants';
 /**
  * Minimum safe value for division operations.
  * Below this value, division results may produce numerically degenerate outputs
@@ -27,9 +28,9 @@ import { clamp } from '../scalar/arithmetic';
  * - `EPSILON`: geometric comparison tolerance ("are these values approximately equal?")
  * - `MIN_SAFE_DIVISOR`: division safety threshold ("will dividing by this produce garbage?")
  *
- * For reference, Unreal Engine uses `SMALL_NUMBER = 1e-8` for a similar role,
- * Ogre3D uses `1e-8`, and Box2D uses `FLT_EPSILON` (~1.19e-7, float32).
- * Our value of `1e-10` is more conservative, appropriate for double precision.
+ * Common values in game engines and graphics libraries range from `1e-8` to
+ * `~1.19e-7` (float32 epsilon). Our value of `1e-10` is more conservative,
+ * appropriate for double-precision arithmetic.
  *
  * @constant {number}
  * @category Safety
@@ -119,25 +120,45 @@ export function sqrtSafe(x: number): number {
 
 /**
  * Safe deterministic arc cosine (clamps input to [-1, 1]).
- * Re-exported from deterministic-kernels for convenience.
  *
- * @remarks Uses deterministic math for cross-platform reproducibility.
+ * @remarks
+ * Uses deterministic math for cross-platform reproducibility.
+ * Returns PI for x <= -1, 0 for x >= 1, deterministic acos(x) otherwise.
+ *
+ * @param x - Any value (will be clamped to [-1, 1])
+ * @returns acos(clamp(x, -1, 1))
+ *
+ * @see {@link acos} from deterministic-kernels — returns NaN for out-of-range inputs
  *
  * @category Safety
  * @since 0.7.0
  */
-export { acosSafe };
+export function acosSafe(x: number): number {
+ if (x <= -1) return PI;
+ if (x >= 1) return 0;
+ return acos(x);
+}
 
 /**
  * Safe deterministic arc sine (clamps input to [-1, 1]).
- * Re-exported from deterministic-kernels for convenience.
  *
- * @remarks Uses deterministic math for cross-platform reproducibility.
+ * @remarks
+ * Uses deterministic math for cross-platform reproducibility.
+ * Returns -PI/2 for x <= -1, PI/2 for x >= 1, deterministic asin(x) otherwise.
+ *
+ * @param x - Any value (will be clamped to [-1, 1])
+ * @returns asin(clamp(x, -1, 1))
+ *
+ * @see {@link asin} from deterministic-kernels — returns NaN for out-of-range inputs
  *
  * @category Safety
  * @since 0.7.0
  */
-export { asinSafe };
+export function asinSafe(x: number): number {
+ if (x <= -1) return -HALF_PI;
+ if (x >= 1) return HALF_PI;
+ return asin(x);
+}
 
 /**
  * Safe logarithm (returns 0 for non-positive values).
@@ -174,6 +195,27 @@ export function logSafe(value: number, base: number = Math.E): number {
 }
 
 /**
+ * Safe exponential function (handles extreme values gracefully).
+ *
+ * @remarks
+ * Uses deterministic math for cross-platform reproducibility.
+ * Returns Number.MAX_VALUE for positive overflow (not Infinity) and 0 for
+ * negative overflow, maintaining the Safe contract (finite-in/finite-out).
+ *
+ * @param x - Exponent value
+ * @returns e^x, clamped to finite range
+ *
+ * @category Safety
+ * @since 0.7.0
+ */
+export function expSafe(x: number): number {
+ if (x !== x) return NaN;
+ const result = exp(x);
+ if (!Number.isFinite(result)) return result > 0 ? Number.MAX_VALUE : 0;
+ return result;
+}
+
+/**
  * Safe power that handles edge cases.
  *
  * @remarks
@@ -186,9 +228,9 @@ export function logSafe(value: number, base: number = Math.E): number {
  * **Note on Safe convention exception**: Unlike other `*Safe` functions
  * that always return finite values, `powSafe(-x, frac)` returns NaN because
  * this case is mathematically undefined in ℝ (the result is complex).
- * This matches IEEE 754 §9.2, C99 `pow()`, and every industrial math library
- * (Unity, GLM, Eigen, Three.js). Returning a finite fallback like 0 would be
- * mathematically misleading and inconsistent with universal external convention.
+ * This matches IEEE 754 §9.2, C99 `pow()`, and every major math library.
+ * Returning a finite fallback like 0 would be mathematically misleading
+ * and inconsistent with universal convention.
  *
  * Note: 0^(-n) returns 0 (finite fallback per Safe contract, not mathematical Infinity).
  *

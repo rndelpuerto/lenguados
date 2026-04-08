@@ -48,11 +48,11 @@ This is the definitive guide to mathematical failure within the `math2d` package
 
 ## 3. The Branchless Mathematical Contract (The `*Unchecked` Path)
 
-The ultimate architectural concession for extreme performance is the `Unchecked` variant of arithmetic methods -- a deliberate decision made under engine-level optimization criteria (V8/CPU Pipeline) that mirrors the "fast-paths" of C++ physics engines (like Box2D).
+The ultimate architectural concession for extreme performance is the `Unchecked` variant of arithmetic methods -- a deliberate decision made under engine-level optimization criteria (V8/CPU Pipeline) that mirrors the "fast-paths" of C++ physics engines.
 
 ### 3.1 Branchless Normalization and Inversion
 
-- **The Industry Context:** Traditional graphics libraries like `Three.js` or `gl-matrix` include defensive checks in their core functions (e.g., `if (len > 0)` or `length || 1`).
+- **The Industry Context:** Traditional graphics libraries include defensive checks in their core functions (e.g., `if (len > 0)` or `length || 1`).
 - **The Hidden Cost:** In a collision-resolution loop executed 100,000 times per frame, that `if` statement forces the CPU's Branch Predictor to guess. A misprediction flushes the pipeline, destroying performance.
 - **The Math2D Architecture:** The `*Unchecked` methods (such as `Vector2.normalizeUnchecked()` or `Matrix2.inverseUnchecked()`) deliberately eliminate the `if`. They guarantee 100% linear (branchless) code.
 - **The Edge Case (The IEEE 754 Contract):** If you break the contract and pass the Zero Vector to `normalizeUnchecked()`, the system will execute `1 / 0`, yielding `Infinity`. Multiplying `0 * Infinity` produces a result vector of `(NaN, NaN)`. Matrices with a zero determinant will fill with `Infinity`.

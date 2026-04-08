@@ -111,8 +111,8 @@ Exact replacements to use (no judgment needed):
 
 ### D7: @since version for missing tags
 
-**Decision:** Use `@since 0.8.0` for all missing @since tags on static class constants.
-**Rationale:** These constants were introduced in the current enhancement branch. The exact version will be confirmed at release time, but 0.8.0 is the planned next version.
+**Decision:** Use `@since 0.7.0` for all missing @since tags on static class constants.
+**Rationale:** These constants were introduced in the current enhancement branch. The exact version will be confirmed at release time, but 0.7.0 is the planned next version.
 
 ## Risks / Trade-offs
 
