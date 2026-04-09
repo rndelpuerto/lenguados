@@ -1,6 +1,6 @@
 # Interface: Matrix2Like
 
-Defined in: [src/types/index.ts:60](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/types/index.ts#L60)
+Defined in: [src/types/index.ts:60](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/types/index.ts#L60)
 
 Mutable interface for 2x2 matrix components.
 
@@ -14,7 +14,7 @@ Mutable interface for 2x2 matrix components.
 
 > **m00**: `number`
 
-Defined in: [src/types/index.ts:61](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/types/index.ts#L61)
+Defined in: [src/types/index.ts:61](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/types/index.ts#L61)
 
 ---
 
@@ -22,7 +22,7 @@ Defined in: [src/types/index.ts:61](https://github.com/rndelpuerto/lenguados/blo
 
 > **m01**: `number`
 
-Defined in: [src/types/index.ts:62](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/types/index.ts#L62)
+Defined in: [src/types/index.ts:62](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/types/index.ts#L62)
 
 ---
 
@@ -30,7 +30,7 @@ Defined in: [src/types/index.ts:62](https://github.com/rndelpuerto/lenguados/blo
 
 > **m10**: `number`
 
-Defined in: [src/types/index.ts:63](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/types/index.ts#L63)
+Defined in: [src/types/index.ts:63](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/types/index.ts#L63)
 
 ---
 
@@ -38,4 +38,4 @@ Defined in: [src/types/index.ts:63](https://github.com/rndelpuerto/lenguados/blo
 
 > **m11**: `number`
 
-Defined in: [src/types/index.ts:64](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/types/index.ts#L64)
+Defined in: [src/types/index.ts:64](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/types/index.ts#L64)

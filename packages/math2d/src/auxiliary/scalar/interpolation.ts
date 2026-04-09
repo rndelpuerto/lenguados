@@ -10,6 +10,11 @@ import { saturate } from './arithmetic';
  * Linear interpolation between two values.
  *
  * @remarks
+ * Uses the standard form `a + (b - a) * t` which guarantees monotonicity.
+ * For extreme values where `|b - a|` approaches `Number.MAX_VALUE`,
+ * the distributive form `a * (1 - t) + b * t` trades monotonicity
+ * for overflow safety.
+ *
  * The interpolation factor t is not clamped, allowing extrapolation
  * for t values outside [0, 1]. Use {@link lerpClamped} when you need
  * to ensure the result stays within [a, b].

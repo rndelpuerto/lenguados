@@ -2575,8 +2575,8 @@ describe('Complex.fromVector2', () => {
 
 describe('Component-wise operations', () => {
  describe('Static component-wise', () => {
-  it('abs returns absolute values', () => {
-   const result = Complex.abs({ real: -3, imag: -4 });
+  it('absComponents returns absolute values', () => {
+   const result = Complex.absComponents({ real: -3, imag: -4 });
    expect(result.real).toBe(3);
    expect(result.imag).toBe(4);
   });
@@ -2605,8 +2605,8 @@ describe('Component-wise operations', () => {
    expect(result.imag).toBe(-2);
   });
 
-  it('sign returns sign of both components', () => {
-   const result = Complex.sign({ real: -5, imag: 3 });
+  it('signComponents returns sign of both components', () => {
+   const result = Complex.signComponents({ real: -5, imag: 3 });
    expect(result.real).toBe(-1);
    expect(result.imag).toBe(1);
   });
@@ -2636,7 +2636,7 @@ describe('Component-wise operations', () => {
   });
 
   it('handles NaN passthrough', () => {
-   const result = Complex.abs({ real: NaN, imag: 1 });
+   const result = Complex.absComponents({ real: NaN, imag: 1 });
    expect(result.real).toBeNaN();
    expect(result.imag).toBe(1);
   });
@@ -2649,7 +2649,7 @@ describe('Component-wise operations', () => {
 
   it('writes to out parameter', () => {
    const out = new Complex();
-   const result = Complex.abs({ real: -3, imag: -4 }, out);
+   const result = Complex.absComponents({ real: -3, imag: -4 }, out);
    expect(result).toBe(out);
    expect(out.real).toBe(3);
    expect(out.imag).toBe(4);
@@ -2657,9 +2657,9 @@ describe('Component-wise operations', () => {
  });
 
  describe('Instance component-wise', () => {
-  it('abs mutates and chains', () => {
+  it('absComponents mutates and chains', () => {
    const z = new Complex(-3, -4);
-   const result = z.abs();
+   const result = z.absComponents();
    expect(result).toBe(z);
    expect(z.real).toBe(3);
    expect(z.imag).toBe(4);
@@ -2693,9 +2693,9 @@ describe('Component-wise operations', () => {
    expect(z.imag).toBe(-2);
   });
 
-  it('sign mutates and chains', () => {
+  it('signComponents mutates and chains', () => {
    const z = new Complex(-5, 3);
-   expect(z.sign()).toBe(z);
+   expect(z.signComponents()).toBe(z);
    expect(z.real).toBe(-1);
    expect(z.imag).toBe(1);
   });

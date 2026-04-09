@@ -10,12 +10,7 @@
  */
 
 import { divideSafe, sqrtSafe } from '../auxiliary/numeric/safety';
-import {
- clamp,
- mod as scalarModule,
- saturate,
- sign as scalarSign,
-} from '../auxiliary/scalar/arithmetic';
+import { clamp, saturate, sign as scalarSign } from '../auxiliary/scalar/arithmetic';
 import {
  isNearZero,
  nearEquals as scalarNearEquals,
@@ -929,26 +924,6 @@ export class Interval implements IntervalLike {
   );
  }
 
- /**
-  * Component-wise modulo of two intervals.
-  *
-  * @remarks
-  * This is component-wise modulo (applied to min and max independently), NOT
-  * interval-theoretic modulo. The result may not enclose all possible modulo
-  * values of points within the interval.
-  *
-  * @param a - Dividend interval
-  * @param b - Divisor interval
-  * @param out - Optional output interval
-  * @returns Interval with per-bound remainder
-  *
-  * @category Arithmetic
-  * @since 0.7.0
-  */
- public static mod(a: ReadonlyIntervalLike, b: ReadonlyIntervalLike, out?: Interval): Interval {
-  return Interval.ensureOut(out).setDirect(scalarModule(a.min, b.min), scalarModule(a.max, b.max));
- }
-
  /* ======================================================================== */
  /* Static Interpolation                                                     */
  /* ======================================================================== */
@@ -1812,19 +1787,6 @@ export class Interval implements IntervalLike {
  clamp(minI: ReadonlyIntervalLike, maxI: ReadonlyIntervalLike): this {
   this.min = clamp(this.min, minI.min, maxI.min);
   this.max = clamp(this.max, minI.max, maxI.max);
-  return this;
- }
-
- /**
-  * Component-wise modulo.
-  * @param other - Divisor interval
-  * @returns This for chaining
-  * @category Arithmetic
-  * @since 0.7.0
-  */
- mod(other: ReadonlyIntervalLike): this {
-  this.min = scalarModule(this.min, other.min);
-  this.max = scalarModule(this.max, other.max);
   return this;
  }
 

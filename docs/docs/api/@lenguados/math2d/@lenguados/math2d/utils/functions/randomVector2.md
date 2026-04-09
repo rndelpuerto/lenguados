@@ -2,7 +2,7 @@
 
 > **randomVector2**(`min?`, `max?`, `out?`, `source?`): [`Vector2`](../../core/classes/Vector2.md)
 
-Defined in: [src/utils/random.ts:77](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/utils/random.ts#L77)
+Defined in: [src/utils/random.ts:77](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/utils/random.ts#L77)
 
 Generates a random 2D vector with components in range [min, max).
 

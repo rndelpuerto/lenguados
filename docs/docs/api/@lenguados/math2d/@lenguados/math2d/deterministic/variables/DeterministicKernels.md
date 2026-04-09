@@ -2,7 +2,7 @@
 
 > `const` **DeterministicKernels**: `object`
 
-Defined in: [src/deterministic/deterministic-kernels.ts:926](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/deterministic/deterministic-kernels.ts#L926)
+Defined in: [src/deterministic/deterministic-kernels.ts:940](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/deterministic/deterministic-kernels.ts#L940)
 
 Pure deterministic math kernels for L0 cross-platform consistency.
 
@@ -365,6 +365,17 @@ base^exponent
 For integer exponents, uses exponentiation by squaring.
 For non-integer exponents, uses deterministic exp(exponent \* log(base)).
 Fully L0 deterministic with no Math.pow dependency.
+
+**NaN propagation:** `pow(x, NaN)` returns NaN for all x except `pow(x, 0) = 1`
+(ECMAScript §21.3.2.26). `pow(1, ±Infinity)` returns NaN.
+
+**fdlibm edge cases:** Signed-zero handling (`pow(-0, odd)`) and negative-base
+with ±Infinity exponent follow fdlibm/C99 semantics, which may differ from
+ECMAScript `Math.pow` for these specific edge cases. All finite positive-base
+computations are bit-identical to the fdlibm reference.
+
+**Precision:** For fractional exponents, results may differ from `Math.pow` by
+up to 1 ULP due to the `exp(exponent * log(base))` computation path.
 
 ##### Example
 

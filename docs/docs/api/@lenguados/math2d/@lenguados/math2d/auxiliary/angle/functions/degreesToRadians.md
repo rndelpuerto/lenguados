@@ -2,7 +2,7 @@
 
 > **degreesToRadians**(`degrees`): `number`
 
-Defined in: [src/auxiliary/angle/conversion.ts:24](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/auxiliary/angle/conversion.ts#L24)
+Defined in: [src/auxiliary/angle/conversion.ts:24](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/auxiliary/angle/conversion.ts#L24)
 
 Converts degrees to radians.
 

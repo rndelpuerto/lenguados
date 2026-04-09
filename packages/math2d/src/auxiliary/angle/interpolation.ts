@@ -18,7 +18,7 @@ import { angleDifference } from './operations';
  *
  * @param from - Start angle in radians
  * @param to - End angle in radians
- * @param t - Interpolation factor [0, 1]
+ * @param t - Interpolation factor (typically [0, 1], values outside produce extrapolation)
  * @returns Interpolated angle
  *
  * @example

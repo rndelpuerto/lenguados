@@ -93,8 +93,6 @@ export function roundToPlaces(value: number, places: number): number {
  * roundToMultiple(1.7, 0.5);     // 1.5
  * ```
  *
- * @see {@link snapToGrid} - Equivalent: roundToMultiple(value, multiple) = snapToGrid(value, multiple, 0)
- *
  * @category Arithmetic
  * @since 0.7.0
  */
@@ -180,30 +178,6 @@ export function floorPowerOfTwo(value: number): number {
  if (value <= 0) return 0;
  const candidate = 2 ** Math.floor(log(value) / LN_2);
  return candidate > value ? candidate / 2 : candidate;
-}
-
-/**
- * Snaps to grid with offset.
- * @param value - Value to snap
- * @param gridSize - Size of grid cells
- * @param offset - Grid offset (default: 0)
- * @returns Snapped value
- *
- * @example
- * ```typescript
- * snapToGrid(7, 5);          // 5
- * snapToGrid(8, 5);          // 10
- * snapToGrid(7, 5, 2);       // 7 (snaps to 2, 7, 12, ...)
- * snapToGrid(3.7, 0.5);      // 3.5
- * ```
- *
- * @category Arithmetic
- * @since 0.7.0
- */
-export function snapToGrid(value: number, gridSize: number, offset: number = 0): number {
- if (!Number.isFinite(value)) return value;
- if (gridSize === 0) return value;
- return Math.round((value - offset) / gridSize) * gridSize + offset;
 }
 
 /**

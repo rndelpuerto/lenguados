@@ -342,7 +342,7 @@ export function parseMatrix2(string_: string, out = new Matrix2()): Matrix2 {
     // Handle nested arrays
     if (Array.isArray(parsed) && parsed.length === 2) {
      const [row0, row1] = parsed;
-     if (Array.isArray(row0) && Array.isArray(row1)) {
+     if (Array.isArray(row0) && row0.length === 2 && Array.isArray(row1) && row1.length === 2) {
       return out.set(row0[0], row0[1], row1[0], row1[1]);
      }
     }

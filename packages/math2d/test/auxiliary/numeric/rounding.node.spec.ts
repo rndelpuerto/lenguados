@@ -13,7 +13,6 @@ import {
  roundToPowerOfTwo,
  ceilPowerOfTwo,
  floorPowerOfTwo,
- snapToGrid,
  fract,
 } from '../../../src/auxiliary/numeric/rounding';
 
@@ -120,37 +119,6 @@ describe('numeric/rounding', () => {
   });
  });
 
- describe('snapToGrid', () => {
-  test('snaps to grid without offset', () => {
-   expect(snapToGrid(7, 5)).toBe(5);
-   expect(snapToGrid(8, 5)).toBe(10);
-   expect(snapToGrid(12, 10)).toBe(10);
-   expect(snapToGrid(17, 10)).toBe(20);
-  });
-
-  test('snaps to grid with offset', () => {
-   expect(snapToGrid(7, 5, 2)).toBe(7); // snaps to 2, 7, 12, ...
-   expect(snapToGrid(9, 5, 2)).toBe(7);
-   expect(snapToGrid(10, 5, 2)).toBe(12);
-  });
-
-  test('handles fractional grid sizes', () => {
-   expect(snapToGrid(3.7, 0.5)).toBe(3.5);
-   expect(snapToGrid(3.8, 0.5)).toBe(4.0);
-   expect(snapToGrid(3.25, 0.5)).toBe(3.5);
-  });
-
-  test('returns value unchanged when gridSize is 0', () => {
-   expect(snapToGrid(7, 0)).toBe(7);
-   expect(snapToGrid(-3.5, 0)).toBe(-3.5);
-  });
-
-  test('handles negative values', () => {
-   expect(snapToGrid(-7, 5)).toBe(-5);
-   expect(snapToGrid(-8, 5)).toBe(-10);
-  });
- });
-
  describe('NaN/Infinity handling', () => {
   test('roundToPlaces propagates non-finite values', () => {
    expect(roundToPlaces(NaN, 2)).toBeNaN();
@@ -162,12 +130,6 @@ describe('numeric/rounding', () => {
    expect(roundToMultiple(NaN, 5)).toBeNaN();
    expect(roundToMultiple(Infinity, 5)).toBe(Infinity);
    expect(roundToMultiple(-Infinity, 5)).toBe(-Infinity);
-  });
-
-  test('snapToGrid propagates non-finite values', () => {
-   expect(snapToGrid(NaN, 5)).toBeNaN();
-   expect(snapToGrid(Infinity, 5)).toBe(Infinity);
-   expect(snapToGrid(-Infinity, 5)).toBe(-Infinity);
   });
 
   test('roundToInt throws on non-finite values', () => {
@@ -210,13 +172,6 @@ describe('numeric/rounding', () => {
   test('roundToPowerOfTwo(Infinity) returns 0 (non-positive guard)', () => {
    // Infinity > 0 so it enters the computation; log(Infinity) = Infinity
    const result = roundToPowerOfTwo(Infinity);
-   expect(typeof result).toBe('number');
-  });
-
-  test('snapToGrid(5, NaN) returns 5', () => {
-   // gridSize is NaN, fails gridSize === 0 check, computes NaN * NaN + 0 = NaN
-   // Actually snapToGrid checks !Number.isFinite(value) first - 5 is finite
-   const result = snapToGrid(5, NaN);
    expect(typeof result).toBe('number');
   });
 

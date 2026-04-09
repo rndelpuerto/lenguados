@@ -10,7 +10,7 @@ Debug assertions for development-time validation
 
 ## Remarks
 
-**Pattern**: Inspired by Box2D/Bullet Physics assertions with compile-time DCE.
+**Pattern**: Development-only assertions with compile-time DCE.
 
 This module provides debug-only validation that is **completely eliminated**
 in production builds via Dead Code Elimination (DCE). The `process.env.NODE_ENV`

@@ -1,6 +1,6 @@
 # Interface: Rotation2Like
 
-Defined in: [src/types/index.ts:138](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/types/index.ts#L138)
+Defined in: [src/types/index.ts:138](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/types/index.ts#L138)
 
 Mutable interface for 2D rotation represented as cosine/sine components.
 
@@ -18,7 +18,7 @@ Mutable interface for 2D rotation represented as cosine/sine components.
 
 > **cos**: `number`
 
-Defined in: [src/types/index.ts:143](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/types/index.ts#L143)
+Defined in: [src/types/index.ts:143](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/types/index.ts#L143)
 
 Cosine component of the rotation.
 For a rotation of angle θ, this equals cos(θ).
@@ -29,7 +29,7 @@ For a rotation of angle θ, this equals cos(θ).
 
 > **sin**: `number`
 
-Defined in: [src/types/index.ts:149](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/types/index.ts#L149)
+Defined in: [src/types/index.ts:149](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/types/index.ts#L149)
 
 Sine component of the rotation.
 For a rotation of angle θ, this equals sin(θ).

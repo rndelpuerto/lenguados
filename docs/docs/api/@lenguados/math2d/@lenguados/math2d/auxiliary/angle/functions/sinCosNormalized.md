@@ -2,7 +2,7 @@
 
 > **sinCosNormalized**(`angle`, `out?`): [`SinCos`](../../../types/interfaces/SinCos.md)
 
-Defined in: [src/auxiliary/angle/operations.ts:81](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/auxiliary/angle/operations.ts#L81)
+Defined in: [src/auxiliary/angle/operations.ts:81](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/auxiliary/angle/operations.ts#L81)
 
 Computes sine and cosine of a normalized angle.
 Normalizes the angle to (-π, π] before computing.

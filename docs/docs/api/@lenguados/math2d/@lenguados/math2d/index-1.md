@@ -70,7 +70,7 @@ const cosValue = cos(angle); // Uses polynomial approximation
 For advanced use cases, additional modules are available via specific imports:
 
 ```typescript
-// Validation - assertions for development (Box2D/Bullet style)
+// Validation - assertions for development (tree-shakeable)
 import {
  assertFinite,
  assertVector2,

@@ -2272,12 +2272,6 @@ describe('Component-wise operations', () => {
    expect(result.max).toBe(5);
   });
 
-  it('mod computes per-bound remainder', () => {
-   const result = Interval.mod({ min: 5, max: 7 }, { min: 3, max: 4 });
-   expect(result.min).toBeCloseTo(2);
-   expect(result.max).toBeCloseTo(3);
-  });
-
   it('writes to out parameter', () => {
    const out = new Interval();
    const result = Interval.floor({ min: -1.5, max: 2.7 }, out);
@@ -2328,13 +2322,6 @@ describe('Component-wise operations', () => {
    expect(index.clamp({ min: 0, max: 0 }, { min: 5, max: 5 })).toBe(index);
    expect(index.min).toBe(0);
    expect(index.max).toBe(5);
-  });
-
-  it('mod mutates and chains', () => {
-   const index = new Interval(5, 7);
-   expect(index.mod({ min: 3, max: 4 })).toBe(index);
-   expect(index.min).toBeCloseTo(2);
-   expect(index.max).toBeCloseTo(3);
   });
  });
 

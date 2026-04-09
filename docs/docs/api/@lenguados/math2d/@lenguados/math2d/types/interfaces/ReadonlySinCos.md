@@ -1,6 +1,6 @@
 # Interface: ReadonlySinCos
 
-Defined in: [src/types/index.ts:541](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/types/index.ts#L541)
+Defined in: [src/types/index.ts:541](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/types/index.ts#L541)
 
 Read-only variant of [SinCos](SinCos.md) for cached angle lookup tables.
 
@@ -20,7 +20,7 @@ Use when storing pre-computed sin/cos values that should not be mutated.
 
 > `readonly` **cos**: `number`
 
-Defined in: [src/types/index.ts:545](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/types/index.ts#L545)
+Defined in: [src/types/index.ts:545](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/types/index.ts#L545)
 
 Cosine of the angle (read-only).
 
@@ -30,6 +30,6 @@ Cosine of the angle (read-only).
 
 > `readonly` **sin**: `number`
 
-Defined in: [src/types/index.ts:543](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/types/index.ts#L543)
+Defined in: [src/types/index.ts:543](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/types/index.ts#L543)
 
 Sine of the angle (read-only).

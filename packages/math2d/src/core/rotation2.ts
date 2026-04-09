@@ -65,8 +65,7 @@ import {
 } from '../auxiliary/scalar/comparison';
 import { EPSILON, PI } from '../auxiliary/scalar/constants';
 import { smoothStep } from '../auxiliary/scalar/interpolation';
-import { hypot } from '../deterministic/deterministic-kernels';
-import { atan2 } from '../deterministic/deterministic-kernels';
+import { atan2, hypot } from '../deterministic/deterministic-kernels';
 import type {
  ReadonlyComplexLike,
  ReadonlyMatrix2Like,
@@ -1085,16 +1084,23 @@ export class Rotation2 implements Rotation2Like {
 
  /**
   * Tests if a rotation is normalized (unit magnitude).
+  *
+  * @remarks
+  * Named `isNormalized` rather than `isUnit` because unit length is an
+  * intrinsic invariant of the Rotation2 type, not merely a testable
+  * property. Vector2 and Complex use `isUnit` because unit length is
+  * optional for those types.
+  *
   * @param rotation - Rotation to test
   * @param epsilon - Tolerance (default: EPSILON)
-  * @returns True if |cos² + sin² - 1| < epsilon
+  * @returns True if |cos² + sin² - 1| ≤ epsilon
   *
   * @category Comparison
   * @since 0.7.0
   */
  public static isNormalized(rotation: ReadonlyRotation2Like, epsilon: number = EPSILON): boolean {
   const magnitudeSq = rotation.cos * rotation.cos + rotation.sin * rotation.sin;
-  return Math.abs(magnitudeSq - 1) < epsilon;
+  return Math.abs(magnitudeSq - 1) <= epsilon;
  }
 
  /**

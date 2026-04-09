@@ -131,3 +131,33 @@ rotation.setDirect(x * inv, y * inv); // ← CORRECT: invariant already proven
 `setDirect` is private to each class. It bypasses normalization because the calling code has already proven the invariant. This is the `setDirect` pattern (see ADR-009 in the Design Decisions doc).
 
 `Transform2.fromComponents` is a concrete example of a related case: when a `ReadonlyRotation2Like` is passed, `cos` and `sin` are copied directly to the internal `Rotation2` without going through `set()`. This avoids both the redundant `Math.sqrt` and a lossy `atan2 → sinCos` roundtrip. The trade-off is that the **caller is responsible for providing a unit-length object** (`cos² + sin² = 1`). Passing a non-unit-length object stores invalid state silently — this is the implicit caller contract made explicit in the TSDoc `@remarks`.
+
+---
+
+## 7. Magnitude Overflow Threshold
+
+Default-tier and Safe-tier methods that compute vector magnitude use `hypot(x, y)` from the deterministic kernels, which is overflow-safe for components up to ~1.34e308. Unchecked methods use `Math.sqrt(x*x + y*y)`, which overflows to `Infinity` when either component exceeds ~1.34e154 (`sqrt(Number.MAX_VALUE / 2)`).
+
+This is a deliberate performance vs safety trade-off documented in `math2d-patterns.md`. If you use `normalizeUnchecked()` or other Unchecked methods with components > 1e154, you will get `NaN` or `Infinity` results silently. Use the default or Safe variants for inputs of unknown magnitude.
+
+---
+
+## 8. Deterministic `pow()` — fdlibm Edge Cases
+
+The deterministic `pow(base, exponent)` kernel propagates NaN exponents correctly: `pow(x, NaN) = NaN` for all `x` except `pow(x, 0) = 1` (ECMAScript convention). `pow(1, ±Infinity) = NaN`.
+
+Signed-zero handling and negative-base with ±Infinity exponent follow fdlibm/C99 semantics, which differ from ECMAScript `Math.pow` for these specific edge cases. For example, `pow(-0, 3) = 0` (not `-0`) and `pow(-2, Infinity) = NaN` (not `Infinity`). These edge cases cannot occur through the library's own API since `Complex.pow` passes magnitudes (always ≥ 0) as the base. For fractional exponents, results may differ from `Math.pow` by up to 1 ULP.
+
+---
+
+## 9. `Interval.mod` — Removed
+
+`Interval.mod` was removed because component-wise modulo on interval bounds (`mod(a.min, b.min), mod(a.max, b.max)`) is not valid interval arithmetic per IEEE 1788-2015 and could violate the `min ≤ max` class invariant. For example, `[7, 12].mod([10, 10])` would produce `[7, 2]` where `min > max`.
+
+If you need component-wise modulo on interval bounds, compose it explicitly:
+
+```typescript
+import { mod } from '@lenguados/math2d';
+const result = Interval.fromValues(mod(a.min, b.min), mod(a.max, b.max));
+// Caller is responsible for ensuring result.min <= result.max
+```

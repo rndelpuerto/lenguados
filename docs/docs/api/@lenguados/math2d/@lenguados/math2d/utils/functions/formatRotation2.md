@@ -2,7 +2,7 @@
 
 > **formatRotation2**(`r`, `format?`, `precision?`): `string`
 
-Defined in: [src/utils/parse.ts:278](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/utils/parse.ts#L278)
+Defined in: [src/utils/parse.ts:278](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/utils/parse.ts#L278)
 
 Formats a 2D rotation as a string.
 

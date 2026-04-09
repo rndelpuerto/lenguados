@@ -2,7 +2,7 @@
 
 > **freezeTransform2**(`transform`): [`ReadonlyTransform2`](../type-aliases/ReadonlyTransform2.md)
 
-Defined in: [src/core/transform2.ts:81](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/transform2.ts#L81)
+Defined in: [src/core/transform2.ts:81](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/transform2.ts#L81)
 
 Permanently freezes a [Transform2](../classes/Transform2.md) instance so it can no longer be mutated.
 

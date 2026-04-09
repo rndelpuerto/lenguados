@@ -10,14 +10,14 @@ Deterministic 2D rotation for physics simulations
 
 ## Remarks
 
-## Design Pattern: Box2D b2Rot
+## Design Pattern: Unit Complex Representation
 
-This class follows the proven design from Box2D physics engine:
+This class stores rotation as `(cos θ, sin θ)` — a unit complex number —
+instead of a raw angle. This representation is standard in 2D physics and
+robotics because it:
 
-- Stores rotation as `(cos θ, sin θ)` instead of angle
 - Avoids repeated trigonometric calls
 - Enables efficient rotation composition via complex multiplication
-- Used by: Box2D, Planck.js, Rapier2D
 
 ## Why (cos, sin) Instead of Angle?
 

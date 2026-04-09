@@ -2,7 +2,7 @@
 
 > **relativeEquals**(`a`, `b`, `relativeEpsilon?`): `boolean`
 
-Defined in: [src/auxiliary/scalar/comparison.ts:141](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/auxiliary/scalar/comparison.ts#L141)
+Defined in: [src/auxiliary/scalar/comparison.ts:140](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/auxiliary/scalar/comparison.ts#L140)
 
 Tests combined tolerance equality: |a-b| <= epsilon \* max(|a|, |b|, 1).
 Scales with magnitude for large numbers; uses absolute floor for small numbers.
@@ -35,8 +35,7 @@ True if within the scaled tolerance
 
 ## Remarks
 
-Uses the combined absolute+relative tolerance pattern from Christer Ericson's
-_Real-Time Collision Detection_: the `max(1, ...)` floor ensures near-zero
+Uses the combined absolute+relative tolerance pattern: the `max(1, ...)` floor ensures near-zero
 values are compared with threshold = `relativeEpsilon` (absolute behavior),
 while large values scale proportionally (relative behavior).
 

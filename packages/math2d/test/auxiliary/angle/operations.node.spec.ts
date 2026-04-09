@@ -49,6 +49,14 @@ describe('angle/operations', () => {
    expect(anglesNearEqual(-Math.PI, Math.PI)).toBe(true);
    expect(anglesNearEqual(0, 0.1)).toBe(false);
   });
+
+  test('throws on NaN epsilon', () => {
+   expect(() => anglesNearEqual(0, 0, NaN)).toThrow(RangeError);
+  });
+
+  test('throws on negative epsilon', () => {
+   expect(() => anglesNearEqual(0, 0, -1)).toThrow(RangeError);
+  });
  });
 
  describe('angleBisector', () => {

@@ -2,7 +2,7 @@
 
 > **normalizeRadians**(`radians`): `number`
 
-Defined in: [src/auxiliary/angle/normalization.ts:39](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/auxiliary/angle/normalization.ts#L39)
+Defined in: [src/auxiliary/angle/normalization.ts:39](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/auxiliary/angle/normalization.ts#L39)
 
 Normalizes an angle to (-PI, PI] range.
 Standard signed angle representation matching the mathematical
@@ -25,7 +25,7 @@ Normalized angle in (-PI, PI]
 ## Remarks
 
 Uses (-PI, PI] (PI included, -PI excluded) — the convention used by
-IEEE 754 atan2, C standard, MATLAB wrapToPi, Unity, Box2D, and Bullet Physics.
+IEEE 754 atan2 and the C standard.
 This ensures `normalizeRadians(Math.atan2(y, x)) === Math.atan2(y, x)`.
 
 For very large angles (>1e6 radians), floating-point precision loss in

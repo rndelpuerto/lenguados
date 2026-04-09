@@ -2,7 +2,7 @@
 
 > **powSafe**(`base`, `exponent`): `number`
 
-Defined in: [src/auxiliary/numeric/safety.ts:252](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/auxiliary/numeric/safety.ts#L252)
+Defined in: [src/auxiliary/numeric/safety.ts:252](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/auxiliary/numeric/safety.ts#L252)
 
 Safe power that handles edge cases.
 
@@ -38,9 +38,9 @@ Handles edge cases like:
 **Note on Safe convention exception**: Unlike other `*Safe` functions
 that always return finite values, `powSafe(-x, frac)` returns NaN because
 this case is mathematically undefined in ℝ (the result is complex).
-This matches IEEE 754 §9.2, C99 `pow()`, and every industrial math library
-(Unity, GLM, Eigen, Three.js). Returning a finite fallback like 0 would be
-mathematically misleading and inconsistent with universal external convention.
+This matches IEEE 754 §9.2, C99 `pow()`, and every major math library.
+Returning a finite fallback like 0 would be mathematically misleading
+and inconsistent with universal convention.
 
 Note: 0^(-n) returns 0 (finite fallback per Safe contract, not mathematical Infinity).
 

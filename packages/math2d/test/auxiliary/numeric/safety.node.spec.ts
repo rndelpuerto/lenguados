@@ -18,8 +18,6 @@ import {
  robustSum,
  neumaierSum,
  compensatedProduct,
- lerpSafe,
- sanitizeNumber,
  ensureFinite,
  MIN_SAFE_DIVISOR,
 } from '../../../src/auxiliary/numeric/safety';
@@ -257,50 +255,6 @@ describe('numeric/safety', () => {
   });
  });
 
- describe('lerpSafe', () => {
-  test('interpolates linearly', () => {
-   expect(lerpSafe(0, 10, 0.5)).toBe(5);
-   expect(lerpSafe(0, 10, 0)).toBe(0);
-   expect(lerpSafe(0, 10, 1)).toBe(10);
-  });
-
-  test('uses a + (b-a)*t formula when t < 0.5', () => {
-   // t = 0.3, so uses first branch
-   expect(lerpSafe(0, 10, 0.3)).toBeCloseTo(3);
-   expect(lerpSafe(10, 20, 0.25)).toBeCloseTo(12.5);
-  });
-
-  test('uses b - (b-a)*(1-t) formula when t >= 0.5', () => {
-   // t = 0.7, so uses second branch
-   expect(lerpSafe(0, 10, 0.7)).toBeCloseTo(7);
-   expect(lerpSafe(10, 20, 0.75)).toBeCloseTo(17.5);
-  });
-
-  test('clamps t <= 0 to a', () => {
-   expect(lerpSafe(5, 15, -0.5)).toBe(5);
-  });
-
-  test('clamps t >= 1 to b', () => {
-   expect(lerpSafe(5, 15, 1.5)).toBe(15);
-  });
- });
-
- describe('sanitizeNumber', () => {
-  test('returns finite numbers as-is', () => {
-   expect(sanitizeNumber(5)).toBe(5);
-   expect(sanitizeNumber(-3.14)).toBe(-3.14);
-  });
-
-  test('returns fallback for non-finite', () => {
-   expect(sanitizeNumber(NaN)).toBe(0);
-   expect(sanitizeNumber(Infinity)).toBe(0);
-  });
-
-  test('uses custom fallback', () => {
-   expect(sanitizeNumber(NaN, 42)).toBe(42);
-  });
- });
-
  describe('ensureFinite', () => {
   test('returns finite numbers as-is', () => {
    expect(ensureFinite(5)).toBe(5);
@@ -343,13 +297,6 @@ describe('numeric/safety', () => {
    expect(Number.isFinite(logSafe(1, Infinity))).toBe(true);
   });
 
-  test('sanitizeNumber always returns finite for finite inputs', () => {
-   expect(Number.isFinite(sanitizeNumber(NaN))).toBe(true);
-   expect(Number.isFinite(sanitizeNumber(Infinity))).toBe(true);
-   expect(Number.isFinite(sanitizeNumber(-Infinity))).toBe(true);
-   expect(Number.isFinite(sanitizeNumber(NaN, Infinity))).toBe(true);
-  });
-
   test('ensureFinite always returns finite', () => {
    expect(Number.isFinite(ensureFinite(NaN))).toBe(true);
    expect(Number.isFinite(ensureFinite(Infinity))).toBe(true);
@@ -369,20 +316,6 @@ describe('numeric/safety', () => {
 
   test('expSafe(NaN) returns NaN', () => {
    expect(expSafe(NaN)).toBeNaN();
-  });
- });
-
- describe('lerpSafe overflow prevention', () => {
-  test('lerpSafe(-1e308, 1e308, 0.3) returns finite ~-4e307', () => {
-   const result = lerpSafe(-1e308, 1e308, 0.3);
-   expect(Number.isFinite(result)).toBe(true);
-   expect(result).toBeCloseTo(-4e307, -306);
-  });
-
-  test('lerpSafe with opposite-sign large magnitudes does not overflow', () => {
-   const result = lerpSafe(-1e308, 1e308, 0.5);
-   expect(Number.isFinite(result)).toBe(true);
-   expect(result).toBeCloseTo(0, -306);
   });
  });
 });

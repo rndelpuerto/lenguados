@@ -242,6 +242,26 @@ describe('DeterministicKernels L0 Functions', () => {
    expect(pow(1, 100)).toBe(1);
    expect(pow(0, -1)).toBe(Infinity);
   });
+
+  it('should propagate NaN exponent (except exponent=0)', () => {
+   expect(pow(1, NaN)).toBeNaN();
+   expect(pow(0, NaN)).toBeNaN();
+   expect(pow(5, NaN)).toBeNaN();
+   expect(pow(-3, NaN)).toBeNaN();
+   expect(pow(Infinity, NaN)).toBeNaN();
+  });
+
+  it('should return NaN for pow(1, ±Infinity)', () => {
+   expect(pow(1, Infinity)).toBeNaN();
+   expect(pow(1, -Infinity)).toBeNaN();
+  });
+
+  it('should return 1 for pow(NaN, 0) and pow(any, 0)', () => {
+   expect(pow(NaN, 0)).toBe(1);
+   expect(pow(Infinity, 0)).toBe(1);
+   expect(pow(-Infinity, 0)).toBe(1);
+   expect(pow(0, 0)).toBe(1);
+  });
  });
 
  describe('log', () => {

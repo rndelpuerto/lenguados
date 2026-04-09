@@ -38,8 +38,7 @@ import {
 } from '../auxiliary/scalar/comparison';
 import { EPSILON } from '../auxiliary/scalar/constants';
 import { lerp } from '../auxiliary/scalar/interpolation';
-import { hypot } from '../deterministic/deterministic-kernels';
-import { atan2 } from '../deterministic/deterministic-kernels';
+import { atan2, hypot } from '../deterministic/deterministic-kernels';
 import type {
  Matrix3Like,
  ReadonlyMatrix2Like,

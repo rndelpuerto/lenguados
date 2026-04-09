@@ -155,6 +155,9 @@ export function angleDistance(a: number, b: number): number {
  * @since 0.7.0
  */
 export function anglesNearEqual(a: number, b: number, epsilon: number = EPSILON): boolean {
+ if (!(epsilon >= 0)) {
+  throw new RangeError(`anglesNearEqual: epsilon must be non-negative, got ${epsilon}`);
+ }
  return angleDistance(a, b) <= epsilon;
 }
 

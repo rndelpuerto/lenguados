@@ -1,6 +1,6 @@
 # Class: MeasurementCollector\<T\>
 
-Defined in: [src/utils/performance.ts:281](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/utils/performance.ts#L281)
+Defined in: [src/utils/performance.ts:281](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/utils/performance.ts#L281)
 
 Convenience wrapper around [recordMeasurement](../functions/recordMeasurement.md) and [summarizeMeasurements](../functions/summarizeMeasurements.md).
 
@@ -39,7 +39,7 @@ collector.record(measure('tick', () => 1));
 
 > **get** **entries**(): `ReadonlyMap`\<`string`, readonly [`Measurement`](../interfaces/Measurement.md)\<`T`\>[]\>
 
-Defined in: [src/utils/performance.ts:328](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/utils/performance.ts#L328)
+Defined in: [src/utils/performance.ts:328](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/utils/performance.ts#L328)
 
 Returns a snapshot of the underlying measurements map.
 
@@ -59,7 +59,7 @@ Read-only view of recorded measurements
 
 > **summarize**(): `Map`\<`string`, [`MeasurementSummary`](../interfaces/MeasurementSummary.md)\>
 
-Defined in: [src/utils/performance.ts:340](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/utils/performance.ts#L340)
+Defined in: [src/utils/performance.ts:340](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/utils/performance.ts#L340)
 
 Computes summary statistics for the recorded measurements.
 
@@ -79,7 +79,7 @@ Map of label to summary statistics
 
 > **summarizeArray**(): [`MeasurementSummary`](../interfaces/MeasurementSummary.md)[]
 
-Defined in: [src/utils/performance.ts:352](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/utils/performance.ts#L352)
+Defined in: [src/utils/performance.ts:352](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/utils/performance.ts#L352)
 
 Convenience helper returning all summaries as an array.
 
@@ -99,7 +99,7 @@ Array of summary statistics
 
 > **formatSummaries**(): `string`[]
 
-Defined in: [src/utils/performance.ts:364](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/utils/performance.ts#L364)
+Defined in: [src/utils/performance.ts:364](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/utils/performance.ts#L364)
 
 Formats summaries using [formatSummary](../functions/formatSummary.md).
 
@@ -119,7 +119,7 @@ Array of formatted summary strings
 
 > **clear**(): `void`
 
-Defined in: [src/utils/performance.ts:316](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/utils/performance.ts#L316)
+Defined in: [src/utils/performance.ts:316](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/utils/performance.ts#L316)
 
 Clears all recorded measurements.
 
@@ -137,7 +137,7 @@ Clears all recorded measurements.
 
 > **record**(`measurement`): `void`
 
-Defined in: [src/utils/performance.ts:292](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/utils/performance.ts#L292)
+Defined in: [src/utils/performance.ts:292](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/utils/performance.ts#L292)
 
 Records a measurement in the collector.
 
@@ -163,7 +163,7 @@ Measurement to record
 
 > **recordMany**(`measurements`): `void`
 
-Defined in: [src/utils/performance.ts:304](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/utils/performance.ts#L304)
+Defined in: [src/utils/performance.ts:304](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/utils/performance.ts#L304)
 
 Records multiple measurements in sequence.
 

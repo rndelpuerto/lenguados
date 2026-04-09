@@ -13,8 +13,10 @@ Deterministic mathematical kernels for L0 cross-platform consistency
 ## Purpose
 
 This module contains ONLY pure deterministic replacements for `Math.*` functions
-that are NOT bit-exact across JavaScript engines. Each kernel accepts any IEEE 754
-double and returns the IEEE 754-specified result (including NaN for domain errors).
+that are NOT bit-exact across JavaScript engines. Each kernel uses fdlibm polynomial
+coefficients (Remez algorithm) for cross-platform bit-exact results. NaN exponents
+propagate correctly per ECMAScript semantics. Signed-zero and negative-base edge
+cases in `pow()` follow fdlibm/C99 conventions (see `pow` `@remarks` for details).
 No clamping, no fallbacks, no Safe variants — those belong in
 `auxiliary/numeric/safety.ts` (L1).
 

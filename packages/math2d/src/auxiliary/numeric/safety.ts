@@ -13,7 +13,6 @@
  */
 
 import { acos, asin, exp, log, pow } from '../../deterministic/deterministic-kernels';
-import { clamp } from '../scalar/arithmetic';
 import { HALF_PI, PI } from '../scalar/constants';
 /**
  * Minimum safe value for division operations.
@@ -185,7 +184,7 @@ export function asinSafe(x: number): number {
  * @since 0.7.0
  */
 export function logSafe(value: number, base: number = Math.E): number {
- if (value <= 0) {
+ if (!Number.isFinite(value) || value <= 0) {
   return 0;
  }
  if (base <= 0 || base === 1 || !Number.isFinite(base)) {
@@ -267,8 +266,14 @@ export function powSafe(base: number, exponent: number): number {
 }
 
 /**
- * Kahan summation algorithm for improved precision.
- * Compensates for floating-point errors in large sums.
+ * Kahan compensated summation for improved precision.
+ *
+ * @remarks
+ * Kahan compensated summation (1965). The branchless inner loop makes it
+ * faster than {@link neumaierSum} for hot-path accumulation where all values
+ * have similar magnitude. For inputs of varying scale, prefer
+ * {@link neumaierSum} which handles mixed magnitudes more accurately.
+ *
  * @param values - Array of numbers to sum
  * @returns Sum with reduced rounding error
  *
@@ -279,7 +284,7 @@ export function powSafe(base: number, exponent: number): number {
  * robustSum(values);  // Closer to 100000 than naive sum
  * ```
  *
- * @see {@link neumaierSum} For improved accuracy with values of varying magnitudes
+ * @see {@link neumaierSum} — improved variant for varying-magnitude inputs
  * @category Safety
  * @since 0.7.0
  */
@@ -300,8 +305,14 @@ export function robustSum(values: readonly number[]): number {
 }
 
 /**
- * Neumaier summation - improved Kahan algorithm.
- * Even more robust for values of varying magnitudes.
+ * Neumaier compensated summation for improved precision.
+ *
+ * @remarks
+ * Improved compensated summation (Neumaier, 1974). More accurate than
+ * {@link robustSum} for inputs of varying magnitude due to the
+ * comparison-based compensation. For uniform-magnitude hot-path
+ * accumulation, {@link robustSum} may be marginally faster (branchless).
+ *
  * @param values - Array of numbers to sum
  * @returns Sum with minimized error
  *
@@ -311,7 +322,7 @@ export function robustSum(values: readonly number[]): number {
  * // Naive sum might give 0 due to rounding
  * ```
  *
- * @see {@link robustSum} For simpler Kahan summation when values have similar magnitudes
+ * @see {@link robustSum} — branchless Kahan variant for uniform-magnitude hot paths
  * @category Safety
  * @since 0.7.0
  */
@@ -395,88 +406,6 @@ export function compensatedProduct(a: number, b: number): { product: number; err
  const error = aLow * bLow - error3;
 
  return { product, error };
-}
-
-/**
- * Safe linear interpolation that avoids overflow.
- *
- * @remarks
- * The distributive form `a*(1-t) + b*t` trades strict monotonicity for
- * overflow safety. For inputs where `a` and `b` have the same sign and no
- * overflow risk, standard {@link lerp} (`a + (b-a)*t`)
- * preserves monotonicity.
- *
- * @param a - Start value
- * @param b - End value
- * @param t - Interpolation factor
- * @returns Interpolated value
- *
- * @example
- * ```typescript
- * // Avoids overflow for large values
- * lerpSafe(1e308, 2e308, 0.5); // 1.5e308
- * // Normal lerp might overflow
- * ```
- *
- * @category Safety
- * @since 0.7.0
- */
-export function lerpSafe(a: number, b: number, t: number): number {
- // Avoid catastrophic cancellation and overflow
- if (t <= 0) return a;
- if (t >= 1) return b;
-
- // Distributive form prevents overflow when a and b have opposite signs
- return a * (1 - t) + b * t;
-}
-
-/* ========================================================================== */
-/* Sanitization Functions (moved from guards.ts for cohesion)                 */
-/* ========================================================================== */
-
-/**
- * Validates and cleans numeric value.
- *
- * @remarks
- * Combines validation with clamping. Use when you need to ensure
- * a value is both finite and within a specific range.
- *
- * @remarks
- * The fallback value itself is also clamped to [min, max]. For example,
- * `sanitizeNumber(NaN, 100, 0, 50)` returns 50 (fallback clamped to max).
- *
- * If fallback itself is NaN, the result will be NaN (unlike ensureFinite
- * which validates the fallback).
- *
- * @param value - Value to sanitize
- * @param fallback - Value to use if input is invalid (default: 0)
- * @param min - Minimum allowed value (default: -Number.MAX_VALUE)
- * @param max - Maximum allowed value (default: Number.MAX_VALUE)
- * @returns Clean value or fallback
- *
- * @example
- * ```typescript
- * sanitizeNumber(42);                    // 42
- * sanitizeNumber(NaN);                   // 0 (fallback)
- * sanitizeNumber(Infinity);              // 0 (fallback)
- * sanitizeNumber(100, 0, 0, 50);         // 50 (clamped to max)
- * sanitizeNumber(-10, 0, 0, 100);        // 0 (clamped to min)
- * sanitizeNumber(NaN, -1);               // -1 (custom fallback)
- * ```
- *
- * @category Safety
- * @since 0.7.0
- */
-export function sanitizeNumber(
- value: number,
- fallback: number = 0,
- min: number = -Number.MAX_VALUE,
- max: number = Number.MAX_VALUE,
-): number {
- if (!Number.isFinite(value)) {
-  return clamp(fallback, min, max);
- }
- return clamp(value, min, max);
 }
 
 /**

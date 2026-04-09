@@ -2,7 +2,7 @@
 
 > **isNearOne**(`value`, `epsilon?`): `boolean`
 
-Defined in: [src/auxiliary/scalar/comparison.ts:101](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/auxiliary/scalar/comparison.ts#L101)
+Defined in: [src/auxiliary/scalar/comparison.ts:101](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/auxiliary/scalar/comparison.ts#L101)
 
 Tests if value is near one.
 

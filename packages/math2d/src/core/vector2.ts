@@ -20,7 +20,7 @@
  */
 
 import { angleFromVectors, sinCos } from '../auxiliary/angle/operations';
-import { acosSafe, divideSafe, sqrtSafe } from '../auxiliary/numeric/safety';
+import { acosSafe, divideSafe } from '../auxiliary/numeric/safety';
 import {
  clamp,
  mod as scalarModule,
@@ -1501,7 +1501,8 @@ export class Vector2 implements Vector2Like {
  public static limit(v: ReadonlyVector2Like, maxLength: number, out?: Vector2): Vector2 {
   const lengthSq = Vector2.magnitudeSq(v);
   if (lengthSq > maxLength * maxLength && lengthSq > 0) {
-   const scale = maxLength / sqrtSafe(lengthSq);
+   const mag = hypot(v.x, v.y);
+   const scale = maxLength / mag;
    return this.ensureOut(out).set(v.x * scale, v.y * scale);
   }
   return this.ensureOut(out).set(v.x, v.y);
@@ -2073,11 +2074,11 @@ export class Vector2 implements Vector2Like {
   normal: ReadonlyVector2Like,
   out?: Vector2,
  ): Vector2 {
-  const lengthSq = Vector2.magnitudeSq(normal);
-  if (isNearZero(lengthSq)) {
+  const mag = hypot(normal.x, normal.y);
+  if (isNearZero(mag)) {
    return this.ensureOut(out).set(v.x, v.y);
   }
-  const invLength = 1 / sqrtSafe(lengthSq);
+  const invLength = 1 / mag;
   const nx = normal.x * invLength;
   const ny = normal.y * invLength;
   const d2 = 2 * (v.x * nx + v.y * ny);
@@ -2449,11 +2450,11 @@ export class Vector2 implements Vector2Like {
   complex: ReadonlyComplexLike,
   out?: Vector2,
  ): Vector2 {
-  const magSq = complex.real * complex.real + complex.imag * complex.imag;
-  if (isNearZero(magSq)) {
+  const mag = hypot(complex.real, complex.imag);
+  if (isNearZero(mag)) {
    return this.clone(v, out);
   }
-  const invMag = 1 / sqrtSafe(magSq);
+  const invMag = 1 / mag;
   const c = complex.real * invMag;
   const s = complex.imag * invMag;
   return this.ensureOut(out).set(c * v.x - s * v.y, s * v.x + c * v.y);
@@ -2710,11 +2711,11 @@ export class Vector2 implements Vector2Like {
   * @since 0.6.0
   */
  public get normalized(): Vector2 {
-  const lengthSq = this.magnitudeSq();
-  if (isNearZero(lengthSq)) {
+  const mag = hypot(this.x, this.y);
+  if (isNearZero(mag)) {
    return new Vector2(0, 0);
   }
-  const inv = 1 / sqrtSafe(lengthSq);
+  const inv = 1 / mag;
   return new Vector2(this.x * inv, this.y * inv);
  }
 
@@ -3719,7 +3720,8 @@ export class Vector2 implements Vector2Like {
  public limit(maxLength: number): this {
   const lengthSq = this.magnitudeSq();
   if (lengthSq > maxLength * maxLength && lengthSq > 0) {
-   const scale = maxLength / sqrtSafe(lengthSq);
+   const mag = hypot(this.x, this.y);
+   const scale = maxLength / mag;
    this.multiplyScalar(scale);
   }
   return this;
@@ -3916,6 +3918,10 @@ export class Vector2 implements Vector2Like {
   * @since 0.6.0
   */
  public projectOnUnit(unitAxis: ReadonlyVector2Like): this {
+  assert(
+   isNearZero(Vector2.magnitudeSq(unitAxis) - 1),
+   'Vector2.projectOnUnit: unitAxis must be unit-length. Use Vector2.project() for non-unit axes.',
+  );
   const s = this.dot(unitAxis);
   return this.set(unitAxis.x * s, unitAxis.y * s);
  }
@@ -3951,11 +3957,11 @@ export class Vector2 implements Vector2Like {
   * @since 0.6.0
   */
  public reflectSafe(normal: ReadonlyVector2Like): this {
-  const lengthSq = Vector2.magnitudeSq(normal);
-  if (isNearZero(lengthSq)) {
+  const mag = hypot(normal.x, normal.y);
+  if (isNearZero(mag)) {
    return this;
   }
-  const invLength = 1 / sqrtSafe(lengthSq);
+  const invLength = 1 / mag;
   const nx = normal.x * invLength;
   const ny = normal.y * invLength;
   const d2 = 2 * (this.x * nx + this.y * ny);
@@ -4295,12 +4301,13 @@ export class Vector2 implements Vector2Like {
 
  /**
   * Tests if unit length.
-  * @returns True if |magnitudeSq - 1| ≤ EPSILON
+  * @param epsilon - Tolerance (default: EPSILON)
+  * @returns True if |magnitudeSq - 1| ≤ epsilon
   * @category Comparison
   * @since 0.6.0
   */
- public isUnit(): boolean {
-  return Vector2.isUnit(this);
+ public isUnit(epsilon: number = EPSILON): boolean {
+  return Vector2.isUnit(this, epsilon);
  }
 
  /**
@@ -4605,11 +4612,11 @@ export class Vector2 implements Vector2Like {
   * @since 0.7.0
   */
  public applyComplex(complex: ReadonlyComplexLike): this {
-  const magSq = complex.real * complex.real + complex.imag * complex.imag;
-  if (isNearZero(magSq)) {
+  const mag = hypot(complex.real, complex.imag);
+  if (isNearZero(mag)) {
    return this;
   }
-  const invMag = 1 / sqrtSafe(magSq);
+  const invMag = 1 / mag;
   const c = complex.real * invMag;
   const s = complex.imag * invMag;
   const rx = c * this.x - s * this.y;

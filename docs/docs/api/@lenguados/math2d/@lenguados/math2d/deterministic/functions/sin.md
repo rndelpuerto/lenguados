@@ -2,7 +2,7 @@
 
 > **sin**(`x`): `number`
 
-Defined in: [src/deterministic/deterministic-kernels.ts:361](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/deterministic/deterministic-kernels.ts#L361)
+Defined in: [src/deterministic/deterministic-kernels.ts:363](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/deterministic/deterministic-kernels.ts#L363)
 
 Deterministic sine function.
 

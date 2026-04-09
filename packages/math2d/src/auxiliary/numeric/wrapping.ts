@@ -41,6 +41,8 @@ import { isNearZero } from '../scalar/comparison';
  *
  * @see {@link flooredModSafe} - Returns 0 if divisor is zero
  * @see {@link flooredModUnchecked} - No validation
+ * @see {@link mod} — positive modulo (in `auxiliary/scalar/arithmetic.ts`)
+ * @see {@link loop} — range wrapping (in `auxiliary/scalar/arithmetic.ts`)
  *
  * @category Wrapping
  * @since 0.7.0

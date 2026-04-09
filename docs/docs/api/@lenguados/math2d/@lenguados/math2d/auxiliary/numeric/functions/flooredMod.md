@@ -2,7 +2,7 @@
 
 > **flooredMod**(`dividend`, `divisor`): `number`
 
-Defined in: [src/auxiliary/numeric/wrapping.ts:48](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/auxiliary/numeric/wrapping.ts#L48)
+Defined in: [src/auxiliary/numeric/wrapping.ts:50](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/auxiliary/numeric/wrapping.ts#L50)
 
 Floored modulo (strict).
 
@@ -48,6 +48,8 @@ flooredMod(-7, -3); // -1
 
 - [flooredModSafe](flooredModSafe.md) - Returns 0 if divisor is zero
 - [flooredModUnchecked](flooredModUnchecked.md) - No validation
+- mod — positive modulo (in `auxiliary/scalar/arithmetic.ts`)
+- loop — range wrapping (in `auxiliary/scalar/arithmetic.ts`)
 
 ## Since
 

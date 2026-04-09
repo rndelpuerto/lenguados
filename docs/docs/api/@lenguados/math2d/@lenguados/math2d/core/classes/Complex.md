@@ -1,6 +1,6 @@
 # Class: Complex
 
-Defined in: [src/core/complex.ts:195](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L195)
+Defined in: [src/core/complex.ts:195](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L195)
 
 Mutable interface for complex numbers.
 
@@ -18,7 +18,7 @@ Mutable interface for complex numbers.
 
 > **new Complex**(`real?`, `imag?`): `Complex`
 
-Defined in: [src/core/complex.ts:267](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L267)
+Defined in: [src/core/complex.ts:267](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L267)
 
 Creates a new Complex number from real and imaginary parts.
 
@@ -56,7 +56,7 @@ Imaginary component.
 
 > **get** **angle**(): `number`
 
-Defined in: [src/core/complex.ts:1753](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L1753)
+Defined in: [src/core/complex.ts:1764](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L1764)
 
 Gets the phase angle in radians.
 Computed as atan2(imag, real), consistent with Vector2.angle and Rotation2.angle.
@@ -75,7 +75,7 @@ Angle in radians
 
 > **set** **angle**(`value`): `void`
 
-Defined in: [src/core/complex.ts:1777](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L1777)
+Defined in: [src/core/complex.ts:1788](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L1788)
 
 Sets the phase angle in radians.
 Preserves magnitude, only changes angle. Zero-allocation in-place mutation.
@@ -83,8 +83,8 @@ Symmetric with Rotation2.angle setter.
 
 ##### Remarks
 
-Unlike immutable libraries (complex.js, math.js), we provide mutable setters
-for zero-allocation hot paths in game loops and physics simulations.
+Mutable setter for zero-allocation hot paths in game loops and physics
+simulations. Avoids creating new instances on every angle change.
 
 ##### Example
 
@@ -117,7 +117,7 @@ c.angle; // ≈ Math.PI / 4
 
 > **get** **angleDegrees**(): `number`
 
-Defined in: [src/core/complex.ts:1792](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L1792)
+Defined in: [src/core/complex.ts:1803](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L1803)
 
 Gets the phase angle in degrees.
 Symmetric with Rotation2.angleDegrees getter.
@@ -136,7 +136,7 @@ Angle in degrees
 
 > **set** **angleDegrees**(`value`): `void`
 
-Defined in: [src/core/complex.ts:1804](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L1804)
+Defined in: [src/core/complex.ts:1815](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L1815)
 
 Sets the phase angle in degrees.
 Preserves magnitude, only changes angle. Zero-allocation in-place mutation.
@@ -164,7 +164,7 @@ Symmetric with Rotation2.angleDegrees setter.
 
 > **get** **angleTurns**(): `number`
 
-Defined in: [src/core/complex.ts:1816](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L1816)
+Defined in: [src/core/complex.ts:1827](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L1827)
 
 Gets the phase angle in turns (0-1 = one full rotation).
 Symmetric with Rotation2.angleTurns getter.
@@ -183,7 +183,7 @@ Angle in turns (0-1 range)
 
 > **set** **angleTurns**(`value`): `void`
 
-Defined in: [src/core/complex.ts:1828](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L1828)
+Defined in: [src/core/complex.ts:1839](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L1839)
 
 Sets the phase angle in turns.
 Preserves magnitude, only changes angle. Zero-allocation in-place mutation.
@@ -211,7 +211,7 @@ Symmetric with Rotation2.angleTurns setter.
 
 > **get** **conjugated**(): `Complex`
 
-Defined in: [src/core/complex.ts:2675](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L2675)
+Defined in: [src/core/complex.ts:2695](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L2695)
 
 Returns the conjugate without modifying this number.
 
@@ -233,7 +233,7 @@ New conjugate complex
 
 > **get** **negated**(): `Complex`
 
-Defined in: [src/core/complex.ts:2714](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L2714)
+Defined in: [src/core/complex.ts:2734](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L2734)
 
 Returns the negated complex without modifying this number.
 
@@ -255,7 +255,7 @@ New negated complex
 
 > **get** **normalized**(): `Complex`
 
-Defined in: [src/core/complex.ts:2698](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L2698)
+Defined in: [src/core/complex.ts:2718](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L2718)
 
 Returns the normalized (unit) complex without modifying this number.
 
@@ -289,7 +289,7 @@ New unit complex
 
 > **get** **reciprocated**(): `Complex`
 
-Defined in: [src/core/complex.ts:2731](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L2731)
+Defined in: [src/core/complex.ts:2751](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L2751)
 
 Returns the reciprocal without modifying this number.
 Uses safe behavior: returns (0,0) for zero-magnitude input.
@@ -315,7 +315,7 @@ New reciprocal complex
 
 > **add**(`other`): `this`
 
-Defined in: [src/core/complex.ts:1844](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L1844)
+Defined in: [src/core/complex.ts:1855](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L1855)
 
 Adds another complex number in place.
 
@@ -343,7 +343,7 @@ This for chaining
 
 > **addScalar**(`scalar`): `this`
 
-Defined in: [src/core/complex.ts:2044](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L2044)
+Defined in: [src/core/complex.ts:2055](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L2055)
 
 Adds a real scalar to this complex number in place.
 Only the real component is affected: `(a+bi) + s = (a+s) + bi`.
@@ -384,7 +384,7 @@ new Complex(3, 4).addScalar(2); // (5, 4)
 
 > **conjugate**(): `this`
 
-Defined in: [src/core/complex.ts:2075](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L2075)
+Defined in: [src/core/complex.ts:2086](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L2086)
 
 Conjugates this complex number in place.
 
@@ -404,7 +404,7 @@ This for chaining
 
 > **divide**(`other`): `this`
 
-Defined in: [src/core/complex.ts:1900](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L1900)
+Defined in: [src/core/complex.ts:1911](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L1911)
 
 Divides by another complex number in place.
 
@@ -448,7 +448,7 @@ new Complex(1, 0).divide(Complex.ZERO); // throws RangeError
 
 > **divideSafe**(`other`): `this`
 
-Defined in: [src/core/complex.ts:1921](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L1921)
+Defined in: [src/core/complex.ts:1932](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L1932)
 
 Divides by another complex number in place (safe).
 
@@ -487,7 +487,7 @@ new Complex(1, 0).divideSafe(Complex.ZERO); // (0, 0)
 
 > **divideScalar**(`scalar`): `this`
 
-Defined in: [src/core/complex.ts:1958](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L1958)
+Defined in: [src/core/complex.ts:1969](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L1969)
 
 Divides this complex number by a real scalar in place.
 
@@ -524,7 +524,7 @@ If scalar is near zero
 
 > **divideScalarSafe**(`scalar`): `this`
 
-Defined in: [src/core/complex.ts:1978](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L1978)
+Defined in: [src/core/complex.ts:1989](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L1989)
 
 Divides this complex number by a real scalar in place (safe).
 
@@ -557,7 +557,7 @@ This for chaining (sets to (0,0) if scalar near zero)
 
 > **divideScalarUnchecked**(`scalar`): `this`
 
-Defined in: [src/core/complex.ts:2004](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L2004)
+Defined in: [src/core/complex.ts:2015](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L2015)
 
 Divides this complex number by a real scalar in place (unchecked).
 
@@ -594,7 +594,7 @@ This for chaining
 
 > **divideUnchecked**(`other`): `this`
 
-Defined in: [src/core/complex.ts:1941](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L1941)
+Defined in: [src/core/complex.ts:1952](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L1952)
 
 Divides by another complex number in place (unchecked).
 
@@ -631,7 +631,7 @@ This for chaining
 
 > **mod**(`other`): `this`
 
-Defined in: [src/core/complex.ts:2203](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L2203)
+Defined in: [src/core/complex.ts:2223](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L2223)
 
 Component-wise modulo.
 
@@ -659,7 +659,7 @@ This for chaining
 
 > **multiply**(`other`): `this`
 
-Defined in: [src/core/complex.ts:1872](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L1872)
+Defined in: [src/core/complex.ts:1883](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L1883)
 
 Multiplies with another complex number in place.
 
@@ -687,7 +687,7 @@ This for chaining
 
 > **multiplyScalar**(`scalar`): `this`
 
-Defined in: [src/core/complex.ts:2018](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L2018)
+Defined in: [src/core/complex.ts:2029](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L2029)
 
 Multiplies both components by a scalar in place.
 
@@ -715,7 +715,7 @@ This for chaining
 
 > **negate**(): `this`
 
-Defined in: [src/core/complex.ts:2643](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L2643)
+Defined in: [src/core/complex.ts:2663](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L2663)
 
 Negates this complex number in place.
 
@@ -735,7 +735,7 @@ This for chaining
 
 > **subtract**(`other`): `this`
 
-Defined in: [src/core/complex.ts:1858](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L1858)
+Defined in: [src/core/complex.ts:1869](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L1869)
 
 Subtracts another complex number in place.
 
@@ -763,7 +763,7 @@ This for chaining
 
 > **subtractScalar**(`scalar`): `this`
 
-Defined in: [src/core/complex.ts:2063](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L2063)
+Defined in: [src/core/complex.ts:2074](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L2074)
 
 Subtracts a real scalar from this complex number in place.
 Only the real component is affected: `(a+bi) - s = (a-s) + bi`.
@@ -798,7 +798,7 @@ new Complex(3, 4).subtractScalar(2); // (1, 4)
 
 > `static` **add**(`a`, `b`, `out?`): `Complex`
 
-Defined in: [src/core/complex.ts:509](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L509)
+Defined in: [src/core/complex.ts:509](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L509)
 
 Adds two complex numbers.
 
@@ -838,7 +838,7 @@ Sum
 
 > `static` **addScalar**(`complex`, `scalar`, `out?`): `Complex`
 
-Defined in: [src/core/complex.ts:676](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L676)
+Defined in: [src/core/complex.ts:676](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L676)
 
 Adds a real scalar to a complex number: `(a+bi) + s = (a+s) + bi`.
 Only the real component is affected.
@@ -891,7 +891,7 @@ Complex.addScalar(new Complex(3, 4), 2); // (5, 4)
 
 > `static` **conjugate**(`complex`, `out?`): `Complex`
 
-Defined in: [src/core/complex.ts:779](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L779)
+Defined in: [src/core/complex.ts:779](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L779)
 
 Returns the conjugate of a complex number.
 
@@ -925,7 +925,7 @@ Conjugate
 
 > `static` **divide**(`a`, `b`, `out?`): `Complex`
 
-Defined in: [src/core/complex.ts:571](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L571)
+Defined in: [src/core/complex.ts:571](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L571)
 
 Divides two complex numbers.
 
@@ -981,7 +981,7 @@ Complex.divide(new Complex(1, 0), Complex.ZERO); // throws RangeError
 
 > `static` **divideSafe**(`a`, `b`, `out?`): `Complex`
 
-Defined in: [src/core/complex.ts:599](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L599)
+Defined in: [src/core/complex.ts:599](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L599)
 
 Divides two complex numbers, returning (0,0) if denominator is near zero.
 
@@ -1032,7 +1032,7 @@ Complex.divideSafe(new Complex(1, 0), Complex.ZERO); // (0, 0)
 
 > `static` **divideScalar**(`z`, `scalar`, `out?`): `Complex`
 
-Defined in: [src/core/complex.ts:718](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L718)
+Defined in: [src/core/complex.ts:718](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L718)
 
 Divides a complex number by a real scalar.
 
@@ -1081,7 +1081,7 @@ If scalar is near zero
 
 > `static` **divideScalarSafe**(`z`, `scalar`, `out?`): `Complex`
 
-Defined in: [src/core/complex.ts:738](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L738)
+Defined in: [src/core/complex.ts:738](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L738)
 
 Divides a complex number by a real scalar, returning zero for near-zero scalar.
 
@@ -1126,7 +1126,7 @@ z / scalar, or (0, 0) if scalar is near zero
 
 > `static` **divideScalarUnchecked**(`z`, `scalar`, `out?`): `Complex`
 
-Defined in: [src/core/complex.ts:762](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L762)
+Defined in: [src/core/complex.ts:762](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L762)
 
 Divides a complex number by a real scalar without validation.
 
@@ -1175,7 +1175,7 @@ z / scalar
 
 > `static` **divideUnchecked**(`a`, `b`, `out?`): `Complex`
 
-Defined in: [src/core/complex.ts:626](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L626)
+Defined in: [src/core/complex.ts:626](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L626)
 
 Divides two complex numbers without validation.
 
@@ -1224,7 +1224,7 @@ Quotient
 
 > `static` **mod**(`a`, `b`, `out?`): `Complex`
 
-Defined in: [src/core/complex.ts:939](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L939)
+Defined in: [src/core/complex.ts:950](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L950)
 
 Component-wise modulo.
 
@@ -1264,7 +1264,7 @@ Complex with per-component remainder
 
 > `static` **multiply**(`a`, `b`, `out?`): `Complex`
 
-Defined in: [src/core/complex.ts:544](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L544)
+Defined in: [src/core/complex.ts:544](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L544)
 
 Multiplies two complex numbers.
 
@@ -1312,7 +1312,7 @@ const result = Complex.multiply(a, b); // -5 + 10i
 
 > `static` **multiplyScalar**(`complex`, `scalar`, `out?`): `Complex`
 
-Defined in: [src/core/complex.ts:646](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L646)
+Defined in: [src/core/complex.ts:646](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L646)
 
 Multiplies all components of a complex number by a scalar.
 
@@ -1352,7 +1352,7 @@ Complex with both components multiplied by scalar
 
 > `static` **negate**(`complex`, `out?`): `Complex`
 
-Defined in: [src/core/complex.ts:792](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L792)
+Defined in: [src/core/complex.ts:792](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L792)
 
 Negates a complex number.
 
@@ -1386,7 +1386,7 @@ Negated complex
 
 > `static` **subtract**(`a`, `b`, `out?`): `Complex`
 
-Defined in: [src/core/complex.ts:523](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L523)
+Defined in: [src/core/complex.ts:523](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L523)
 
 Subtracts two complex numbers.
 
@@ -1426,7 +1426,7 @@ Difference
 
 > `static` **subtractScalar**(`complex`, `scalar`, `out?`): `Complex`
 
-Defined in: [src/core/complex.ts:696](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L696)
+Defined in: [src/core/complex.ts:696](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L696)
 
 Subtracts a real scalar from a complex number: `(a+bi) - s = (a-s) + bi`.
 Only the real component is affected.
@@ -1473,7 +1473,7 @@ Complex.subtractScalar(new Complex(3, 4), 2); // (1, 4)
 
 > **exactEquals**(`other`): `boolean`
 
-Defined in: [src/core/complex.ts:2509](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L2509)
+Defined in: [src/core/complex.ts:2529](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L2529)
 
 Exact equality (bit-identical).
 
@@ -1505,7 +1505,7 @@ Use [nearEquals](#nearequals-1) for comparing results of floating-point operatio
 
 > **hasInfinity**(): `boolean`
 
-Defined in: [src/core/complex.ts:2606](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L2606)
+Defined in: [src/core/complex.ts:2626](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L2626)
 
 Tests if any component is infinite (±Infinity).
 
@@ -1525,7 +1525,7 @@ True if any component is ±Infinity
 
 > **hasNaN**(): `boolean`
 
-Defined in: [src/core/complex.ts:2595](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L2595)
+Defined in: [src/core/complex.ts:2615](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L2615)
 
 Tests if any component is NaN.
 
@@ -1545,7 +1545,7 @@ True if any component is NaN
 
 > **isFinite**(): `boolean`
 
-Defined in: [src/core/complex.ts:2584](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L2584)
+Defined in: [src/core/complex.ts:2604](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L2604)
 
 Tests if both components are finite numbers.
 
@@ -1565,7 +1565,7 @@ True if both components are finite
 
 > **isIdentity**(`epsilon?`): `boolean`
 
-Defined in: [src/core/complex.ts:2630](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L2630)
+Defined in: [src/core/complex.ts:2650](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L2650)
 
 Tests if this complex number is the multiplicative identity (1 + 0i).
 
@@ -1593,7 +1593,7 @@ True if z ≈ 1 + 0i
 
 > **isImaginary**(`epsilon?`): `boolean`
 
-Defined in: [src/core/complex.ts:2573](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L2573)
+Defined in: [src/core/complex.ts:2593](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L2593)
 
 Tests if this complex number is purely imaginary.
 
@@ -1621,7 +1621,7 @@ True if real part is near zero
 
 > **isNearZero**(`epsilon?`): `boolean`
 
-Defined in: [src/core/complex.ts:2549](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L2549)
+Defined in: [src/core/complex.ts:2569](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L2569)
 
 Tests if this complex number is near zero.
 
@@ -1649,7 +1649,7 @@ True if near zero
 
 > **isReal**(`epsilon?`): `boolean`
 
-Defined in: [src/core/complex.ts:2561](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L2561)
+Defined in: [src/core/complex.ts:2581](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L2581)
 
 Tests if this complex number is purely real.
 
@@ -1677,7 +1677,7 @@ True if imaginary part is near zero
 
 > **isUnit**(`epsilon?`): `boolean`
 
-Defined in: [src/core/complex.ts:2618](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L2618)
+Defined in: [src/core/complex.ts:2638](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L2638)
 
 Tests if this complex number has unit magnitude.
 
@@ -1705,7 +1705,7 @@ True if |z| ≈ 1
 
 > **isZero**(): `boolean`
 
-Defined in: [src/core/complex.ts:2537](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L2537)
+Defined in: [src/core/complex.ts:2557](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L2557)
 
 Tests if this complex number is exactly zero.
 
@@ -1725,7 +1725,7 @@ True if both real and imag are exactly 0
 
 > **nearEquals**(`other`, `epsilon?`): `boolean`
 
-Defined in: [src/core/complex.ts:2526](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L2526)
+Defined in: [src/core/complex.ts:2546](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L2546)
 
 Approximate equality using relative tolerance.
 
@@ -1767,7 +1767,7 @@ Uses relative tolerance: `|a - b| <= epsilon * max(1, |a|, |b|)` per component.
 
 > `static` **exactEquals**(`a`, `b`): `boolean`
 
-Defined in: [src/core/complex.ts:1088](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L1088)
+Defined in: [src/core/complex.ts:1099](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L1099)
 
 Exact component-wise equality (bit-identical).
 
@@ -1805,7 +1805,7 @@ Use [nearEquals](#nearequals-1) for comparing results of floating-point operatio
 
 > `static` **hasInfinity**(`complex`): `boolean`
 
-Defined in: [src/core/complex.ts:1633](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L1633)
+Defined in: [src/core/complex.ts:1644](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L1644)
 
 Tests if any component is infinite (±Infinity).
 
@@ -1837,7 +1837,7 @@ Distinguishes infinity from NaN. Use [isFinite](#isfinite-1) to check for both.
 
 > `static` **hasNaN**(`complex`): `boolean`
 
-Defined in: [src/core/complex.ts:1617](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L1617)
+Defined in: [src/core/complex.ts:1628](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L1628)
 
 Tests if any component is NaN.
 
@@ -1865,7 +1865,7 @@ True if any component is NaN
 
 > `static` **isFinite**(`complex`): `boolean`
 
-Defined in: [src/core/complex.ts:1605](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L1605)
+Defined in: [src/core/complex.ts:1616](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L1616)
 
 Tests if both components are finite numbers.
 
@@ -1893,7 +1893,7 @@ True if both components are finite
 
 > `static` **isIdentity**(`complex`, `epsilon?`): `boolean`
 
-Defined in: [src/core/complex.ts:1142](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L1142)
+Defined in: [src/core/complex.ts:1153](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L1153)
 
 Tests if a complex number is the multiplicative identity (1 + 0i).
 
@@ -1932,7 +1932,7 @@ This is equivalent to Rotation2.isIdentity() (0° rotation).
 
 > `static` **isImaginary**(`complex`, `epsilon?`): `boolean`
 
-Defined in: [src/core/complex.ts:1593](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L1593)
+Defined in: [src/core/complex.ts:1604](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L1604)
 
 Tests if a complex number is purely imaginary.
 
@@ -1966,7 +1966,7 @@ True if real part is near zero
 
 > `static` **isNearZero**(`complex`, `epsilon?`): `boolean`
 
-Defined in: [src/core/complex.ts:1567](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L1567)
+Defined in: [src/core/complex.ts:1578](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L1578)
 
 Tests if a complex number is near zero within tolerance.
 
@@ -2000,7 +2000,7 @@ True if both components are within epsilon of zero
 
 > `static` **isReal**(`complex`, `epsilon?`): `boolean`
 
-Defined in: [src/core/complex.ts:1580](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L1580)
+Defined in: [src/core/complex.ts:1591](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L1591)
 
 Tests if a complex number is purely real.
 
@@ -2034,7 +2034,7 @@ True if imaginary part is near zero
 
 > `static` **isUnit**(`complex`, `epsilon?`): `boolean`
 
-Defined in: [src/core/complex.ts:1123](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L1123)
+Defined in: [src/core/complex.ts:1134](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L1134)
 
 Tests if a complex number has unit magnitude.
 
@@ -2068,7 +2068,7 @@ True if |z| ≈ 1
 
 > `static` **isZero**(`complex`): `boolean`
 
-Defined in: [src/core/complex.ts:1553](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L1553)
+Defined in: [src/core/complex.ts:1564](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L1564)
 
 Tests if a complex number is exactly zero.
 
@@ -2100,7 +2100,7 @@ For tolerance-based comparison, use [isNearZero](../../auxiliary/scalar/function
 
 > `static` **nearEquals**(`a`, `b`, `epsilon?`): `boolean`
 
-Defined in: [src/core/complex.ts:1106](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L1106)
+Defined in: [src/core/complex.ts:1117](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L1117)
 
 Approximate equality between two complex numbers using relative tolerance.
 
@@ -2148,7 +2148,7 @@ Uses relative tolerance: `|a - b| <= epsilon * max(1, |a|, |b|)` per component.
 
 > **magnitude**(): `number`
 
-Defined in: [src/core/complex.ts:1730](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L1730)
+Defined in: [src/core/complex.ts:1741](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L1741)
 
 Returns the magnitude of this complex number.
 
@@ -2168,7 +2168,7 @@ Magnitude
 
 > **magnitudeSq**(): `number`
 
-Defined in: [src/core/complex.ts:1741](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L1741)
+Defined in: [src/core/complex.ts:1752](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L1752)
 
 Returns the squared magnitude of this complex number.
 
@@ -2188,7 +2188,7 @@ Squared magnitude
 
 > `static` **angle**(`complex`): `number`
 
-Defined in: [src/core/complex.ts:1167](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L1167)
+Defined in: [src/core/complex.ts:1178](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L1178)
 
 Returns the phase angle of a complex number in radians.
 Computed as atan2(imag, real), consistent with Vector2.angle.
@@ -2217,7 +2217,7 @@ Angle in radians
 
 > `static` **magnitude**(`complex`): `number`
 
-Defined in: [src/core/complex.ts:1154](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L1154)
+Defined in: [src/core/complex.ts:1165](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L1165)
 
 Returns the magnitude of a complex number.
 
@@ -2245,7 +2245,7 @@ Magnitude
 
 > `static` **magnitudeSq**(`complex`): `number`
 
-Defined in: [src/core/complex.ts:1179](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L1179)
+Defined in: [src/core/complex.ts:1190](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L1190)
 
 Returns the squared magnitude of a complex number.
 
@@ -2273,7 +2273,7 @@ Squared magnitude
 
 > `readonly` `static` **ELEMENT_COUNT**: `2` = `2`
 
-Defined in: [src/core/complex.ts:227](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L227)
+Defined in: [src/core/complex.ts:227](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L227)
 
 Number of elements when serialized to an array.
 
@@ -2287,7 +2287,7 @@ Number of elements when serialized to an array.
 
 > `readonly` `static` **I**: `Readonly`\<`Complex`\>
 
-Defined in: [src/core/complex.ts:241](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L241)
+Defined in: [src/core/complex.ts:241](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L241)
 
 Imaginary unit (0 + 1i).
 
@@ -2301,7 +2301,7 @@ Imaginary unit (0 + 1i).
 
 > `readonly` `static` **NEG_I**: `Readonly`\<`Complex`\>
 
-Defined in: [src/core/complex.ts:248](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L248)
+Defined in: [src/core/complex.ts:248](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L248)
 
 Negative imaginary unit (0 - 1i).
 
@@ -2315,7 +2315,7 @@ Negative imaginary unit (0 - 1i).
 
 > `readonly` `static` **NEG_ONE**: `Readonly`\<`Complex`\>
 
-Defined in: [src/core/complex.ts:255](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L255)
+Defined in: [src/core/complex.ts:255](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L255)
 
 Negative real unit (-1 + 0i).
 
@@ -2329,7 +2329,7 @@ Negative real unit (-1 + 0i).
 
 > `readonly` `static` **ONE**: `Readonly`\<`Complex`\>
 
-Defined in: [src/core/complex.ts:234](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L234)
+Defined in: [src/core/complex.ts:234](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L234)
 
 Real unit (1 + 0i).
 
@@ -2343,7 +2343,7 @@ Real unit (1 + 0i).
 
 > `readonly` `static` **ZERO**: `Readonly`\<`Complex`\>
 
-Defined in: [src/core/complex.ts:220](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L220)
+Defined in: [src/core/complex.ts:220](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L220)
 
 Zero complex (0 + 0i).
 
@@ -2357,7 +2357,7 @@ Zero complex (0 + 0i).
 
 > **clamp**(`minZ`, `maxZ`): `this`
 
-Defined in: [src/core/complex.ts:2190](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L2190)
+Defined in: [src/core/complex.ts:2210](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L2210)
 
 Clamps components between min and max complex values.
 
@@ -2391,7 +2391,7 @@ This for chaining
 
 > **max**(`other`): `this`
 
-Defined in: [src/core/complex.ts:2176](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L2176)
+Defined in: [src/core/complex.ts:2196](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L2196)
 
 Component-wise maximum with other.
 
@@ -2419,7 +2419,7 @@ This for chaining
 
 > **min**(`other`): `this`
 
-Defined in: [src/core/complex.ts:2163](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L2163)
+Defined in: [src/core/complex.ts:2183](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L2183)
 
 Component-wise minimum with other.
 
@@ -2447,7 +2447,7 @@ This for chaining
 
 > `static` **clamp**(`z`, `minZ`, `maxZ`, `out?`): `Complex`
 
-Defined in: [src/core/complex.ts:917](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L917)
+Defined in: [src/core/complex.ts:928](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L928)
 
 Clamps components between min and max complex values.
 
@@ -2493,7 +2493,7 @@ Clamped complex
 
 > `static` **max**(`a`, `b`, `out?`): `Complex`
 
-Defined in: [src/core/complex.ts:902](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L902)
+Defined in: [src/core/complex.ts:913](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L913)
 
 Component-wise maximum of a and b.
 
@@ -2533,7 +2533,7 @@ Complex with per-component maxima
 
 > `static` **min**(`a`, `b`, `out?`): `Complex`
 
-Defined in: [src/core/complex.ts:888](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L888)
+Defined in: [src/core/complex.ts:899](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L899)
 
 Component-wise minimum of a and b.
 
@@ -2573,7 +2573,7 @@ Complex with per-component minima
 
 > **\[iterator\]**(): `IterableIterator`\<`number`\>
 
-Defined in: [src/core/complex.ts:3011](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L3011)
+Defined in: [src/core/complex.ts:3031](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L3031)
 
 Iterator for array destructuring.
 
@@ -2599,7 +2599,7 @@ const [real, imag] = new Complex(3, 4);
 
 > **clone**(): `Complex`
 
-Defined in: [src/core/complex.ts:2995](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L2995)
+Defined in: [src/core/complex.ts:3015](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L3015)
 
 Creates a deep copy of this complex number.
 
@@ -2627,7 +2627,7 @@ copy.set(0, 0); // Original unchanged
 
 > **toArray**\<`T`\>(`out?`, `offset?`): \[`number`, `number`\] \| `T`
 
-Defined in: [src/core/complex.ts:2905](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L2905)
+Defined in: [src/core/complex.ts:2925](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L2925)
 
 Writes to array or typed array.
 
@@ -2682,7 +2682,7 @@ c.toArray(arr, 4); // writes at indices 4, 5
 
 > **toJSON**(): [`ComplexLike`](../../types/interfaces/ComplexLike.md)
 
-Defined in: [src/core/complex.ts:2950](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L2950)
+Defined in: [src/core/complex.ts:2970](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L2970)
 
 Converts the complex number to a JSON-serializable object.
 Called automatically by JSON.stringify().
@@ -2711,7 +2711,7 @@ const json = JSON.stringify(c);
 
 > **toObject**(): [`ComplexLike`](../../types/interfaces/ComplexLike.md)
 
-Defined in: [src/core/complex.ts:2931](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L2931)
+Defined in: [src/core/complex.ts:2951](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L2951)
 
 Converts the complex number to a plain object.
 
@@ -2739,7 +2739,7 @@ const obj = c.toObject();
 
 > **toPolar**(): `object`
 
-Defined in: [src/core/complex.ts:2489](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L2489)
+Defined in: [src/core/complex.ts:2509](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L2509)
 
 Converts this complex number to polar coordinates.
 
@@ -2767,7 +2767,7 @@ Object with magnitude and angle
 
 > **toRotationMatrix2**(`out?`): [`Matrix2Like`](../../types/interfaces/Matrix2Like.md)
 
-Defined in: [src/core/complex.ts:2856](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L2856)
+Defined in: [src/core/complex.ts:2876](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L2876)
 
 Converts the complex number to a 2D rotation matrix.
 The complex number is normalized before conversion.
@@ -2813,7 +2813,7 @@ const m = c.toRotationMatrix2();
 
 > **toString**(`precision?`): `string`
 
-Defined in: [src/core/complex.ts:2974](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L2974)
+Defined in: [src/core/complex.ts:2994](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L2994)
 
 Creates a human-readable string representation.
 Uses standard mathematical notation: a + bi or a - bi.
@@ -2854,7 +2854,7 @@ console.log(c2.toString());
 
 > **toVector2**(`out?`): [`Vector2`](Vector2.md)
 
-Defined in: [src/core/complex.ts:2881](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L2881)
+Defined in: [src/core/complex.ts:2901](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L2901)
 
 Converts the complex number to a Vector2 (real → x, imag → y).
 
@@ -2890,7 +2890,7 @@ const v = c.toVector2();
 
 > `static` **toPolar**(`z`): `object`
 
-Defined in: [src/core/complex.ts:1537](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L1537)
+Defined in: [src/core/complex.ts:1548](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L1548)
 
 Converts a complex number to polar coordinates.
 
@@ -2926,7 +2926,7 @@ Object with magnitude and angle
 
 > `static` **clone**(`source`, `out?`): `Complex`
 
-Defined in: [src/core/complex.ts:471](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L471)
+Defined in: [src/core/complex.ts:471](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L471)
 
 Creates a deep copy of a complex number.
 
@@ -2971,7 +2971,7 @@ Complex.clone(z, out); // → (3, 4)
 
 > `static` **copy**(`source`, `destination`): `Complex`
 
-Defined in: [src/core/complex.ts:491](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L491)
+Defined in: [src/core/complex.ts:491](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L491)
 
 Copies values from source into destination (alloc-free).
 
@@ -3013,7 +3013,7 @@ Complex.copy(src, dst); // dst → (3, 4)
 
 > `static` **fromArray**(`array`, `offset?`, `out?`): `Complex`
 
-Defined in: [src/core/complex.ts:357](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L357)
+Defined in: [src/core/complex.ts:357](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L357)
 
 Creates a complex number from an array [real, imag].
 
@@ -3071,7 +3071,7 @@ Complex.fromArray([1, 2], 0, out); // → (1, 2)
 
 > `static` **fromObject**(`object`, `out?`): `Complex`
 
-Defined in: [src/core/complex.ts:384](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L384)
+Defined in: [src/core/complex.ts:384](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L384)
 
 Creates a complex number from an object { real, imag }.
 
@@ -3115,7 +3115,7 @@ Complex.fromObject({ real: 1, imag: -1 }, out); // → (1, -1)
 
 > `static` **fromPolar**(`magnitude`, `angle`, `out?`): `Complex`
 
-Defined in: [src/core/complex.ts:296](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L296)
+Defined in: [src/core/complex.ts:296](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L296)
 
 Creates a complex number from polar coordinates (magnitude and angle).
 
@@ -3165,7 +3165,7 @@ Complex.fromPolar(2, Math.PI, out); // → (-2, 0)
 
 > `static` **fromPolarCS**(`magnitude`, `cos`, `sin`, `out?`): `Complex`
 
-Defined in: [src/core/complex.ts:329](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L329)
+Defined in: [src/core/complex.ts:329](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L329)
 
 Creates a complex number from polar form using pre-computed cos/sin.
 
@@ -3228,7 +3228,7 @@ Complex.fromPolarCS(1, cos, sin, out); // → (√2/2, √2/2)
 
 > `static` **fromRotation2**(`rotation`, `out?`): `Complex`
 
-Defined in: [src/core/complex.ts:448](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L448)
+Defined in: [src/core/complex.ts:448](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L448)
 
 Creates a complex number from a 2D rotation, mapping (cos, sin) to (real, imag).
 
@@ -3274,7 +3274,7 @@ const z = Complex.fromRotation2(r); // → (cos(π/4) + i·sin(π/4))
 
 > `static` **fromValues**(`real`, `imag`, `out?`): `Complex`
 
-Defined in: [src/core/complex.ts:405](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L405)
+Defined in: [src/core/complex.ts:405](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L405)
 
 Creates a complex number from individual real and imaginary values.
 
@@ -3322,7 +3322,7 @@ Complex.fromValues(3, 4); // 3 + 4i
 
 > `static` **fromVector2**(`v`, `out?`): `Complex`
 
-Defined in: [src/core/complex.ts:424](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L424)
+Defined in: [src/core/complex.ts:424](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L424)
 
 Creates a complex number from a 2D vector, mapping (x, y) to (real, imag).
 
@@ -3363,7 +3363,7 @@ const z = Complex.fromVector2(v); // → (3 + 4i)
 
 > **lerp**(`other`, `t`): `this`
 
-Defined in: [src/core/complex.ts:2753](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L2753)
+Defined in: [src/core/complex.ts:2773](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L2773)
 
 Linear interpolation towards another complex number in place.
 
@@ -3397,7 +3397,7 @@ This for chaining
 
 > **lerpClamped**(`other`, `t`): `this`
 
-Defined in: [src/core/complex.ts:2768](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L2768)
+Defined in: [src/core/complex.ts:2788](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L2788)
 
 Linear interpolation with t clamped to [0, 1].
 
@@ -3431,7 +3431,7 @@ This for chaining
 
 > **slerp**(`other`, `t`): `this`
 
-Defined in: [src/core/complex.ts:2781](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L2781)
+Defined in: [src/core/complex.ts:2801](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L2801)
 
 Spherical linear interpolation towards another complex number in place.
 
@@ -3465,7 +3465,7 @@ This for chaining
 
 > **slerpClamped**(`other`, `t`): `this`
 
-Defined in: [src/core/complex.ts:2807](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L2807)
+Defined in: [src/core/complex.ts:2827](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L2827)
 
 Spherical linear interpolation with t clamped to [0, 1].
 
@@ -3499,7 +3499,7 @@ This for chaining
 
 > **smoothStep**(`other`, `t`): `this`
 
-Defined in: [src/core/complex.ts:2824](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L2824)
+Defined in: [src/core/complex.ts:2844](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L2844)
 
 Smooth interpolation with another complex number in place.
 
@@ -3537,7 +3537,7 @@ Uses Hermite smoothStep for ease-in-out effect.
 
 > `static` **lerp**(`a`, `b`, `t`, `out?`): `Complex`
 
-Defined in: [src/core/complex.ts:958](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L958)
+Defined in: [src/core/complex.ts:969](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L969)
 
 Linear interpolation between two complex numbers.
 
@@ -3583,7 +3583,7 @@ Interpolated complex
 
 > `static` **lerpClamped**(`a`, `b`, `t`, `out?`): `Complex`
 
-Defined in: [src/core/complex.ts:978](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L978)
+Defined in: [src/core/complex.ts:989](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L989)
 
 Linear interpolation with t clamped to [0, 1].
 
@@ -3629,7 +3629,7 @@ Interpolated complex
 
 > `static` **slerp**(`a`, `b`, `t`, `out?`): `Complex`
 
-Defined in: [src/core/complex.ts:999](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L999)
+Defined in: [src/core/complex.ts:1010](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L1010)
 
 Spherical linear interpolation between two complex numbers.
 Interpolates both magnitude and angle.
@@ -3676,7 +3676,7 @@ Interpolated complex
 
 > `static` **slerpClamped**(`a`, `b`, `t`, `out?`): `Complex`
 
-Defined in: [src/core/complex.ts:1030](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L1030)
+Defined in: [src/core/complex.ts:1041](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L1041)
 
 Spherical linear interpolation with t clamped to [0, 1].
 
@@ -3722,7 +3722,7 @@ Interpolated complex
 
 > `static` **smoothStep**(`a`, `b`, `t`, `out?`): `Complex`
 
-Defined in: [src/core/complex.ts:1062](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L1062)
+Defined in: [src/core/complex.ts:1073](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L1073)
 
 Smooth interpolation between two complex numbers using smoothStep easing.
 
@@ -3781,7 +3781,7 @@ const smooth = Complex.smoothStep(a, b, 0.5); // Smooth interpolation
 
 > **copy**(`other`): `this`
 
-Defined in: [src/core/complex.ts:1667](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L1667)
+Defined in: [src/core/complex.ts:1678](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L1678)
 
 Copies values from another complex number.
 
@@ -3809,7 +3809,7 @@ This for chaining
 
 > **set**(`real`, `imag`): `this`
 
-Defined in: [src/core/complex.ts:1653](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L1653)
+Defined in: [src/core/complex.ts:1664](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L1664)
 
 Sets the real and imaginary parts.
 
@@ -3843,7 +3843,7 @@ This for chaining
 
 > **setFromArray**(`array`, `offset?`): `this`
 
-Defined in: [src/core/complex.ts:1698](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L1698)
+Defined in: [src/core/complex.ts:1709](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L1709)
 
 Sets from array values.
 
@@ -3877,7 +3877,7 @@ This for chaining
 
 > **setFromPolar**(`magnitude`, `angle`): `this`
 
-Defined in: [src/core/complex.ts:1682](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L1682)
+Defined in: [src/core/complex.ts:1693](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L1693)
 
 Sets from polar coordinates.
 
@@ -3911,7 +3911,7 @@ This for chaining
 
 > **setFromVector2**(`v`): `this`
 
-Defined in: [src/core/complex.ts:1715](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L1715)
+Defined in: [src/core/complex.ts:1726](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L1726)
 
 Sets from a Vector2 (x→real, y→imag).
 
@@ -3939,7 +3939,7 @@ This for chaining
 
 > **zero**(): `this`
 
-Defined in: [src/core/complex.ts:2658](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L2658)
+Defined in: [src/core/complex.ts:2678](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L2678)
 
 Resets this complex number to zero.
 
@@ -3959,7 +3959,7 @@ This for chaining
 
 > **imag**: `number`
 
-Defined in: [src/core/complex.ts:201](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L201)
+Defined in: [src/core/complex.ts:201](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L201)
 
 #### Implementation of
 
@@ -3971,7 +3971,7 @@ Defined in: [src/core/complex.ts:201](https://github.com/rndelpuerto/lenguados/b
 
 > **real**: `number`
 
-Defined in: [src/core/complex.ts:200](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L200)
+Defined in: [src/core/complex.ts:200](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L200)
 
 #### Implementation of
 
@@ -3979,19 +3979,23 @@ Defined in: [src/core/complex.ts:200](https://github.com/rndelpuerto/lenguados/b
 
 ## Transform
 
-### abs()
+### absComponents()
 
-> **abs**(): `this`
+> **absComponents**(): `this`
 
-Defined in: [src/core/complex.ts:2090](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L2090)
+Defined in: [src/core/complex.ts:2105](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L2105)
 
-Applies Math.abs to both components.
+Applies Math.abs to both components independently.
 
 #### Returns
 
 `this`
 
 This for chaining
+
+#### Remarks
+
+Component-wise `(|re|, |im|)`, NOT the modulus. For `|z|`, use [magnitude](#magnitude-1).
 
 #### Since
 
@@ -4003,7 +4007,7 @@ This for chaining
 
 > **apply**(`vector`, `out?`): [`Vector2`](Vector2.md)
 
-Defined in: [src/core/complex.ts:2314](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L2314)
+Defined in: [src/core/complex.ts:2334](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L2334)
 
 Applies this complex number as a rotation to a vector.
 
@@ -4050,7 +4054,7 @@ const rotated = c.apply(v); // (0.707, 0.707)
 
 > **applyInverse**(`vector`, `out?`): [`Vector2`](Vector2.md)
 
-Defined in: [src/core/complex.ts:2342](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L2342)
+Defined in: [src/core/complex.ts:2362](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L2362)
 
 Applies the inverse rotation of this complex number to a vector.
 
@@ -4100,7 +4104,7 @@ const back = c.applyInverse(rotated); // ≈ (1, 0)
 
 > **ceil**(): `this`
 
-Defined in: [src/core/complex.ts:2114](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L2114)
+Defined in: [src/core/complex.ts:2129](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L2129)
 
 Applies Math.ceil to both components.
 
@@ -4120,7 +4124,7 @@ This for chaining
 
 > **exp**(): `this`
 
-Defined in: [src/core/complex.ts:2465](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L2465)
+Defined in: [src/core/complex.ts:2485](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L2485)
 
 Computes the complex exponential e^z in place using Euler's formula.
 
@@ -4140,7 +4144,7 @@ This for chaining
 
 > **floor**(): `this`
 
-Defined in: [src/core/complex.ts:2102](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L2102)
+Defined in: [src/core/complex.ts:2117](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L2117)
 
 Applies Math.floor to both components.
 
@@ -4160,7 +4164,7 @@ This for chaining
 
 > **log**(): `this`
 
-Defined in: [src/core/complex.ts:2477](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L2477)
+Defined in: [src/core/complex.ts:2497](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L2497)
 
 Computes the principal complex logarithm in place.
 
@@ -4180,7 +4184,7 @@ This for chaining
 
 > **normalize**(): `this`
 
-Defined in: [src/core/complex.ts:2230](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L2230)
+Defined in: [src/core/complex.ts:2250](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L2250)
 
 Normalizes this complex number to unit length in place.
 
@@ -4216,7 +4220,7 @@ Complex.ZERO.normalize(); // throws RangeError
 
 > **normalizeSafe**(): `this`
 
-Defined in: [src/core/complex.ts:2256](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L2256)
+Defined in: [src/core/complex.ts:2276](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L2276)
 
 Safe normalization. Sets to (1, 0) if magnitude is near zero.
 
@@ -4247,7 +4251,7 @@ new Complex(0, 0).normalizeSafe(); // (1, 0)
 
 > **normalizeUnchecked**(): `this`
 
-Defined in: [src/core/complex.ts:2285](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L2285)
+Defined in: [src/core/complex.ts:2305](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L2305)
 
 Normalizes this complex number without validation (for hot paths).
 
@@ -4279,7 +4283,7 @@ This for chaining
 
 > **pow**(`exponent`): `this`
 
-Defined in: [src/core/complex.ts:2432](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L2432)
+Defined in: [src/core/complex.ts:2452](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L2452)
 
 Raises this complex number to a power in place.
 
@@ -4307,7 +4311,7 @@ This for chaining
 
 > **reciprocal**(): `this`
 
-Defined in: [src/core/complex.ts:2363](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L2363)
+Defined in: [src/core/complex.ts:2383](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L2383)
 
 Computes the reciprocal of this complex number in place.
 
@@ -4343,7 +4347,7 @@ new Complex(0, 0).reciprocal(); // throws RangeError
 
 > **reciprocalSafe**(): `this`
 
-Defined in: [src/core/complex.ts:2389](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L2389)
+Defined in: [src/core/complex.ts:2409](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L2409)
 
 Computes the reciprocal of this complex number in place (safe).
 
@@ -4374,7 +4378,7 @@ new Complex(0, 0).reciprocalSafe(); // (0, 0)
 
 > **reciprocalUnchecked**(): `this`
 
-Defined in: [src/core/complex.ts:2416](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L2416)
+Defined in: [src/core/complex.ts:2436](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L2436)
 
 Computes the reciprocal of this complex number in place (unchecked).
 
@@ -4403,7 +4407,7 @@ This for chaining
 
 > **round**(): `this`
 
-Defined in: [src/core/complex.ts:2126](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L2126)
+Defined in: [src/core/complex.ts:2141](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L2141)
 
 Applies Math.round to both components.
 
@@ -4419,19 +4423,24 @@ This for chaining
 
 ---
 
-### sign()
+### signComponents()
 
-> **sign**(): `this`
+> **signComponents**(): `this`
 
-Defined in: [src/core/complex.ts:2150](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L2150)
+Defined in: [src/core/complex.ts:2170](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L2170)
 
-Component-wise sign.
+Component-wise sign applied to real and imaginary independently.
 
 #### Returns
 
 `this`
 
 This for chaining
+
+#### Remarks
+
+Returns `(sign(re), sign(im))`. NOT the complex signum `z/|z|`.
+For the complex signum, use [normalize](#normalize-1).
 
 #### Since
 
@@ -4443,7 +4452,7 @@ This for chaining
 
 > **sqrt**(): `this`
 
-Defined in: [src/core/complex.ts:2453](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L2453)
+Defined in: [src/core/complex.ts:2473](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L2473)
 
 Computes the square root of this complex number in place.
 
@@ -4463,7 +4472,7 @@ This for chaining
 
 > **trunc**(): `this`
 
-Defined in: [src/core/complex.ts:2138](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L2138)
+Defined in: [src/core/complex.ts:2153](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L2153)
 
 Applies Math.trunc to both components.
 
@@ -4479,13 +4488,13 @@ This for chaining
 
 ---
 
-### abs()
+### absComponents()
 
-> `static` **abs**(`z`, `out?`): `Complex`
+> `static` **absComponents**(`z`, `out?`): `Complex`
 
-Defined in: [src/core/complex.ts:809](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L809)
+Defined in: [src/core/complex.ts:814](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L814)
 
-Applies Math.abs to both components.
+Applies Math.abs to both components independently.
 
 #### Parameters
 
@@ -4507,6 +4516,11 @@ Optional output complex
 
 Complex with absolute components
 
+#### Remarks
+
+This is component-wise absolute value `(|re|, |im|)`, NOT the complex
+modulus. For the modulus `|z| = sqrt(re² + im²)`, use [magnitude](#magnitude-1).
+
 #### Since
 
 0.7.0
@@ -4517,7 +4531,7 @@ Complex with absolute components
 
 > `static` **apply**(`complex`, `vector`, `out?`): [`Vector2`](Vector2.md)
 
-Defined in: [src/core/complex.ts:1294](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L1294)
+Defined in: [src/core/complex.ts:1305](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L1305)
 
 Applies a complex number as a rotation to a vector.
 
@@ -4573,7 +4587,7 @@ const rotated = Complex.apply(c, v); // (0.707, 0.707)
 
 > `static` **applyInverse**(`complex`, `vector`, `out?`): [`Vector2`](Vector2.md)
 
-Defined in: [src/core/complex.ts:1335](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L1335)
+Defined in: [src/core/complex.ts:1346](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L1346)
 
 Applies the inverse rotation of a complex number to a vector.
 
@@ -4630,7 +4644,7 @@ const back = Complex.applyInverse(c, rotated); // ≈ (1, 0)
 
 > `static` **ceil**(`z`, `out?`): `Complex`
 
-Defined in: [src/core/complex.ts:835](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L835)
+Defined in: [src/core/complex.ts:840](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L840)
 
 Applies Math.ceil to both components.
 
@@ -4664,7 +4678,7 @@ Complex with ceiled components
 
 > `static` **exp**(`z`, `out?`): `Complex`
 
-Defined in: [src/core/complex.ts:1508](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L1508)
+Defined in: [src/core/complex.ts:1519](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L1519)
 
 Computes the complex exponential e^z using Euler's formula.
 
@@ -4698,7 +4712,7 @@ e^z = e^re \* (cos(im) + i·sin(im))
 
 > `static` **floor**(`z`, `out?`): `Complex`
 
-Defined in: [src/core/complex.ts:822](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L822)
+Defined in: [src/core/complex.ts:827](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L827)
 
 Applies Math.floor to both components.
 
@@ -4732,7 +4746,7 @@ Complex with floored components
 
 > `static` **log**(`z`, `out?`): `Complex`
 
-Defined in: [src/core/complex.ts:1523](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L1523)
+Defined in: [src/core/complex.ts:1534](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L1534)
 
 Computes the principal complex logarithm.
 
@@ -4766,7 +4780,7 @@ log(z) = (ln|z|, arg(z))
 
 > `static` **normalize**(`complex`, `out?`): `Complex`
 
-Defined in: [src/core/complex.ts:1202](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L1202)
+Defined in: [src/core/complex.ts:1213](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L1213)
 
 Normalizes a complex number to unit length.
 
@@ -4816,7 +4830,7 @@ Complex.normalize(Complex.ZERO); // throws RangeError
 
 > `static` **normalizeSafe**(`complex`, `out?`): `Complex`
 
-Defined in: [src/core/complex.ts:1236](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L1236)
+Defined in: [src/core/complex.ts:1247](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L1247)
 
 Safe normalization that handles zero-magnitude complex numbers.
 
@@ -4869,7 +4883,7 @@ const safe = Complex.normalizeSafe(zero); // Returns (1, 0)
 
 > `static` **normalizeUnchecked**(`complex`, `out?`): `Complex`
 
-Defined in: [src/core/complex.ts:1263](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L1263)
+Defined in: [src/core/complex.ts:1274](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L1274)
 
 Normalizes a complex number without validation (for hot paths).
 
@@ -4915,7 +4929,7 @@ Normalized complex
 
 > `static` **pow**(`complex`, `exponent`, `out?`): `Complex`
 
-Defined in: [src/core/complex.ts:1438](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L1438)
+Defined in: [src/core/complex.ts:1449](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L1449)
 
 Raises a complex number to a power.
 
@@ -4959,7 +4973,7 @@ If magnitude is zero and exponent is negative
 
 > `static` **reciprocal**(`complex`, `out?`): `Complex`
 
-Defined in: [src/core/complex.ts:1370](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L1370)
+Defined in: [src/core/complex.ts:1381](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L1381)
 
 Returns the reciprocal of a complex number.
 
@@ -5009,7 +5023,7 @@ Complex.reciprocal(Complex.ZERO); // throws RangeError
 
 > `static` **reciprocalSafe**(`complex`, `out?`): `Complex`
 
-Defined in: [src/core/complex.ts:1396](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L1396)
+Defined in: [src/core/complex.ts:1407](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L1407)
 
 Returns the reciprocal of a complex number, returning (0,0) if magnitude is near zero.
 
@@ -5054,7 +5068,7 @@ Complex.reciprocalSafe(Complex.ZERO); // (0, 0)
 
 > `static` **reciprocalUnchecked**(`complex`, `out?`): `Complex`
 
-Defined in: [src/core/complex.ts:1421](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L1421)
+Defined in: [src/core/complex.ts:1432](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L1432)
 
 Returns the reciprocal of a complex number without validation.
 
@@ -5097,7 +5111,7 @@ Reciprocal
 
 > `static` **round**(`z`, `out?`): `Complex`
 
-Defined in: [src/core/complex.ts:848](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L848)
+Defined in: [src/core/complex.ts:853](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L853)
 
 Applies Math.round to both components.
 
@@ -5127,13 +5141,13 @@ Complex with rounded components
 
 ---
 
-### sign()
+### signComponents()
 
-> `static` **sign**(`z`, `out?`): `Complex`
+> `static` **signComponents**(`z`, `out?`): `Complex`
 
-Defined in: [src/core/complex.ts:874](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L874)
+Defined in: [src/core/complex.ts:885](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L885)
 
-Component-wise sign.
+Component-wise sign applied to real and imaginary independently.
 
 #### Parameters
 
@@ -5155,6 +5169,12 @@ Optional output complex
 
 Complex with sign of each component (-1, 0, or 1)
 
+#### Remarks
+
+Returns `(sign(re), sign(im))` where each component maps to -1, 0, or 1.
+This is NOT the complex signum `z/|z|`. For the complex signum (unit
+direction on the circle), use [normalize](#normalize-1).
+
 #### Since
 
 0.7.0
@@ -5165,7 +5185,7 @@ Complex with sign of each component (-1, 0, or 1)
 
 > `static` **sqrt**(`complex`, `out?`): `Complex`
 
-Defined in: [src/core/complex.ts:1471](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L1471)
+Defined in: [src/core/complex.ts:1482](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L1482)
 
 Returns the principal square root of a complex number.
 
@@ -5213,7 +5233,7 @@ Branch-cut handling (C99 Annex G):
 
 > `static` **trunc**(`z`, `out?`): `Complex`
 
-Defined in: [src/core/complex.ts:861](https://github.com/rndelpuerto/lenguados/blob/b5bc3c56066e78e7b5908f28104e6f6ef0302803/packages/math2d/src/core/complex.ts#L861)
+Defined in: [src/core/complex.ts:866](https://github.com/rndelpuerto/lenguados/blob/d802d438ec4beeaab5f6ab1340a68f854e86e5be/packages/math2d/src/core/complex.ts#L866)
 
 Applies Math.trunc to both components.
 

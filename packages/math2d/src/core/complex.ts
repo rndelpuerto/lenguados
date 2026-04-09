@@ -798,7 +798,12 @@ export class Complex implements ComplexLike {
  /* ======================================================================== */
 
  /**
-  * Applies Math.abs to both components.
+  * Applies Math.abs to both components independently.
+  *
+  * @remarks
+  * This is component-wise absolute value `(|re|, |im|)`, NOT the complex
+  * modulus. For the modulus `|z| = sqrt(re² + im²)`, use {@link magnitude}.
+  *
   * @param z - Input complex
   * @param out - Optional output complex
   * @returns Complex with absolute components
@@ -806,7 +811,7 @@ export class Complex implements ComplexLike {
   * @category Transform
   * @since 0.7.0
   */
- public static abs(z: ReadonlyComplexLike, out?: Complex): Complex {
+ public static absComponents(z: ReadonlyComplexLike, out?: Complex): Complex {
   return Complex.ensureOut(out).set(Math.abs(z.real), Math.abs(z.imag));
  }
 
@@ -863,7 +868,13 @@ export class Complex implements ComplexLike {
  }
 
  /**
-  * Component-wise sign.
+  * Component-wise sign applied to real and imaginary independently.
+  *
+  * @remarks
+  * Returns `(sign(re), sign(im))` where each component maps to -1, 0, or 1.
+  * This is NOT the complex signum `z/|z|`. For the complex signum (unit
+  * direction on the circle), use {@link normalize}.
+  *
   * @param z - Input complex
   * @param out - Optional output complex
   * @returns Complex with sign of each component (-1, 0, or 1)
@@ -871,7 +882,7 @@ export class Complex implements ComplexLike {
   * @category Transform
   * @since 0.7.0
   */
- public static sign(z: ReadonlyComplexLike, out?: Complex): Complex {
+ public static signComponents(z: ReadonlyComplexLike, out?: Complex): Complex {
   return Complex.ensureOut(out).set(scalarSign(z.real), scalarSign(z.imag));
  }
 
@@ -2082,12 +2093,16 @@ export class Complex implements ComplexLike {
  /* ======================================================================== */
 
  /**
-  * Applies Math.abs to both components.
+  * Applies Math.abs to both components independently.
+  *
+  * @remarks
+  * Component-wise `(|re|, |im|)`, NOT the modulus. For `|z|`, use {@link magnitude}.
+  *
   * @returns This for chaining
   * @category Transform
   * @since 0.7.0
   */
- abs(): this {
+ absComponents(): this {
   this.real = Math.abs(this.real);
   this.imag = Math.abs(this.imag);
   return this;
@@ -2142,12 +2157,17 @@ export class Complex implements ComplexLike {
  }
 
  /**
-  * Component-wise sign.
+  * Component-wise sign applied to real and imaginary independently.
+  *
+  * @remarks
+  * Returns `(sign(re), sign(im))`. NOT the complex signum `z/|z|`.
+  * For the complex signum, use {@link normalize}.
+  *
   * @returns This for chaining
   * @category Transform
   * @since 0.7.0
   */
- sign(): this {
+ signComponents(): this {
   this.real = scalarSign(this.real);
   this.imag = scalarSign(this.imag);
   return this;

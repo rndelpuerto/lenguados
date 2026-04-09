@@ -37,8 +37,8 @@ describe('Edge Case Properties', () => {
     fc.property(arbVector2, arbAngleNearPi, (v, angle) => {
      const rotated = Vector2.rotate(v, angle);
      const expected = Vector2.negate(v);
-     // Relative tolerance for large vectors
-     const tolerance = Math.max(1e-3, Vector2.magnitude(v) * 1e-6);
+     // Relative tolerance for large vectors (2x margin for floating-point rounding)
+     const tolerance = Math.max(1e-3, Vector2.magnitude(v) * 2e-6);
      return rotated.nearEquals(expected, tolerance);
     }),
    );

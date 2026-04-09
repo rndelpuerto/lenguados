@@ -108,6 +108,9 @@ export class MathRandomSource implements RandomSource {
   * @since 0.7.0
   */
  nextInt(max: number): number {
+  if (max <= 0 || !Number.isInteger(max) || max !== max) {
+   throw new TypeError(`MathRandomSource.nextInt: max must be a positive integer, got ${max}`);
+  }
   return Math.floor(Math.random() * max);
  }
 }

@@ -7,8 +7,10 @@
  * ## Purpose
  *
  * This module contains ONLY pure deterministic replacements for `Math.*` functions
- * that are NOT bit-exact across JavaScript engines. Each kernel accepts any IEEE 754
- * double and returns the IEEE 754-specified result (including NaN for domain errors).
+ * that are NOT bit-exact across JavaScript engines. Each kernel uses fdlibm polynomial
+ * coefficients (Remez algorithm) for cross-platform bit-exact results. NaN exponents
+ * propagate correctly per ECMAScript semantics. Signed-zero and negative-base edge
+ * cases in `pow()` follow fdlibm/C99 conventions (see `pow` `@remarks` for details).
  * No clamping, no fallbacks, no Safe variants — those belong in
  * `auxiliary/numeric/safety.ts` (L1).
  *
@@ -485,6 +487,10 @@ export function sinCos(x: number, out?: SinCos): SinCos {
  return result;
 }
 
+// Reusable scratch object for tan() — avoids per-call allocation.
+// Safe: JavaScript is single-threaded; same non-reentrancy assumption as ieeeBuffer.
+const _tanScratch: SinCos = { sin: 0, cos: 0 };
+
 /**
  * Deterministic tangent function.
  *
@@ -506,8 +512,8 @@ export function sinCos(x: number, out?: SinCos): SinCos {
  */
 export function tan(x: number): number {
  if (config.useNativeMath) return Math.tan(x);
- const { sin: s, cos: c } = sinCos(x);
- return s / c;
+ sinCos(x, _tanScratch);
+ return _tanScratch.sin / _tanScratch.cos;
 }
 
 /**
@@ -856,6 +862,17 @@ export function exp(x: number): number {
  * For non-integer exponents, uses deterministic exp(exponent * log(base)).
  * Fully L0 deterministic with no Math.pow dependency.
  *
+ * **NaN propagation:** `pow(x, NaN)` returns NaN for all x except `pow(x, 0) = 1`
+ * (ECMAScript §21.3.2.26). `pow(1, ±Infinity)` returns NaN.
+ *
+ * **fdlibm edge cases:** Signed-zero handling (`pow(-0, odd)`) and negative-base
+ * with ±Infinity exponent follow fdlibm/C99 semantics, which may differ from
+ * ECMAScript `Math.pow` for these specific edge cases. All finite positive-base
+ * computations are bit-identical to the fdlibm reference.
+ *
+ * **Precision:** For fractional exponents, results may differ from `Math.pow` by
+ * up to 1 ULP due to the `exp(exponent * log(base))` computation path.
+ *
  * @param base - Base value
  * @param exponent - Exponent value
  * @returns base^exponent
@@ -872,11 +889,12 @@ export function exp(x: number): number {
  */
 export function pow(base: number, exponent: number): number {
  if (config.useNativeMath) return Math.pow(base, exponent);
- // Handle special cases
- if (exponent === 0) return 1;
+ // Handle special cases (order matters for ECMAScript parity)
+ if (exponent === 0) return 1; // NaN^0 = 1, 0^0 = 1 (ECMAScript §21.3.2.26)
+ if (exponent !== exponent) return NaN; // NaN exponent propagates (after 0 check)
  if (exponent === 1) return base;
  if (base === 0) return exponent > 0 ? 0 : Infinity;
- if (base === 1) return 1;
+ if (base === 1) return Number.isFinite(exponent) ? 1 : NaN; // pow(1, ±Infinity) = NaN
 
  // Integer exponent: use exponentiation by squaring (fastest)
  if (Number.isInteger(exponent)) {

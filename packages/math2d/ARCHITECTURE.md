@@ -93,7 +93,7 @@ To support high-performance game loops (60fps+), the library minimizes garbage c
 Every fallible operation (e.g., normalization) follows the triality pattern:
 
 1. `op()`: Strict, throws on error.
-2. `opSafe()`: Returns safe fallback (suffix naming: `divideSafe`, `lerpSafe`).
+2. `opSafe()`: Returns safe fallback (suffix naming: `divideSafe`, `sqrtSafe`).
 3. `opUnchecked()`: Fast, undefined behavior on error.
 
 **Zero-check convention:** The safe variant guards the same condition as its strict counterpart — only the response differs (throw vs fallback). Two tiers exist:
