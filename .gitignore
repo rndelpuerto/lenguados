@@ -141,9 +141,11 @@ packages/**/lib
 packages/**/docs
 packages/**/bundle-stats.html
 
-# Claude Code local files
+# AI agent configuration (local only)
+CLAUDE.md
 CLAUDE.local.md
-.claude/settings.local.json
+.claude/
+openspec/
 
 # System files
 .DS_Store
