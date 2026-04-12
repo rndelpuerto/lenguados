@@ -60,6 +60,8 @@ export default defineFlatConfig([
    'docs/.docusaurus/**',
    'docs/build/**',
    'docs/docs/api/**',
+   'docs/docusaurus.config.ts',
+   'docs/sidebars.ts',
    'tools/package/**',
    'openspec/**',
   ],

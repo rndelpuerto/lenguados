@@ -31,4 +31,4 @@ const invalid = parseJSONData('not json');
 
 ## License
 
-[Apache License 2.0](../../LICENSE)
+[Apache License 2.0](https://github.com/rndelpuerto/lenguados/blob/main/LICENSE)

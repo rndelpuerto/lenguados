@@ -1,9 +1,0 @@
-{
- "label": "math2d",
- "position": 2,
- "description": "Architecture, design decisions, and reference for @lenguados/math2d",
- "link": {
-  "type": "generated-index",
-  "description": "In-depth documentation for the @lenguados/math2d package."
- }
-}

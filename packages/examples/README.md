@@ -28,4 +28,4 @@ Open `src/canvas-hello/demo.html` in a browser to see it in action.
 
 ## License
 
-[Apache License 2.0](../../LICENSE)
+[Apache License 2.0](https://github.com/rndelpuerto/lenguados/blob/main/LICENSE)

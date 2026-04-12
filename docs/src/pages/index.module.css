@@ -1,18 +1,44 @@
-/**
- * CSS files with the .module.css suffix will be treated as CSS modules
- * and scoped locally.
- */
-
 .heroBanner {
- padding: 4rem 0;
+ padding: 6rem 0;
  text-align: center;
  position: relative;
  overflow: hidden;
+ background: #0a0a0a;
+ color: white;
+}
+
+[data-theme='dark'] .heroBanner {
+ background: #0a0a0a;
+}
+
+.heroLogo {
+ position: absolute;
+ top: 50%;
+ left: 5vw;
+ transform: translateY(-50%);
+ width: clamp(180px, 28vw, 420px);
+ height: clamp(180px, 28vw, 420px);
+ opacity: 0.12;
+ pointer-events: none;
+ user-select: none;
+ filter: brightness(1.8);
+}
+
+.heroBanner .hero__title {
+ color: white;
+ position: relative;
+ z-index: 1;
+}
+
+.heroBanner .hero__subtitle {
+ color: rgba(255, 255, 255, 0.8);
+ position: relative;
+ z-index: 1;
 }
 
 @media screen and (max-width: 996px) {
  .heroBanner {
-  padding: 2rem;
+  padding: 3rem 1.5rem;
  }
 }
 
@@ -20,4 +46,48 @@
  display: flex;
  align-items: center;
  justify-content: center;
+ gap: 1rem;
+ margin-top: 1.5rem;
+ position: relative;
+ z-index: 1;
+}
+
+.buttonPrimary,
+.buttonOutline {
+ display: inline-flex;
+ align-items: center;
+ gap: 0.4rem;
+}
+
+.buttonPrimary {
+ background: var(--ifm-color-accent, #f44611);
+ border: 2px solid var(--ifm-color-accent, #f44611);
+ color: white;
+}
+
+.buttonPrimary:hover {
+ background: #d63c0e;
+ border-color: #d63c0e;
+ color: white;
+}
+
+.buttonOutline {
+ border: 2px solid var(--ifm-color-primary-light, #008d00);
+ color: var(--ifm-color-primary-light, #008d00);
+ background: transparent;
+}
+
+.buttonOutline:hover {
+ background: var(--ifm-color-primary-light, #008d00);
+ color: white;
+}
+
+[data-theme='dark'] .buttonOutline {
+ border-color: var(--ifm-color-primary, #33c240);
+ color: var(--ifm-color-primary, #33c240);
+}
+
+[data-theme='dark'] .buttonOutline:hover {
+ background: var(--ifm-color-primary, #33c240);
+ color: #0a0a0a;
 }

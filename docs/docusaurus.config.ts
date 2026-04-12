@@ -1,8 +1,8 @@
 import type * as Preset from '@docusaurus/preset-classic';
 import type { Config } from '@docusaurus/types';
 import { themes as prismThemes } from 'prism-react-renderer';
-
-// This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
+import rehypeKatex from 'rehype-katex';
+import remarkMath from 'remark-math';
 
 const config: Config = {
  future: {
@@ -12,35 +12,34 @@ const config: Config = {
 
  title: 'Lenguados',
  tagline:
-  'Lenguados is a TypeScript‑based, lightweight, deterministic, and extensible 2‑D physics engine.',
+  'TypeScript\u2011based, lightweight, deterministic, and extensible 2\u2011D physics engine.',
  favicon: 'img/favicon.ico',
 
- // Markdown configuration for TypeDoc-generated API docs compatibility
- // 'detect' uses file extension: .md = CommonMark, .mdx = MDX
- // This prevents MDX from parsing TypeDoc output as JSX
  markdown: {
   format: 'detect',
+  mermaid: true,
  },
 
- // Set the production url of your site here
  url: 'https://rndelpuerto.github.io',
- // Set the /<baseUrl>/ pathname under which your site is served
- // For GitHub pages deployment, it is often '/<projectName>/'
  baseUrl: '/lenguados/',
 
- // GitHub pages deployment config.
- // If you aren't using GitHub pages, you don't need these.
- organizationName: 'rndelpuerto', // Usually your GitHub org/user name.
- projectName: 'lenguados', // Usually your repo name.
-
+ organizationName: 'rndelpuerto',
+ projectName: 'lenguados',
  deploymentBranch: 'gh-pages',
 
  onBrokenLinks: 'warn',
- onBrokenMarkdownLinks: 'warn',
 
- // Even if you don't use internationalization, you can use this field to set
- // useful metadata like html lang. For example, if your site is Chinese, you
- // may want to replace "en" with "zh-Hans".
+ headTags: [
+  {
+   tagName: 'link',
+   attributes: {
+    rel: 'apple-touch-icon',
+    sizes: '180x180',
+    href: '/lenguados/img/apple-touch-icon.png',
+   },
+  },
+ ],
+
  i18n: {
   defaultLocale: 'en',
   locales: ['en'],
@@ -52,26 +51,9 @@ const config: Config = {
    {
     docs: {
      sidebarPath: './sidebars.ts',
-     // Please change this to your repo.
-     // Remove this to remove the "edit this page" links.
-     //  editUrl:
-     //   'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
+     remarkPlugins: [remarkMath],
+     rehypePlugins: [rehypeKatex],
     },
-    // blog: {
-    //  showReadingTime: true,
-    //  feedOptions: {
-    //   type: ['rss', 'atom'],
-    //   xslt: true,
-    //  },
-    //  // Please change this to your repo.
-    //  // Remove this to remove the "edit this page" links.
-    //  //  editUrl:
-    //  //   'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
-    //  // Useful options to enforce blogging best practices
-    //  onInlineTags: 'warn',
-    //  onInlineAuthors: 'warn',
-    //  onUntruncatedBlogPosts: 'warn',
-    // },
     theme: {
      customCss: './src/css/custom.css',
     },
@@ -84,20 +66,41 @@ const config: Config = {
    'docusaurus-plugin-typedoc',
    {
     id: 'api',
-    name: 'API Reference',
     entryPoints: ['../packages/*'],
     entryPointStrategy: 'packages',
     tsconfig: '../tsconfig.json',
     exclude: ['**/test/**/*'],
     readme: 'none',
+    excludeScopesInPaths: true,
+    cleanOutputDir: true,
+    categorizeByGroup: true,
+    excludeInternal: true,
+    parametersFormat: 'table',
     hideBreadcrumbs: true,
+    sidebar: {
+     autoConfiguration: true,
+     pretty: true,
+    },
+   },
+  ],
+ ],
+
+ themes: [
+  '@docusaurus/theme-mermaid',
+  [
+   require.resolve('@easyops-cn/docusaurus-search-local'),
+   {
+    hashed: true,
+    indexDocs: true,
+    indexBlog: false,
+    indexPages: false,
+    language: ['en'],
    },
   ],
  ],
 
  themeConfig: {
-  // Replace with your project's social card
-  image: 'img/docusaurus-social-card.jpg',
+  image: 'img/social-card.png',
   navbar: {
    title: 'Lenguados',
    logo: {
@@ -107,15 +110,21 @@ const config: Config = {
    items: [
     {
      type: 'docSidebar',
-     sidebarId: 'tutorialSidebar',
+     sidebarId: 'docsSidebar',
      position: 'left',
-     label: 'Tutorial',
+     label: 'Docs',
     },
-    // { to: '/blog', label: 'Blog', position: 'left' },
+    {
+     type: 'docSidebar',
+     sidebarId: 'apiSidebar',
+     position: 'left',
+     label: 'API',
+    },
     {
      href: 'https://github.com/rndelpuerto/lenguados',
-     label: 'GitHub',
      position: 'right',
+     className: 'header-github-link',
+     'aria-label': 'GitHub repository',
     },
    ],
   },
@@ -123,46 +132,33 @@ const config: Config = {
    style: 'dark',
    links: [
     {
-     title: 'Docs',
+     title: 'Documentation',
      items: [
       {
-       label: 'Tutorial',
+       label: 'Getting Started',
        to: '/docs/intro',
       },
-     ],
-    },
-    {
-     title: 'Community',
-     items: [
-      // {
-      //  label: 'Stack Overflow',
-      //  href: 'https://stackoverflow.com/questions/tagged/docusaurus',
-      // },
-      // {
-      //  label: 'Discord',
-      //  href: 'https://discordapp.com/invite/docusaurus',
-      // },
-      // {
-      //  label: 'X',
-      //  href: 'https://x.com/docusaurus',
-      // },
+      {
+       label: 'API Reference',
+       to: '/docs/api',
+      },
      ],
     },
     {
      title: 'More',
      items: [
-      // {
-      //  label: 'Blog',
-      //  to: '/blog',
-      // },
       {
        label: 'GitHub',
        href: 'https://github.com/rndelpuerto/lenguados',
       },
+      {
+       label: 'License (Apache-2.0)',
+       href: 'https://github.com/rndelpuerto/lenguados/blob/main/LICENSE',
+      },
      ],
     },
    ],
-   copyright: `Copyright © ${new Date().getFullYear()} Lenguados.`,
+   copyright: `Copyright \u00A9 ${new Date().getFullYear()} Lenguados.`,
   },
   prism: {
    theme: prismThemes.github,

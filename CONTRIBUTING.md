@@ -107,34 +107,24 @@ npm run test:watch
 npx jest --testPathPattern="packages/math2d/test/core/vector2" --no-coverage
 ```
 
-## math2d API Conventions
+## Engine-Wide Standards
 
-The `@lenguados/math2d` package follows these patterns. See [ARCHITECTURE.md](packages/math2d/ARCHITECTURE.md) for the full code map.
+These standards apply to all packages. Each package may extend them with domain-specific conventions.
 
-- **Static + Instance**: Static methods are pure, accept optional `out` parameter as last arg for allocation-free hot paths. Instance methods mutate `this`, return `this` for chaining.
-- **Triality** (strict/safe/unchecked): `op()` throws on error. `opSafe()` returns fallback. `opUnchecked()` skips validation. Suffix naming: `divideSafe`, not `safeDivide`.
-- **CS variants**: Methods ending in `CS` accept pre-computed cos/sin for hot loops (`rotateCS(cos, sin)` instead of `rotate(angle)`).
-- **Apply vs Transform**: `apply` for operators acting on operands (Rotation2). `transform` for spatial coordinate changes (Matrix3).
-- **`*Like` interfaces**: Input params use `Readonly*Like` (accept POJOs). Outputs use concrete types.
-- **`out` parameter**: Always the last optional parameter. Enables zero-allocation in tight loops.
+- [Design Philosophy](DESIGN_PHILOSOPHY.md) -- POA principles, intentional SOLID deviations, mechanical sympathy
+- [TSDoc Standard](TSDOC_STANDARD.md) -- canonical tag order, templates, controlled `@category` vocabulary
+- [Testing Strategy](TESTING_STRATEGY.md) -- property-based testing with fast-check, algebraic invariants
+- [Iconography Standard](ICONOGRAPHY_STANDARD.md) -- icon library, placement rules, sizing, color, and accessibility for the documentation site
 
-## Detailed Guides
-
-In-depth contributor references on the docs site:
-
-- [TSDoc Standard](docs/docs/contributing/tsdoc-standard.md) -- canonical tag order, 14 templates, controlled @category vocabulary
-- [Testing Strategy](docs/docs/contributing/testing-strategy.md) -- property-based testing with fast-check, algebraic invariants
-- [Design Philosophy](docs/docs/contributing/design-philosophy.md) -- POA principles, intentional SOLID deviations
+For package-specific conventions (API patterns, extended categories, specific invariants), see each package's documentation.
 
 ## Documentation
 
-- **Package root**: Only `README.md`, `CHANGELOG.md`, and `ARCHITECTURE.md` at `packages/math2d/`
-- **Monorepo root**: `README.md`, `CHANGELOG.md`, `CONTRIBUTING.md`, `ARCHITECTURE.md`, `LICENSE`
-- **Docs site**: `docs/docs/math2d/` for package deep-dives, `docs/docs/contributing/` for contributor guides
+- **Package root**: `README.md`, `CHANGELOG.md`, `ARCHITECTURE.md`
+- **Monorepo root**: `README.md`, `CHANGELOG.md`, `CONTRIBUTING.md`, `ARCHITECTURE.md`, `DESIGN_PHILOSOPHY.md`, `TSDOC_STANDARD.md`, `TESTING_STRATEGY.md`, `LICENSE`
+- **Docs site**: auto-generated from root + package markdown, plus manual deep-dives per package
 - **Language**: All documentation in English
 - **Linking**: Package README uses absolute GitHub URLs (npm compatibility). Root files use relative paths.
-- **New docs site page**: Create `.md` in `docs/docs/`, add `sidebar_position`, `title`, `description` frontmatter
-- **TSDoc**: Follow the [TSDoc Standard](docs/docs/contributing/tsdoc-standard.md)
 
 ## Reporting Issues
 

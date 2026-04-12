@@ -7,6 +7,11 @@
 # Generated files
 .docusaurus
 .cache-loader
+docs/api/
+docs/architecture.md
+docs/contributing/
+docs/packages/*/overview.md
+docs/guides/
 
 # Misc
 .DS_Store

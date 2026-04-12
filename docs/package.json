@@ -4,8 +4,8 @@
  "private": true,
  "scripts": {
   "docusaurus": "docusaurus",
-  "start": "docusaurus start",
-  "build": "docusaurus build",
+  "start": "node ../scripts/generate-package-docs.mjs && docusaurus start",
+  "build": "node ../scripts/generate-package-docs.mjs && docusaurus build",
   "swizzle": "docusaurus swizzle",
   "deploy": "docusaurus deploy --skip-build",
   "clear": "docusaurus clear",
@@ -18,11 +18,16 @@
   "@docusaurus/core": "3.10.0",
   "@docusaurus/faster": "3.10.0",
   "@docusaurus/preset-classic": "3.10.0",
+  "@docusaurus/theme-mermaid": "3.10.0",
+  "@easyops-cn/docusaurus-search-local": "^0.55.1",
   "@mdx-js/react": "^3.0.0",
   "clsx": "^2.0.0",
+  "lucide-react": "^1.8.0",
   "prism-react-renderer": "^2.3.0",
   "react": "^19.0.0",
-  "react-dom": "^19.0.0"
+  "react-dom": "^19.0.0",
+  "rehype-katex": "^7.0.1",
+  "remark-math": "^6.0.0"
  },
  "devDependencies": {
   "@docusaurus/module-type-aliases": "3.10.0",
