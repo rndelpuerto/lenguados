@@ -26,6 +26,10 @@ Open `src/canvas-hello/demo.html` in a browser to see it in action.
 3. Add a corresponding `demo.html` for browser testing
 4. Register the subpath export in `package.json` under `exports`
 
+## Documentation
+
+- [Full Documentation](https://rndelpuerto.github.io/lenguados/docs/) -- docs site with architecture, standards, and API reference
+
 ## License
 
 [Apache License 2.0](https://github.com/rndelpuerto/lenguados/blob/main/LICENSE)

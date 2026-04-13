@@ -143,7 +143,7 @@ By default, `@lenguados/math2d` routes all critical transcendental functions (`s
 The core exposes the configuration object `config.useNativeMath`, which short-circuits the polynomial kernels and hands execution back to the browser's native `Math.*` implementations (backed by C++ FPU instructions).
 
 ```typescript
-import { config } from '@lenguados/math2d/deterministic';
+import { config } from '@lenguados/math2d';
 
 // At your application's startup for single-player mode:
 config.useNativeMath = true;
@@ -154,6 +154,8 @@ When `useNativeMath` is `true`, calls to `sin`, `cos`, and other transcendental 
 ---
 
 ## Internal Module Policies
+
+For the classification framework, decision criteria, and build mechanics behind internal modules, see [Module Exports & Internals](../../guides/module-exports). For the specific classification decisions applied to this package, see [Module Exports & Internals -- math2d](./module-exports).
 
 ### Iron Rule for `utils/`
 

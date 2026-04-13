@@ -74,7 +74,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the full contributor guide.
 - [math2d Architecture](packages/math2d/ARCHITECTURE.md) -- layered architecture and design patterns
 - [Contributing](CONTRIBUTING.md) -- setup, workflow, commit conventions, math2d API conventions
 - [Changelog](CHANGELOG.md) -- version history
-- [Docs Site](docs/docs/math2d) -- deep-dives, design decisions, edge cases, and API reference
+- [Docs Site](https://rndelpuerto.github.io/lenguados/docs/) -- deep-dives, design decisions, edge cases, and API reference
 
 ## License
 

@@ -111,6 +111,23 @@ for (const pkg of packages) {
 
 console.log(`[generate-package-docs] ${generated} overview(s) generated from ${packages.length} package(s)`);
 
+// --- Cross-reference link map (shared by Phase 2 and Phase 3) ---
+
+/**
+ * Map from root guide filenames to their Docusaurus-relative paths.
+ * Used to convert cross-references between root markdown files into
+ * navigable links in the docs site.
+ */
+const ROOT_GUIDE_LINKS = {
+ 'DESIGN_PHILOSOPHY.md': 'guides/design-philosophy',
+ 'TSDOC_STANDARD.md': 'guides/tsdoc-standard',
+ 'TESTING_STRATEGY.md': 'guides/testing-strategy',
+ 'ICONOGRAPHY_STANDARD.md': 'guides/iconography-standard',
+ 'MODULE_EXPORTS.md': 'guides/module-exports',
+ 'CONTRIBUTING.md': 'contributing',
+ 'ARCHITECTURE.md': 'architecture',
+};
+
 // --- Phase 2: Generate engine-level guide pages from root markdown files ---
 
 const GUIDES_OUTPUT = join(ROOT, 'docs', 'docs', 'guides');
@@ -136,6 +153,13 @@ const ROOT_GUIDES = [
   description: 'Property-based testing, algebraic invariants, and tolerance conventions',
   position: 3,
  },
+ {
+  source: 'MODULE_EXPORTS.md',
+  output: 'module-exports.md',
+  title: 'Module Exports & Internals',
+  description: 'Subpath exports, internal modules, and the classification framework for package APIs',
+  position: 5,
+ },
 ];
 
 mkdirSync(GUIDES_OUTPUT, { recursive: true });
@@ -153,6 +177,17 @@ for (const guide of ROOT_GUIDES) {
 
   // Remove H1 title (frontmatter title is used)
   content = content.replace(/^# .+\n*/m, '');
+
+  // Convert cross-references to root files into docs-site relative links
+  // e.g., [TSDoc Standard](TSDOC_STANDARD.md) → [TSDoc Standard](./tsdoc-standard)
+  content = content.replace(/\[([^\]]+)\]\(([A-Z][A-Z0-9_]*(?:\.[a-z]+)?)\)/g, (match, text, file) => {
+   const docsPath = ROOT_GUIDE_LINKS[file];
+   if (docsPath) {
+    const rel = docsPath.startsWith('guides/') ? './' + docsPath.replace('guides/', '') : '../' + docsPath;
+    return `[${text}](${rel})`;
+   }
+   return `**${text}**`;
+  });
 
   const frontmatter = [
    '---',
@@ -177,19 +212,6 @@ console.log(`[generate-package-docs] ${guides} guide(s) generated from root mark
 // --- Phase 3: Generate root-level doc pages from root markdown files ---
 
 const DOCS_OUTPUT = join(ROOT, 'docs', 'docs');
-/**
- * Map from root guide filenames to their Docusaurus-relative paths.
- * Used to convert cross-references between root markdown files into
- * navigable links in the docs site.
- */
-const ROOT_GUIDE_LINKS = {
- 'DESIGN_PHILOSOPHY.md': 'guides/design-philosophy',
- 'TSDOC_STANDARD.md': 'guides/tsdoc-standard',
- 'TESTING_STRATEGY.md': 'guides/testing-strategy',
- 'ICONOGRAPHY_STANDARD.md': 'guides/iconography-standard',
- 'CONTRIBUTING.md': 'contributing',
- 'ARCHITECTURE.md': 'architecture',
-};
 
 const ROOT_PAGES = [
  {
@@ -269,3 +291,84 @@ for (const page of ROOT_PAGES) {
 }
 
 console.log(`[generate-package-docs] ${pages} root page(s) generated`);
+
+// --- Phase 4: Generate package-level companion docs from package root markdown files ---
+// Scans each package for markdown files that match engine-wide standards (e.g., MODULE_EXPORTS.md).
+// The filename at the package root must match a root-level standard to be discovered.
+
+/**
+ * Package-level companion docs. Each entry maps a root standard filename to its
+ * Docusaurus output name, title template, and description template.
+ * The title/description templates use {name} as a placeholder for the package name.
+ */
+const PACKAGE_COMPANIONS = [
+ {
+  source: 'MODULE_EXPORTS.md',
+  output: 'module-exports.md',
+  title: 'Module Exports & Internals',
+  description: 'Classification decisions and subpath export rationale for {name}',
+  position: 9,
+ },
+];
+
+let companions = 0;
+
+for (const pkg of packages) {
+ for (const companion of PACKAGE_COMPANIONS) {
+  const sourcePath = join(PACKAGES_DIR, pkg.dirName, companion.source);
+  if (!existsSync(sourcePath)) continue;
+
+  try {
+   let content = readFileSync(sourcePath, 'utf-8');
+
+   // Remove H1 title (frontmatter title is used)
+   content = content.replace(/^# .+\n*/m, '');
+
+   // Convert cross-references to root files into docs-site relative links
+   content = content.replace(/\[([^\]]+)\]\(([A-Z][A-Z0-9_]*(?:\.[a-z]+)?)\)/g, (match, text, file) => {
+    const docsPath = ROOT_GUIDE_LINKS[file];
+    if (docsPath) {
+     return `[${text}](../../${docsPath})`;
+    }
+    return `**${text}**`;
+   });
+
+   // Convert relative links to other package root files (../../MODULE_EXPORTS.md)
+   content = content.replace(
+    /\[([^\]]+)\]\(\.\.\/\.\.\/([A-Z][A-Z0-9_]*(?:\.[a-z]+)?)\)/g,
+    (match, text, file) => {
+     const docsPath = ROOT_GUIDE_LINKS[file];
+     if (docsPath) {
+      return `[${text}](../../${docsPath})`;
+     }
+     return `**${text}**`;
+    },
+   );
+
+   const title = companion.title.replace('{name}', pkg.name);
+   const description = companion.description.replace('{name}', pkg.name);
+
+   const frontmatter = [
+    '---',
+    `title: ${JSON.stringify(title)}`,
+    `description: ${JSON.stringify(description)}`,
+    `sidebar_position: ${companion.position}`,
+    '---',
+    '',
+   ].join('\n');
+
+   const outDir = join(OUTPUT_DIR, pkg.dirName);
+   mkdirSync(outDir, { recursive: true });
+
+   const outPath = join(outDir, companion.output);
+   writeFileSync(outPath, frontmatter + content.trim() + '\n');
+   console.log(`  generated ${pkg.dirName}/${companion.output}`);
+   companions++;
+  } catch (err) {
+   console.error(`  ERROR processing ${pkg.dirName}/${companion.source}: ${err.message}`);
+   process.exitCode = 1;
+  }
+ }
+}
+
+console.log(`[generate-package-docs] ${companions} companion doc(s) generated`);

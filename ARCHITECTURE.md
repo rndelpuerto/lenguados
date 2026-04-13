@@ -51,4 +51,4 @@ The main package has a strict 6-layer architecture with unidirectional dependenc
 - Key patterns (out parameter, triality, CS variants, apply vs transform)
 - Zero-check conventions and tolerance constants
 
-For expanded design principles and architectural axioms, see the [math2d architecture deep-dive](https://github.com/rndelpuerto/lenguados/blob/main/docs/docs/packages/math2d/architecture.md).
+For expanded design principles and architectural axioms, see the [math2d architecture deep-dive](https://rndelpuerto.github.io/lenguados/docs/packages/math2d/architecture).

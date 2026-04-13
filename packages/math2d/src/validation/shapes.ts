@@ -4,7 +4,7 @@
  * @description Object shape assertions for validating unknown values against *Like interfaces
  *
  * @remarks
- * Provides the seven `assert*Like` shape-validation functions as a dedicated subpath.
+ * Provides the `assert*Like` shape-validation functions for all core types as a dedicated subpath.
  * These functions accept `unknown` values, narrow them to the corresponding `*Like`
  * interface via TypeScript assertion signatures, and validate that all numeric
  * components are finite.

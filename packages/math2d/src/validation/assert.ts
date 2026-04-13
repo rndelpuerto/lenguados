@@ -1,6 +1,6 @@
 /**
  * @file validation/assert.ts
- * @module @lenguados/math2d/validation
+ * @module @lenguados/math2d
  * @description Debug assertions for development-time validation
  *
  * @remarks

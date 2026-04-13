@@ -23,6 +23,7 @@ const sidebars: SidebarsConfig = {
     'guides/tsdoc-standard',
     'guides/testing-strategy',
     'guides/iconography-standard',
+    'guides/module-exports',
    ],
   },
   {
@@ -41,6 +42,7 @@ const sidebars: SidebarsConfig = {
       'packages/math2d/design-philosophy',
       'packages/math2d/tsdoc-standard',
       'packages/math2d/testing-strategy',
+      'packages/math2d/module-exports',
       'packages/math2d/audit-closure-2026',
      ],
     },

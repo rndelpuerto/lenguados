@@ -29,6 +29,10 @@ const invalid = parseJSONData('not json');
 // invalid: undefined
 ```
 
+## Documentation
+
+- [Full Documentation](https://rndelpuerto.github.io/lenguados/docs/) -- docs site with architecture, standards, and API reference
+
 ## License
 
 [Apache License 2.0](https://github.com/rndelpuerto/lenguados/blob/main/LICENSE)

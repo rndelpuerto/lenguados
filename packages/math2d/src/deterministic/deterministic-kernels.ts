@@ -1,6 +1,6 @@
 /**
  * @file deterministic/deterministic-kernels.ts
- * @module @lenguados/math2d/deterministic
+ * @module @lenguados/math2d
  * @description Deterministic mathematical kernels for L0 cross-platform consistency
  *
  * @remarks
@@ -73,7 +73,7 @@ const QUARTER_PI = Math.PI / 4;
  *
  * @example
  * ```typescript
- * import { config } from '@lenguados/math2d/deterministic';
+ * import { config } from '@lenguados/math2d';
  *
  * // Disable determinism, run native C-level floats on local CPU
  * config.useNativeMath = true;

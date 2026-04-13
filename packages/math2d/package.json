@@ -48,15 +48,26 @@
     "import": "./main.mjs"
    }
   },
-  "./validation/shapes": {
-   "types": "./lib/@types/validation/shapes.d.ts",
+  "./utils/parse": {
+   "types": "./lib/@types/utils/parse.d.ts",
    "development": {
-    "require": "./lib/cjs/validation/shapes.development.js",
-    "import": "./lib/esm/validation/shapes.development.js"
+    "require": "./lib/cjs/utils/parse.development.js",
+    "import": "./lib/esm/utils/parse.development.js"
    },
    "default": {
-    "require": "./lib/cjs/validation/shapes.production.js",
-    "import": "./lib/esm/validation/shapes.production.js"
+    "require": "./lib/cjs/utils/parse.production.js",
+    "import": "./lib/esm/utils/parse.production.js"
+   }
+  },
+  "./utils/performance": {
+   "types": "./lib/@types/utils/performance.d.ts",
+   "development": {
+    "require": "./lib/cjs/utils/performance.development.js",
+    "import": "./lib/esm/utils/performance.development.js"
+   },
+   "default": {
+    "require": "./lib/cjs/utils/performance.production.js",
+    "import": "./lib/esm/utils/performance.production.js"
    }
   },
   "./utils/random": {
@@ -81,26 +92,15 @@
     "import": "./lib/esm/utils/random-source.production.js"
    }
   },
-  "./utils/parse": {
-   "types": "./lib/@types/utils/parse.d.ts",
+  "./validation/shapes": {
+   "types": "./lib/@types/validation/shapes.d.ts",
    "development": {
-    "require": "./lib/cjs/utils/parse.development.js",
-    "import": "./lib/esm/utils/parse.development.js"
+    "require": "./lib/cjs/validation/shapes.development.js",
+    "import": "./lib/esm/validation/shapes.development.js"
    },
    "default": {
-    "require": "./lib/cjs/utils/parse.production.js",
-    "import": "./lib/esm/utils/parse.production.js"
-   }
-  },
-  "./utils/performance": {
-   "types": "./lib/@types/utils/performance.d.ts",
-   "development": {
-    "require": "./lib/cjs/utils/performance.development.js",
-    "import": "./lib/esm/utils/performance.development.js"
-   },
-   "default": {
-    "require": "./lib/cjs/utils/performance.production.js",
-    "import": "./lib/esm/utils/performance.production.js"
+    "require": "./lib/cjs/validation/shapes.production.js",
+    "import": "./lib/esm/validation/shapes.production.js"
    }
   },
   "./lib/*": {

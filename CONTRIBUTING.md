@@ -115,6 +115,7 @@ These standards apply to all packages. Each package may extend them with domain-
 - [TSDoc Standard](TSDOC_STANDARD.md) -- canonical tag order, templates, controlled `@category` vocabulary
 - [Testing Strategy](TESTING_STRATEGY.md) -- property-based testing with fast-check, algebraic invariants
 - [Iconography Standard](ICONOGRAPHY_STANDARD.md) -- icon library, placement rules, sizing, color, and accessibility for the documentation site
+- [Module Exports & Internals](MODULE_EXPORTS.md) -- classification framework, subpath exports, `module-internals.json` convention, build mechanics
 
 For package-specific conventions (API patterns, extended categories, specific invariants), see each package's documentation.
 
