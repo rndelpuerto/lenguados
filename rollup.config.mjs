@@ -94,11 +94,20 @@ const entryPoints = Object.freeze(
  Array.from(
   new Set([
    rootEntry,
-   ...INTERNALS_LIST.flatMap((dir) =>
-    fg
-     .sync([`${dir}/**/*.ts`, `!${dir}/**/test/**/*.ts`], { cwd: srcDir })
-     .map((f) => path.join(srcDir, f)),
-   ),
+   ...INTERNALS_LIST.flatMap((item) => {
+    // Specific file entry — resolve directly
+    if (item.endsWith('.ts')) {
+     const filePath = path.join(srcDir, item);
+     if (!fs.existsSync(filePath)) {
+      throw new Error(`Internal module file not found: ${filePath}`);
+     }
+     return [filePath];
+    }
+    // Directory entry — glob for all .ts files (excluding tests)
+    return fg
+     .sync([`${item}/**/*.ts`, `!${item}/**/test/**/*.ts`], { cwd: srcDir })
+     .map((f) => path.join(srcDir, f));
+   }),
   ]),
  ),
 );

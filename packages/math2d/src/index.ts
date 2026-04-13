@@ -68,9 +68,8 @@
  * For advanced use cases, additional modules are available via specific imports:
  *
  * ```typescript
- * // Validation - assertions for development (tree-shakeable)
- * import { assertFinite, assertVector2, setAssertionsEnabled } from '@lenguados/math2d/validation/assert';
- *
+ * // Shape assertions - validate unknown values against *Like interfaces (tree-shakeable)
+ * import { assertVector2Like, assertMatrix3Like } from '@lenguados/math2d/validation/shapes';
  *
  * // Random generation
  * import { randomVector2, randomInCircle } from '@lenguados/math2d/utils/random';
@@ -136,11 +135,4 @@ export {
  assertComplex,
  assertInterval,
  assertTransform2,
- assertVector2Like,
- assertRotation2Like,
- assertMatrix2Like,
- assertMatrix3Like,
- assertComplexLike,
- assertIntervalLike,
- assertTransform2Like,
 } from './validation/assert';

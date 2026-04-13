@@ -48,26 +48,15 @@
     "import": "./main.mjs"
    }
   },
-  "./validation/assert": {
-   "types": "./lib/@types/validation/assert.d.ts",
+  "./validation/shapes": {
+   "types": "./lib/@types/validation/shapes.d.ts",
    "development": {
-    "require": "./lib/cjs/validation/assert.development.js",
-    "import": "./lib/esm/validation/assert.development.js"
+    "require": "./lib/cjs/validation/shapes.development.js",
+    "import": "./lib/esm/validation/shapes.development.js"
    },
    "default": {
-    "require": "./lib/cjs/validation/assert.production.js",
-    "import": "./lib/esm/validation/assert.production.js"
-   }
-  },
-  "./deterministic": {
-   "types": "./lib/@types/deterministic/deterministic-kernels.d.ts",
-   "development": {
-    "require": "./lib/cjs/deterministic/deterministic-kernels.development.js",
-    "import": "./lib/esm/deterministic/deterministic-kernels.development.js"
-   },
-   "default": {
-    "require": "./lib/cjs/deterministic/deterministic-kernels.production.js",
-    "import": "./lib/esm/deterministic/deterministic-kernels.production.js"
+    "require": "./lib/cjs/validation/shapes.production.js",
+    "import": "./lib/esm/validation/shapes.production.js"
    }
   },
   "./utils/random": {
