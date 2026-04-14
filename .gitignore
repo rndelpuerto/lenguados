@@ -141,6 +141,11 @@ packages/**/lib
 packages/**/docs
 packages/**/bundle-stats.html
 
+# Benchmark results (generated output)
+tools/benchmark/results/
+tools/benchmark/node_modules/
+tools/benchmark/dist/
+
 # AI agent configuration (local only)
 CLAUDE.md
 CLAUDE.local.md

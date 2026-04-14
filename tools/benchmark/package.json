@@ -1,0 +1,39 @@
+{
+ "name": "@lenguados/benchmark",
+ "version": "0.0.0",
+ "private": true,
+ "description": "Scientific benchmarking and stress testing laboratory for @lenguados/math2d",
+ "type": "module",
+ "engines": {
+  "node": ">=24"
+ },
+ "scripts": {
+  "bench": "tsx scripts/bench.ts",
+  "stress": "node --expose-gc ./node_modules/.bin/tsx scripts/stress.ts",
+  "dx": "tsx scripts/dx.ts",
+  "cross-env": "tsx scripts/cross-env.ts",
+  "compare": "tsx scripts/compare.ts",
+  "run-all": "tsx scripts/run-all.ts",
+  "smoke": "tsx scripts/smoke.ts",
+  "test": "node --experimental-vm-modules ./node_modules/.bin/jest"
+ },
+ "dependencies": {
+  "decimal.js": "^10.4.3",
+  "fast-check": "^3.22.0",
+  "gl-matrix": "^3.4.3",
+  "mitata": "^1.0.10",
+  "tsx": "^4.19.0"
+ },
+ "devDependencies": {
+  "@jest/globals": "^30.3.0",
+  "@size-limit/esbuild": "^11.0.0",
+  "@swc/core": "^1.15.24",
+  "@swc/jest": "^0.2.39",
+  "@types/node": "^25.6.0",
+  "jest": "^30.3.0",
+  "size-limit": "^11.0.0"
+ },
+ "optionalDependencies": {
+  "playwright": "^1.48.0"
+ }
+}

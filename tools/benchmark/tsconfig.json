@@ -1,0 +1,24 @@
+{
+ "compilerOptions": {
+  "target": "ESNext",
+  "module": "ESNext",
+  "moduleResolution": "bundler",
+  "allowImportingTsExtensions": true,
+  "strict": true,
+  "exactOptionalPropertyTypes": true,
+  "noUncheckedIndexedAccess": true,
+  "esModuleInterop": true,
+  "skipLibCheck": true,
+  "noEmit": true,
+  "rootDir": ".",
+  "declaration": false,
+  "sourceMap": true,
+  "types": ["node"],
+  "paths": {
+   "@lenguados/math2d": ["../../packages/math2d/lib/@types/index.d.ts"],
+   "@lenguados/math2d/*": ["../../packages/math2d/lib/@types/*"]
+  }
+ },
+ "include": ["src/**/*.ts", "scripts/**/*.ts", "test/**/*.ts"],
+ "exclude": ["node_modules", "dist", "results"]
+}
