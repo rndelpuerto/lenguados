@@ -154,6 +154,14 @@ const ROOT_GUIDES = [
   position: 3,
  },
  {
+  source: 'ICONOGRAPHY_STANDARD.md',
+  output: 'iconography-standard.md',
+  title: 'Iconography Standard',
+  description:
+   'Icon library, placement rules, sizing, color, accessibility, and density guidelines for the documentation site',
+  position: 4,
+ },
+ {
   source: 'MODULE_EXPORTS.md',
   output: 'module-exports.md',
   title: 'Module Exports & Internals',

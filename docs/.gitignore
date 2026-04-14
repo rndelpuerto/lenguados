@@ -11,6 +11,7 @@ docs/api/
 docs/architecture.md
 docs/contributing/
 docs/packages/*/overview.md
+docs/packages/*/module-exports.md
 docs/guides/
 
 # Misc
