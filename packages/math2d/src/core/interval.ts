@@ -1531,7 +1531,8 @@ export class Interval implements IntervalLike {
   const newMin = interval.min + delta;
   const newMax = interval.max - delta;
   if (newMin > newMax) {
-   const mid = (interval.min + interval.max) * 0.5;
+   // Robust midpoint formula avoids overflow when min + max > MAX_VALUE
+   const mid = interval.min + (interval.max - interval.min) * 0.5;
    return Interval.ensureOut(out).setDirect(mid, mid);
   }
   return Interval.ensureOut(out).setDirect(newMin, newMax);
@@ -2212,7 +2213,8 @@ export class Interval implements IntervalLike {
   const newMin = this.min + delta;
   const newMax = this.max - delta;
   if (newMin > newMax) {
-   const mid = (this.min + this.max) * 0.5;
+   // Robust midpoint formula avoids overflow when min + max > MAX_VALUE
+   const mid = this.min + (this.max - this.min) * 0.5;
    this.min = mid;
    this.max = mid;
   } else {

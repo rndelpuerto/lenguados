@@ -322,10 +322,17 @@ export class SeededRandomSource implements RandomSource {
   if (!Array.isArray(state) || state.length !== 4) {
    throw new RangeError('State must be a 4-element array');
   }
-  if (state[0] === 0 && state[1] === 0 && state[2] === 0 && state[3] === 0) {
-   throw new RangeError('State must not be all zeros');
+  // Convert to uint32 first — NaN and non-integer values coerce to 0 via >>> 0
+  const s0 = state[0] >>> 0;
+  const s1 = state[1] >>> 0;
+  const s2 = state[2] >>> 0;
+  const s3 = state[3] >>> 0;
+  if (s0 === 0 && s1 === 0 && s2 === 0 && s3 === 0) {
+   throw new RangeError(
+    'State must not be all zeros (NaN and non-integer values are coerced to 0 via >>> 0)',
+   );
   }
-  this.state = [state[0] >>> 0, state[1] >>> 0, state[2] >>> 0, state[3] >>> 0];
+  this.state = [s0, s1, s2, s3];
  }
 }
 

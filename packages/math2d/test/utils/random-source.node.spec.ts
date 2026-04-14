@@ -131,6 +131,14 @@ describe('utils/random-source', () => {
    );
   });
 
+  it('restoreState rejects NaN values that coerce to all-zero state', () => {
+   const source = new SeededRandomSource(12345);
+
+   expect(() => source.restoreState([NaN, 0, 0, 0])).toThrow(RangeError);
+   expect(() => source.restoreState([NaN, NaN, NaN, NaN])).toThrow(RangeError);
+   expect(() => source.restoreState([0.5, 0, 0, 0])).toThrow(RangeError);
+  });
+
   it('handles edge case seeds', () => {
    // Seed of 0 should work
    const source0 = new SeededRandomSource(0);

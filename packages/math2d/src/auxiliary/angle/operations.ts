@@ -245,6 +245,8 @@ export function isAngleBetween(
  * @remarks
  * Clamps to the nearest boundary of the CCW arc from min to max.
  *
+ * Returns NaN if any argument is NaN (IEEE 754 §6.2 NaN propagation).
+ *
  * @param angle - Angle to clamp
  * @param min - Minimum angle
  * @param max - Maximum angle
@@ -261,6 +263,9 @@ export function isAngleBetween(
  * @since 0.7.0
  */
 export function clampAngle(angle: number, min: number, max: number): number {
+ // IEEE 754 §6.2: propagate NaN — prevents silent conversion to valid angle
+ if (angle !== angle || min !== min || max !== max) return NaN;
+
  // Normalize all angles to (-PI, PI]
  const normAngle = normalizeRadians(angle);
  const normMin = normalizeRadians(min);

@@ -12,7 +12,6 @@ lenguados/
     examples/   → @lenguados/examples Interactive demos and visual tests
   docs/           Docusaurus documentation site + TypeDoc API reference
   scripts/        Shared build scripts (build.mjs, clean.mjs, watch.mjs)
-  openspec/       Spec-driven development workflow
 ```
 
 ## Package Dependency Graph

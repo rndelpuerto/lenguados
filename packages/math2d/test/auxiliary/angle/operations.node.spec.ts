@@ -102,6 +102,12 @@ describe('angle/operations', () => {
    // When equidistant, returns min boundary (-π/2)
    expect(clampAngle(5 * Math.PI, -Math.PI / 2, Math.PI / 2)).toBeCloseTo(-Math.PI / 2);
   });
+
+  test('propagates NaN per IEEE 754 §6.2', () => {
+   expect(clampAngle(NaN, 0, Math.PI / 2)).toBeNaN();
+   expect(clampAngle(0, NaN, Math.PI / 2)).toBeNaN();
+   expect(clampAngle(0, 0, NaN)).toBeNaN();
+  });
  });
 
  describe('sinCos', () => {

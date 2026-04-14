@@ -185,7 +185,7 @@ Every package includes three root-level entry files that bridge CJS and ESM cons
 
 CJS uses a single file with a runtime `if/else` on `process.env.NODE_ENV` because `require()` is evaluated at runtime. ESM uses two separate files because `import` statements are statically analyzed — bundlers resolve the correct file at build time through the `development` and `default` conditions in the `exports` field.
 
-For the full build configuration and `package.json` field requirements, see `rollup.config.mjs` and the `build-and-exports` conventions in `.claude/rules/`.
+For the full build configuration and `package.json` field requirements, see `rollup.config.mjs`.
 
 ---
 

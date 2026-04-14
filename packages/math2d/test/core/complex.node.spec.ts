@@ -2792,6 +2792,30 @@ describe('Component-wise operations', () => {
     expect(instanceR.imag).toBe(staticR.imag);
    }
   });
+
+  it('avoids catastrophic cancellation for |real| >> |imag| (Friedland 1967)', () => {
+   // a >= 0 branch: (r - a) would cancel without the b/(2t) formula
+   const z1 = Complex.sqrt({ real: 1e8, imag: 1 });
+   expect(z1.imag).not.toBe(0);
+   expect(z1.imag).toBeCloseTo(1 / (2 * Math.sqrt(1e8)), 4);
+
+   const z2 = Complex.sqrt({ real: 1e16, imag: 1 });
+   expect(z2.imag).not.toBe(0);
+   expect(z2.imag).toBeCloseTo(1 / (2 * Math.sqrt(1e16)), 4);
+
+   // a < 0 branch: (r + a) would cancel without the |b|/(2t) formula
+   const z3 = Complex.sqrt({ real: -1e8, imag: 1 });
+   expect(z3.real).not.toBe(0);
+   expect(z3.real).toBeCloseTo(1 / (2 * Math.sqrt(1e8)), 4);
+  });
+
+  it('round-trip sqrt(z)^2 ≈ z for extreme aspect ratio', () => {
+   const input = { real: 1e12, imag: 1e-6 };
+   const root = Complex.sqrt(input);
+   const squared = Complex.multiply(root, root);
+   expect(squared.real).toBeCloseTo(input.real, 0);
+   expect(squared.imag).toBeCloseTo(input.imag, 0);
+  });
  });
 
  /* ===== exp and log ===== */
@@ -2807,6 +2831,24 @@ describe('Component-wise operations', () => {
    const z = Complex.exp({ real: 0, imag: Math.PI });
    expect(z.real).toBeCloseTo(-1, DIGITS);
    expect(z.imag).toBeCloseTo(0, DIGITS);
+  });
+
+  it('exp(+∞ + 0i) = (+∞, 0) per C99 Annex G §G.6.3.1', () => {
+   const z = Complex.exp({ real: Infinity, imag: 0 });
+   expect(z.real).toBe(Infinity);
+   expect(z.imag).toBe(0);
+  });
+
+  it('exp(-∞ + 0i) = (0, 0)', () => {
+   const z = Complex.exp({ real: -Infinity, imag: 0 });
+   expect(z.real).toBe(0);
+   expect(z.imag).toBe(0);
+  });
+
+  it('exp(+∞ + (-0)i) preserves signed zero', () => {
+   const z = Complex.exp({ real: Infinity, imag: -0 });
+   expect(z.real).toBe(Infinity);
+   expect(Object.is(z.imag, -0)).toBe(true);
   });
  });
 

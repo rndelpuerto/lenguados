@@ -1911,6 +1911,13 @@ describe('Interval', () => {
    const iv = new Interval(0, 10);
    expect(() => iv.shrink(-1)).toThrow(RangeError);
   });
+
+  it('shrink uses robust midpoint formula (no overflow for extreme bounds)', () => {
+   const result = Interval.shrink({ min: 1e308, max: 1.5e308 }, 1e308);
+   expect(Number.isFinite(result.min)).toBe(true);
+   expect(Number.isFinite(result.max)).toBe(true);
+   expect(result.min).toBe(result.max);
+  });
  });
 
  describe('sqrtSafe', () => {

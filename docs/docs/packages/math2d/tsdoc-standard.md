@@ -13,7 +13,6 @@ This document is the authoritative reference for TSDoc documentation conventions
 **Related documents:**
 
 - [ARCHITECTURE.md](https://github.com/rndelpuerto/lenguados/blob/main/packages/math2d/ARCHITECTURE.md) — Layering strategy, key patterns, naming conventions
-- [OpenSpec spec](https://github.com/rndelpuerto/lenguados/blob/main/openspec/specs/documentation-standard/spec.md) — Formal requirements with testable scenarios
 
 ---
 

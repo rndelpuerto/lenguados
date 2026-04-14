@@ -1461,16 +1461,20 @@ export class Complex implements ComplexLike {
   * Returns the principal square root of a complex number.
   *
   * @remarks
-  * Uses the direct algebraic formula (matching C99 Annex G / production
-  * `csqrt` implementations) instead of polar form, avoiding the overhead
-  * of `atan2` + `sinCos` and providing better numerical stability.
+  * Uses the Friedland 1967 (CACM Algorithm 312) formula instead of polar form,
+  * avoiding the overhead of `atan2` + `sinCos` and providing better numerical
+  * stability.
   *
-  * Branch-cut handling (C99 Annex G):
+  * The general-case formula derives the smaller component via division using
+  * the identity 2·Re(√z)·Im(√z) = Im(z), avoiding catastrophic cancellation
+  * in `r − a` when `|Re| >> |Im|`.
+  *
+  * Branch-cut handling (C99 Annex G, Kahan 1987):
   * - `sqrt(0)` = 0
   * - `sqrt(a + 0i)` where `a >= 0` = `(sqrt(a), 0)`
   * - `sqrt(a + 0i)` where `a < 0` = `(0, sqrt(-a))`
-  * - General: `(sqrt((r+a)/2), sign(b) * sqrt((r-a)/2))`
-  *   where `r = |z|`, `a = Re(z)`, `b = Im(z)`
+  * - General (a ≥ 0): `t = sqrt((r+a)/2)`, `imag = b/(2t)`
+  * - General (a < 0): `t = sqrt((r-a)/2)`, `real = |b|/(2t)`
   *
   * @param complex - Complex number
   * @param out - Optional output complex
@@ -1499,16 +1503,35 @@ export class Complex implements ComplexLike {
    return target.set(0, Object.is(b, -0) ? -Math.sqrt(-a) : Math.sqrt(-a));
   }
 
-  // General case: algebraic formula (C99 csqrt)
+  // General case: Friedland 1967 (CACM Algorithm 312).
+  // Derives the smaller component via division using the identity
+  // 2·Re(√z)·Im(√z) = Im(z), avoiding catastrophic cancellation in r − a
+  // when |Re| >> |Im| (or r + a when |Re| << −|Im|).
   const r = hypot(a, b);
-  const realPart = Math.sqrt((r + a) / 2);
-  const imagPart = (b < 0 ? -1 : 1) * Math.sqrt((r - a) / 2);
+  let realPart: number;
+  let imagPart: number;
+
+  if (a >= 0) {
+   // (r + a) is well-conditioned; (r − a) may cancel → derive imag from real
+   realPart = Math.sqrt((r + a) * 0.5);
+   imagPart = b / (2 * realPart);
+  } else {
+   // (r − a) = (r + |a|) is well-conditioned; (r + a) may cancel → derive real from imag
+   imagPart = Math.sqrt((r - a) * 0.5);
+   realPart = Math.abs(b) / (2 * imagPart);
+   if (b < 0) imagPart = -imagPart;
+  }
 
   return target.set(realPart, imagPart);
  }
 
  /**
   * Computes the complex exponential e^z using Euler's formula.
+  *
+  * @remarks
+  * Pure real input avoids ∞ × sin(0) = NaN (IEEE 754 ∞ × 0 = NaN).
+  * Per C99 Annex G §G.6.3.1, exp(x + 0i) = (exp(x), 0).
+  *
   * @param z - Complex exponent
   * @param out - Optional output complex
   * @returns e^z = e^re * (cos(im) + i·sin(im))
@@ -1517,6 +1540,10 @@ export class Complex implements ComplexLike {
   * @since 0.7.0
   */
  public static exp(z: ReadonlyComplexLike, out?: Complex): Complex {
+  // C99 Annex G §G.6.3.1: exp(x + 0i) = (exp(x), 0) — avoids ∞ × sin(0) = NaN
+  if (z.imag === 0) {
+   return Complex.ensureOut(out).set(detExp(z.real), z.imag);
+  }
   const er = detExp(z.real);
   const sc = sinCos(z.imag);
   return Complex.ensureOut(out).set(er * sc.cos, er * sc.sin);
