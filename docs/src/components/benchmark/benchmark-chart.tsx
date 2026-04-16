@@ -1,0 +1,46 @@
+/**
+ * Base ECharts wrapper with Docusaurus theme integration.
+ *
+ * Uses tree-shaken ECharts core and detects light/dark mode
+ * via Docusaurus useColorMode for automatic theme switching.
+ */
+
+import React from 'react';
+import ReactEChartsCore from 'echarts-for-react/lib/core';
+import { useColorMode } from '@docusaurus/theme-common';
+import { echarts } from './echarts-setup';
+import type { EChartsOption } from 'echarts';
+
+interface BenchmarkChartProps {
+ option: EChartsOption;
+ height?: number | string;
+ style?: React.CSSProperties;
+}
+
+export default function BenchmarkChart({
+ option,
+ height = 400,
+ style,
+}: BenchmarkChartProps): React.ReactElement {
+ const { colorMode } = useColorMode();
+ const isDark = colorMode === 'dark';
+
+ const themedOption: EChartsOption = {
+  ...option,
+  backgroundColor: 'transparent',
+  textStyle: {
+   color: isDark ? '#e3e3e3' : '#333',
+   ...(option.textStyle as Record<string, unknown>),
+  },
+ };
+
+ return (
+  <ReactEChartsCore
+   echarts={echarts}
+   option={themedOption}
+   style={{ height, width: '100%', ...style }}
+   theme={isDark ? 'dark' : undefined}
+   notMerge
+  />
+ );
+}

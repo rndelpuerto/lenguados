@@ -6,7 +6,7 @@
  * (assertions stripped) maintains mathematical correctness.
  */
 
-import { loadMath2d } from '../harness/math2d-loader.ts';
+import { math2dLoader } from '../packages/math2d/loader.ts';
 import { float64ToHex } from '../harness/ulp.ts';
 
 export interface BuildCorrectnessResult {
@@ -31,8 +31,8 @@ export async function verifyBuildCorrectness(): Promise<{
  correctness: BuildCorrectnessResult[];
  assertions: AssertionBehaviorResult[];
 }> {
- const devMod = await loadMath2d('development');
- const prodMod = await loadMath2d('production');
+ const devMod = await math2dLoader.load('development');
+ const prodMod = await math2dLoader.load('production');
 
  const correctness: BuildCorrectnessResult[] = [];
  const assertions: AssertionBehaviorResult[] = [];
@@ -52,8 +52,16 @@ export async function verifyBuildCorrectness(): Promise<{
   let devThrows = false;
   let prodThrows = false;
 
-  try { devFn(); } catch { devThrows = true; }
-  try { prodFn(); } catch { prodThrows = true; }
+  try {
+   devFn();
+  } catch {
+   devThrows = true;
+  }
+  try {
+   prodFn();
+  } catch {
+   prodThrows = true;
+  }
 
   assertions.push({
    operation: name,
@@ -78,22 +86,50 @@ export async function verifyBuildCorrectness(): Promise<{
  const v = { x: 3.5, y: 7.2 };
  const v2 = { x: 1.1, y: 4.8 };
 
- compareOperation('Vector2.dot', () => dV2.dot(v, v2), () => pV2.dot(v, v2));
- compareOperation('Vector2.cross', () => dV2.cross(v, v2), () => pV2.cross(v, v2));
- compareOperation('Vector2.magnitude', () => dV2.magnitude(v), () => pV2.magnitude(v));
- compareOperation('Vector2.distance', () => dV2.distance(v, v2), () => pV2.distance(v, v2));
+ compareOperation(
+  'Vector2.dot',
+  () => dV2.dot(v, v2),
+  () => pV2.dot(v, v2),
+ );
+ compareOperation(
+  'Vector2.cross',
+  () => dV2.cross(v, v2),
+  () => pV2.cross(v, v2),
+ );
+ compareOperation(
+  'Vector2.magnitude',
+  () => dV2.magnitude(v),
+  () => pV2.magnitude(v),
+ );
+ compareOperation(
+  'Vector2.distance',
+  () => dV2.distance(v, v2),
+  () => pV2.distance(v, v2),
+ );
 
  const m = dM3.fromRotation(0.7);
  const pm = pM3.fromRotation(0.7);
- compareOperation('Matrix3.determinant', () => dM3.determinant(m), () => pM3.determinant(pm));
+ compareOperation(
+  'Matrix3.determinant',
+  () => dM3.determinant(m),
+  () => pM3.determinant(pm),
+ );
 
  const r = dR2.fromAngle(0.7);
  const pr = pR2.fromAngle(0.7);
- compareOperation('Rotation2.angle', () => dR2.angle(r), () => pR2.angle(pr));
+ compareOperation(
+  'Rotation2.angle',
+  () => dR2.angle(r),
+  () => pR2.angle(pr),
+ );
 
  const c = dC.fromValues(3.5, 7.2);
  const pc = pC.fromValues(3.5, 7.2);
- compareOperation('Complex.magnitude', () => dC.magnitude(c), () => pC.magnitude(pc));
+ compareOperation(
+  'Complex.magnitude',
+  () => dC.magnitude(c),
+  () => pC.magnitude(pc),
+ );
 
  // Assertion stripping — dev throws, prod doesn't
  const zeroVec = { x: 0, y: 0 };

@@ -1,0 +1,97 @@
+{
+ "metadata": {
+  "timestamp": "2026-01-01T00:00:00.000Z",
+  "nodeVersion": "v24.0.0",
+  "os": "linux 6.5.0",
+  "cpu": "Test CPU (4 cores)",
+  "commitHash": "fixture",
+  "arch": "x64"
+ },
+ "results": [
+  {
+   "operation": "Vector2.add (out)",
+   "stats": {
+    "mean": 2.5,
+    "median": 2.3,
+    "stddev": 0.3,
+    "ci95lo": 2.1,
+    "ci95hi": 2.9,
+    "outliersMild": 10,
+    "outliersSevere": 2,
+    "samples": 1000,
+    "opsPerSec": 400000000,
+    "p50": 2.3,
+    "p95": 3.0,
+    "p99": 3.5
+   }
+  },
+  {
+   "operation": "Vector2.normalize (out)",
+   "stats": {
+    "mean": 5.0,
+    "median": 4.8,
+    "stddev": 0.5,
+    "ci95lo": 4.5,
+    "ci95hi": 5.5,
+    "outliersMild": 15,
+    "outliersSevere": 5,
+    "samples": 1000,
+    "opsPerSec": 200000000,
+    "p50": 4.8,
+    "p95": 5.8,
+    "p99": 6.2
+   }
+  },
+  {
+   "operation": "Vector2.normalizeSafe (out)",
+   "stats": {
+    "mean": 5.5,
+    "median": 5.3,
+    "stddev": 0.6,
+    "ci95lo": 4.9,
+    "ci95hi": 6.1,
+    "outliersMild": 20,
+    "outliersSevere": 3,
+    "samples": 1000,
+    "opsPerSec": 181818182,
+    "p50": 5.3,
+    "p95": 6.3,
+    "p99": 6.8
+   }
+  },
+  {
+   "operation": "Vector2.normalizeUnchecked (out)",
+   "stats": {
+    "mean": 4.0,
+    "median": 3.8,
+    "stddev": 0.4,
+    "ci95lo": 3.6,
+    "ci95hi": 4.4,
+    "outliersMild": 8,
+    "outliersSevere": 1,
+    "samples": 1000,
+    "opsPerSec": 250000000,
+    "p50": 3.8,
+    "p95": 4.5,
+    "p99": 5.0
+   }
+  },
+  {
+   "operation": "Matrix2.determinant",
+   "stats": {
+    "mean": 3.0,
+    "median": 2.8,
+    "stddev": 0.2,
+    "ci95lo": 2.7,
+    "ci95hi": 3.3,
+    "outliersMild": 5,
+    "outliersSevere": 0,
+    "samples": 500,
+    "opsPerSec": 333333333,
+    "p50": 2.8,
+    "p95": 3.2,
+    "p99": 3.5
+   }
+  }
+ ]
+}

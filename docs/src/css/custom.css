@@ -22,6 +22,15 @@
  --ifm-code-font-size: 95%;
  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
  --ifm-color-accent: #f44611;
+
+ /* Okabe-Ito colorblind-safe chart palette */
+ --chart-color-primary: #0072b2;
+ --chart-color-secondary: #d55e00;
+ --chart-color-tertiary: #009e73;
+ --chart-color-quaternary: #e69f00;
+ --chart-color-quinary: #cc79a7;
+ --chart-color-senary: #56b4e9;
+ --chart-color-tie: #888888;
 }
 
 .header-github-link::before {
@@ -48,4 +57,13 @@
  --ifm-color-primary-lightest: #6ad674;
  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
  --ifm-color-accent: #ff6d3f;
+
+ /* Okabe-Ito chart palette — dark theme overrides for contrast */
+ --chart-color-primary: #56b4e9;
+ --chart-color-secondary: #e69f00;
+ --chart-color-tertiary: #009e73;
+ --chart-color-quaternary: #f0e442;
+ --chart-color-quinary: #cc79a7;
+ --chart-color-senary: #0072b2;
+ --chart-color-tie: #aaaaaa;
 }

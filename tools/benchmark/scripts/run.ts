@@ -1,15 +1,26 @@
 /**
- * Main entry point for the benchmark laboratory.
+ * Shared CLI utilities for benchmark scripts.
  *
- * Verifies math2d build artifacts exist before proceeding
- * to any benchmark, stress test, or analysis operation.
+ * Provides build artifact verification and common flag parsing.
  */
 
-import { verifyBuildArtifacts } from '../src/harness/math2d-loader.ts';
-import type { BuildMode } from '../src/harness/math2d-loader.ts';
+import type { BuildMode } from '../src/harness/dimensions.ts';
+import type { PackageLoader } from '../src/harness/package-loader.ts';
+import { verifyArtifacts } from '../src/harness/loader-utils.ts';
 
-export async function ensureBuildArtifacts(modes: BuildMode[]): Promise<void> {
- const error = await verifyBuildArtifacts(modes);
+/**
+ * Verify that build artifacts exist for the given package loader.
+ * Exits the process with an error message if artifacts are missing.
+ */
+export async function ensureBuildArtifacts(
+ modes: BuildMode[],
+ loader: PackageLoader,
+): Promise<void> {
+ const entryPoints: Record<string, string> = {};
+ for (const mode of modes) {
+  entryPoints[mode] = loader.entryPoints[mode];
+ }
+ const error = await verifyArtifacts(entryPoints as Record<BuildMode, string>, loader.name);
  if (error) {
   console.error(`\n  ERROR: ${error}\n`);
   process.exit(1);
@@ -21,12 +32,14 @@ export async function ensureBuildArtifacts(modes: BuildMode[]): Promise<void> {
  */
 export function parseCommonFlags(args: string[]): {
  buildModes: BuildMode[];
+ packageName: string;
  help: boolean;
 } {
  const help = args.includes('--help') || args.includes('-h');
  const buildArg = args.find((a) => a.startsWith('--build='));
- let buildModes: BuildMode[];
+ const pkgArg = args.find((a) => a.startsWith('--package='));
 
+ let buildModes: BuildMode[];
  if (buildArg) {
   const value = buildArg.split('=')[1]!;
   buildModes = value.split(',') as BuildMode[];
@@ -34,12 +47,38 @@ export function parseCommonFlags(args: string[]): {
   buildModes = ['development', 'production'];
  }
 
- return { buildModes, help };
+ const packageName = pkgArg?.split('=')[1] ?? 'math2d';
+
+ return { buildModes, packageName, help };
+}
+
+/**
+ * Load a package's loader module by name.
+ * Exits with clear error if the package doesn't exist.
+ */
+export async function loadPackageLoader(packageName: string): Promise<PackageLoader> {
+ try {
+  const mod = await import(`../src/packages/${packageName}/loader.ts`);
+  // Find the first exported PackageLoader (convention: named export with 'load' method)
+  const loader = Object.values(mod).find(
+   (v): v is PackageLoader =>
+    typeof v === 'object' && v !== null && 'name' in v && 'load' in v && 'entryPoints' in v,
+  );
+  if (!loader) {
+   throw new Error(`No PackageLoader exported from packages/${packageName}/loader.ts`);
+  }
+  return loader;
+ } catch (err: unknown) {
+  const msg = err instanceof Error ? err.message : String(err);
+  console.error(`\n  ERROR: Unknown package '${packageName}'. ${msg}\n`);
+  process.exit(1);
+ }
 }
 
 // When run directly, verify both builds exist
 if (import.meta.url === `file://${process.argv[1]}`) {
- const { buildModes } = parseCommonFlags(process.argv.slice(2));
- await ensureBuildArtifacts(buildModes);
+ const { buildModes, packageName } = parseCommonFlags(process.argv.slice(2));
+ const loader = await loadPackageLoader(packageName);
+ await ensureBuildArtifacts(buildModes, loader);
  console.log('Build artifacts verified. Ready to run benchmarks.');
 }

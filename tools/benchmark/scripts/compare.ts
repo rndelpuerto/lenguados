@@ -1,55 +1,81 @@
 /**
  * CLI entry point for cross-library comparison.
  *
- * Usage: npm run compare -- [--libraries=math2d,gl-matrix]
- *        [--operations=vectorAdd,vectorNormalize]
- *        [--math2d-tier=default|unchecked]
+ * Compares math2d vs gl-matrix under the most representative production scenario:
+ * - Production build (assertions stripped by bundler DCE)
+ * - Unchecked tier (equivalent to default after DCE)
+ * - Native Math.* (same as gl-matrix — apples-to-apples)
+ * - Static methods with out parameter (zero allocation for both libs)
+ *
+ * The cost of fdlibm determinism is measured separately in the internal
+ * performance benchmarks (see the performance/auxiliary page), not in
+ * cross-library comparison, because gl-matrix has no determinism toggle.
+ *
+ * Usage: npm run compare -- [--operations=vectorAdd,vectorNormalize]
  */
 
-import { ensureBuildArtifacts } from './run.ts';
-import { createMath2dAdapter } from '../src/adapters/math2d-adapter.ts';
-import { createGlMatrixAdapter } from '../src/adapters/gl-matrix-adapter.ts';
+import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { join } from 'node:path';
+
+import { ensureBuildArtifacts, loadPackageLoader } from './run.ts';
+import { createMath2dAdapter } from '../src/packages/math2d/adapters/math2d-adapter.ts';
+import { createGlMatrixAdapter } from '../src/packages/math2d/adapters/gl-matrix-adapter.ts';
 import { runComparison } from '../src/harness/comparison-runner.ts';
 import {
  printComparisonAscii,
  generateComparisonJson,
 } from '../src/harness/comparison-reporter.ts';
-import { OPERATION_NAMES } from '../src/harness/operation-vocabulary.ts';
-import { writeFileSync, mkdirSync } from 'node:fs';
+import type { ComparisonConditions } from '../src/harness/comparison-reporter.ts';
+import { ALL_OPERATIONS, OPERATION_NAMES } from '../src/packages/math2d/vocabulary.ts';
+import { createLatestPointer } from '../src/harness/reporter.ts';
 
 const args = process.argv.slice(2);
-const tierArg = args.find((a) => a.startsWith('--math2d-tier='))?.split('=')[1] as 'default' | 'unchecked' | undefined;
 const opsArg = args.find((a) => a.startsWith('--operations='))?.split('=')[1];
 const operationFilter = opsArg ? new Set(opsArg.split(',')) : undefined;
 
-await ensureBuildArtifacts(['production']);
+const loader = await loadPackageLoader('math2d');
+await ensureBuildArtifacts(['production'], loader);
 
 console.log('\n  Cross-Library Comparison\n  =======================\n');
 
-// Create adapters
 const math2dAdapter = await createMath2dAdapter({
- tier: tierArg ?? 'default',
+ tier: 'unchecked',
  buildMode: 'production',
+ nativeMath: true,
 });
 const glMatrixAdapter = createGlMatrixAdapter();
 
-console.log(`  math2d: v${math2dAdapter.version} (tier: ${tierArg ?? 'default'})`);
+console.log(`  math2d: v${math2dAdapter.version}`);
 console.log(`  gl-matrix: v${glMatrixAdapter.version}`);
-console.log(`  Operations: ${operationFilter ? [...operationFilter].join(', ') : 'all standard vocabulary'}\n`);
+console.log(`  Build: production (assertions stripped by bundler DCE)`);
+console.log(`  Tier: unchecked (equivalent to default after DCE)`);
+console.log(`  Math: native Math.* (apples-to-apples with gl-matrix)`);
+console.log(`  Methods: static with out parameter (zero allocation)`);
+console.log(
+ `  Operations: ${operationFilter ? [...operationFilter].join(', ') : 'all standard vocabulary'}\n`,
+);
 
-// Run comparison
 const result = await runComparison(
  [math2dAdapter, glMatrixAdapter],
  'gl-matrix',
+ OPERATION_NAMES,
  operationFilter,
 );
 
-// Print ASCII table
 console.log(printComparisonAscii(result));
 
-// Save JSON
+const conditions: ComparisonConditions = {
+ buildMode: 'production',
+ tier: 'unchecked (simulates bundler DCE of assertions)',
+ determinism: 'native (apples-to-apples — both libs use platform Math.*)',
+ methodStyle: 'static with out parameter (zero allocation)',
+};
+
 mkdirSync('results', { recursive: true });
-const json = generateComparisonJson(result);
-const filepath = `results/comparison-${new Date().toISOString().replace(/[:.]/g, '-')}.json`;
+const json = generateComparisonJson(result, ALL_OPERATIONS, conditions);
+const filename = `comparison-${new Date().toISOString().replace(/[:.]/g, '-')}.json`;
+const filepath = join('results', filename);
+const latestPath = join('results', 'comparison-latest.json');
 writeFileSync(filepath, JSON.stringify(json, null, 2));
+createLatestPointer(filepath, latestPath, filename);
 console.log(`\n  Results saved to: ${filepath}\n`);

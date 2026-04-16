@@ -5,9 +5,9 @@
  * Tests sideEffects: false is honored.
  */
 
-import { MATH2D_ROOT } from '../harness/math2d-loader.ts';
 import { measureBundleSize } from './bundle-size.ts';
-import type { BundleSizeResult } from './bundle-size.ts';
+
+import type { DxConfig } from '../harness/dx-types.ts';
 
 export interface TreeShakingResult {
  fullSize: number;
@@ -23,14 +23,16 @@ const MIN_REDUCTION_PERCENT = 40;
 /**
  * Verify tree-shaking by comparing full import vs single-type import.
  */
-export function verifyTreeShaking(): TreeShakingResult {
+export function verifyTreeShaking(config: DxConfig): TreeShakingResult {
  const fullResult = measureBundleSize(
-  `export * from '${MATH2D_ROOT}main.mjs';`,
+  `export * from '${config.mainEntry}';`,
   'full-library',
+  config.root,
  );
  const minResult = measureBundleSize(
-  `export { Vector2 } from '${MATH2D_ROOT}main.mjs';`,
-  'vector2-only',
+  config.treeshakingMinimalImport,
+  'minimal-import',
+  config.root,
  );
 
  const fullSize = fullResult?.rawBytes ?? 0;
@@ -39,10 +41,7 @@ export function verifyTreeShaking(): TreeShakingResult {
  const reductionPercent = fullSize > 0 ? (reduction / fullSize) * 100 : 0;
 
  // Test sideEffects: false — bare import should produce empty bundle
- const bareResult = measureBundleSize(
-  `import '${MATH2D_ROOT}main.mjs';`,
-  'bare-import',
- );
+ const bareResult = measureBundleSize(`import '${config.mainEntry}';`, 'bare-import', config.root);
  const sideEffectsEmpty = (bareResult?.rawBytes ?? Infinity) < 100;
 
  return {

@@ -5,12 +5,11 @@
  * each benchmark cell runs, restoring state afterward.
  */
 
-import type { DimensionCell } from './dimensions.ts';
-import { getConfig, loadMath2d } from './math2d-loader.ts';
-import type { BuildMode } from './math2d-loader.ts';
+import type { DimensionCell, BuildMode } from './dimensions.ts';
+import type { PackageLoader } from './package-loader.ts';
 
 export interface CellContext {
- /** The loaded math2d module for this cell's build mode */
+ /** The loaded module for this cell's build mode */
  math2d: Record<string, unknown>;
  /** The cell being executed */
  cell: DimensionCell;
@@ -21,26 +20,32 @@ export interface CellContext {
 /**
  * Set up the environment for a single dimension cell.
  *
- * 1. Loads the correct math2d build (dev or prod)
- * 2. Sets config.useNativeMath based on determinism dimension
+ * 1. Loads the correct build (dev or prod) via the package loader
+ * 2. Sets determinism config if the package and cell support it
  * 3. Returns a teardown function that restores the previous state
- *
- * Per architecture-and-layers.md: "Set once at app startup; never toggle
- * mid-computation." Benchmark cells are isolated runs — each cell sets
- * the toggle before measurement and restores after.
  */
-export async function setupCell(cell: DimensionCell): Promise<CellContext> {
- const math2d = await loadMath2d(cell.buildMode as BuildMode);
- const config = getConfig(math2d);
- const previousNativeMath = config.useNativeMath;
+export async function setupCell(cell: DimensionCell, loader: PackageLoader): Promise<CellContext> {
+ const mod = await loader.load(cell.buildMode as BuildMode);
 
- config.useNativeMath = cell.determinism === 'native';
+ let previousValue: unknown;
+ let config: Record<string, unknown> | undefined;
+
+ // Toggle determinism if the package supports it and the cell has a determinism axis
+ if (loader.getConfig && cell.determinism !== undefined) {
+  config = loader.getConfig(mod);
+  if (config && 'useNativeMath' in config) {
+   previousValue = config['useNativeMath'];
+   config['useNativeMath'] = cell.determinism === 'native';
+  }
+ }
 
  return {
-  math2d,
+  math2d: mod,
   cell,
   teardown() {
-   config.useNativeMath = previousNativeMath;
+   if (config && previousValue !== undefined) {
+    config['useNativeMath'] = previousValue;
+   }
   },
  };
 }

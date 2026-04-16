@@ -7,9 +7,8 @@
  */
 
 import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
 
-import { MATH2D_ROOT } from '../harness/math2d-loader.ts';
+import type { DxConfig } from '../harness/dx-types.ts';
 
 export interface AssertionEliminationResult {
  prodBundle: {
@@ -30,43 +29,11 @@ export interface AssertionEliminationResult {
 }
 
 /**
- * Complete list of assertion function names from validation/assert.ts.
- * Verified against the actual source code.
- */
-const ASSERTION_FUNCTIONS = [
- 'assertFinite',
- 'assertNonZero',
- // Generic assertion (note: 'assert' may match false positives in minified code,
- // so we check for 'function assert(' which is more specific)
- // 'assert' is checked separately below
- 'assertRange',
- 'assertPositive',
- 'assertNonNegative',
- 'assertSafeInteger',
- 'assertVector2',
- 'assertMatrix2',
- 'assertMatrix3',
- 'assertRotation2',
- 'assertRotation2Normalized',
- 'assertComplex',
- 'assertInterval',
- 'assertTransform2',
- // *Like shape validators
- 'assertVector2Like',
- 'assertRotation2Like',
- 'assertMatrix2Like',
- 'assertMatrix3Like',
- 'assertComplexLike',
- 'assertIntervalLike',
- 'assertTransform2Like',
-];
-
-/**
  * Verify that assertion code is eliminated from the production bundle.
  */
-export function verifyAssertionElimination(): AssertionEliminationResult {
- const prodPath = join(MATH2D_ROOT, 'lib', 'esm', 'module.js');
- const devPath = join(MATH2D_ROOT, 'lib', 'esm', 'index.development.js');
+export function verifyAssertionElimination(config: DxConfig): AssertionEliminationResult {
+ const prodPath = config.prodBundle;
+ const devPath = config.devBundle;
 
  let prodContent: string;
  let devContent: string;
@@ -83,9 +50,9 @@ export function verifyAssertionElimination(): AssertionEliminationResult {
   throw new Error(`Development bundle not found at ${devPath}. Run \`npm run build\` first.`);
  }
 
- // Check production bundle for assertion patterns
+ // Check production bundle for assertion patterns from config
  const foundInProd: string[] = [];
- for (const fn of ASSERTION_FUNCTIONS) {
+ for (const fn of config.assertionPatterns) {
   if (prodContent.includes(fn)) {
    foundInProd.push(fn);
   }
@@ -96,7 +63,7 @@ export function verifyAssertionElimination(): AssertionEliminationResult {
  const containsLenguadosDev = prodContent.includes('__LENGUADOS_DEV__');
 
  // Check development bundle has assertions (sanity check)
- const devHasAssertions = ASSERTION_FUNCTIONS.some((fn) => devContent.includes(fn));
+ const devHasAssertions = config.assertionPatterns.some((fn) => devContent.includes(fn));
 
  return {
   prodBundle: {

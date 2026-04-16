@@ -7,9 +7,19 @@ import {
  registerAdapter,
 } from '../../src/harness/library-adapter.ts';
 import type { LibraryAdapter } from '../../src/harness/library-adapter.ts';
-import { ALL_OPERATIONS, getOperationSpec, OPERATION_NAMES } from '../../src/harness/operation-vocabulary.ts';
-import { generateComparisonJson, printComparisonAscii } from '../../src/harness/comparison-reporter.ts';
-import type { ComparisonResult, LibraryBenchmarkResult } from '../../src/harness/comparison-runner.ts';
+import {
+ ALL_OPERATIONS,
+ getOperationSpec,
+ OPERATION_NAMES,
+} from '../../src/packages/math2d/vocabulary.ts';
+import {
+ generateComparisonJson,
+ printComparisonAscii,
+} from '../../src/harness/comparison-reporter.ts';
+import type {
+ ComparisonResult,
+ LibraryBenchmarkResult,
+} from '../../src/harness/comparison-runner.ts';
 import type { BenchmarkStats } from '../../src/harness/statistics.ts';
 
 function mockStats(mean: number): BenchmarkStats {
@@ -112,16 +122,24 @@ describe('Comparison Reporter', () => {
   return {
    libraries,
    scores: new Map([
-    ['math2d', {
-     geometricMean: 1.1,
-     ratios: [
-      { operation: 'vectorAdd', ratio: 1.25, targetOpsPerSec: 5e8, referenceOpsPerSec: 4e8 },
-      { operation: 'vectorNormalize', ratio: 0.8, targetOpsPerSec: 2e8, referenceOpsPerSec: 2.5e8 },
-      { operation: 'matrixMultiply', ratio: 1.2, targetOpsPerSec: 1e8, referenceOpsPerSec: 8.3e7 },
-     ],
-     targetName: 'math2d',
-     referenceName: 'gl-matrix',
-    }],
+    [
+     'math2d',
+     {
+      geometricMean: 1.1,
+      ratios: [
+       { operation: 'vectorAdd', ratio: 1.25, targetOpsPerSec: 5e8, referenceOpsPerSec: 4e8 },
+       {
+        operation: 'vectorNormalize',
+        ratio: 0.8,
+        targetOpsPerSec: 2e8,
+        referenceOpsPerSec: 2.5e8,
+       },
+       { operation: 'matrixMultiply', ratio: 1.2, targetOpsPerSec: 1e8, referenceOpsPerSec: 8.3e7 },
+      ],
+      targetName: 'math2d',
+      referenceName: 'gl-matrix',
+     },
+    ],
    ]),
    referenceLibrary: 'gl-matrix',
   };
@@ -149,7 +167,7 @@ describe('Comparison Reporter', () => {
 
  it('JSON output has correct structure', () => {
   const result = mockComparisonResult();
-  const json = generateComparisonJson(result);
+  const json = generateComparisonJson(result, ALL_OPERATIONS);
   expect(json.libraries).toHaveLength(2);
   expect(json.operations).toHaveLength(3);
   expect(json.scores).toHaveLength(1);
@@ -158,7 +176,7 @@ describe('Comparison Reporter', () => {
 
  it('JSON operations include per-library results', () => {
   const result = mockComparisonResult();
-  const json = generateComparisonJson(result);
+  const json = generateComparisonJson(result, ALL_OPERATIONS);
   const addOp = json.operations.find((o) => o.name === 'vectorAdd');
   expect(addOp).toBeDefined();
   expect(addOp!.results['math2d']).toBeDefined();

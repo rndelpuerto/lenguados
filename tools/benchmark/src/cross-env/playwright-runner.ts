@@ -11,7 +11,9 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { MATH2D_ROOT } from '../harness/math2d-loader.ts';
+import { resolvePackageRoot } from '../harness/loader-utils.ts';
+
+const MATH2D_ROOT = resolvePackageRoot('math2d');
 import type { GoldenFile, VerificationResult } from './golden-file.ts';
 
 export type BrowserName = 'chromium' | 'firefox' | 'webkit';
@@ -33,8 +35,8 @@ async function loadPlaywright(): Promise<any | null> {
  } catch {
   console.error(
    '\n  Playwright is not installed. Cross-browser tests require it.\n' +
-   '  Install with: cd tools/benchmark && npm install playwright\n' +
-   '  Then run: npx playwright install\n',
+    '  Install with: cd tools/benchmark && npm install playwright\n' +
+    '  Then run: npx playwright install\n',
   );
   return null;
  }
@@ -166,7 +168,7 @@ export async function runCrossBrowserVerification(
       hypot: m2d.hypot,
      };
 
-     const fnMap = new Map<string, typeof results[0]>();
+     const fnMap = new Map<string, (typeof results)[0]>();
 
      for (const entry of entries) {
       let r = fnMap.get(entry.fn);
@@ -177,7 +179,10 @@ export async function runCrossBrowserVerification(
       r.totalTests++;
 
       const impl = kernels[entry.fn];
-      if (!impl) { r.failed++; continue; }
+      if (!impl) {
+       r.failed++;
+       continue;
+      }
 
       const inputs = entry.inputsHex.map(fromHex);
       try {
@@ -188,12 +193,17 @@ export async function runCrossBrowserVerification(
        } else {
         r.failed++;
         r.divergences.push({
-         fn: entry.fn, inputs,
-         expectedHex: entry.expectedHex, actualHex,
-         expectedDecimal: entry.expectedDecimal, actualDecimal: actual,
+         fn: entry.fn,
+         inputs,
+         expectedHex: entry.expectedHex,
+         actualHex,
+         expectedDecimal: entry.expectedDecimal,
+         actualDecimal: actual,
         });
        }
-      } catch { r.failed++; }
+      } catch {
+       r.failed++;
+      }
      }
 
      return [...fnMap.values()];

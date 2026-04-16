@@ -3,12 +3,17 @@
  *
  * Usage: npm run bench -- [--suite=name] [--tier=default|safe|unchecked]
  *        [--determinism=fdlibm|native] [--build=development|production]
- *        [--compare=path/to/baseline.json]
+ *        [--compare=path/to/baseline.json] [--package=math2d]
  */
 
-import { ensureBuildArtifacts, parseCommonFlags } from './run.ts';
+import { ensureBuildArtifacts, parseCommonFlags, loadPackageLoader } from './run.ts';
 import { discoverSuites, filterBenchmarksForCell } from '../src/harness/suite.ts';
-import { cartesianProduct, filterCells, parseDimensionFilter, cellToLabel } from '../src/harness/dimensions.ts';
+import {
+ cartesianProduct,
+ filterCells,
+ parseDimensionFilter,
+ cellToLabel,
+} from '../src/harness/dimensions.ts';
 import { setupCell } from '../src/harness/cell-setup.ts';
 import { runBenchmarkGroup } from '../src/harness/runner.ts';
 import {
@@ -24,7 +29,7 @@ import type { GroupResult } from '../src/harness/runner.ts';
 import type { ReportEntry } from '../src/harness/reporter.ts';
 
 const args = process.argv.slice(2);
-const { buildModes, help } = parseCommonFlags(args);
+const { buildModes, packageName, help } = parseCommonFlags(args);
 
 if (help) {
  console.log(`
@@ -36,19 +41,21 @@ if (help) {
     --determinism=<mode>  Filter: fdlibm, native
     --build=<mode>        Build modes: development, production (default: both)
     --compare=<path>      Compare against baseline JSON result file
+    --package=<name>      Package to benchmark (default: math2d)
     -h, --help            Show this help
  `);
  process.exit(0);
 }
 
-await ensureBuildArtifacts(buildModes);
+const loader = await loadPackageLoader(packageName);
+await ensureBuildArtifacts(buildModes, loader);
 
 const suiteFilter = args.find((a) => a.startsWith('--suite='))?.split('=')[1];
 const compareFile = args.find((a) => a.startsWith('--compare='))?.split('=')[1];
 const dimFilter = parseDimensionFilter(args);
 
 console.log('\n  Discovering benchmark suites...');
-const suites = await discoverSuites(suiteFilter ? new RegExp(suiteFilter) : undefined);
+const suites = await discoverSuites(packageName, suiteFilter ? new RegExp(suiteFilter) : undefined);
 console.log(`  Found ${suites.length} suites.\n`);
 
 const allEntries: ReportEntry[] = [];
@@ -67,7 +74,7 @@ for (const suite of suites) {
  console.log(`\n  Suite: ${suite.name} (${cells.length} cells)`);
 
  for (const cell of cells) {
-  const ctx = await setupCell(cell);
+  const ctx = await setupCell(cell, loader);
   try {
    // Clear accumulated benchmarks from previous cell to prevent
    // duplication — setup() pushes to the shared entries array.
@@ -106,7 +113,7 @@ for (const suite of suites) {
    allGroups.push(result);
 
    for (const bm of result.benchmarks) {
-    allEntries.push(benchmarkResultToEntry(bm, cell as unknown as Record<string, string>, true));
+    allEntries.push(benchmarkResultToEntry(bm, cell as unknown as Record<string, string>, false));
    }
 
    if (suite.teardown) await suite.teardown();
@@ -125,7 +132,7 @@ for (const suite of suites) {
 console.log('\n' + printAsciiTable(allEntries) + '\n');
 
 // Generate and persist report
-const report = generateJsonReport(allGroups, undefined, true);
+const report = generateJsonReport(allGroups, undefined, false);
 const filepath = persistReport(report);
 console.log(`  Results saved to: ${filepath}`);
 

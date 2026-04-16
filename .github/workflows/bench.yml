@@ -1,0 +1,87 @@
+# .github/workflows/bench.yml
+name: Run Benchmark Suite
+
+# ───────────────────────────────────────────────────────────────────────────────
+# Trigger:
+# - Automatically on push to main (before docs deploy)
+# - Manually via workflow_dispatch (re-run benchmarks without push)
+# ───────────────────────────────────────────────────────────────────────────────
+on:
+ push:
+  branches:
+   - main
+ workflow_dispatch:
+
+# ───────────────────────────────────────────────────────────────────────────────
+# Concurrency: Cancel any in-flight benchmark run when a new push arrives.
+# ───────────────────────────────────────────────────────────────────────────────
+concurrency:
+ group: bench-${{ github.ref }}
+ cancel-in-progress: true
+
+jobs:
+ benchmark:
+  name: Run Benchmarks
+  runs-on: ubuntu-latest
+  timeout-minutes: 60
+
+  permissions:
+   contents: read
+
+  steps:
+   # ─────────────────────────────────────────────────────────────────────────
+   # Checkout
+   # ─────────────────────────────────────────────────────────────────────────
+   - name: Checkout repository
+     uses: actions/checkout@v4
+     with:
+      fetch-depth: 1
+
+   # ─────────────────────────────────────────────────────────────────────────
+   # Setup Environment
+   # ─────────────────────────────────────────────────────────────────────────
+   - name: Set up Node.js
+     uses: actions/setup-node@v4
+     with:
+      node-version-file: '.nvmrc'
+      cache: npm
+
+   - name: Install monorepo dependencies
+     run: npm ci
+
+   - name: Install benchmark tool dependencies
+     run: npm run tools:bench:setup
+
+   # ─────────────────────────────────────────────────────────────────────────
+   # Build packages (required for benchmarks)
+   # ─────────────────────────────────────────────────────────────────────────
+   - name: Build development + production bundles
+     run: npm run dist
+
+   # ─────────────────────────────────────────────────────────────────────────
+   # Run benchmark suite
+   # Produces: tools/benchmark/results/{latest,stress-latest,dx-latest,comparison-latest}.json
+   # ─────────────────────────────────────────────────────────────────────────
+   - name: Run full benchmark suite
+     run: npm run tools:bench:all
+     env:
+      # Reduce variance: disable Node.js JIT tiering changes mid-benchmark
+      NODE_OPTIONS: '--max-old-space-size=4096'
+
+   # ─────────────────────────────────────────────────────────────────────────
+   # Generate documentation summary JSON
+   # Transforms raw results (~100MB) into lightweight summaries (~80KB)
+   # ─────────────────────────────────────────────────────────────────────────
+   - name: Generate benchmark summaries for documentation
+     run: npm run tools:bench:docs-data
+
+   # ─────────────────────────────────────────────────────────────────────────
+   # Upload summaries as artifact for the docs deploy workflow
+   # ─────────────────────────────────────────────────────────────────────────
+   - name: Upload benchmark summaries
+     uses: actions/upload-artifact@v4
+     with:
+      name: benchmark-summaries
+      path: docs/static/benchmark-data/
+      retention-days: 30
+      if-no-files-found: warn

@@ -1,0 +1,89 @@
+---
+sidebar_position: 15
+title: Interval & Transform Performance
+description: Performance analysis for Interval and Transform2 — set operations, SRT composition, and inverse costs.
+---
+
+import {
+ OperationBarChart,
+ DataTable,
+ TldrBox,
+ NoDataFallback,
+ MethodologyNote,
+} from '@site/src/components/benchmark';
+import { useBenchmarkData } from '@site/src/hooks/use-benchmark-data';
+
+export function IntervalTransformPerformance() {
+ const { performance } = useBenchmarkData('math2d');
+ if (!performance || !performance.metadata) return <NoDataFallback />;
+ const interval = performance.entities['Interval'];
+ const transform = performance.entities['Transform2'];
+ if (!interval && !transform) {
+  return (
+   <TldrBox>
+    Interval and Transform2 benchmark data is not yet available.
+    Run <code>npm run tools:bench:all</code> with interval and transform suites
+    to generate this data.
+   </TldrBox>
+  );
+ }
+ const formatOps = (v) => v >= 1e9 ? `${(v/1e9).toFixed(1)}G` : v >= 1e6 ? `${(v/1e6).toFixed(0)}M` : `${(v/1e3).toFixed(0)}K`;
+ return (
+  <>
+   {interval && (
+    <>
+     <h3>Interval Operations</h3>
+     <OperationBarChart data={interval.operations} title="Interval — ops/sec" />
+     <MethodologyNote summary="Interval data table">
+      <DataTable
+       columns={[
+        { key: 'name', label: 'Operation' },
+        { key: 'opsPerSec', label: 'ops/sec', format: (v) => formatOps(Number(v)), align: 'right' },
+        { key: 'median', label: 'Median (ns)', format: (v) => Number(v).toFixed(1), align: 'right' },
+        { key: 'samples', label: 'Samples', align: 'right' },
+       ]}
+       data={interval.operations}
+       highlightBest="opsPerSec"
+      />
+     </MethodologyNote>
+    </>
+   )}
+   {transform && (
+    <>
+     <h3>Transform2 Operations</h3>
+     <OperationBarChart data={transform.operations} title="Transform2 — ops/sec" />
+     <MethodologyNote summary="Transform2 data table">
+      <DataTable
+       columns={[
+        { key: 'name', label: 'Operation' },
+        { key: 'opsPerSec', label: 'ops/sec', format: (v) => formatOps(Number(v)), align: 'right' },
+        { key: 'median', label: 'Median (ns)', format: (v) => Number(v).toFixed(1), align: 'right' },
+        { key: 'samples', label: 'Samples', align: 'right' },
+       ]}
+       data={transform.operations}
+       highlightBest="opsPerSec"
+      />
+     </MethodologyNote>
+    </>
+   )}
+  </>
+ );
+}
+
+# Interval & Transform Performance
+
+Performance analysis for `Interval` (1D ranges with set operations) and `Transform2`
+(Scale-Rotate-Translate compositions).
+
+<IntervalTransformPerformance />
+
+## Key Characteristics
+
+- **Interval set operations** (`union`, `intersection`, `contains`) are branch-heavy due to
+  min/max comparisons but operate on only 2 floats
+- **Transform2 composition** decomposes into Scale, Rotate, Translate steps — the `compose`
+  operation is the hot path in scene graph traversal
+- **Transform2 inverse** requires computing the inverse of the rotation and negating the
+  scaled translation
+
+For measurement methodology, see [Methodology](../../../performance/methodology).

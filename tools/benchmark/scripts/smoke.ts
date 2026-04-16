@@ -18,7 +18,8 @@
  * - Bundle size — not a correctness concern
  */
 
-import { verifyBuildArtifacts } from '../src/harness/math2d-loader.ts';
+import { math2dLoader } from '../src/packages/math2d/loader.ts';
+import { verifyArtifacts } from '../src/harness/loader-utils.ts';
 import { existsSync } from 'node:fs';
 
 const startTime = Date.now();
@@ -36,7 +37,7 @@ function fail(label: string, detail: string): void {
 console.log('\n  Benchmark Smoke Test (pre-push)\n');
 
 // 1. Build artifacts exist
-const buildError = await verifyBuildArtifacts(['development', 'production']);
+const buildError = await verifyArtifacts(math2dLoader.entryPoints, 'math2d');
 if (buildError) {
  fail('Build artifacts', buildError);
 } else {
@@ -81,11 +82,14 @@ if (!buildError) {
 if (!buildError) {
  try {
   const { compareBuildSizes } = await import('../src/dx/build-comparison.ts');
-  const sizes = compareBuildSizes();
+  const { math2dDxConfig } = await import('../src/packages/math2d/dx-config.ts');
+  const sizes = compareBuildSizes(math2dDxConfig);
 
   if (sizes.prodSize.raw > 0 && sizes.devSize.raw > 0) {
-   const ratio = (sizes.reductionPercent.raw).toFixed(1);
-   pass(`Build structure: dev=${(sizes.devSize.raw / 1024).toFixed(0)}KB, prod=${(sizes.prodSize.raw / 1024).toFixed(0)}KB (${ratio}% reduction)`);
+   const ratio = sizes.reductionPercent.raw.toFixed(1);
+   pass(
+    `Build structure: dev=${(sizes.devSize.raw / 1024).toFixed(0)}KB, prod=${(sizes.prodSize.raw / 1024).toFixed(0)}KB (${ratio}% reduction)`,
+   );
   } else {
    fail('Build structure', 'Could not read dev or prod bundle sizes');
   }
@@ -98,12 +102,13 @@ if (!buildError) {
 const goldenPath = 'results/golden.json';
 if (existsSync(goldenPath)) {
  try {
-  const { readGoldenFile, verifyAgainstGoldenFile } = await import('../src/cross-env/golden-file.ts');
-  const { loadMath2d, getConfig } = await import('../src/harness/math2d-loader.ts');
+  const { readGoldenFile, verifyAgainstGoldenFile } =
+   await import('../src/cross-env/golden-file.ts');
 
   const golden = readGoldenFile(goldenPath);
-  const math2d = await loadMath2d('production');
-  getConfig(math2d).useNativeMath = false;
+  const math2d = await math2dLoader.load('production');
+  const config = math2dLoader.getConfig?.(math2d);
+  if (config && 'useNativeMath' in config) config['useNativeMath'] = false;
 
   const results = verifyAgainstGoldenFile(
    golden,
@@ -124,7 +129,9 @@ if (existsSync(goldenPath)) {
   fail('Determinism', err instanceof Error ? err.message : String(err));
  }
 } else {
- console.log('  - Determinism golden file not found (run tools:bench:cross-env -- --generate-golden to create)');
+ console.log(
+  '  - Determinism golden file not found (run tools:bench:cross-env -- --generate-golden to create)',
+ );
 }
 
 // Result

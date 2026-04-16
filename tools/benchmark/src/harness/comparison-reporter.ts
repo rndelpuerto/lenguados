@@ -8,16 +8,25 @@
 import type { ComparisonResult, LibraryBenchmarkResult } from './comparison-runner.ts';
 import { padLeft, padRight, formatOpsPerSec } from './format-utils.ts';
 import type { AggregateScore } from './scoring.ts';
-import { ALL_OPERATIONS } from './operation-vocabulary.ts';
+
+/** Operation specification for cross-library comparison vocabulary. */
+export interface OperationSpec {
+ /** Standard operation name (e.g., "vectorAdd") */
+ name: string;
+ /** Category for grouping in reports (package-defined, e.g., "vector", "dynamics") */
+ category: string;
+ /** Mathematical specification of inputs and expected output */
+ description: string;
+ /** Number of input parameters (excluding output parameter) */
+ inputCount: number;
+}
 
 export function printComparisonAscii(result: ComparisonResult): string {
  const { libraries, scores, referenceLibrary } = result;
 
  if (libraries.length === 0) return '(no libraries to compare)';
 
- const opNames = [...new Set(
-  libraries.flatMap((lib) => [...lib.operations.keys()]),
- )].sort();
+ const opNames = [...new Set(libraries.flatMap((lib) => [...lib.operations.keys()]))].sort();
 
  const libNames = libraries.map((l) => l.libraryName);
  const colWidth = 14;
@@ -25,7 +34,8 @@ export function printComparisonAscii(result: ComparisonResult): string {
  const lines: string[] = [];
 
  // Header
- const header = padRight('Operation', 25) +
+ const header =
+  padRight('Operation', 25) +
   libNames.map((name) => padLeft(name, colWidth)).join('') +
   padLeft('Ratio', 10);
  lines.push(header);
@@ -68,7 +78,7 @@ export function printComparisonAscii(result: ComparisonResult): string {
  for (const [libName, score] of scores) {
   lines.push(
    `Geometric Mean: ${libName} vs ${referenceLibrary} = ${score.geometricMean.toFixed(3)}x ` +
-   `(${score.geometricMean >= 1 ? 'faster' : 'slower'})`,
+    `(${score.geometricMean >= 1 ? 'faster' : 'slower'})`,
   );
  }
 
@@ -79,7 +89,15 @@ export function printComparisonAscii(result: ComparisonResult): string {
 /* JSON Comparison Output                                                      */
 /* ========================================================================== */
 
+export interface ComparisonConditions {
+ buildMode: string;
+ tier: string;
+ determinism: string;
+ methodStyle: string;
+}
+
 export interface ComparisonJsonOutput {
+ conditions?: ComparisonConditions;
  libraries: Array<{ name: string; version: string }>;
  operations: Array<{
   name: string;
@@ -95,16 +113,22 @@ export interface ComparisonJsonOutput {
  }>;
 }
 
-export function generateComparisonJson(result: ComparisonResult): ComparisonJsonOutput {
+export function generateComparisonJson(
+ result: ComparisonResult,
+ vocabulary: OperationSpec[],
+ conditions?: ComparisonConditions,
+): ComparisonJsonOutput {
  const { libraries, scores, referenceLibrary } = result;
+ const ops = vocabulary;
 
- const opNames = [...new Set(
-  libraries.flatMap((lib) => [...lib.operations.keys()]),
- )].sort();
+ const opNames = [...new Set(libraries.flatMap((lib) => [...lib.operations.keys()]))].sort();
 
  const operations = opNames.map((opName) => {
-  const spec = ALL_OPERATIONS.find((o) => o.name === opName);
-  const results: Record<string, { opsPerSec: number; meanNs: number; ci95lo: number; ci95hi: number }> = {};
+  const spec = ops.find((o) => o.name === opName);
+  const results: Record<
+   string,
+   { opsPerSec: number; meanNs: number; ci95lo: number; ci95hi: number }
+  > = {};
 
   for (const lib of libraries) {
    const stats = lib.operations.get(opName);
@@ -124,9 +148,10 @@ export function generateComparisonJson(result: ComparisonResult): ComparisonJson
    ?.operations.get(opName);
   const nonRefLib = libraries.find((l) => l.libraryName !== referenceLibrary);
   const nonRefStats = nonRefLib?.operations.get(opName);
-  const ratio = refStats && nonRefStats && refStats.opsPerSec > 0
-   ? nonRefStats.opsPerSec / refStats.opsPerSec
-   : undefined;
+  const ratio =
+   refStats && nonRefStats && refStats.opsPerSec > 0
+    ? nonRefStats.opsPerSec / refStats.opsPerSec
+    : undefined;
 
   return {
    name: opName,
@@ -144,6 +169,7 @@ export function generateComparisonJson(result: ComparisonResult): ComparisonJson
  }));
 
  return {
+  ...(conditions ? { conditions } : {}),
   libraries: libraries.map((l) => ({ name: l.libraryName, version: l.libraryVersion })),
   operations,
   scores: scoreEntries,

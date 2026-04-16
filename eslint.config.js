@@ -63,6 +63,7 @@ export default defineFlatConfig([
    'docs/docusaurus.config.ts',
    'docs/sidebars.ts',
    'tools/package/**',
+   'tools/benchmark/**',
    'openspec/**',
   ],
  },

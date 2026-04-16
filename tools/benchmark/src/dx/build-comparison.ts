@@ -6,10 +6,9 @@
  */
 
 import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
 import { gzipSync } from 'node:zlib';
 
-import { MATH2D_ROOT } from '../harness/math2d-loader.ts';
+import type { DxConfig } from '../harness/dx-types.ts';
 
 export interface BuildComparisonResult {
  devSize: { raw: number; gzip: number };
@@ -21,12 +20,9 @@ export interface BuildComparisonResult {
 /**
  * Compare development and production build sizes.
  */
-export function compareBuildSizes(): BuildComparisonResult {
- const devPath = join(MATH2D_ROOT, 'lib', 'esm', 'index.development.js');
- const prodPath = join(MATH2D_ROOT, 'lib', 'esm', 'module.js');
-
- const devContent = readFileSync(devPath);
- const prodContent = readFileSync(prodPath);
+export function compareBuildSizes(config: DxConfig): BuildComparisonResult {
+ const devContent = readFileSync(config.devBundle);
+ const prodContent = readFileSync(config.prodBundle);
 
  const devRaw = devContent.length;
  const prodRaw = prodContent.length;
@@ -50,8 +46,14 @@ export function compareBuildSizes(): BuildComparisonResult {
 export function formatBuildComparison(result: BuildComparisonResult): string {
  const lines: string[] = [];
  lines.push('Build Size Comparison (dev vs prod):');
- lines.push(`  Development: ${(result.devSize.raw / 1024).toFixed(1)} KB raw, ${(result.devSize.gzip / 1024).toFixed(1)} KB gzip`);
- lines.push(`  Production:  ${(result.prodSize.raw / 1024).toFixed(1)} KB raw, ${(result.prodSize.gzip / 1024).toFixed(1)} KB gzip`);
- lines.push(`  Reduction:   ${(result.difference.raw / 1024).toFixed(1)} KB raw (${result.reductionPercent.raw.toFixed(1)}%), ${(result.difference.gzip / 1024).toFixed(1)} KB gzip (${result.reductionPercent.gzip.toFixed(1)}%)`);
+ lines.push(
+  `  Development: ${(result.devSize.raw / 1024).toFixed(1)} KB raw, ${(result.devSize.gzip / 1024).toFixed(1)} KB gzip`,
+ );
+ lines.push(
+  `  Production:  ${(result.prodSize.raw / 1024).toFixed(1)} KB raw, ${(result.prodSize.gzip / 1024).toFixed(1)} KB gzip`,
+ );
+ lines.push(
+  `  Reduction:   ${(result.difference.raw / 1024).toFixed(1)} KB raw (${result.reductionPercent.raw.toFixed(1)}%), ${(result.difference.gzip / 1024).toFixed(1)} KB gzip (${result.reductionPercent.gzip.toFixed(1)}%)`,
+ );
  return lines.join('\n');
 }

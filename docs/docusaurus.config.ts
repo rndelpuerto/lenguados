@@ -62,6 +62,7 @@ const config: Config = {
  ],
 
  plugins: [
+  './src/plugins/benchmark-data-plugin.ts',
   [
    'docusaurus-plugin-typedoc',
    {

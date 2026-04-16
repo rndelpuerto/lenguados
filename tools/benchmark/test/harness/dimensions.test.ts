@@ -35,13 +35,24 @@ describe('cartesianProduct', () => {
   expect(new Set(keys).size).toBe(keys.length);
  });
 
- it('uses defaults for missing axes', () => {
+ it('uses defaults for missing axes, skips undefined optional axes', () => {
   const spec: DimensionSpec = {
    entity: ['Matrix3'],
   };
   const cells = cartesianProduct(spec);
-  // defaults: 1 env * 2 buildModes * 2 determinisms * 1 tier * 1 entity = 4
-  expect(cells).toHaveLength(4);
+  // defaults: 1 env * 2 buildModes * 1 entity = 2 (tier and determinism skipped when omitted)
+  expect(cells).toHaveLength(2);
+  expect(cells[0]!.determinism).toBeUndefined();
+  expect(cells[0]!.tier).toBeUndefined();
+ });
+
+ it('empty array axis produces zero cells', () => {
+  const spec: DimensionSpec = {
+   entity: ['Vector2'],
+   tier: [],
+  };
+  const cells = cartesianProduct(spec);
+  expect(cells).toHaveLength(0);
  });
 
  it('single-value axes produce 1 cell', () => {
@@ -137,5 +148,28 @@ describe('cellToKey / cellToLabel', () => {
   expect(label).toContain('production');
   expect(label).toContain('fdlibm');
   expect(label).toContain('unchecked');
+ });
+
+ it('handles undefined optional axes in key', () => {
+  const minimal: DimensionCell = {
+   environment: 'node',
+   buildMode: 'production',
+   entity: 'Body',
+  };
+  const key = cellToKey(minimal);
+  expect(key).toBe('node:production:Body');
+  expect(key).not.toContain('undefined');
+ });
+
+ it('handles undefined optional axes in label', () => {
+  const minimal: DimensionCell = {
+   environment: 'node',
+   buildMode: 'production',
+   entity: 'Body',
+  };
+  const label = cellToLabel(minimal);
+  expect(label).toContain('Body');
+  expect(label).toContain('production');
+  expect(label).not.toContain('undefined');
  });
 });

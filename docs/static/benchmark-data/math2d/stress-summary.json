@@ -1,0 +1,1139 @@
+{
+ "metadata": { "timestamp": "2026-04-15T23:19:04.451Z", "commitHash": "53937bd", "samples": 500 },
+ "ulpAccuracy": [
+  {
+   "fn": "sin",
+   "sampleCount": 528,
+   "maxUlp": 8759214731332380000,
+   "meanUlp": 33246741669604910,
+   "histogram": { "0": 189, "1": 141, "2+": 198 },
+   "specialMismatches": 0
+  },
+  {
+   "fn": "cos",
+   "sampleCount": 528,
+   "maxUlp": 8763383717944753000,
+   "meanUlp": 49830939006142340,
+   "histogram": { "0": 177, "1": 169, "2+": 182 },
+   "specialMismatches": 0
+  },
+  {
+   "fn": "tan",
+   "sampleCount": 528,
+   "maxUlp": 9686202854910947000,
+   "meanUlp": 88290748489843000,
+   "histogram": { "0": 83, "1": 90, "2+": 355 },
+   "specialMismatches": 0
+  },
+  {
+   "fn": "asin",
+   "sampleCount": 505,
+   "maxUlp": 3,
+   "meanUlp": 0.5900990099009901,
+   "histogram": { "0": 246, "1": 223, "2+": 36 },
+   "specialMismatches": 0
+  },
+  {
+   "fn": "acos",
+   "sampleCount": 505,
+   "maxUlp": 15,
+   "meanUlp": 0.45544554455445546,
+   "histogram": { "0": 334, "1": 149, "2+": 22 },
+   "specialMismatches": 0
+  },
+  {
+   "fn": "atan",
+   "sampleCount": 506,
+   "maxUlp": 2,
+   "meanUlp": 0.29051383399209485,
+   "histogram": { "0": 369, "1": 127, "2+": 10 },
+   "specialMismatches": 0
+  },
+  {
+   "fn": "atan2",
+   "sampleCount": 535,
+   "maxUlp": 3,
+   "meanUlp": 0.33271028037383177,
+   "histogram": { "0": 375, "1": 145, "2+": 15 },
+   "specialMismatches": 0
+  },
+  {
+   "fn": "log",
+   "sampleCount": 506,
+   "maxUlp": 1,
+   "meanUlp": 0.029644268774703556,
+   "histogram": { "0": 491, "1": 15, "2+": 0 },
+   "specialMismatches": 0
+  },
+  {
+   "fn": "exp",
+   "sampleCount": 506,
+   "maxUlp": 348,
+   "meanUlp": 68.06719367588933,
+   "histogram": { "0": 16, "1": 19, "2+": 471 },
+   "specialMismatches": 0
+  },
+  {
+   "fn": "pow",
+   "sampleCount": 533,
+   "maxUlp": 12,
+   "meanUlp": 1.4878048780487805,
+   "histogram": { "0": 185, "1": 173, "2+": 175 },
+   "specialMismatches": 0
+  },
+  {
+   "fn": "hypot",
+   "sampleCount": 533,
+   "maxUlp": 2,
+   "meanUlp": 0.4727954971857411,
+   "histogram": { "0": 293, "1": 228, "2+": 12 },
+   "specialMismatches": 0
+  }
+ ],
+ "edgeCases": [
+  {
+   "operation": "magnitude",
+   "entity": "Vector2",
+   "input": [0],
+   "classification": "finite",
+   "value": 0
+  },
+  {
+   "operation": "magnitude",
+   "entity": "Vector2",
+   "input": [0],
+   "classification": "finite",
+   "value": 0
+  },
+  {
+   "operation": "magnitude",
+   "entity": "Vector2",
+   "input": [null],
+   "classification": "NaN",
+   "value": null
+  },
+  {
+   "operation": "magnitude",
+   "entity": "Vector2",
+   "input": [null],
+   "classification": "+Infinity",
+   "value": null
+  },
+  {
+   "operation": "magnitude",
+   "entity": "Vector2",
+   "input": [null],
+   "classification": "+Infinity",
+   "value": null
+  },
+  {
+   "operation": "magnitude",
+   "entity": "Vector2",
+   "input": [1.7976931348623157e308],
+   "classification": "+Infinity",
+   "value": null
+  },
+  {
+   "operation": "magnitude",
+   "entity": "Vector2",
+   "input": [5e-324],
+   "classification": "finite",
+   "value": 5e-324
+  },
+  {
+   "operation": "magnitude",
+   "entity": "Vector2",
+   "input": [2.220446049250313e-16],
+   "classification": "finite",
+   "value": 3.1401849173675503e-16
+  },
+  {
+   "operation": "magnitude",
+   "entity": "Vector2",
+   "input": [9007199254740991],
+   "classification": "finite",
+   "value": 12738103345051544
+  },
+  {
+   "operation": "magnitude",
+   "entity": "Vector2",
+   "input": [-9007199254740991],
+   "classification": "finite",
+   "value": 12738103345051544
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [0, 0],
+   "classification": "finite",
+   "value": 0
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [0, 0],
+   "classification": "finite",
+   "value": 0
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [0, null],
+   "classification": "NaN",
+   "value": null
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [0, null],
+   "classification": "NaN",
+   "value": null
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [0, null],
+   "classification": "NaN",
+   "value": null
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [0, 1.7976931348623157e308],
+   "classification": "finite",
+   "value": 0
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [0, 5e-324],
+   "classification": "finite",
+   "value": 0
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [0, 2.220446049250313e-16],
+   "classification": "finite",
+   "value": 0
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [0, 9007199254740991],
+   "classification": "finite",
+   "value": 0
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [0, -9007199254740991],
+   "classification": "finite",
+   "value": 0
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [0, 0],
+   "classification": "finite",
+   "value": 0
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [0, 0],
+   "classification": "finite",
+   "value": 0
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [0, null],
+   "classification": "NaN",
+   "value": null
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [0, null],
+   "classification": "NaN",
+   "value": null
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [0, null],
+   "classification": "NaN",
+   "value": null
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [0, 1.7976931348623157e308],
+   "classification": "finite",
+   "value": 0
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [0, 5e-324],
+   "classification": "finite",
+   "value": 0
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [0, 2.220446049250313e-16],
+   "classification": "finite",
+   "value": 0
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [0, 9007199254740991],
+   "classification": "finite",
+   "value": 0
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [0, -9007199254740991],
+   "classification": "finite",
+   "value": 0
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [null, 0],
+   "classification": "NaN",
+   "value": null
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [null, 0],
+   "classification": "NaN",
+   "value": null
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [null, null],
+   "classification": "NaN",
+   "value": null
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [null, null],
+   "classification": "NaN",
+   "value": null
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [null, null],
+   "classification": "NaN",
+   "value": null
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [null, 1.7976931348623157e308],
+   "classification": "NaN",
+   "value": null
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [null, 5e-324],
+   "classification": "NaN",
+   "value": null
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [null, 2.220446049250313e-16],
+   "classification": "NaN",
+   "value": null
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [null, 9007199254740991],
+   "classification": "NaN",
+   "value": null
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [null, -9007199254740991],
+   "classification": "NaN",
+   "value": null
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [null, 0],
+   "classification": "NaN",
+   "value": null
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [null, 0],
+   "classification": "NaN",
+   "value": null
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [null, null],
+   "classification": "NaN",
+   "value": null
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [null, null],
+   "classification": "+Infinity",
+   "value": null
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [null, null],
+   "classification": "-Infinity",
+   "value": null
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [null, 1.7976931348623157e308],
+   "classification": "+Infinity",
+   "value": null
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [null, 5e-324],
+   "classification": "+Infinity",
+   "value": null
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [null, 2.220446049250313e-16],
+   "classification": "+Infinity",
+   "value": null
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [null, 9007199254740991],
+   "classification": "+Infinity",
+   "value": null
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [null, -9007199254740991],
+   "classification": "-Infinity",
+   "value": null
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [null, 0],
+   "classification": "NaN",
+   "value": null
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [null, 0],
+   "classification": "NaN",
+   "value": null
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [null, null],
+   "classification": "NaN",
+   "value": null
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [null, null],
+   "classification": "-Infinity",
+   "value": null
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [null, null],
+   "classification": "+Infinity",
+   "value": null
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [null, 1.7976931348623157e308],
+   "classification": "-Infinity",
+   "value": null
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [null, 5e-324],
+   "classification": "-Infinity",
+   "value": null
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [null, 2.220446049250313e-16],
+   "classification": "-Infinity",
+   "value": null
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [null, 9007199254740991],
+   "classification": "-Infinity",
+   "value": null
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [null, -9007199254740991],
+   "classification": "+Infinity",
+   "value": null
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [1.7976931348623157e308, 0],
+   "classification": "finite",
+   "value": 0
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [1.7976931348623157e308, 0],
+   "classification": "finite",
+   "value": 0
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [1.7976931348623157e308, null],
+   "classification": "NaN",
+   "value": null
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [1.7976931348623157e308, null],
+   "classification": "+Infinity",
+   "value": null
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [1.7976931348623157e308, null],
+   "classification": "-Infinity",
+   "value": null
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [1.7976931348623157e308, 1.7976931348623157e308],
+   "classification": "+Infinity",
+   "value": null
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [1.7976931348623157e308, 5e-324],
+   "classification": "finite",
+   "value": 8.881784197001251e-16
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [1.7976931348623157e308, 2.220446049250313e-16],
+   "classification": "finite",
+   "value": 3.991680619069439e292
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [1.7976931348623157e308, 9007199254740991],
+   "classification": "+Infinity",
+   "value": null
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [1.7976931348623157e308, -9007199254740991],
+   "classification": "-Infinity",
+   "value": null
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [5e-324, 0],
+   "classification": "finite",
+   "value": 0
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [5e-324, 0],
+   "classification": "finite",
+   "value": 0
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [5e-324, null],
+   "classification": "NaN",
+   "value": null
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [5e-324, null],
+   "classification": "+Infinity",
+   "value": null
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [5e-324, null],
+   "classification": "-Infinity",
+   "value": null
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [5e-324, 1.7976931348623157e308],
+   "classification": "finite",
+   "value": 8.881784197001251e-16
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [5e-324, 5e-324],
+   "classification": "finite",
+   "value": 0
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [5e-324, 2.220446049250313e-16],
+   "classification": "finite",
+   "value": 0
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [5e-324, 9007199254740991],
+   "classification": "finite",
+   "value": 4.4501477170144023e-308
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [5e-324, -9007199254740991],
+   "classification": "finite",
+   "value": -4.4501477170144023e-308
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [2.220446049250313e-16, 0],
+   "classification": "finite",
+   "value": 0
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [2.220446049250313e-16, 0],
+   "classification": "finite",
+   "value": 0
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [2.220446049250313e-16, null],
+   "classification": "NaN",
+   "value": null
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [2.220446049250313e-16, null],
+   "classification": "+Infinity",
+   "value": null
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [2.220446049250313e-16, null],
+   "classification": "-Infinity",
+   "value": null
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [2.220446049250313e-16, 1.7976931348623157e308],
+   "classification": "finite",
+   "value": 3.991680619069439e292
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [2.220446049250313e-16, 5e-324],
+   "classification": "finite",
+   "value": 0
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [2.220446049250313e-16, 2.220446049250313e-16],
+   "classification": "finite",
+   "value": 4.930380657631324e-32
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [2.220446049250313e-16, 9007199254740991],
+   "classification": "finite",
+   "value": 1.9999999999999998
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [2.220446049250313e-16, -9007199254740991],
+   "classification": "finite",
+   "value": -1.9999999999999998
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [9007199254740991, 0],
+   "classification": "finite",
+   "value": 0
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [9007199254740991, 0],
+   "classification": "finite",
+   "value": 0
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [9007199254740991, null],
+   "classification": "NaN",
+   "value": null
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [9007199254740991, null],
+   "classification": "+Infinity",
+   "value": null
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [9007199254740991, null],
+   "classification": "-Infinity",
+   "value": null
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [9007199254740991, 1.7976931348623157e308],
+   "classification": "+Infinity",
+   "value": null
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [9007199254740991, 5e-324],
+   "classification": "finite",
+   "value": 4.4501477170144023e-308
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [9007199254740991, 2.220446049250313e-16],
+   "classification": "finite",
+   "value": 1.9999999999999998
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [9007199254740991, 9007199254740991],
+   "classification": "finite",
+   "value": 8.112963841460666e31
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [9007199254740991, -9007199254740991],
+   "classification": "finite",
+   "value": -8.112963841460666e31
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [-9007199254740991, 0],
+   "classification": "finite",
+   "value": 0
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [-9007199254740991, 0],
+   "classification": "finite",
+   "value": 0
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [-9007199254740991, null],
+   "classification": "NaN",
+   "value": null
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [-9007199254740991, null],
+   "classification": "-Infinity",
+   "value": null
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [-9007199254740991, null],
+   "classification": "+Infinity",
+   "value": null
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [-9007199254740991, 1.7976931348623157e308],
+   "classification": "-Infinity",
+   "value": null
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [-9007199254740991, 5e-324],
+   "classification": "finite",
+   "value": -4.4501477170144023e-308
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [-9007199254740991, 2.220446049250313e-16],
+   "classification": "finite",
+   "value": -1.9999999999999998
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [-9007199254740991, 9007199254740991],
+   "classification": "finite",
+   "value": -8.112963841460666e31
+  },
+  {
+   "operation": "dot",
+   "entity": "Vector2",
+   "input": [-9007199254740991, -9007199254740991],
+   "classification": "finite",
+   "value": 8.112963841460666e31
+  },
+  {
+   "operation": "normalizeUnchecked",
+   "entity": "Vector2",
+   "input": [0],
+   "classification": "finite",
+   "value": 0
+  },
+  {
+   "operation": "normalizeUnchecked",
+   "entity": "Vector2",
+   "input": [0],
+   "classification": "finite",
+   "value": 0
+  },
+  {
+   "operation": "normalizeUnchecked",
+   "entity": "Vector2",
+   "input": [null],
+   "classification": "NaN",
+   "value": null
+  },
+  {
+   "operation": "normalizeUnchecked",
+   "entity": "Vector2",
+   "input": [null],
+   "classification": "NaN",
+   "value": null
+  },
+  {
+   "operation": "normalizeUnchecked",
+   "entity": "Vector2",
+   "input": [null],
+   "classification": "NaN",
+   "value": null
+  },
+  {
+   "operation": "normalizeUnchecked",
+   "entity": "Vector2",
+   "input": [1.7976931348623157e308],
+   "classification": "finite",
+   "value": 0
+  },
+  {
+   "operation": "normalizeUnchecked",
+   "entity": "Vector2",
+   "input": [5e-324],
+   "classification": "finite",
+   "value": 5e-324
+  },
+  {
+   "operation": "normalizeUnchecked",
+   "entity": "Vector2",
+   "input": [2.220446049250313e-16],
+   "classification": "finite",
+   "value": 2.220446049250313e-16
+  },
+  {
+   "operation": "normalizeUnchecked",
+   "entity": "Vector2",
+   "input": [9007199254740991],
+   "classification": "finite",
+   "value": 1
+  },
+  {
+   "operation": "normalizeUnchecked",
+   "entity": "Vector2",
+   "input": [-9007199254740991],
+   "classification": "finite",
+   "value": -1
+  }
+ ],
+ "identities": [
+  {
+   "property": "rotation preserves magnitude",
+   "runs": 10000,
+   "maxError": 0,
+   "meanError": 0,
+   "passed": true
+  },
+  {
+   "property": "project + reject = v",
+   "runs": 10000,
+   "maxError": 0,
+   "meanError": 0,
+   "passed": true
+  },
+  {
+   "property": "M * M^-1 = I (Matrix3)",
+   "runs": 10000,
+   "maxError": 0,
+   "meanError": 0,
+   "passed": false,
+   "failureExample": "Property failed after 1 tests\n{ seed: -1707596420, path: \"0:0:0:0\", endOnFailure: true }\nCounterexample: [0,1,1]\nShrunk 3 time(s)\nGot TypeError: Matrix3.ensureOut(...).set is not a function\n    at Function.scaleBy (/Users/casa/Documents/GitHub/lenguados/packages/math2d/lib/esm/index.development.js:18997:39)\n    at <anonymous> (/Users/casa/Documents/GitHub/lenguados/tools/benchmark/src/stress/identity.stress.ts:105:7)\n    at Property.predicate (file:///Users/casa/Documents/GitHub/lenguados/tools/benchmark/node_modules/fast-check/lib/esm/check/property/Property.js:14:54)\n    at Property.run (file:///Users/casa/Documents/GitHub/lenguados/tools/benchmark/node_modules/fast-check/lib/esm/check/property/Property.generic.js:46:33)\n    at runIt (file:///Users/casa/Documents/GitHub/lenguados/tools/benchmark/node_modules/fast-check/lib/esm/check/runner/Runner.js:18:30)\n    at check (file:///Users/casa/Documents/GitHub/lenguados/tools/benchmark/node_modules/fast-check/lib/esm/check/runner/Runner.js:62:11)\n    at Module.assert (file:///Users/casa/Documents/GitHub/lenguados/tools/benchmark/node_modules/fast-check/lib/esm/check/runner/Runner.js:65:17)\n    at runProperty (/Users/casa/Documents/GitHub/lenguados/tools/benchmark/src/stress/identity.stress.ts:62:7)\n    at runIdentityStress (/Users/casa/Documents/GitHub/lenguados/tools/benchmark/src/stress/identity.stress.ts:101:15)\n    at Object.run (/Users/casa/Documents/GitHub/lenguados/tools/benchmark/src/packages/math2d/stress/identity.stress-def.ts:18:19)\n\nHint: Enable verbose mode in order to have the list of all failing values encountered during the run"
+  },
+  {
+   "property": "compose associativity (T2)",
+   "runs": 10000,
+   "maxError": 0,
+   "meanError": 0,
+   "passed": false,
+   "failureExample": "Property failed after 1 tests\n{ seed: 1265313061, path: \"0:0:0:0:0:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:1:1:2:1:1:1:2:2:3:2:2:2:2:2:2:2:2:2:2:2:2:2:2:3:3:3\", endOnFailure: true }\nCounterexample: [[Vector2(0.0000, 0.0000),0,1,2],[Vector2(0.0000, 0.0000),-0.0003141592653589793,1,1],[Vector2(0.0000, 1.0000),0,1,1]]\nShrunk 50 time(s)\nGot error: Property failed by returning false\n\nHint: Enable verbose mode in order to have the list of all failing values encountered during the run"
+  },
+  {
+   "property": "det(A*B) = det(A)*det(B)",
+   "runs": 10000,
+   "maxError": 0,
+   "meanError": 0,
+   "passed": true
+  }
+ ],
+ "cancellation": [
+  {
+   "operation": "cross",
+   "entity": "Vector2",
+   "bitsLost": 16.60966932804909,
+   "inputs": { "ax": 100000, "ay": 100001, "bx": 100000, "by": 100002 },
+   "result": 100000,
+   "isCatastrophic": false
+  },
+  {
+   "operation": "cross",
+   "entity": "Vector2",
+   "bitsLost": 26.5754247879528,
+   "inputs": { "ax": 100000000, "ay": 100000001, "bx": 100000000, "by": 100000002 },
+   "result": 100000000,
+   "isCatastrophic": false
+  },
+  {
+   "operation": "cross",
+   "entity": "Vector2",
+   "bitsLost": 33.219282278750526,
+   "inputs": { "ax": 10000000000, "ay": 10000000001, "bx": 10000000000, "by": 10000000002 },
+   "result": 9999990784,
+   "isCatastrophic": false
+  },
+  {
+   "operation": "cross",
+   "entity": "Vector2",
+   "bitsLost": 39.863249567062695,
+   "inputs": { "ax": 1000000000000, "ay": 1000000000001, "bx": 1000000000000, "by": 1000000000002 },
+   "result": 999922073600,
+   "isCatastrophic": false
+  },
+  {
+   "operation": "cross",
+   "entity": "Vector2",
+   "bitsLost": 49.85048792456326,
+   "inputs": {
+    "ax": 1000000000000000,
+    "ay": 1000000000000001,
+    "bx": 1000000000000000,
+    "by": 1000000000000002
+   },
+   "result": 985162418487296,
+   "isCatastrophic": true
+  },
+  {
+   "operation": "determinant",
+   "entity": "Matrix2",
+   "bitsLost": 35.219295375787965,
+   "inputs": { "m00": 100000, "m01": 100000.5, "m10": 100000.5, "m11": 100001 },
+   "result": -0.25,
+   "isCatastrophic": false
+  },
+  {
+   "operation": "determinant",
+   "entity": "Matrix2",
+   "bitsLost": 0,
+   "inputs": { "m00": 100000000, "m01": 100000000.5, "m10": 100000000.5, "m11": 100000001 },
+   "result": 0,
+   "isCatastrophic": false
+  },
+  {
+   "operation": "determinant",
+   "entity": "Matrix2",
+   "bitsLost": 0,
+   "inputs": { "m00": 10000000000, "m01": 10000000000.5, "m10": 10000000000.5, "m11": 10000000001 },
+   "result": 0,
+   "isCatastrophic": false
+  },
+  {
+   "operation": "determinant",
+   "entity": "Matrix2",
+   "bitsLost": 0,
+   "inputs": {
+    "m00": 1000000000000,
+    "m01": 1000000000000.5,
+    "m10": 1000000000000.5,
+    "m11": 1000000000001
+   },
+   "result": 0,
+   "isCatastrophic": false
+  },
+  {
+   "operation": "determinant",
+   "entity": "Matrix2",
+   "bitsLost": 0,
+   "inputs": {
+    "m00": 1000000000000000,
+    "m01": 1000000000000000.5,
+    "m10": 1000000000000000.5,
+    "m11": 1000000000000001
+   },
+   "result": 0,
+   "isCatastrophic": false
+  }
+ ],
+ "allocation": [],
+ "overflow": [
+  {
+   "test": "magnitude",
+   "tier": "default",
+   "input": [9.575559427190268e153, 9.575559427190268e153],
+   "output": 1.3541886009242023e154,
+   "isFinite": true,
+   "expected": "finite"
+  },
+  {
+   "test": "magnitudeSq",
+   "tier": "unchecked",
+   "input": [9.575559427190268e153, 9.575559427190268e153],
+   "output": null,
+   "isFinite": false,
+   "expected": "overflow"
+  },
+  {
+   "test": "normalize",
+   "tier": "default",
+   "input": [9.575559427190268e153, 9.575559427190268e153],
+   "output": 1,
+   "isFinite": true,
+   "expected": "finite"
+  },
+  {
+   "test": "normalizeSafe",
+   "tier": "safe",
+   "input": [9.575559427190268e153, 9.575559427190268e153],
+   "output": 1,
+   "isFinite": true,
+   "expected": "finite"
+  },
+  {
+   "test": "magnitude (underflow)",
+   "tier": "default",
+   "input": [1e-200, 1e-200],
+   "output": 1.414213562373095e-200,
+   "isFinite": true,
+   "expected": "finite"
+  },
+  {
+   "test": "exp(710)",
+   "tier": "deterministic",
+   "input": [710],
+   "output": null,
+   "isFinite": false,
+   "expected": "infinity"
+  },
+  {
+   "test": "exp(709)",
+   "tier": "deterministic",
+   "input": [709],
+   "output": 8.218407461554972e307,
+   "isFinite": true,
+   "expected": "finite"
+  },
+  {
+   "test": "hypot(1e154, 1e154)",
+   "tier": "deterministic",
+   "input": [1e154, 1e154],
+   "output": 1.4142135623730953e154,
+   "isFinite": true,
+   "expected": "finite"
+  }
+ ],
+ "nearSingular": []
+}

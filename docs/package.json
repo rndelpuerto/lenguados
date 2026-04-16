@@ -4,8 +4,8 @@
  "private": true,
  "scripts": {
   "docusaurus": "docusaurus",
-  "start": "node ../scripts/generate-package-docs.mjs && docusaurus start",
-  "build": "node ../scripts/generate-package-docs.mjs && docusaurus build",
+  "start": "node ../scripts/generate-docs-data.mjs && node ../scripts/generate-package-docs.mjs && docusaurus start",
+  "build": "node ../scripts/generate-docs-data.mjs && node ../scripts/generate-package-docs.mjs && docusaurus build",
   "swizzle": "docusaurus swizzle",
   "deploy": "docusaurus deploy --skip-build",
   "clear": "docusaurus clear",
@@ -22,6 +22,8 @@
   "@easyops-cn/docusaurus-search-local": "^0.55.1",
   "@mdx-js/react": "^3.0.0",
   "clsx": "^2.0.0",
+  "echarts": "^5.6.0",
+  "echarts-for-react": "^3.0.6",
   "lucide-react": "^1.8.0",
   "prism-react-renderer": "^2.3.0",
   "react": "^19.0.0",
@@ -49,6 +51,6 @@
   ]
  },
  "engines": {
-  "node": ">=18.0"
+  "node": ">=24"
  }
 }

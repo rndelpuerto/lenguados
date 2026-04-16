@@ -12,7 +12,6 @@ import { bench, do_not_optimize, group, run } from 'mitata';
 import { benchmarkStats } from './statistics.ts';
 import type { BenchmarkStats } from './statistics.ts';
 import type { LibraryAdapter } from './library-adapter.ts';
-import { OPERATION_NAMES } from './operation-vocabulary.ts';
 import { aggregateScore } from './scoring.ts';
 import type { AggregateScore, OperationResult } from './scoring.ts';
 
@@ -46,9 +45,10 @@ export interface ComparisonResult {
 export async function runComparison(
  adapters: LibraryAdapter[],
  referenceLibrary: string,
+ vocabularyNames: Set<string>,
  operationFilter?: Set<string>,
 ): Promise<ComparisonResult> {
- const filter = operationFilter ?? OPERATION_NAMES;
+ const filter = operationFilter ?? vocabularyNames;
 
  // Register all benchmarks across all libraries
  let totalOps = 0;
@@ -128,12 +128,7 @@ export async function runComparison(
     targetOps.push({ operation: op, meanNs: stats.mean, opsPerSec: stats.opsPerSec });
    }
 
-   const score = aggregateScore(
-    targetOps,
-    refOps,
-    libResult.libraryName,
-    referenceLibrary,
-   );
+   const score = aggregateScore(targetOps, refOps, libResult.libraryName, referenceLibrary);
    scores.set(libResult.libraryName, score);
   }
  }

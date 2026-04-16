@@ -5,8 +5,7 @@
  *        [--generate-golden] [--verify=path/to/golden.json]
  */
 
-import { ensureBuildArtifacts } from './run.ts';
-import { loadMath2d, getConfig } from '../src/harness/math2d-loader.ts';
+import { ensureBuildArtifacts, loadPackageLoader } from './run.ts';
 import {
  generateGoldenFile,
  writeGoldenFile,
@@ -23,11 +22,14 @@ const verifyPath = args.find((a) => a.startsWith('--verify='))?.split('=')[1];
 const browsersArg = args.find((a) => a.startsWith('--browsers='))?.split('=')[1];
 const browsers = (browsersArg?.split(',') ?? ['chromium', 'firefox', 'webkit']) as BrowserName[];
 
-await ensureBuildArtifacts(['production']);
+const loader = await loadPackageLoader('math2d');
+await ensureBuildArtifacts(['production'], loader);
 
-const math2d = await loadMath2d('production');
-const config = getConfig(math2d);
-config.useNativeMath = false;
+const math2d = await loader.load('production');
+const config = loader.getConfig?.(math2d);
+if (config && 'useNativeMath' in config) {
+ config['useNativeMath'] = false;
+}
 
 if (generateGolden) {
  console.log('\n  Generating golden file from Node.js (V8/fdlibm)...');
@@ -46,7 +48,11 @@ if (generateGolden) {
 
  // Node.js verification (same engine as generator)
  console.log('  Node.js (V8):');
- const nodeResults = verifyAgainstGoldenFile(golden, math2d as Record<string, (...args: number[]) => number>, 'Node.js');
+ const nodeResults = verifyAgainstGoldenFile(
+  golden,
+  math2d as Record<string, (...args: number[]) => number>,
+  'Node.js',
+ );
  for (const r of nodeResults) {
   console.log(`    ${r.fn}: ${r.passed}/${r.totalTests} passed, ${r.failed} failed`);
  }
@@ -60,7 +66,9 @@ if (generateGolden) {
    const status = r.failed === 0 ? 'ALL MATCH' : `${r.failed} DIVERGENCES`;
    console.log(`    ${r.fn}: ${r.passed}/${r.totalTests} — ${status}`);
    for (const d of r.divergences.slice(0, 3)) {
-    console.log(`      inputs=${JSON.stringify(d.inputs)} expected=${d.expected.hex} actual=${d.actual.hex}`);
+    console.log(
+     `      inputs=${JSON.stringify(d.inputs)} expected=${d.expected.hex} actual=${d.actual.hex}`,
+    );
    }
    if (r.divergences.length > 3) {
     console.log(`      ... and ${r.divergences.length - 3} more`);

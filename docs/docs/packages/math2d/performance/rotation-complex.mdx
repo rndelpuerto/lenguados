@@ -1,0 +1,88 @@
+---
+sidebar_position: 14
+title: Rotation & Complex Performance
+description: Performance analysis for Rotation2 and Complex — transcendental functions, normalization, and composition.
+---
+
+import {
+ OperationBarChart,
+ TierComparisonChart,
+ DataTable,
+ TldrBox,
+ NoDataFallback,
+ MethodologyNote,
+} from '@site/src/components/benchmark';
+import { useBenchmarkData } from '@site/src/hooks/use-benchmark-data';
+
+export function RotationPerformance() {
+ const { performance } = useBenchmarkData('math2d');
+ if (!performance || !performance.metadata) return <NoDataFallback />;
+ const r2 = performance.entities['Rotation2'];
+ const cx = performance.entities['Complex'];
+ if (!r2 && !cx) {
+  return (
+   <TldrBox>
+    Rotation2 and Complex benchmark data is not yet available.
+    Run <code>npm run tools:bench:all</code> with rotation and complex suites
+    to generate this data.
+   </TldrBox>
+  );
+ }
+ const formatOps = (v) => v >= 1e9 ? `${(v/1e9).toFixed(1)}G` : v >= 1e6 ? `${(v/1e6).toFixed(0)}M` : `${(v/1e3).toFixed(0)}K`;
+ return (
+  <>
+   {r2 && (
+    <>
+     <h3>Rotation2 Operations</h3>
+     <OperationBarChart data={r2.operations} title="Rotation2 — ops/sec" />
+     <MethodologyNote summary="Rotation2 data table">
+      <DataTable
+       columns={[
+        { key: 'name', label: 'Operation' },
+        { key: 'opsPerSec', label: 'ops/sec', format: (v) => formatOps(Number(v)), align: 'right' },
+        { key: 'median', label: 'Median (ns)', format: (v) => Number(v).toFixed(1), align: 'right' },
+        { key: 'samples', label: 'Samples', align: 'right' },
+       ]}
+       data={r2.operations}
+       highlightBest="opsPerSec"
+      />
+     </MethodologyNote>
+    </>
+   )}
+   {cx && (
+    <>
+     <h3>Complex Operations</h3>
+     <OperationBarChart data={cx.operations} title="Complex — ops/sec" />
+     <MethodologyNote summary="Complex data table">
+      <DataTable
+       columns={[
+        { key: 'name', label: 'Operation' },
+        { key: 'opsPerSec', label: 'ops/sec', format: (v) => formatOps(Number(v)), align: 'right' },
+        { key: 'median', label: 'Median (ns)', format: (v) => Number(v).toFixed(1), align: 'right' },
+        { key: 'samples', label: 'Samples', align: 'right' },
+       ]}
+       data={cx.operations}
+       highlightBest="opsPerSec"
+      />
+     </MethodologyNote>
+    </>
+   )}
+  </>
+ );
+}
+
+# Rotation & Complex Performance
+
+Performance analysis for `Rotation2` and `Complex` — transcendental function costs,
+normalization overhead, and rotation composition throughput.
+
+<RotationPerformance />
+
+## Key Characteristics
+
+- **Transcendental operations** (`sin`, `cos`, `atan2`) use fdlibm kernels for determinism,
+  which adds a constant overhead vs native `Math.*`
+- **`*CS` variants** accept pre-computed `(cos, sin)` to avoid redundant trig calls in loops
+- **Normalization** is required after composition to prevent drift in the (cos, sin) representation
+
+For measurement methodology, see [Methodology](../../../performance/methodology).

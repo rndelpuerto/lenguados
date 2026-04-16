@@ -1,0 +1,92 @@
+---
+sidebar_position: 12
+title: Vector2 Performance
+description: Detailed performance analysis of Vector2 — 63 operations, tier comparisons, and CS variant analysis.
+---
+
+import {
+ OperationBarChart,
+ TierComparisonChart,
+ DataTable,
+ TldrBox,
+ NoDataFallback,
+ MethodologyNote,
+} from '@site/src/components/benchmark';
+import { useBenchmarkData } from '@site/src/hooks/use-benchmark-data';
+
+export function Vector2Performance() {
+ const { performance } = useBenchmarkData('math2d');
+ if (!performance || !performance.metadata) return <NoDataFallback />;
+ const entity = performance.entities['Vector2'];
+ if (!entity) return <NoDataFallback />;
+ const ops = entity.operations;
+ const tierComparison = entity.tierComparison;
+ const formatOps = (v) => v >= 1e9 ? `${(v/1e9).toFixed(1)}G` : v >= 1e6 ? `${(v/1e6).toFixed(0)}M` : `${(v/1e3).toFixed(0)}K`;
+ const medianOps = [...ops].sort((a, b) => a.opsPerSec - b.opsPerSec);
+ const median = medianOps[Math.floor(medianOps.length / 2)]?.opsPerSec ?? 0;
+ const fastest = ops.reduce((best, o) => o.opsPerSec > best.opsPerSec ? o : best, ops[0]);
+ return (
+  <>
+   <TldrBox>
+    <strong>{ops.length} operations</strong> measured — median throughput {formatOps(median)} ops/sec,
+    peak {formatOps(fastest.opsPerSec)} ops/sec ({fastest.name}).
+   </TldrBox>
+   <h3>All Operations</h3>
+   <OperationBarChart data={ops} title="Vector2 — ops/sec by operation" />
+   <MethodologyNote summary="Full data table">
+    <DataTable
+     columns={[
+      { key: 'name', label: 'Operation' },
+      { key: 'opsPerSec', label: 'ops/sec', format: (v) => formatOps(Number(v)), align: 'right' },
+      { key: 'median', label: 'Median (ns)', format: (v) => Number(v).toFixed(1), align: 'right' },
+      { key: 'outlierPercent', label: 'Outliers %', format: (v) => `${Number(v).toFixed(1)}%`, align: 'right' },
+      { key: 'samples', label: 'Samples', align: 'right' },
+     ]}
+     data={ops}
+     highlightBest="opsPerSec"
+    />
+   </MethodologyNote>
+   {tierComparison && tierComparison.operations.length > 0 && (
+    <>
+     <h3>Validation Tier Comparison</h3>
+     <p>
+      Operations with <code>Safe</code> and <code>Unchecked</code> variants show the
+      cost of input validation. In production builds, <code>default</code> assertions
+      are stripped, making it equivalent to <code>unchecked</code>.
+     </p>
+     <TierComparisonChart
+      data={tierComparison.operations}
+      title="Vector2 — Tier Comparison"
+     />
+     <MethodologyNote summary="Tier comparison data">
+      <DataTable
+       columns={[
+        { key: 'name', label: 'Operation' },
+        { key: 'defaultOps', label: 'Default', format: (v) => formatOps(Number(v)), align: 'right' },
+        { key: 'safeOps', label: 'Safe', format: (v) => v ? formatOps(Number(v)) : '—', align: 'right' },
+        { key: 'uncheckedOps', label: 'Unchecked', format: (v) => v ? formatOps(Number(v)) : '—', align: 'right' },
+        { key: 'speedup', label: 'Speedup', format: (v) => v ? `${Number(v).toFixed(2)}x` : '—', align: 'right' },
+       ]}
+       data={tierComparison.operations.map(t => ({
+        name: t.name,
+        defaultOps: t.default.opsPerSec,
+        safeOps: t.safe?.opsPerSec,
+        uncheckedOps: t.unchecked?.opsPerSec,
+        speedup: t.speedup?.uncheckedVsDefault,
+       }))}
+      />
+     </MethodologyNote>
+    </>
+   )}
+  </>
+ );
+}
+
+# Vector2 Performance
+
+Detailed performance analysis for `Vector2` — the most-used type in math2d with
+operations spanning arithmetic, normalization, projection, rotation, and interpolation.
+
+<Vector2Performance />
+
+For measurement methodology, see [Methodology](../../../performance/methodology).

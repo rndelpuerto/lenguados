@@ -70,7 +70,11 @@ export function filterBenchmarksForCell(
    return false;
   }
   // Determinism filtering: if benchmark has a determinism tag, it must match
-  if (b.determinism !== undefined && cell.determinism !== undefined && b.determinism !== cell.determinism) {
+  if (
+   b.determinism !== undefined &&
+   cell.determinism !== undefined &&
+   b.determinism !== cell.determinism
+  ) {
    return false;
   }
   return true;
@@ -81,28 +85,34 @@ export function filterBenchmarksForCell(
 /* Suite Auto-Discovery                                                        */
 /* ========================================================================== */
 
-const SUITES_DIR = new URL('../suites/', import.meta.url).pathname;
+const PACKAGES_DIR = new URL('../packages/', import.meta.url).pathname;
 
 /**
- * Discover all suite modules in src/suites/*.bench.ts.
+ * Discover all suite modules for a given package.
  *
+ * Looks in src/packages/{packageName}/suites/*.bench.ts.
  * Each module must export a `defineSuite` function.
  * Returns an array of SuiteDefinition objects.
  */
 export async function discoverSuites(
+ packageName: string = 'math2d',
  filter?: RegExp,
 ): Promise<SuiteDefinition[]> {
- const files = await readdir(SUITES_DIR);
- const benchFiles = files
-  .filter((f) => f.endsWith('.bench.ts') || f.endsWith('.bench.mjs'))
-  .sort();
+ const suitesDir = join(PACKAGES_DIR, packageName, 'suites');
+ let files: string[];
+ try {
+  files = await readdir(suitesDir);
+ } catch {
+  return [];
+ }
+ const benchFiles = files.filter((f) => f.endsWith('.bench.ts') || f.endsWith('.bench.mjs')).sort();
 
  const suites: SuiteDefinition[] = [];
 
  for (const file of benchFiles) {
   if (filter && !filter.test(file)) continue;
 
-  const modulePath = join(SUITES_DIR, file);
+  const modulePath = join(suitesDir, file);
   const mod = (await import(modulePath)) as { defineSuite?: SuiteFactory };
 
   if (typeof mod.defineSuite !== 'function') {
@@ -159,4 +169,3 @@ export function measureAllocations(
   bytesPerOp: heapGrowthBytes / iterations,
  };
 }
-

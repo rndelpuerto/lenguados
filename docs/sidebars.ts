@@ -28,6 +28,11 @@ const sidebars: SidebarsConfig = {
   },
   {
    type: 'category',
+   label: 'Performance',
+   items: ['performance/overview', 'performance/methodology', 'performance/interpreting-results'],
+  },
+  {
+   type: 'category',
    label: 'Packages',
    items: [
     {
@@ -44,6 +49,20 @@ const sidebars: SidebarsConfig = {
       'packages/math2d/testing-strategy',
       'packages/math2d/module-exports',
       'packages/math2d/audit-closure-2026',
+      {
+       type: 'category',
+       label: 'Performance',
+       link: { type: 'doc', id: 'packages/math2d/performance/index' },
+       items: [
+        'packages/math2d/performance/vector2',
+        'packages/math2d/performance/matrices',
+        'packages/math2d/performance/rotation-complex',
+        'packages/math2d/performance/interval-transform',
+        'packages/math2d/performance/auxiliary',
+        'packages/math2d/performance/comparisons',
+        'packages/math2d/performance/accuracy',
+       ],
+      },
      ],
     },
     {

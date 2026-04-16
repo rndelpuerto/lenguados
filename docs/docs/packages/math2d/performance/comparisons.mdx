@@ -1,0 +1,121 @@
+---
+sidebar_position: 17
+title: Cross-Library Comparisons
+description: Head-to-head performance comparison of math2d vs gl-matrix across vector, matrix, and rotation operations.
+---
+
+import {
+ ComparisonChart,
+ DataTable,
+ TldrBox,
+ InsightCallout,
+ NoDataFallback,
+ MethodologyNote,
+} from '@site/src/components/benchmark';
+import { useBenchmarkData } from '@site/src/hooks/use-benchmark-data';
+
+export function ComparisonOverview() {
+ const { comparison } = useBenchmarkData('math2d');
+ if (!comparison || !comparison.metadata) return <NoDataFallback />;
+ const { categories, aggregate, libraries, conditions } = comparison;
+ const libNames = libraries.map(l => l.name);
+ const libVersions = libraries.map(l => `${l.name} v${l.version}`).join(' vs ');
+ const formatOps = (v) => v >= 1e9 ? `${(v/1e9).toFixed(1)}G` : v >= 1e6 ? `${(v/1e6).toFixed(0)}M` : `${(v/1e3).toFixed(0)}K`;
+ return (
+  <>
+   <TldrBox>
+    {aggregate ? (
+     <>
+      <strong>{aggregate.geometricMean.toFixed(2)}x geometric mean</strong> throughput
+      vs {aggregate.reference} — {aggregate.wins} wins, {aggregate.losses} losses,
+      {' '}{aggregate.ties} ties (within 2.5% equivalence). Measured with {libVersions}.
+     </>
+    ) : (
+     <>Comparison data available for {libVersions}.</>
+    )}
+   </TldrBox>
+   {conditions && (
+    <div style={{ fontSize: '0.85rem', margin: '0.5rem 0 1.5rem', padding: '0.75rem 1rem', backgroundColor: 'var(--ifm-background-surface-color, #f6f8fa)', borderRadius: '4px', border: '1px solid var(--ifm-color-emphasis-200)' }}>
+     <strong>Conditions:</strong> {conditions.buildMode} build | {conditions.tier} | {conditions.determinism} | {conditions.methodStyle}
+    </div>
+   )}
+   {Object.entries(categories).map(([category, { operations }]) => (
+    <div key={category}>
+     <h3>{category.charAt(0).toUpperCase() + category.slice(1)} Operations</h3>
+     <ComparisonChart
+      data={operations}
+      libraries={libNames}
+      title={`${category} — ops/sec`}
+     />
+     <MethodologyNote summary={`${category} data table`}>
+      <DataTable
+       columns={[
+        { key: 'name', label: 'Operation' },
+        ...libNames.map(name => ({
+         key: name,
+         label: name,
+         format: (v) => { const ops = v?.opsPerSec; if (!ops) return 'N/A'; return formatOps(ops); },
+         align: 'right',
+        })),
+        { key: 'ratio', label: 'Ratio', format: (v) => v != null ? `${Number(v).toFixed(3)}x` : '\u2014', align: 'right' },
+       ]}
+       data={operations.map(op => ({
+        name: op.name,
+        ...Object.fromEntries(libNames.map(n => [n, op.results[n]])),
+        ratio: op.ratio,
+       }))}
+      />
+     </MethodologyNote>
+    </div>
+   ))}
+  </>
+ );
+}
+
+# Cross-Library Comparisons
+
+This page compares `@lenguados/math2d` against [gl-matrix](https://glmatrix.net/),
+the most widely used JavaScript 2D/3D math library.
+
+<ComparisonOverview />
+
+## Benchmark Conditions
+
+The comparison uses the **most representative production scenario**:
+
+- **Production build** with unchecked tier — simulates real production where user bundlers
+  strip assertions via dead-code elimination (DCE), making default and unchecked equivalent
+- **Native `Math.*`** for both libraries — apples-to-apples comparison since gl-matrix
+  also uses native platform math
+- **Static methods with `out` parameter** — zero heap allocation for both libraries,
+  measuring pure computation throughput
+
+### What about fdlibm determinism?
+
+math2d offers an optional cross-platform determinism guarantee via fdlibm kernels
+that gl-matrix does not have. The cost of fdlibm (~10-30% overhead on transcendental
+operations like `sin`, `cos`, `sqrt`) is measured in the
+[Auxiliary Performance](./auxiliary) page, not here. Comparing math2d-with-fdlibm
+against gl-matrix-without-fdlibm would be unfair — it penalizes math2d for a feature
+the competitor doesn't offer.
+
+### Why is gl-matrix faster on simple operations?
+
+gl-matrix uses `Float32Array` typed arrays (`out[0] = a[0] + b[0]`) while math2d uses
+JavaScript objects with named properties (`out.x = a.x + b.x`). Typed array indexed
+access compiles to a single machine instruction, while object property access requires
+V8 hidden class lookups. This is a deliberate architectural tradeoff — math2d prioritizes
+type safety, readability, and API ergonomics over raw indexed throughput.
+
+## Fairness Statement
+
+Both libraries are benchmarked under identical conditions:
+
+- Same hardware, same Node.js process, same mitata session
+- Production builds for both libraries
+- Same input values for semantically equivalent operations
+- Static methods with pre-allocated output buffers (zero allocation)
+- **2.5% equivalence threshold**: differences within 2.5% are reported as ties
+
+For how to read these metrics, see [Interpreting Results](../../../performance/interpreting-results).
+For measurement details, see [Methodology](../../../performance/methodology).

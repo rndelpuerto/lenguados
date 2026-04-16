@@ -6,9 +6,15 @@
  */
 
 import { execSync } from 'node:child_process';
-import { ensureBuildArtifacts } from './run.ts';
+import { ensureBuildArtifacts, loadPackageLoader } from './run.ts';
 
-await ensureBuildArtifacts(['development', 'production']);
+// Propagate --package flag if provided
+const pkgArg = process.argv.find((a) => a.startsWith('--package='));
+const pkgFlag = pkgArg ? ` ${pkgArg}` : '';
+const packageName = pkgArg?.split('=')[1] ?? 'math2d';
+
+const loader = await loadPackageLoader(packageName);
+await ensureBuildArtifacts(['development', 'production'], loader);
 
 const tsx = './node_modules/.bin/tsx';
 const nodeGc = `node --expose-gc ${tsx}`;
@@ -30,16 +36,19 @@ function run(label: string, command: string): void {
 }
 
 // 1. Performance Benchmarks (quick: production + fdlibm only)
-run('Performance Benchmarks', `${tsx} scripts/bench.ts --build=production --determinism=fdlibm`);
+run(
+ 'Performance Benchmarks',
+ `${tsx} scripts/bench.ts --build=production --determinism=fdlibm${pkgFlag}`,
+);
 
 // 2. Stress Tests
-run('Stress Tests', `${nodeGc} scripts/stress.ts --samples=500`);
+run('Stress Tests', `${nodeGc} scripts/stress.ts --samples=500${pkgFlag}`);
 
 // 3. DX Analysis
-run('DX Analysis', `${tsx} scripts/dx.ts`);
+run('DX Analysis', `${tsx} scripts/dx.ts${pkgFlag}`);
 
 // 4. Cross-Library Comparison
-run('Cross-Library Comparison', `${tsx} scripts/compare.ts`);
+run('Cross-Library Comparison', `${tsx} scripts/compare.ts${pkgFlag}`);
 
 const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
 console.log(`\n  ================================================================`);

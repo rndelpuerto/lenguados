@@ -1,0 +1,47 @@
+{
+ "libraries": [
+  { "name": "math2d", "version": "0.1.0" },
+  { "name": "gl-matrix", "version": "3.4.3" }
+ ],
+ "operations": [
+  {
+   "name": "vectorAdd",
+   "category": "vector",
+   "results": {
+    "math2d": { "opsPerSec": 500000000, "meanNs": 2.0, "ci95lo": 1.8, "ci95hi": 2.2 },
+    "gl-matrix": { "opsPerSec": 400000000, "meanNs": 2.5, "ci95lo": 2.3, "ci95hi": 2.7 }
+   },
+   "ratio": 1.25
+  },
+  {
+   "name": "vectorNormalize",
+   "category": "vector",
+   "results": {
+    "math2d": { "opsPerSec": 200000000, "meanNs": 5.0, "ci95lo": 4.5, "ci95hi": 5.5 },
+    "gl-matrix": { "opsPerSec": 210000000, "meanNs": 4.8, "ci95lo": 4.3, "ci95hi": 5.3 }
+   },
+   "ratio": 0.952
+  },
+  {
+   "name": "matrixMultiply",
+   "category": "matrix",
+   "results": {
+    "math2d": { "opsPerSec": 100000000, "meanNs": 10.0, "ci95lo": 9.0, "ci95hi": 11.0 },
+    "gl-matrix": { "opsPerSec": 100500000, "meanNs": 9.95, "ci95lo": 9.0, "ci95hi": 10.9 }
+   },
+   "ratio": 0.995
+  }
+ ],
+ "scores": [
+  {
+   "target": "math2d",
+   "reference": "gl-matrix",
+   "geometricMean": 1.05,
+   "ratios": [
+    { "operation": "vectorAdd", "ratio": 1.25 },
+    { "operation": "vectorNormalize", "ratio": 0.952 },
+    { "operation": "matrixMultiply", "ratio": 0.995 }
+   ]
+  }
+ ]
+}

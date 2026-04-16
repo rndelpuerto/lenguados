@@ -1,0 +1,148 @@
+{
+ "metadata": { "timestamp": "2026-04-15T23:19:28.921Z", "commitHash": "53937bd" },
+ "bundleSize": [
+  {
+   "importPath": "Full library",
+   "importStatement": "export * from '/Users/casa/Documents/GitHub/lenguados/packages/math2d/main.mjs';",
+   "rawBytes": 134060,
+   "gzipBytes": 28378
+  },
+  {
+   "importPath": "{ Vector2 }",
+   "importStatement": "export { Vector2 } from '/Users/casa/Documents/GitHub/lenguados/packages/math2d/main.mjs';",
+   "rawBytes": 120947,
+   "gzipBytes": 25040
+  },
+  {
+   "importPath": "{ Matrix3 }",
+   "importStatement": "export { Matrix3 } from '/Users/casa/Documents/GitHub/lenguados/packages/math2d/main.mjs';",
+   "rawBytes": 120947,
+   "gzipBytes": 25040
+  },
+  {
+   "importPath": "{ Vector2, Rotation2 }",
+   "importStatement": "export { Vector2, Rotation2 } from '/Users/casa/Documents/GitHub/lenguados/packages/math2d/main.mjs';",
+   "rawBytes": 120962,
+   "gzipBytes": 25047
+  },
+  {
+   "importPath": "{ Transform2 }",
+   "importStatement": "export { Transform2 } from '/Users/casa/Documents/GitHub/lenguados/packages/math2d/main.mjs';",
+   "rawBytes": 120950,
+   "gzipBytes": 25041
+  },
+  {
+   "importPath": "utils/parse",
+   "importStatement": "export * from '/Users/casa/Documents/GitHub/lenguados/packages/math2d/lib/esm/utils/parse.production.js';",
+   "rawBytes": 128401,
+   "gzipBytes": 26318
+  },
+  {
+   "importPath": "utils/random",
+   "importStatement": "export * from '/Users/casa/Documents/GitHub/lenguados/packages/math2d/lib/esm/utils/random.production.js';",
+   "rawBytes": 123173,
+   "gzipBytes": 25765
+  }
+ ],
+ "treeShaking": {
+  "fullSize": 134060,
+  "minimalSize": 120947,
+  "reduction": 13113,
+  "reductionPercent": 9.781441145755633,
+  "effectiveTreeShaking": false,
+  "sideEffectsEmpty": true
+ },
+ "buildComparison": {
+  "devSize": { "raw": 769798, "gzip": 134486 },
+  "prodSize": { "raw": 134986, "gzip": 29072 },
+  "difference": { "raw": 634812, "gzip": 105414 },
+  "reductionPercent": { "raw": 82.46475049298647, "gzip": 78.38288000237942 }
+ },
+ "buildCorrectness": {
+  "correctness": [
+   {
+    "operation": "Vector2.dot",
+    "devResultHex": "4043347ae147ae15",
+    "prodResultHex": "4043347ae147ae15",
+    "match": true
+   },
+   {
+    "operation": "Vector2.cross",
+    "devResultHex": "4021c28f5c28f5c2",
+    "prodResultHex": "4021c28f5c28f5c2",
+    "match": true
+   },
+   {
+    "operation": "Vector2.magnitude",
+    "devResultHex": "402002e1055f150e",
+    "prodResultHex": "402002e1055f150e",
+    "match": true
+   },
+   {
+    "operation": "Vector2.distance",
+    "devResultHex": "400b27247aff1490",
+    "prodResultHex": "400b27247aff1490",
+    "match": true
+   },
+   {
+    "operation": "Matrix3.determinant",
+    "devResultHex": "3feffffffffffffe",
+    "prodResultHex": "3feffffffffffffe",
+    "match": true
+   },
+   {
+    "operation": "Rotation2.angle",
+    "devResultHex": "3fe6666666666668",
+    "prodResultHex": "3fe6666666666668",
+    "match": true
+   },
+   {
+    "operation": "Complex.magnitude",
+    "devResultHex": "402002e1055f150e",
+    "prodResultHex": "402002e1055f150e",
+    "match": true
+   }
+  ],
+  "assertions": [
+   {
+    "operation": "Vector2.normalize(zero)",
+    "devThrows": true,
+    "prodThrows": true,
+    "correctBehavior": false
+   }
+  ]
+ },
+ "assertionElimination": {
+  "prodBundle": {
+   "path": "/Users/casa/Documents/GitHub/lenguados/packages/math2d/lib/esm/module.js",
+   "size": 134980,
+   "containsAssertions": true,
+   "containsDevMode": false,
+   "containsNodeEnv": true,
+   "containsLenguadosDev": false,
+   "foundPatterns": [
+    "assertFinite",
+    "assertNonZero",
+    "assertRange",
+    "assertPositive",
+    "assertNonNegative",
+    "assertSafeInteger",
+    "assertVector2",
+    "assertMatrix2",
+    "assertMatrix3",
+    "assertRotation2",
+    "assertRotation2Normalized",
+    "assertComplex",
+    "assertInterval",
+    "assertTransform2",
+    "process.env.NODE_ENV"
+   ]
+  },
+  "devBundle": {
+   "path": "/Users/casa/Documents/GitHub/lenguados/packages/math2d/lib/esm/index.development.js",
+   "size": 768684,
+   "containsAssertions": true
+  },
+  "eliminationVerified": false
+ }
+}

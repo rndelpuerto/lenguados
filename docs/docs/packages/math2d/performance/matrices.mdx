@@ -1,0 +1,90 @@
+---
+sidebar_position: 13
+title: Matrix Performance
+description: Performance analysis for Matrix2 and Matrix3 — eigendecomposition, affine operations, and inverse triality.
+---
+
+import {
+ OperationBarChart,
+ TierComparisonChart,
+ DataTable,
+ TldrBox,
+ NoDataFallback,
+ MethodologyNote,
+} from '@site/src/components/benchmark';
+import { useBenchmarkData } from '@site/src/hooks/use-benchmark-data';
+
+export function MatrixPerformance() {
+ const { performance } = useBenchmarkData('math2d');
+ if (!performance || !performance.metadata) return <NoDataFallback />;
+ const m2 = performance.entities['Matrix2'];
+ const m3 = performance.entities['Matrix3'];
+ if (!m2 && !m3) return <NoDataFallback />;
+ const formatOps = (v) => v >= 1e9 ? `${(v/1e9).toFixed(1)}G` : v >= 1e6 ? `${(v/1e6).toFixed(0)}M` : `${(v/1e3).toFixed(0)}K`;
+ return (
+  <>
+   <TldrBox>
+    {m2 && <><strong>Matrix2: {m2.operations.length} operations</strong>. </>}
+    {m3 && <><strong>Matrix3: {m3.operations.length} operations</strong>. </>}
+    Matrix operations range from simple component access to O(n^3) decompositions.
+   </TldrBox>
+   {m2 && (
+    <>
+     <h3>Matrix2 Operations</h3>
+     <OperationBarChart data={m2.operations} title="Matrix2 — ops/sec" />
+     <MethodologyNote summary="Matrix2 data table">
+      <DataTable
+       columns={[
+        { key: 'name', label: 'Operation' },
+        { key: 'opsPerSec', label: 'ops/sec', format: (v) => formatOps(Number(v)), align: 'right' },
+        { key: 'median', label: 'Median (ns)', format: (v) => Number(v).toFixed(1), align: 'right' },
+        { key: 'samples', label: 'Samples', align: 'right' },
+       ]}
+       data={m2.operations}
+       highlightBest="opsPerSec"
+      />
+     </MethodologyNote>
+     {m2.tierComparison && m2.tierComparison.operations.length > 0 && (
+      <>
+       <h4>Matrix2 Tier Comparison</h4>
+       <TierComparisonChart data={m2.tierComparison.operations} title="Matrix2 — Tier Comparison" />
+      </>
+     )}
+    </>
+   )}
+   {m3 && (
+    <>
+     <h3>Matrix3 Operations</h3>
+     <OperationBarChart data={m3.operations} title="Matrix3 — ops/sec" />
+     <MethodologyNote summary="Matrix3 data table">
+      <DataTable
+       columns={[
+        { key: 'name', label: 'Operation' },
+        { key: 'opsPerSec', label: 'ops/sec', format: (v) => formatOps(Number(v)), align: 'right' },
+        { key: 'median', label: 'Median (ns)', format: (v) => Number(v).toFixed(1), align: 'right' },
+        { key: 'samples', label: 'Samples', align: 'right' },
+       ]}
+       data={m3.operations}
+       highlightBest="opsPerSec"
+      />
+     </MethodologyNote>
+     {m3.tierComparison && m3.tierComparison.operations.length > 0 && (
+      <>
+       <h4>Matrix3 Tier Comparison</h4>
+       <TierComparisonChart data={m3.tierComparison.operations} title="Matrix3 — Tier Comparison" />
+      </>
+     )}
+    </>
+   )}
+  </>
+ );
+}
+
+# Matrix Performance
+
+Performance analysis for `Matrix2` (2x2) and `Matrix3` (3x3 affine) — covering
+factory methods, arithmetic, decomposition, and inverse operations.
+
+<MatrixPerformance />
+
+For measurement methodology, see [Methodology](../../../performance/methodology).

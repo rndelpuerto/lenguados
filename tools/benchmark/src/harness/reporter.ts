@@ -7,7 +7,14 @@
  */
 
 import { execSync } from 'node:child_process';
-import { copyFileSync, mkdirSync, writeFileSync } from 'node:fs';
+import {
+ copyFileSync,
+ existsSync,
+ mkdirSync,
+ symlinkSync,
+ unlinkSync,
+ writeFileSync,
+} from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { arch, cpus, platform, release } from 'node:os';
@@ -178,8 +185,8 @@ export function printAsciiTable(entries: ReportEntry[]): string {
  for (const r of rows) {
   lines.push(
    `${padRight(r.op, widths.op)}  ${padLeft(r.mean, widths.mean)}  ` +
-   `${padLeft(r.ci, widths.ci)}  ${padLeft(r.ops, widths.ops)}  ` +
-   `${padLeft(r.outliers, widths.outliers)}`,
+    `${padLeft(r.ci, widths.ci)}  ${padLeft(r.ops, widths.ops)}  ` +
+    `${padLeft(r.outliers, widths.outliers)}`,
   );
  }
 
@@ -202,9 +209,21 @@ export function persistReport(report: BenchmarkReport): string {
  const latestPath = join(RESULTS_DIR, 'latest.json');
 
  writeFileSync(filepath, JSON.stringify(report, null, 2));
- copyFileSync(filepath, latestPath);
+ createLatestPointer(filepath, latestPath, filename);
 
  return filepath;
+}
+
+/**
+ * Create a "latest" pointer — symlink when possible, copy as Windows fallback.
+ */
+export function createLatestPointer(filepath: string, latestPath: string, filename: string): void {
+ try {
+  if (existsSync(latestPath)) unlinkSync(latestPath);
+  symlinkSync(filename, latestPath);
+ } catch {
+  copyFileSync(filepath, latestPath);
+ }
 }
 
 /* ========================================================================== */
@@ -257,18 +276,16 @@ export function compareReports(
 
   // Use raw samples when available for proper statistical testing.
   // Single-element arrays cause detectRegression to skip the t-test entirely.
-  const baselineSamples = base.raw && base.raw.length >= 2
-   ? base.raw
-   : generateSyntheticSamples(base.stats.mean, base.stats.stddev, base.stats.samples);
-  const currentSamples = entry.raw && entry.raw.length >= 2
-   ? entry.raw
-   : generateSyntheticSamples(entry.stats.mean, entry.stats.stddev, entry.stats.samples);
+  const baselineSamples =
+   base.raw && base.raw.length >= 2
+    ? base.raw
+    : generateSyntheticSamples(base.stats.mean, base.stats.stddev, base.stats.samples);
+  const currentSamples =
+   entry.raw && entry.raw.length >= 2
+    ? entry.raw
+    : generateSyntheticSamples(entry.stats.mean, entry.stats.stddev, entry.stats.samples);
 
-  const regression = detectRegression(
-   baselineSamples,
-   currentSamples,
-   noiseThreshold,
-  );
+  const regression = detectRegression(baselineSamples, currentSamples, noiseThreshold);
 
   comparisons.push({
    operation: entry.operation,
@@ -287,7 +304,7 @@ export function printComparisonTable(comparisons: ComparisonEntry[]): string {
  const lines: string[] = [];
  lines.push(
   `${padRight('Operation', 30)}  ${padLeft('Baseline', 12)}  ` +
-  `${padLeft('Current', 12)}  ${padLeft('Change', 10)}  Status`,
+   `${padLeft('Current', 12)}  ${padLeft('Change', 10)}  Status`,
  );
  lines.push('-'.repeat(80));
 
@@ -298,7 +315,7 @@ export function printComparisonTable(comparisons: ComparisonEntry[]): string {
 
   lines.push(
    `${padRight(c.operation, 30)}  ${padLeft(formatNs(c.baselineMean), 12)}  ` +
-   `${padLeft(formatNs(c.currentMean), 12)}  ${padLeft(changeStr, 10)}  ${status}`,
+    `${padLeft(formatNs(c.currentMean), 12)}  ${padLeft(changeStr, 10)}  ${status}`,
   );
  }
 
@@ -316,10 +333,6 @@ export type {
  DiagnosticReport,
 } from './diagnostics.ts';
 
-export {
- createDiagnosticReport,
- addFinding,
- formatDiagnosticSummary,
-} from './diagnostics.ts';
+export { createDiagnosticReport, addFinding, formatDiagnosticSummary } from './diagnostics.ts';
 
 export { withTimeout, runWithRecovery } from './timeout.ts';

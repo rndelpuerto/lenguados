@@ -1,81 +1,97 @@
 # .github/workflows/deploy-docs.yml
 name: Deploy Docusaurus Documentation to GitHub Pages
-# ───────────────────────────────────────────────────────────────────────────────
-# Trigger: Whenever code is pushed to the default branch (main).
-# Ensures that documentation is rebuilt and redeployed on every change.
-# ───────────────────────────────────────────────────────────────────────────────
-on:
- push:
-  branches:
-   - main
 
 # ───────────────────────────────────────────────────────────────────────────────
-# Concurrency: Cancel any in-flight deployment when a new push arrives,
-# preventing multiple deployments from overlapping.
+# Trigger:
+# - Automatically after the benchmark workflow completes (on main)
+# - Manually via workflow_dispatch (deploy without fresh benchmarks)
+# ───────────────────────────────────────────────────────────────────────────────
+on:
+ workflow_run:
+  workflows: ['Run Benchmark Suite']
+  types:
+   - completed
+  branches:
+   - main
+ workflow_dispatch:
+
+# ───────────────────────────────────────────────────────────────────────────────
+# Concurrency: Cancel any in-flight deployment when a new one starts.
 # ───────────────────────────────────────────────────────────────────────────────
 concurrency:
- group: deploy-docs-${{ github.ref }}
- cancel-in-progress: true
+ group: deploy-docs
+ cancel-in-progress: false
 
 jobs:
  # ─────────────────────────────────────────────────────────────────────────────
  # Job: build
- # Purpose: Checkout code, install dependencies, build the Docusaurus site,
- #           and upload the static files as an artifact for later deployment.
+ # Checkout, download benchmark data, build Docusaurus, upload artifact.
  # ─────────────────────────────────────────────────────────────────────────────
  build:
   name: Build Documentation
   runs-on: ubuntu-latest
+  # Run if: bench succeeded, OR manual dispatch, OR not triggered by workflow_run
+  if: >-
+   github.event_name == 'workflow_dispatch' ||
+   github.event.workflow_run.conclusion == 'success'
 
-  # Permissions: we only need to read repo contents and mint an OIDC token.
   permissions:
    contents: read
    id-token: write
+   actions: read # Required to download artifacts from other workflows
 
   steps:
    # ─────────────────────────────────────────────────────────────────────────
    # Checkout
-   # Retrieves the repository code.
    # ─────────────────────────────────────────────────────────────────────────
    - name: Checkout repository
      uses: actions/checkout@v4
      with:
-      # We only need a single level of history to reduce clone time.
       fetch-depth: 1
 
    # ─────────────────────────────────────────────────────────────────────────
    # Setup Environment
-   # Installs Node.js and project dependencies.
    # ─────────────────────────────────────────────────────────────────────────
    - name: Set up Node.js and enable npm cache
      uses: actions/setup-node@v4
      with:
       node-version-file: '.nvmrc'
-      registry-url: 'https://registry.npmjs.org'
       cache: npm
 
    - name: Install monorepo dependencies
      run: npm ci
-     # npm ci is faster and more reproducible than npm install in CI.
+
+   # ─────────────────────────────────────────────────────────────────────────
+   # Download benchmark summaries from the bench workflow
+   # If triggered by workflow_run, download from the triggering run.
+   # If triggered manually or benchmarks not available, docs build will
+   # show NoDataFallback components on performance pages.
+   # ─────────────────────────────────────────────────────────────────────────
+   - name: Download benchmark summaries
+     if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success'
+     uses: actions/download-artifact@v4
+     with:
+      name: benchmark-summaries
+      path: docs/static/benchmark-data/
+      run-id: ${{ github.event.workflow_run.id }}
+      github-token: ${{ secrets.GITHUB_TOKEN }}
+     continue-on-error: true
 
    # ─────────────────────────────────────────────────────────────────────────
    # Build Docusaurus site
-   # Script "npm run docs" from package.json will build /docs into docs/build.
+   # npm run docs runs: generate-docs-data.mjs → generate-package-docs.mjs → docusaurus build
+   # If benchmark summaries were downloaded, they're already in place.
+   # If not, the generator produces placeholders and pages show fallback UI.
    # ─────────────────────────────────────────────────────────────────────────
    - name: Build Docusaurus site
      run: npm run docs
 
    # ─────────────────────────────────────────────────────────────────────────
-   # Configure GitHub Pages deployment
-   # Prepares the Pages environment and sanity-checks settings.
+   # Configure and upload for GitHub Pages
    # ─────────────────────────────────────────────────────────────────────────
    - name: Configure GitHub Pages deployment
      uses: actions/configure-pages@v4
 
-   # ─────────────────────────────────────────────────────────────────────────
-   # Upload built site as artifact
-   # Saves the static files for the deploy job.
-   # ─────────────────────────────────────────────────────────────────────────
    - name: Upload built site as artifact
      uses: actions/upload-pages-artifact@v3
      with:
@@ -83,26 +99,22 @@ jobs:
 
  # ─────────────────────────────────────────────────────────────────────────────
  # Job: deploy
- # Purpose: Take the previously uploaded site artifact and publish it
- #           to GitHub Pages with minimal elevated permissions.
+ # Publish to GitHub Pages.
  # ─────────────────────────────────────────────────────────────────────────────
  deploy:
   name: Deploy to GitHub Pages
   needs: build
   runs-on: ubuntu-latest
 
-  # Permissions: only write to Pages, nothing else.
   permissions:
    pages: write
    id-token: write
 
   environment:
    name: github-pages
-   # Populates the Pages URL in the UI once deployed:
    url: ${{ steps.deploy-pages.outputs.page_url }}
 
   steps:
    - name: Deploy static site to Pages
      id: deploy-pages
      uses: actions/deploy-pages@v4
-     # Uses the artifact from configure-pages/upload-pages-artifact.

@@ -19,18 +19,7 @@ export type DeterminismMode = 'fdlibm' | 'native';
 
 export type ValidationTier = 'default' | 'safe' | 'unchecked';
 
-export type MathEntity =
- | 'Vector2'
- | 'Rotation2'
- | 'Complex'
- | 'Interval'
- | 'Matrix2'
- | 'Matrix3'
- | 'Transform2'
- | 'scalar'
- | 'angle'
- | 'numeric'
- | 'deterministic';
+export type MathEntity = string;
 
 /* ========================================================================== */
 /* Dimension Cell (single point in the matrix)                                 */
@@ -39,8 +28,8 @@ export type MathEntity =
 export interface DimensionCell {
  environment: Environment;
  buildMode: BuildMode;
- determinism: DeterminismMode;
- tier: ValidationTier;
+ determinism?: DeterminismMode;
+ tier?: ValidationTier;
  entity: MathEntity;
 }
 
@@ -77,18 +66,24 @@ const DEFAULTS: Required<DimensionSpec> = {
 export function cartesianProduct(spec: DimensionSpec): DimensionCell[] {
  const environments = spec.environment ?? DEFAULTS.environment;
  const buildModes = spec.buildMode ?? DEFAULTS.buildMode;
- const determinisms = spec.determinism ?? DEFAULTS.determinism;
- const tiers = spec.tier ?? DEFAULTS.tier;
+ const determinisms = spec.determinism; // undefined = skip axis
+ const tiers = spec.tier; // undefined = skip axis
  const entities = spec.entity ?? DEFAULTS.entity;
 
  const cells: DimensionCell[] = [];
 
  for (const environment of environments) {
   for (const buildMode of buildModes) {
-   for (const determinism of determinisms) {
-    for (const tier of tiers) {
+   for (const determinism of determinisms ?? [undefined]) {
+    for (const tier of tiers ?? [undefined]) {
      for (const entity of entities) {
-      cells.push({ environment, buildMode, determinism, tier, entity });
+      cells.push({
+       environment,
+       buildMode,
+       ...(determinism !== undefined ? { determinism } : {}),
+       ...(tier !== undefined ? { tier } : {}),
+       entity,
+      });
      }
     }
    }
@@ -141,9 +136,7 @@ const FLAG_ALIASES: Record<string, keyof DimensionCell> = {
 
 export function parseDimensionFilter(args: string[]): DimensionFilter {
  const filter: DimensionFilter = {};
- const validAxes = new Set<string>([
-  'environment', 'buildMode', 'determinism', 'tier', 'entity',
- ]);
+ const validAxes = new Set<string>(['environment', 'buildMode', 'determinism', 'tier', 'entity']);
 
  for (const arg of args) {
   const match = arg.match(/^--(\w+)=(.+)$/);
@@ -172,12 +165,19 @@ export function parseDimensionFilter(args: string[]): DimensionFilter {
  * human-readable identification of benchmark results.
  */
 export function cellToKey(cell: DimensionCell): string {
- return `${cell.environment}:${cell.buildMode}:${cell.determinism}:${cell.tier}:${cell.entity}`;
+ const parts = [cell.environment, cell.buildMode];
+ if (cell.determinism !== undefined) parts.push(cell.determinism);
+ if (cell.tier !== undefined) parts.push(cell.tier);
+ parts.push(cell.entity);
+ return parts.join(':');
 }
 
 /**
  * Human-readable label for a dimension cell.
  */
 export function cellToLabel(cell: DimensionCell): string {
- return `[${cell.environment}] ${cell.entity} (${cell.buildMode}, ${cell.determinism}, ${cell.tier})`;
+ const details = [cell.buildMode];
+ if (cell.determinism !== undefined) details.push(cell.determinism);
+ if (cell.tier !== undefined) details.push(cell.tier);
+ return `[${cell.environment}] ${cell.entity} (${details.join(', ')})`;
 }
