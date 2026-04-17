@@ -1,5 +1,6 @@
 /**
- * JSON report shapes for stress test and DX analysis persistence.
+ * @file harness/result-types.ts
+ * @description Define JSON report shapes for stress test and DX analysis persistence
  *
  * These interfaces wrap the per-module result types into top-level
  * report structures that include metadata and are written to
@@ -27,6 +28,7 @@ import type { BuildComparisonResult } from '../dx/build-comparison.ts';
 /* Stress Report                                                               */
 /* ========================================================================== */
 
+/** Represent a complete stress test report with metadata and per-suite results */
 export interface StressReport {
  metadata: ReportMetadata;
  samples: number;
@@ -46,6 +48,7 @@ export interface StressReport {
 /* DX Report                                                                   */
 /* ========================================================================== */
 
+/** Represent a complete DX analysis report with bundle size, tree-shaking, and build data */
 export interface DxReport {
  metadata: ReportMetadata;
  bundleSize: BundleSizeResult[];

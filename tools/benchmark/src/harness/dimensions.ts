@@ -1,5 +1,6 @@
 /**
- * Dimension matrix for parameterized benchmark execution.
+ * @file harness/dimensions.ts
+ * @description Define the dimension matrix for parameterized benchmark execution
  *
  * The 5-axis model enables benchmarks to run across every combination
  * of environment, build mode, determinism mode, validation tier, and
@@ -11,20 +12,26 @@
 /* Dimension Axis Types                                                        */
 /* ========================================================================== */
 
+/** Execution environment for benchmarks */
 export type Environment = 'node' | 'chromium' | 'firefox' | 'webkit';
 
+/** Build mode axis (development includes validation, production is minified) */
 export type BuildMode = 'development' | 'production';
 
+/** Determinism mode axis (fdlibm = cross-platform deterministic, native = platform Math) */
 export type DeterminismMode = 'fdlibm' | 'native';
 
+/** Validation tier axis (default = strict, safe = fallback, unchecked = no validation) */
 export type ValidationTier = 'default' | 'safe' | 'unchecked';
 
+/** Mathematical entity name (e.g., 'Vector2', 'Matrix3') */
 export type MathEntity = string;
 
 /* ========================================================================== */
 /* Dimension Cell (single point in the matrix)                                 */
 /* ========================================================================== */
 
+/** Represent a single point in the dimension matrix */
 export interface DimensionCell {
  environment: Environment;
  buildMode: BuildMode;
@@ -37,6 +44,7 @@ export interface DimensionCell {
 /* Dimension Specification (which values each axis can take)                    */
 /* ========================================================================== */
 
+/** Specify which values each dimension axis can take */
 export interface DimensionSpec {
  environment?: Environment[];
  buildMode?: BuildMode[];
@@ -58,10 +66,14 @@ const DEFAULTS: Required<DimensionSpec> = {
 /* ========================================================================== */
 
 /**
- * Compute the cartesian product of a dimension spec.
+ * Compute the cartesian product of a dimension spec
  *
+ * @remarks
  * Returns one DimensionCell per unique combination of axis values.
  * Missing axes use their default values.
+ *
+ * @param spec - The dimension specification with axis value arrays
+ * @returns One DimensionCell per unique combination of axis values
  */
 export function cartesianProduct(spec: DimensionSpec): DimensionCell[] {
  const environments = spec.environment ?? DEFAULTS.environment;
@@ -97,16 +109,22 @@ export function cartesianProduct(spec: DimensionSpec): DimensionCell[] {
 /* Dimension Filtering                                                         */
 /* ========================================================================== */
 
+/** Partial filter constraints for dimension axes */
 export type DimensionFilter = Partial<Record<keyof DimensionCell, string>>;
 
 /**
- * Filter dimension cells to match a set of CLI-style constraints.
+ * Filter dimension cells to match a set of CLI-style constraints
  *
+ * @remarks
  * Each filter key restricts the corresponding axis to the given value.
  * Multiple filters are AND-combined (all must match).
  *
  * Example: `{ tier: 'unchecked', determinism: 'fdlibm' }` keeps only
  * cells where tier=unchecked AND determinism=fdlibm.
+ *
+ * @param cells - The dimension cells to filter
+ * @param filter - Partial constraints to match against
+ * @returns Cells matching all filter constraints
  */
 export function filterCells(cells: DimensionCell[], filter: DimensionFilter): DimensionCell[] {
  return cells.filter((cell) => {
@@ -120,13 +138,9 @@ export function filterCells(cells: DimensionCell[], filter: DimensionFilter): Di
 }
 
 /**
- * Parse CLI arguments into a dimension filter.
+ * CLI flag aliases for dimension axes
  *
- * Accepts `--axis=value` format (e.g., `--tier=unchecked`).
- */
-/**
- * CLI flag aliases for dimension axes.
- *
+ * @remarks
  * Allows short/intuitive flags (e.g., `--build=production`) to map
  * to the canonical axis name (`buildMode`).
  */
@@ -134,6 +148,16 @@ const FLAG_ALIASES: Record<string, keyof DimensionCell> = {
  build: 'buildMode',
 };
 
+/**
+ * Parse CLI arguments into a dimension filter
+ *
+ * @remarks
+ * Accepts `--axis=value` format (e.g., `--tier=unchecked`).
+ * Supports aliases defined in FLAG_ALIASES (e.g., `--build=production`).
+ *
+ * @param args - The CLI argument strings to parse
+ * @returns A dimension filter with matched axis constraints
+ */
 export function parseDimensionFilter(args: string[]): DimensionFilter {
  const filter: DimensionFilter = {};
  const validAxes = new Set<string>(['environment', 'buildMode', 'determinism', 'tier', 'entity']);
@@ -159,10 +183,14 @@ export function parseDimensionFilter(args: string[]): DimensionFilter {
 /* ========================================================================== */
 
 /**
- * Serialize a dimension cell to a stable string key.
+ * Serialize a dimension cell to a stable string key
  *
+ * @remarks
  * Used for keying results in the JSON report and for
  * human-readable identification of benchmark results.
+ *
+ * @param cell - The dimension cell to serialize
+ * @returns A colon-separated string key (e.g., 'node:development:fdlibm:Vector2')
  */
 export function cellToKey(cell: DimensionCell): string {
  const parts = [cell.environment, cell.buildMode];
@@ -173,7 +201,10 @@ export function cellToKey(cell: DimensionCell): string {
 }
 
 /**
- * Human-readable label for a dimension cell.
+ * Format a human-readable label for a dimension cell
+ *
+ * @param cell - The dimension cell to format
+ * @returns A label like '[node] Vector2 (development, fdlibm)'
  */
 export function cellToLabel(cell: DimensionCell): string {
  const details = [cell.buildMode];

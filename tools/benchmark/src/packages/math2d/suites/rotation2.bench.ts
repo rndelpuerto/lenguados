@@ -1,9 +1,21 @@
 /**
- * Rotation2 benchmark suite.
+ * @file packages/math2d/suites/rotation2.bench.ts
+ * @description Rotation2 operations benchmark suite
+ *
+ * Cover factories, arithmetic, vector application, normalization triality,
+ * interpolation, scalar reductions, and predicates on the Rotation2 type.
  */
 
 import { definePackageSuite } from '../../../harness/suite-builder.ts';
 
+/**
+ * Define the Rotation2 benchmark suite
+ *
+ * @remarks
+ * Benchmarks all Rotation2 static operations across both determinism modes
+ * and all three validation tiers (default/safe/unchecked) for the
+ * normalize triality.
+ */
 export const defineSuite = definePackageSuite({
  name: 'Rotation2',
  entity: 'Rotation2',

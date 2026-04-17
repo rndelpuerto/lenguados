@@ -1,5 +1,6 @@
 /**
- * Lab-specific fast-check arbitraries for stress testing.
+ * @file stress/arbitraries.ts
+ * @description Lab-specific fast-check arbitraries for stress testing
  *
  * Defines arbitraries not present in math2d's test suite, targeting
  * overflow boundaries, subnormal ranges, near-singular matrices,
@@ -13,14 +14,16 @@
 import * as fc from 'fast-check';
 
 /**
- * The overflow threshold from testing-deep-patterns.md.
+ * The overflow threshold from testing-deep-patterns.md
+ *
  * Above this value, naive x*x + y*y overflows to Infinity,
  * but hypot(x, y) remains safe.
  */
 export const OVERFLOW_THRESHOLD = Math.sqrt(Number.MAX_VALUE / 2);
 
 /**
- * Vector2-like with components at overflow boundary.
+ * Vector2-like with components at overflow boundary
+ *
  * Tests that Default/Safe tiers use hypot (overflow-safe)
  * while Unchecked uses Math.sqrt(x*x + y*y) per convention.
  */
@@ -32,7 +35,8 @@ export const arbOverflowVector2 = fc
  .map(([x, y]) => ({ x, y }));
 
 /**
- * Vector2-like with components near the subnormal range.
+ * Vector2-like with components near the subnormal range
+ *
  * Tests underflow behavior near Number.MIN_VALUE (5e-324).
  */
 export const arbSubnormalVector2 = fc
@@ -43,7 +47,8 @@ export const arbSubnormalVector2 = fc
  .map(([x, y]) => ({ x, y }));
 
 /**
- * Matrix2-like with determinant between 1e-15 and 1e-5.
+ * Matrix2-like with determinant between 1e-15 and 1e-5
+ *
  * Crosses the MIN_SAFE_DIVISOR = 1e-10 boundary for near-singular testing.
  *
  * Constructed as: [[1, t], [t, 1+epsilon]] where epsilon controls the determinant.
@@ -64,7 +69,8 @@ export const arbNearSingularMatrix2 = fc
  });
 
 /**
- * Matrix3-like with high condition number (> 1e8).
+ * Matrix3-like with high condition number (> 1e8)
+ *
  * Tests numerical stability of inversion and decomposition.
  *
  * Uses a diagonal matrix with extreme element ratio to produce
@@ -76,15 +82,19 @@ export const arbIllConditionedMatrix3 = fc
   // Diagonal matrix: diag(conditionNumber, 1, 1)
   // Condition number = max(singular values) / min(singular values) = conditionNumber
   return {
-   m00: conditionNumber, m01: 0, m02: 0,
-   m10: 0, m11: 1, m12: 0,
-   m20: 0, m21: 0, m22: 1,
+   m00: conditionNumber,
+   m01: 0,
+   m02: 0,
+   m10: 0,
+   m11: 1,
+   m12: 0,
+   m20: 0,
+   m21: 0,
+   m22: 1,
   };
  });
 
-/**
- * IEEE 754 special values for edge-case grid testing.
- */
+/** IEEE 754 special values for edge-case grid testing */
 export const IEEE754_SPECIAL_VALUES = [
  +0,
  -0,
@@ -99,7 +109,9 @@ export const IEEE754_SPECIAL_VALUES = [
 ] as const;
 
 /**
- * Generate the cartesian product of special values for binary operations.
+ * Generate the cartesian product of special values for binary operations
+ *
+ * @returns Array of all (a, b) pairs from IEEE754_SPECIAL_VALUES
  */
 export function specialValuePairs(): Array<[number, number]> {
  const pairs: Array<[number, number]> = [];

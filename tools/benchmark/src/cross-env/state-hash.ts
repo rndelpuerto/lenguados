@@ -1,8 +1,9 @@
 /**
- * FNV-1a state hash for determinism verification.
+ * @file cross-env/state-hash.ts
+ * @description FNV-1a state hash for determinism verification
  *
  * Computes a deterministic hash over raw Float64Array bytes.
- * Sensitive to single-ULP differences — any bit change in any
+ * Sensitive to single-ULP differences -- any bit change in any
  * double produces a different hash.
  */
 
@@ -10,12 +11,13 @@ const FNV_OFFSET_BASIS = 0x811c9dc5;
 const FNV_PRIME = 0x01000193;
 
 /**
- * Compute FNV-1a hash over an array of doubles.
+ * Compute FNV-1a hash over an array of doubles
  *
  * Reinterprets each double as 8 raw bytes via shared ArrayBuffer,
  * then applies the FNV-1a algorithm.
  *
- * Returns a 32-bit unsigned integer as a hex string.
+ * @param values - Array of doubles to hash
+ * @returns 32-bit unsigned integer as a zero-padded hex string
  */
 export function hashFloat64Array(values: number[]): string {
  const buf = new ArrayBuffer(8);
@@ -36,8 +38,11 @@ export function hashFloat64Array(values: number[]): string {
 }
 
 /**
- * Compare hashes from two engines/runs.
- * Returns true if they match (deterministic), false if they diverge.
+ * Compare hashes from two engines/runs
+ *
+ * @param a - First hash string to compare
+ * @param b - Second hash string to compare
+ * @returns True if hashes match (deterministic), false if they diverge
  */
 export function hashesMatch(a: string, b: string): boolean {
  return a === b;

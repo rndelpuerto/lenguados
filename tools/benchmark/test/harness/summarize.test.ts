@@ -1,5 +1,6 @@
 /**
- * Tests for the docs summary generator (generate-docs-data.mjs).
+ * @file test/harness/summarize.test.ts
+ * @description Test the benchmark summary generator (scripts/summarize.ts)
  *
  * Validates output structure, placeholder generation, idempotency,
  * and size constraint using the live generator script.
@@ -10,14 +11,13 @@ import { execSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-const ROOT = resolve(import.meta.dirname, '../../../..');
-const SCRIPT = resolve(ROOT, 'scripts/generate-docs-data.mjs');
-const OUTPUT_DIR = resolve(ROOT, 'docs/static/benchmark-data/math2d');
+const TOOL_ROOT = resolve(import.meta.dirname, '../..');
+const OUTPUT_DIR = resolve(TOOL_ROOT, 'results/summaries/math2d');
 
-function runGenerator(): string {
- return execSync(`node ${SCRIPT}`, {
+function runSummarizer(): string {
+ return execSync('npx tsx scripts/summarize.ts', {
   encoding: 'utf-8',
-  cwd: resolve(import.meta.dirname, '../..'),
+  cwd: TOOL_ROOT,
   stdio: ['pipe', 'pipe', 'pipe'],
  });
 }
@@ -28,13 +28,15 @@ function readOutput(filename: string): unknown {
  return JSON.parse(readFileSync(filepath, 'utf-8'));
 }
 
-describe('generate-docs-data.mjs', () => {
- // Run the generator once for all tests
+describe('summarize.ts', () => {
+ // Run the summarizer once for all tests.
+ // Always produces output — overwrites any existing summaries
+ // with fresh transforms from results/*.json.
  let stdout: string;
  const outputs: Record<string, unknown> = {};
 
  it('runs without errors', () => {
-  stdout = runGenerator();
+  stdout = runSummarizer();
   expect(stdout).toContain('Done.');
 
   outputs.performance = readOutput('performance-summary.json');
@@ -77,7 +79,6 @@ describe('generate-docs-data.mjs', () => {
     expect(Array.isArray(entity.operations)).toBe(true);
     expect(entity.operations.length).toBeGreaterThan(0);
 
-    // Each operation has required fields
     const op = entity.operations[0] as Record<string, unknown>;
     expect(op.name).toBeDefined();
     expect(typeof op.median).toBe('number');
@@ -90,7 +91,6 @@ describe('generate-docs-data.mjs', () => {
  });
 
  it('performance summary strips raw sample arrays', () => {
-  // The output should not contain any 'raw' key with large arrays
   const perfJson = readFileSync(resolve(OUTPUT_DIR, 'performance-summary.json'), 'utf-8');
   expect(perfJson).not.toContain('"raw"');
  });
@@ -111,14 +111,13 @@ describe('generate-docs-data.mjs', () => {
   }
  });
 
- it('comparison summary has correct placeholder when no data', () => {
+ it('comparison summary has correct structure', () => {
   const comp = outputs.comparison as Record<string, unknown>;
   expect(comp).toBeDefined();
   expect(comp).toHaveProperty('metadata');
   expect(comp).toHaveProperty('libraries');
   expect(comp).toHaveProperty('categories');
   expect(comp).toHaveProperty('aggregate');
-  // If no comparison data exists, metadata is null
   if (comp.metadata === null) {
    expect(comp.libraries).toEqual([]);
    expect(comp.categories).toEqual({});
@@ -126,7 +125,7 @@ describe('generate-docs-data.mjs', () => {
   }
  });
 
- it('stress summary has correct placeholder when no data', () => {
+ it('stress summary has correct structure', () => {
   const stress = outputs.stress as Record<string, unknown>;
   expect(stress).toBeDefined();
   expect(stress).toHaveProperty('metadata');
@@ -139,7 +138,7 @@ describe('generate-docs-data.mjs', () => {
   expect(stress).toHaveProperty('nearSingular');
  });
 
- it('dx summary has correct placeholder when no data', () => {
+ it('dx summary has correct structure', () => {
   const dx = outputs.dx as Record<string, unknown>;
   expect(dx).toBeDefined();
   expect(dx).toHaveProperty('metadata');
@@ -167,7 +166,6 @@ describe('generate-docs-data.mjs', () => {
  });
 
  it('output is idempotent (byte-identical on re-run)', () => {
-  // Read current output
   const before: Record<string, string> = {};
   for (const filename of [
    'performance-summary.json',
@@ -179,10 +177,8 @@ describe('generate-docs-data.mjs', () => {
    before[filename] = readFileSync(filepath, 'utf-8');
   }
 
-  // Run again
-  runGenerator();
+  runSummarizer();
 
-  // Compare
   for (const filename of Object.keys(before)) {
    const after = readFileSync(resolve(OUTPUT_DIR, filename), 'utf-8');
    expect(after).toBe(before[filename]);

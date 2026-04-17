@@ -1,5 +1,6 @@
 /**
- * Stress test definition wrapper for IEEE 754 edge cases.
+ * @file packages/math2d/stress/ieee754.stress-def.ts
+ * @description Stress test definition wrapper for IEEE 754 edge cases
  *
  * Delegates to {@link testUnaryEdgeCases}, {@link testBinaryEdgeCases},
  * and {@link verifyNanPropagation} from the stress test library.
@@ -15,6 +16,13 @@ import {
  verifyNanPropagation,
 } from '../../../stress/ieee754-edge.stress.ts';
 
+/**
+ * Exercise IEEE 754 special values (NaN, ±Infinity, ±0, denormals) across operations
+ *
+ * @remarks
+ * Runs unary and binary edge-case matrices against Vector2 operations and
+ * verifies correct NaN propagation in unchecked code paths.
+ */
 export const stressTest: StressTestDefinition = {
  name: 'ieee754',
  run(module: Record<string, unknown>, _options, diagnostics: DiagnosticReport): StressTestOutput {

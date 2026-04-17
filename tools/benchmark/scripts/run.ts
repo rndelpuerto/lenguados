@@ -1,7 +1,9 @@
 /**
- * Shared CLI utilities for benchmark scripts.
+ * @file scripts/run.ts
+ * @description Provide shared CLI utilities for benchmark scripts
  *
- * Provides build artifact verification and common flag parsing.
+ * Includes build artifact verification and common flag parsing used
+ * by all benchmark entry points.
  */
 
 import type { BuildMode } from '../src/harness/dimensions.ts';
@@ -9,8 +11,12 @@ import type { PackageLoader } from '../src/harness/package-loader.ts';
 import { verifyArtifacts } from '../src/harness/loader-utils.ts';
 
 /**
- * Verify that build artifacts exist for the given package loader.
- * Exits the process with an error message if artifacts are missing.
+ * Verify that build artifacts exist for the given package loader
+ *
+ * Exit the process with an error message if artifacts are missing.
+ *
+ * @param modes - Build modes to verify (e.g., development, production)
+ * @param loader - Package loader whose entry points are checked
  */
 export async function ensureBuildArtifacts(
  modes: BuildMode[],
@@ -28,7 +34,10 @@ export async function ensureBuildArtifacts(
 }
 
 /**
- * Parse common CLI flags shared across all entry points.
+ * Parse common CLI flags shared across all entry points
+ *
+ * @param args - Raw CLI arguments (typically `process.argv.slice(2)`)
+ * @returns Parsed build modes, package name, and help flag
  */
 export function parseCommonFlags(args: string[]): {
  buildModes: BuildMode[];
@@ -53,8 +62,12 @@ export function parseCommonFlags(args: string[]): {
 }
 
 /**
- * Load a package's loader module by name.
- * Exits with clear error if the package doesn't exist.
+ * Load a package loader module by name
+ *
+ * Exit with a clear error if the package does not exist.
+ *
+ * @param packageName - Package to load (e.g., "math2d")
+ * @returns The resolved PackageLoader instance
  */
 export async function loadPackageLoader(packageName: string): Promise<PackageLoader> {
  try {

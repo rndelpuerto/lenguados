@@ -1,5 +1,6 @@
 /**
- * CLI entry point for performance benchmarks.
+ * @file scripts/bench.ts
+ * @description Run performance benchmarks from the CLI
  *
  * Usage: npm run bench -- [--suite=name] [--tier=default|safe|unchecked]
  *        [--determinism=fdlibm|native] [--build=development|production]

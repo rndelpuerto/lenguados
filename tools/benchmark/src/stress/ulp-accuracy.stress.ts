@@ -1,7 +1,8 @@
 /**
- * ULP accuracy stress test for deterministic kernel functions.
+ * @file stress/ulp-accuracy.stress.ts
+ * @description ULP accuracy stress test for deterministic kernel functions
  *
- * Measures the accuracy of all 12 fdlibm kernel functions by comparing
+ * Measures the accuracy of all 11 scalar fdlibm kernel functions by comparing
  * against the decimal.js reference oracle at 50-digit precision.
  * Reports max/mean ULP error and distribution histogram.
  * fdlibm guarantees ≤1 ULP for transcendental functions.
@@ -11,13 +12,10 @@ import { ulpDistance } from '../harness/ulp.ts';
 import type { UlpResult } from '../harness/ulp.ts';
 import { addFinding } from '../harness/reporter.ts';
 import type { DiagnosticReport } from '../harness/reporter.ts';
-import {
- ALL_KERNEL_FUNCTIONS,
- computeReferenceSet,
- clearOracleCache,
-} from './reference-oracle.ts';
+import { ALL_KERNEL_FUNCTIONS, computeReferenceSet, clearOracleCache } from './reference-oracle.ts';
 import type { KernelFunction } from './reference-oracle.ts';
 
+/** Aggregated ULP accuracy measurement for a single kernel function */
 export interface UlpAccuracyResult {
  fn: string;
  sampleCount: number;
@@ -28,7 +26,13 @@ export interface UlpAccuracyResult {
 }
 
 /**
- * Run ULP accuracy measurement for a single kernel function.
+ * Run ULP accuracy measurement for a single kernel function
+ *
+ * @param fn - Kernel function name to measure
+ * @param kernelImpl - Actual kernel implementation to test
+ * @param sampleCount - Number of domain-sampled inputs to test
+ * @param diagnostics - Diagnostic report to record findings
+ * @returns Aggregated ULP accuracy result with histogram
  */
 export function measureUlpAccuracy(
  fn: KernelFunction,
@@ -94,8 +98,14 @@ export function measureUlpAccuracy(
 }
 
 /**
- * Run ULP accuracy for all 11 scalar deterministic kernel functions.
- * (sinCos is excluded — it returns {sin, cos}, not a scalar.)
+ * Run ULP accuracy for all 11 scalar deterministic kernel functions
+ *
+ * sinCos is excluded because it returns {sin, cos}, not a scalar.
+ *
+ * @param kernelModule - Module containing all kernel function implementations
+ * @param samplesPerFunction - Number of domain-sampled inputs per function
+ * @param diagnostics - Diagnostic report to record findings
+ * @returns Array of ULP accuracy results, one per kernel function
  */
 export function runUlpAccuracyStress(
  kernelModule: Record<string, (...args: number[]) => number>,

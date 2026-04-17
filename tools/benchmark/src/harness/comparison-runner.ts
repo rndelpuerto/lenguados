@@ -1,5 +1,6 @@
 /**
- * Cross-library comparison runner.
+ * @file harness/comparison-runner.ts
+ * @description Execute cross-library comparison benchmarks
  *
  * Executes identical benchmarks across all registered library adapters
  * using the same mitata runner and statistics engine. Produces
@@ -19,12 +20,14 @@ import type { AggregateScore, OperationResult } from './scoring.ts';
 /* Types                                                                       */
 /* ========================================================================== */
 
+/** Contain per-operation benchmark statistics for a single library */
 export interface LibraryBenchmarkResult {
  libraryName: string;
  libraryVersion: string;
  operations: Map<string, BenchmarkStats>;
 }
 
+/** Contain the full cross-library comparison with scores and reference library */
 export interface ComparisonResult {
  libraries: LibraryBenchmarkResult[];
  scores: Map<string, AggregateScore>;
@@ -36,11 +39,18 @@ export interface ComparisonResult {
 /* ========================================================================== */
 
 /**
- * Run standard vocabulary benchmarks across all provided adapters.
+ * Run standard vocabulary benchmarks across all provided adapters
  *
+ * @remarks
  * Uses the same mitata runner for all libraries, ensuring identical
  * measurement methodology. Results are keyed by operation name,
  * enabling direct cross-library comparison.
+ *
+ * @param adapters - Library adapters to benchmark
+ * @param referenceLibrary - Name of the reference library for scoring
+ * @param vocabularyNames - Set of standard vocabulary operation names
+ * @param operationFilter - Optional subset of operations to benchmark
+ * @returns A ComparisonResult with per-library stats and aggregate scores
  */
 export async function runComparison(
  adapters: LibraryAdapter[],

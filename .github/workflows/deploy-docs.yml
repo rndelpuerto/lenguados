@@ -72,16 +72,17 @@ jobs:
      uses: actions/download-artifact@v4
      with:
       name: benchmark-summaries
-      path: docs/static/benchmark-data/
+      path: tools/benchmark/results/summaries/
       run-id: ${{ github.event.workflow_run.id }}
       github-token: ${{ secrets.GITHUB_TOKEN }}
      continue-on-error: true
 
    # ─────────────────────────────────────────────────────────────────────────
    # Build Docusaurus site
-   # npm run docs runs: generate-docs-data.mjs → generate-package-docs.mjs → docusaurus build
-   # If benchmark summaries were downloaded, they're already in place.
-   # If not, the generator produces placeholders and pages show fallback UI.
+   # npm run docs runs: generate-package-docs.mjs → docusaurus build
+   # The benchmark-data plugin reads summaries from
+   # tools/benchmark/results/summaries/ (downloaded above). If not available,
+   # the plugin returns empty data and pages show NoDataFallback.
    # ─────────────────────────────────────────────────────────────────────────
    - name: Build Docusaurus site
      run: npm run docs

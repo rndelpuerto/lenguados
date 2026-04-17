@@ -1,5 +1,5 @@
 ---
-sidebar_position: 3
+sidebar_position: 4
 title: 'Edge Cases'
 description: 'IEEE 754 failure modes, normalization paradoxes, and set theory anomalies'
 ---
@@ -42,7 +42,7 @@ This is the definitive guide to mathematical failure within the `math2d` package
 
 - **The Reality:** Circular random generative functions accept a `radius` parameter.
 - **The Edge Case:** Passing a negative radius (e.g., `-5`) does not throw an error in JavaScript math. However, it geometrically inverts the resultant coordinates across the origin.
-- **The Architecture:** `assertNonNegative` exists locally inside these functions for `DEV_MODE`. In production (`useNativeMath`), this is stripped, making it silently degenerative.
+- **The Architecture:** `assertNonNegative` guards these functions behind `process.env.NODE_ENV !== 'production'`. In production builds, this assertion is stripped via dead-code elimination (DCE), making it silently degenerative.
 
 ---
 
@@ -62,10 +62,10 @@ The ultimate architectural concession for extreme performance is the `Unchecked`
 
 ## 4. Angle Wrap-Around & Equality Algorithms
 
-### 4.1 The $2\pi$ Leap: `scalarNearEquals` vs `angleDifference`
+### 4.1 The $2\pi$ Leap: `nearEquals` vs `angleDifference`
 
 - **The Engine Reality:** Comparing two angles to see if they represent the same rotational heading.
-- **The Edge Case:** Floating point values `-3.14159` ($-\pi$) and `3.14159` ($\pi$) represent the exact same rotation, yet `scalarNearEquals(Math.PI, -Math.PI)` returns `false`.
+- **The Edge Case:** Floating point values `-3.14159` ($-\pi$) and `3.14159` ($\pi$) represent the exact same rotation, yet `nearEquals(Math.PI, -Math.PI)` returns `false`.
 - **The Architecture:** `Rotation2.nearEquals` explicitly implements a fallback employing `angleDifference(a, b)` precisely to intercept wrap-around.
 - **The Rule:** Developers must never compare rotational headings directly using the raw `angle` getter. Always use `relativeEquals` wrapper primitives or let `Rotation2` handle the boundary cross.
 
@@ -75,10 +75,11 @@ The ultimate architectural concession for extreme performance is the `Unchecked`
 
 Unlike `intersect()`, which can result in an "Empty Set" (`undefined`) if the intervals do not overlap, the `Interval.union(a, b)` operation obeys the principles of **Convex Geometry and Continuous Topological Spaces**, not discrete finite set theory.
 
-> [!WARNING]
-> When `union` is applied to disjoint intervals (e.g., `[0, 1] ∪ [5, 6]`), the system does **not** return an array or fragmented collection of discontinuous dimensions. Instead, the math package operates under the Spatial Continuity postulate, generating the **Convex Hull** of the extreme points: `[0, 6]`.
->
-> **Agnostic Mathematical Criterion:** When dealing with geometric spaces (1D, 2D), the fundamental unit of `Interval` is a continuous uninterrupted line segment. Any combinatorial operation that must return a single resulting `Interval` is mathematically obligated to span the complete range between the global minimum and the global maximum, inevitably absorbing the empty space `(1, 5)`. This is not an anomaly but the standard behavior defined by the topology of convex sets in $\mathbb{R}$.
+:::warning
+When `union` is applied to disjoint intervals (e.g., `[0, 1] ∪ [5, 6]`), the system does **not** return an array or fragmented collection of discontinuous dimensions. Instead, the math package operates under the Spatial Continuity postulate, generating the **Convex Hull** of the extreme points: `[0, 6]`.
+
+**Agnostic Mathematical Criterion:** When dealing with geometric spaces (1D, 2D), the fundamental unit of `Interval` is a continuous uninterrupted line segment. Any combinatorial operation that must return a single resulting `Interval` is mathematically obligated to span the complete range between the global minimum and the global maximum, inevitably absorbing the empty space `(1, 5)`. This is not an anomaly but the standard behavior defined by the topology of convex sets in $\mathbb{R}$.
+:::
 
 ---
 

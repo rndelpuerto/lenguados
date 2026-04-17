@@ -1,9 +1,22 @@
 /**
- * Matrix3 benchmark suite.
+ * @file packages/math2d/suites/matrix3.bench.ts
+ * @description Matrix3 operations benchmark suite
+ *
+ * Cover factories, arithmetic, inverse (general and affine), decomposition,
+ * point/vector transform, composition, extraction, interpolation, and
+ * predicates on the Matrix3 type.
  */
 
 import { definePackageSuite } from '../../../harness/suite-builder.ts';
 
+/**
+ * Define the Matrix3 benchmark suite
+ *
+ * @remarks
+ * Benchmarks all Matrix3 static operations across both determinism modes
+ * and all three validation tiers (default/safe/unchecked) for triality
+ * operations (inverse, inverseAffine).
+ */
 export const defineSuite = definePackageSuite({
  name: 'Matrix3',
  entity: 'Matrix3',

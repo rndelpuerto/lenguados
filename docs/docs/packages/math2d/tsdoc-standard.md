@@ -1,5 +1,5 @@
 ---
-sidebar_position: 1
+sidebar_position: 9
 title: 'TSDoc Standard'
 description: 'Canonical tag order, templates, and documentation conventions for @lenguados/math2d'
 ---

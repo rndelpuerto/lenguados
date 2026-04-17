@@ -1,5 +1,6 @@
 /**
- * Stress test definition wrapper for catastrophic cancellation.
+ * @file packages/math2d/stress/cancellation.stress-def.ts
+ * @description Stress test definition wrapper for catastrophic cancellation
  *
  * Delegates to {@link testCrossProductCancellation} and
  * {@link testDeterminantCancellation} from the stress test library.
@@ -14,6 +15,13 @@ import {
  testDeterminantCancellation,
 } from '../../../stress/cancellation.stress.ts';
 
+/**
+ * Measure catastrophic cancellation in cross product and determinant computations
+ *
+ * @remarks
+ * Tests how many significant bits are lost when nearly-parallel vectors or
+ * near-singular matrices trigger floating-point subtraction cancellation.
+ */
 export const stressTest: StressTestDefinition = {
  name: 'cancellation',
  run(module: Record<string, unknown>, _options, diagnostics: DiagnosticReport): StressTestOutput {

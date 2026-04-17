@@ -1,5 +1,6 @@
 /**
- * DX analysis configuration for @lenguados/math2d.
+ * @file packages/math2d/dx-config.ts
+ * @description DX analysis configuration for @lenguados/math2d
  *
  * Defines import paths, bundle locations, and assertion patterns
  * used by the DX analysis functions (bundle-size, tree-shaking,
@@ -15,6 +16,14 @@ import { math2dLoader } from './loader.ts';
 const root = math2dLoader.root;
 const mainEntry = math2dLoader.mainEntry;
 
+/**
+ * DX analysis configuration for @lenguados/math2d
+ *
+ * @remarks
+ * Provides import paths for bundle-size measurement, assertion function
+ * names for DCE verification, and the minimal single-type import for
+ * tree-shaking analysis.
+ */
 export const math2dDxConfig: DxConfig = {
  root,
  mainEntry,

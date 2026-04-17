@@ -1,9 +1,21 @@
 /**
- * Matrix2 benchmark suite.
+ * @file packages/math2d/suites/matrix2.bench.ts
+ * @description Matrix2 operations benchmark suite
+ *
+ * Cover factories, arithmetic, inverse, solve, decomposition, transform,
+ * interpolation, and predicates on the Matrix2 type.
  */
 
 import { definePackageSuite } from '../../../harness/suite-builder.ts';
 
+/**
+ * Define the Matrix2 benchmark suite
+ *
+ * @remarks
+ * Benchmarks all Matrix2 static operations across both determinism modes
+ * and all three validation tiers (default/safe/unchecked) for triality
+ * operations (inverse, solveLinearSystem).
+ */
 export const defineSuite = definePackageSuite({
  name: 'Matrix2',
  entity: 'Matrix2',

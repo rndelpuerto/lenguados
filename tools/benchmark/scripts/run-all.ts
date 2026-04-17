@@ -1,7 +1,8 @@
 /**
- * Orchestrator that runs all test categories and produces a combined report.
+ * @file scripts/run-all.ts
+ * @description Orchestrate a full benchmark laboratory run
  *
- * Executes: benchmarks → stress tests → DX analysis → cross-library comparison
+ * Execute benchmarks → stress tests → DX analysis → cross-library comparison
  * in sequence, producing a combined summary.
  */
 
@@ -25,6 +26,12 @@ console.log('  ================================================================\
 
 const startTime = Date.now();
 
+/**
+ * Execute a labeled subprocess and log its output
+ *
+ * @param label - Display label for the test category
+ * @param command - Shell command to execute
+ */
 function run(label: string, command: string): void {
  console.log(`\n  --- ${label} ---\n`);
  try {

@@ -1,5 +1,6 @@
 /**
- * Statistics engine implementing the Criterion.rs model.
+ * @file harness/statistics.ts
+ * @description Implement the Criterion.rs-style statistics engine
  *
  * Provides bootstrap confidence intervals, Tukey outlier detection,
  * Welch's t-test regression detection, and standard descriptive statistics.
@@ -10,6 +11,7 @@
 /* Types                                                                       */
 /* ========================================================================== */
 
+/** Contain standard descriptive statistics for a data set */
 export interface DescriptiveStats {
  count: number;
  mean: number;
@@ -24,12 +26,14 @@ export interface DescriptiveStats {
  p99: number;
 }
 
+/** Represent a confidence interval with lower/upper bounds and confidence level */
 export interface ConfidenceInterval {
  lo: number;
  hi: number;
  confidence: number;
 }
 
+/** Classify outliers by severity (mild/severe) and direction (low/high) */
 export interface OutlierClassification {
  mildLow: number;
  mildHigh: number;
@@ -39,6 +43,7 @@ export interface OutlierClassification {
  totalSevere: number;
 }
 
+/** Represent the result of a regression detection test */
 export interface RegressionResult {
  significant: boolean;
  effectSize: number;
@@ -48,6 +53,7 @@ export interface RegressionResult {
  withinThreshold: boolean;
 }
 
+/** Extend descriptive statistics with CI, outlier classification, and throughput */
 export interface BenchmarkStats extends DescriptiveStats {
  ci95: ConfidenceInterval;
  outliers: OutlierClassification;
@@ -58,6 +64,12 @@ export interface BenchmarkStats extends DescriptiveStats {
 /* Descriptive Statistics                                                       */
 /* ========================================================================== */
 
+/**
+ * Compute the arithmetic mean of an array of numbers
+ *
+ * @param data - The input data array
+ * @returns The arithmetic mean, or 0 for empty arrays
+ */
 export function computeMean(data: number[]): number {
  if (data.length === 0) return 0;
  let sum = 0;
@@ -67,6 +79,12 @@ export function computeMean(data: number[]): number {
  return sum / data.length;
 }
 
+/**
+ * Compute the median of a pre-sorted array
+ *
+ * @param sorted - The input data array, must be sorted in ascending order
+ * @returns The median value, or 0 for empty arrays
+ */
 export function computeMedian(sorted: number[]): number {
  if (sorted.length === 0) return 0;
  const mid = sorted.length >>> 1;
@@ -76,6 +94,13 @@ export function computeMedian(sorted: number[]): number {
  return sorted[mid]!;
 }
 
+/**
+ * Compute the sample variance (Bessel-corrected) of a data set
+ *
+ * @param data - The input data array
+ * @param mean - The pre-computed mean of the data
+ * @returns The sample variance, or 0 for arrays with fewer than 2 elements
+ */
 export function computeVariance(data: number[], mean: number): number {
  if (data.length < 2) return 0;
  let sum = 0;
@@ -86,6 +111,13 @@ export function computeVariance(data: number[], mean: number): number {
  return sum / (data.length - 1);
 }
 
+/**
+ * Compute the Median Absolute Deviation (MAD) of a pre-sorted array
+ *
+ * @param sorted - The input data array, must be sorted in ascending order
+ * @param median - The pre-computed median of the data
+ * @returns The MAD value, or 0 for empty arrays
+ */
 export function computeMAD(sorted: number[], median: number): number {
  if (sorted.length === 0) return 0;
  const deviations = new Array<number>(sorted.length);
@@ -96,6 +128,13 @@ export function computeMAD(sorted: number[], median: number): number {
  return computeMedian(deviations);
 }
 
+/**
+ * Compute the p-th percentile of a pre-sorted array using linear interpolation
+ *
+ * @param sorted - The input data array, must be sorted in ascending order
+ * @param p - The percentile to compute (0-100)
+ * @returns The interpolated percentile value, or 0 for empty arrays
+ */
 export function computePercentile(sorted: number[], p: number): number {
  if (sorted.length === 0) return 0;
  if (sorted.length === 1) return sorted[0]!;
@@ -107,11 +146,26 @@ export function computePercentile(sorted: number[], p: number): number {
  return sorted[lo]! * (1 - frac) + sorted[hi]! * frac;
 }
 
+/**
+ * Compute all descriptive statistics for a data set
+ *
+ * @param data - The input data array (unsorted)
+ * @returns A DescriptiveStats object with mean, median, stddev, percentiles, etc.
+ */
 export function descriptiveStats(data: number[]): DescriptiveStats {
  if (data.length === 0) {
   return {
-   count: 0, mean: 0, median: 0, stddev: 0, variance: 0,
-   mad: 0, min: 0, max: 0, p50: 0, p95: 0, p99: 0,
+   count: 0,
+   mean: 0,
+   median: 0,
+   stddev: 0,
+   variance: 0,
+   mad: 0,
+   min: 0,
+   max: 0,
+   p50: 0,
+   p95: 0,
+   p99: 0,
   };
  }
 
@@ -140,11 +194,17 @@ export function descriptiveStats(data: number[]): DescriptiveStats {
 /* ========================================================================== */
 
 /**
- * Compute a bootstrap confidence interval for the mean.
+ * Compute a bootstrap confidence interval for the mean
  *
+ * @remarks
  * Generates `numResamples` bootstrap samples, computes the mean of each,
  * sorts the distribution, and extracts percentile-based confidence bounds.
  * Does NOT assume normality.
+ *
+ * @param data - The input data array
+ * @param confidence - The confidence level (default: 0.95)
+ * @param numResamples - Number of bootstrap resamples (default: 10,000)
+ * @returns A ConfidenceInterval with lower/upper bounds
  */
 export function bootstrapCI(
  data: number[],
@@ -186,18 +246,26 @@ export function bootstrapCI(
 /* ========================================================================== */
 
 /**
- * Classify outliers using modified Tukey's method.
+ * Classify outliers using modified Tukey's method
  *
- * Mild: beyond 1.5 * IQR from Q1/Q3
- * Severe: beyond 3 * IQR from Q1/Q3
+ * @remarks
+ * Mild: beyond 1.5 * IQR from Q1/Q3.
+ * Severe: beyond 3 * IQR from Q1/Q3.
  *
  * Outliers are reported but NOT excluded from calculations.
+ *
+ * @param data - The input data array (unsorted)
+ * @returns An OutlierClassification with counts by severity and direction
  */
 export function classifyOutliers(data: number[]): OutlierClassification {
  if (data.length < 4) {
   return {
-   mildLow: 0, mildHigh: 0, severeLow: 0, severeHigh: 0,
-   totalMild: 0, totalSevere: 0,
+   mildLow: 0,
+   mildHigh: 0,
+   severeLow: 0,
+   severeHigh: 0,
+   totalMild: 0,
+   totalSevere: 0,
   };
  }
 
@@ -244,15 +312,16 @@ export function classifyOutliers(data: number[]): OutlierClassification {
 /* ========================================================================== */
 
 /**
- * Welch's t-test for unequal variances.
+ * Perform Welch's t-test for unequal variances
  *
+ * @remarks
  * Tests whether two sets of measurements have significantly different means.
- * Returns the t-statistic, degrees of freedom, and approximate p-value.
+ *
+ * @param a - First sample array
+ * @param b - Second sample array
+ * @returns The t-statistic, degrees of freedom, and approximate p-value
  */
-function welchTTest(
- a: number[],
- b: number[],
-): { tStat: number; df: number; pValue: number } {
+function welchTTest(a: number[], b: number[]): { tStat: number; df: number; pValue: number } {
  const n1 = a.length;
  const n2 = b.length;
 
@@ -277,7 +346,7 @@ function welchTTest(
 
  // Welch-Satterthwaite degrees of freedom
  const numerator = (se1 + se2) ** 2;
- const denominator = (se1 ** 2) / (n1 - 1) + (se2 ** 2) / (n2 - 1);
+ const denominator = se1 ** 2 / (n1 - 1) + se2 ** 2 / (n2 - 1);
  const df = denominator === 0 ? n1 + n2 - 2 : numerator / denominator;
 
  // Approximate two-tailed p-value using the t-distribution CDF
@@ -288,10 +357,15 @@ function welchTTest(
 }
 
 /**
- * Approximate two-tailed p-value for a t-distribution.
+ * Approximate the two-tailed p-value for a t-distribution
  *
+ * @remarks
  * Uses a rational approximation adequate for regression detection
  * (not for publishing p-values in scientific papers).
+ *
+ * @param absT - The absolute value of the t-statistic
+ * @param df - Degrees of freedom
+ * @returns The approximate two-tailed p-value
  */
 function tDistPValue(absT: number, df: number): number {
  // Hill's 1970 approximation for the incomplete beta function
@@ -310,9 +384,15 @@ function tDistPValue(absT: number, df: number): number {
 }
 
 /**
- * Regularized incomplete beta function approximation.
+ * Approximate the regularized incomplete beta function
  *
+ * @remarks
  * Uses a series expansion adequate for our use case.
+ *
+ * @param x - The upper limit of integration (0 to 1)
+ * @param a - First shape parameter
+ * @param b - Second shape parameter
+ * @returns The approximate value of the regularized incomplete beta function
  */
 function incompleteBetaApprox(x: number, a: number, b: number): number {
  if (x <= 0) return 0;
@@ -341,14 +421,17 @@ function incompleteBetaApprox(x: number, a: number, b: number): number {
 }
 
 /**
- * Log-gamma function (Lanczos approximation).
+ * Compute the log-gamma function using the Lanczos approximation
+ *
+ * @param x - The input value
+ * @returns The natural logarithm of the gamma function at x
  */
 function lgamma(x: number): number {
  const g = 7;
  const c = [
-  0.99999999999980993, 676.5203681218851, -1259.1392167224028,
-  771.32342877765313, -176.61502916214059, 12.507343278686905,
-  -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7,
+  0.99999999999980993, 676.5203681218851, -1259.1392167224028, 771.32342877765313,
+  -176.61502916214059, 12.507343278686905, -0.13857109526572012, 9.9843695780195716e-6,
+  1.5056327351493116e-7,
  ];
 
  if (x < 0.5) {
@@ -366,13 +449,19 @@ function lgamma(x: number): number {
 }
 
 /**
- * Detect performance regression between baseline and current measurements.
+ * Detect performance regression between baseline and current measurements
  *
+ * @remarks
  * A regression is flagged when:
  * 1. The p-value from Welch's t-test is below 0.05
  * 2. The effect size exceeds the noise threshold (default 2%)
  *
  * Both conditions must be true to avoid flagging noise as regression.
+ *
+ * @param baseline - Baseline measurement samples (nanoseconds)
+ * @param current - Current measurement samples (nanoseconds)
+ * @param noiseThresholdPercent - Minimum effect size percentage to flag (default: 2)
+ * @returns A RegressionResult with significance, effect size, and p-value
  */
 export function detectRegression(
  baseline: number[],
@@ -392,8 +481,7 @@ export function detectRegression(
 
  const baselineMean = computeMean(baseline);
  const currentMean = computeMean(current);
- const effectSize =
-  baselineMean === 0 ? 0 : ((currentMean - baselineMean) / baselineMean) * 100;
+ const effectSize = baselineMean === 0 ? 0 : ((currentMean - baselineMean) / baselineMean) * 100;
 
  const { pValue } = welchTTest(baseline, current);
 
@@ -415,7 +503,10 @@ export function detectRegression(
 /* ========================================================================== */
 
 /**
- * Compute full benchmark statistics from raw nanosecond measurements.
+ * Compute full benchmark statistics from raw nanosecond measurements
+ *
+ * @param dataNs - Raw timing samples in nanoseconds
+ * @returns Complete BenchmarkStats with descriptive stats, CI, outliers, and ops/sec
  */
 export function benchmarkStats(dataNs: number[]): BenchmarkStats {
  const desc = descriptiveStats(dataNs);

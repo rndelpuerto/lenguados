@@ -1,5 +1,6 @@
 /**
- * Per-cell setup/teardown for dimension matrix execution.
+ * @file harness/cell-setup.ts
+ * @description Provide per-cell setup/teardown for dimension matrix execution
  *
  * Handles determinism toggle and build mode switching before
  * each benchmark cell runs, restoring state afterward.
@@ -8,6 +9,7 @@
 import type { DimensionCell, BuildMode } from './dimensions.ts';
 import type { PackageLoader } from './package-loader.ts';
 
+/** Represent the execution context for a single dimension cell */
 export interface CellContext {
  /** The loaded module for this cell's build mode */
  math2d: Record<string, unknown>;
@@ -18,11 +20,16 @@ export interface CellContext {
 }
 
 /**
- * Set up the environment for a single dimension cell.
+ * Set up the environment for a single dimension cell
  *
+ * @remarks
  * 1. Loads the correct build (dev or prod) via the package loader
  * 2. Sets determinism config if the package and cell support it
  * 3. Returns a teardown function that restores the previous state
+ *
+ * @param cell - The dimension cell describing environment, build mode, etc.
+ * @param loader - The package loader to load modules from
+ * @returns The cell context with loaded module and teardown function
  */
 export async function setupCell(cell: DimensionCell, loader: PackageLoader): Promise<CellContext> {
  const mod = await loader.load(cell.buildMode as BuildMode);

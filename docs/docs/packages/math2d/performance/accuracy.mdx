@@ -111,9 +111,9 @@ export function AccuracyOverview() {
 # Numerical Accuracy
 
 math2d uses [fdlibm](https://www.netlib.org/fdlibm/)-based deterministic kernels for all
-transcendental functions (`sin`, `cos`, `sqrt`, `atan2`, etc.). This guarantees
-bit-identical results across platforms at the cost of ~10-30% throughput compared to
-native `Math.*`.
+transcendental functions (`sin`, `cos`, `tan`, `atan2`, `exp`, `log`, etc.). This guarantees
+bit-identical results across platforms at the cost of some throughput compared to
+native `Math.*` (which itself uses C++ fdlibm in V8).
 
 This page documents the accuracy characteristics of those implementations.
 
@@ -131,7 +131,7 @@ platform that supports `float64`, with a target accuracy of 1 ULP (one bit of ro
 error in the worst case).
 
 <InsightCallout title="Determinism vs Performance">
- The ~10-30% throughput cost of fdlibm is a deliberate architectural tradeoff.
+ The throughput cost of JavaScript fdlibm is a deliberate architectural tradeoff.
  In a 60 fps game loop with 10K entities, transcendental functions represent
  less than 5% of total frame time — the determinism guarantee is worth far more
  than the marginal throughput difference.

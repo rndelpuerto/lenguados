@@ -1,5 +1,6 @@
 /**
- * Glob-based discovery for stress test definitions.
+ * @file harness/stress-discovery.ts
+ * @description Provide glob-based discovery for stress test definitions
  *
  * Discovers StressTestDefinition objects from
  * src/packages/{packageName}/stress/*.stress-def.ts files.
@@ -13,10 +14,15 @@ import type { StressTestDefinition } from './stress-types.ts';
 const PACKAGES_DIR = new URL('../packages/', import.meta.url).pathname;
 
 /**
- * Discover stress test definitions for a package.
+ * Discover stress test definitions for a package
  *
- * Returns all StressTestDefinition objects found in the package's
- * stress/ directory. Returns empty array if directory does not exist.
+ * @remarks
+ * Scans the package's `stress/` directory for `*.stress-def.ts` files,
+ * dynamically imports each, and collects the exported `stressTest` definitions.
+ * Returns an empty array if the directory does not exist.
+ *
+ * @param packageName - The package directory name to scan (defaults to 'math2d')
+ * @returns All discovered StressTestDefinition objects
  */
 export async function discoverStressTests(
  packageName: string = 'math2d',

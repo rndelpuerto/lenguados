@@ -1,18 +1,28 @@
 /**
- * Numeric safety functions benchmark suite.
+ * @file packages/math2d/suites/numeric.bench.ts
+ * @description Numeric safety functions benchmark suite
  *
  * Per architecture-and-layers.md L1 Safety Rule: ALL domain-clamping
  * and fallback-returning functions live in auxiliary/numeric/safety.ts.
  *
  * Functions split into two groups based on deterministic kernel dependency:
  * - Kernel-dependent (acosSafe, asinSafe, expSafe, logSafe, powSafe):
- *   affected by config.useNativeMath → determinism dimension varies
+ *   affected by config.useNativeMath, so the determinism dimension varies
  * - IEEE 754 only (divideSafe, reciprocalSafe, sqrtSafe):
  *   unaffected by determinism toggle
  */
 
 import { definePackageSuite } from '../../../harness/suite-builder.ts';
 
+/**
+ * Define the numeric safety functions benchmark suite
+ *
+ * @remarks
+ * Benchmarks safe-variant scalar functions (divideSafe, sqrtSafe, acosSafe,
+ * etc.), rounding utilities, denormal guards, and compensated summation
+ * algorithms. Both determinism modes are measured because some functions
+ * delegate to deterministic kernels.
+ */
 export const defineSuite = definePackageSuite({
  name: 'numeric',
  entity: 'numeric',

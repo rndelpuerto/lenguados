@@ -76,7 +76,7 @@ The following hooks run automatically -- do not bypass them with `--no-verify`:
 | Hook           | What it does                                                       |
 | -------------- | ------------------------------------------------------------------ |
 | **pre-commit** | `lint-staged` runs ESLint, Stylelint, and Prettier on staged files |
-| **pre-push**   | Runs the full Jest test suite                                      |
+| **pre-push**   | Runs the full Jest test suite + benchmark smoke test               |
 | **commit-msg** | `commitlint` enforces conventional commit format                   |
 
 ## Code Style

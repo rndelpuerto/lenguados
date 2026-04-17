@@ -1,5 +1,5 @@
 ---
-sidebar_position: 2
+sidebar_position: 8
 title: 'Testing Strategy'
 description: 'Property-based testing with fast-check, algebraic invariants, and tolerance conventions'
 ---
@@ -7,7 +7,7 @@ description: 'Property-based testing with fast-check, algebraic invariants, and 
 # Testing Strategy
 
 > **Package:** `@lenguados/math2d`
-> **Version:** 2.0 (Testing 2026)
+> **Document Revision:** 2.0 (2026)
 > **Status:** MANDATORY
 
 The testing strategy for `@lenguados/math2d` has been redesigned to support exact mathematics and collision engines.
@@ -51,7 +51,7 @@ The `*Unchecked` methods (e.g., `inverseUnchecked`) are exempt from throwing err
 
 Critical care is required with angular Wrap-Around (the dreaded jump from `-pi` to `pi`).
 
-> **Historical L0 Bug:** `scalarNearEquals(A, B)` failed miserably when crossing the circle. **Mandatory Fix:** If you are testing objects with angular components (Transforms, Rotations), require the internal use of the evaluator `angleDifference(A, B) <= EPSILON` for the equitative assertion test (`nearEquals`).
+> **Historical L0 Bug:** `nearEquals(A, B)` failed miserably when crossing the circle. **Mandatory Fix:** If you are testing objects with angular components (Transforms, Rotations), require the internal use of the evaluator `angleDifference(A, B) <= EPSILON` for the equitative assertion test (`nearEquals`).
 
 ### Standard Tolerances (Constants)
 

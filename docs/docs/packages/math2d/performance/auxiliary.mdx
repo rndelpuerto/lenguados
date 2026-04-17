@@ -62,12 +62,12 @@ numeric utilities, and deterministic kernel functions.
 ## fdlibm vs Native Math
 
 The deterministic layer uses [fdlibm](https://www.netlib.org/fdlibm/) implementations
-of transcendental functions (`sin`, `cos`, `sqrt`, `atan2`, etc.) to guarantee
+of transcendental functions (`sin`, `cos`, `tan`, `atan2`, etc.) to guarantee
 bit-identical results across platforms.
 
 <InsightCallout>
- **fdlibm trades ~10-30% throughput for determinism** — native `Math.sin` uses
- platform-specific SIMD implementations that produce subtly different results on
+ **fdlibm trades throughput for determinism** — native `Math.sin` delegates to
+ the platform's C++ libm (which may use SIMD) producing subtly different results on
  different CPUs. fdlibm produces identical results everywhere, which is essential
  for networked simulations, replay systems, and unit test reproducibility.
 </InsightCallout>
@@ -78,6 +78,6 @@ Some scalar operations have the same default/safe/unchecked tier pattern:
 
 - `divideSafe(a, b)` — returns fallback for `b === 0`
 - `divideUnchecked(a, b)` — no check, may produce `Infinity` or `NaN`
-- `clampAngle` vs `clampAngleSafe` — safe variant handles `NaN` inputs
+- `clampAngle` — clamps an angle to a given range
 
 For measurement methodology, see [Methodology](../../../performance/methodology).

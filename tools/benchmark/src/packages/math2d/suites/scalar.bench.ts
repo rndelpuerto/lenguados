@@ -1,5 +1,6 @@
 /**
- * Scalar auxiliary operations benchmark suite.
+ * @file packages/math2d/suites/scalar.bench.ts
+ * @description Scalar auxiliary operations benchmark suite
  *
  * Scalar functions do NOT use deterministic kernels (no sin/cos/etc.)
  * so the determinism dimension is not varied.
@@ -8,6 +9,15 @@
 
 import { definePackageSuite } from '../../../harness/suite-builder.ts';
 
+/**
+ * Define the scalar auxiliary operations benchmark suite
+ *
+ * @remarks
+ * Benchmarks scalar interpolation (lerp, smoothStep, smootherStep),
+ * clamping, comparison, and triality operations (mod, inverseLerp, loop,
+ * pingPong, floorDivide, remap) across all three validation tiers. No
+ * deterministic kernels are involved, so only one determinism mode is used.
+ */
 export const defineSuite = definePackageSuite({
  name: 'scalar',
  entity: 'scalar',

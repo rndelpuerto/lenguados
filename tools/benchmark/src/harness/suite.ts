@@ -1,9 +1,11 @@
 /**
- * Suite definition framework.
+ * @file harness/suite.ts
+ * @description Define the suite definition framework
  *
  * Each benchmark suite is a TypeScript module exporting a defineSuite()
- * function. The runner discovers suites by scanning src/suites/*.bench.ts
- * and executes them across the dimension matrix.
+ * function. The runner discovers suites by scanning
+ * src/packages/{packageName}/suites/*.bench.ts and executes them across
+ * the dimension matrix.
  */
 
 import { readdir } from 'node:fs/promises';
@@ -16,6 +18,7 @@ import type { GcMode } from './runner.ts';
 /* Types                                                                       */
 /* ========================================================================== */
 
+/** Represent a single benchmark entry within a suite */
 export interface BenchmarkEntry {
  /** Human-readable name (e.g., "Vector2.add (static, out)") */
  name: string;
@@ -27,6 +30,32 @@ export interface BenchmarkEntry {
  determinism?: DeterminismMode | undefined;
 }
 
+/**
+ * Declare a benchmark suite with its dimensions, lifecycle hooks, and benchmark entries
+ *
+ * @remarks
+ * Each suite declares which dimension axes it varies over (build mode,
+ * determinism, validation tier, etc.). The runner computes the cartesian
+ * product and executes each cell.
+ *
+ * @example
+ * ```typescript
+ * const suite: SuiteDefinition = {
+ *  name: 'Vector2',
+ *  dimensions: {
+ *   environment: ['node'],
+ *   buildMode: ['development', 'production'],
+ *   tier: ['default', 'unchecked'],
+ *   entity: ['Vector2'],
+ *  },
+ *  setup(math2d) {
+ *   const V2 = math2d['Vector2'] as typeof Vector2;
+ *   // ... register benchmarks ...
+ *  },
+ *  benchmarks: [],
+ * };
+ * ```
+ */
 export interface SuiteDefinition {
  /** Suite name (e.g., "Vector2") */
  name: string;
@@ -42,6 +71,7 @@ export interface SuiteDefinition {
  benchmarks: BenchmarkEntry[];
 }
 
+/** Factory function that creates a SuiteDefinition */
 export type SuiteFactory = () => SuiteDefinition;
 
 /* ========================================================================== */
@@ -49,8 +79,9 @@ export type SuiteFactory = () => SuiteDefinition;
 /* ========================================================================== */
 
 /**
- * Filter benchmarks to only those relevant to the current dimension cell.
+ * Filter benchmarks to only those relevant to the current dimension cell
  *
+ * @remarks
  * Rules:
  * - Benchmarks with no `tier` tag are tier-agnostic: run in EVERY tier cell.
  * - Benchmarks with a `tier` tag run ONLY when the cell's tier matches.
@@ -59,6 +90,10 @@ export type SuiteFactory = () => SuiteDefinition;
  *
  * This eliminates redundant measurements: normalizeUnchecked only runs in
  * the unchecked tier cell, not in all 3 tier cells.
+ *
+ * @param benchmarks - The full list of benchmark entries to filter
+ * @param cell - The current dimension cell with optional tier and determinism values
+ * @returns Benchmarks that match the current cell's dimension values
  */
 export function filterBenchmarksForCell(
  benchmarks: BenchmarkEntry[],
@@ -88,11 +123,15 @@ export function filterBenchmarksForCell(
 const PACKAGES_DIR = new URL('../packages/', import.meta.url).pathname;
 
 /**
- * Discover all suite modules for a given package.
+ * Discover all suite modules for a given package
  *
+ * @remarks
  * Looks in src/packages/{packageName}/suites/*.bench.ts.
  * Each module must export a `defineSuite` function.
- * Returns an array of SuiteDefinition objects.
+ *
+ * @param packageName - The package directory name to scan (defaults to 'math2d')
+ * @param filter - Optional regex to filter suite filenames
+ * @returns An array of SuiteDefinition objects
  */
 export async function discoverSuites(
  packageName: string = 'math2d',
@@ -133,13 +172,18 @@ export async function discoverSuites(
 declare const global: { gc?: () => void };
 
 /**
- * Measure heap allocation for a function over N iterations.
+ * Measure heap allocation for a function over N iterations
  *
+ * @remarks
  * Requires --expose-gc flag. If global.gc is unavailable, returns
  * null with a warning instead of crashing.
  *
  * Returns the heap growth in bytes. For zero-allocation paths
  * (out parameter provided), this should be < 1 KB.
+ *
+ * @param fn - The function to measure allocations for
+ * @param iterations - Number of iterations to run
+ * @returns Heap growth in bytes and bytes per operation, or null if GC is unavailable
  */
 export function measureAllocations(
  fn: () => void,

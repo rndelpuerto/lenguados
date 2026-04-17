@@ -1,14 +1,25 @@
 /**
- * Throughput benchmark suite.
+ * @file packages/math2d/suites/throughput.bench.ts
+ * @description Throughput benchmark suite
  *
- * Measures batch processing performance: transforming arrays of
+ * Measure batch processing performance: transforming arrays of
  * 1000+ elements. Tests both allocating and pre-allocated output paths.
  */
 
 import { definePackageSuite } from '../../../harness/suite-builder.ts';
 
+/** Number of elements per batch operation */
 const BATCH_SIZE = 1000;
 
+/**
+ * Define the throughput benchmark suite
+ *
+ * @remarks
+ * Measures per-element throughput for batch operations (transformPoint,
+ * normalize, lerp, dot, magnitude) at 1000-element scale. Both allocating
+ * and pre-allocated output paths are compared. Assertion overhead is
+ * amplified at batch scale, making this suite sensitive to build mode.
+ */
 export const defineSuite = definePackageSuite({
  name: 'throughput',
  entity: 'Vector2',

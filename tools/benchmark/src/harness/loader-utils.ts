@@ -1,5 +1,6 @@
 /**
- * Shared utility functions for package loaders.
+ * @file harness/loader-utils.ts
+ * @description Provide shared utility functions for package loaders
  *
  * Provides path resolution, module caching, and build artifact
  * verification without package-specific knowledge. Each package
@@ -12,8 +13,10 @@ import { fileURLToPath } from 'node:url';
 import type { BuildMode } from './dimensions.ts';
 
 /**
- * Monorepo root directory — computed once, used by all loaders.
- * All package paths derive from this via join(), avoiding fragile `../` chains.
+ * Monorepo root directory, computed once and used by all loaders
+ *
+ * @remarks
+ * All package paths derive from this via `join()`, avoiding fragile `../` chains.
  */
 export const MONOREPO_ROOT = resolve(
  dirname(fileURLToPath(import.meta.url)),
@@ -24,17 +27,23 @@ export const MONOREPO_ROOT = resolve(
 );
 
 /**
- * Resolve the absolute path to a package root directory.
+ * Resolve the absolute path to a package root directory
+ *
+ * @param packageName - The package directory name (e.g., 'math2d')
+ * @returns The absolute path to the package root
  */
 export function resolvePackageRoot(packageName: string): string {
  return join(MONOREPO_ROOT, 'packages', packageName);
 }
 
 /**
- * Create a module cache for a package loader.
+ * Create a module cache for a package loader
  *
+ * @remarks
  * Returns a Map that stores loaded modules keyed by BuildMode,
  * and a `getOrLoad` function that checks the cache before importing.
+ *
+ * @returns An object containing the cache Map and the getOrLoad helper function
  */
 export function createModuleCache(): {
  cache: Map<BuildMode, Record<string, unknown>>;
@@ -55,10 +64,11 @@ export function createModuleCache(): {
 }
 
 /**
- * Verify that build artifacts exist at the given entry point paths.
+ * Verify that build artifacts exist at the given entry point paths
  *
- * Returns null if all paths exist, or an error message string
- * identifying the first missing artifact.
+ * @param entryPoints - Map of build mode to absolute entry point path
+ * @param packageName - The package name for error messages
+ * @returns Null if all paths exist, or an error message identifying the first missing artifact
  */
 export async function verifyArtifacts(
  entryPoints: Record<BuildMode, string>,

@@ -1,9 +1,22 @@
 /**
- * Angle auxiliary operations benchmark suite.
+ * @file packages/math2d/suites/angle.bench.ts
+ * @description Angle auxiliary operations benchmark suite
+ *
+ * Cover conversion, normalization, interpolation, and unwrapping
+ * operations from the auxiliary/angle module.
  */
 
 import { definePackageSuite } from '../../../harness/suite-builder.ts';
 
+/**
+ * Define the angle operations benchmark suite
+ *
+ * @remarks
+ * Benchmarks angle conversion (degrees, radians, turns), normalization,
+ * interpolation (lerp, smoothStep), and array unwrapping. Both fdlibm
+ * and native determinism modes are measured since sinCos-dependent
+ * operations use deterministic kernels.
+ */
 export const defineSuite = definePackageSuite({
  name: 'angle',
  entity: 'angle',

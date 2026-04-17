@@ -59,7 +59,7 @@ export default function OperationBarChart({
    {
     type: 'bar',
     data: sorted.map((d) => d.opsPerSec),
-    itemStyle: { color: 'var(--chart-color-primary, #0072B2)' },
+    itemStyle: { color: '#0072B2' },
     label: {
      show: true,
      position: 'right',

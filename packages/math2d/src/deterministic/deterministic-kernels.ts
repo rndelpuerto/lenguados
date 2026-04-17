@@ -96,12 +96,40 @@ const PI_4 = QUARTER_PI;
 
 /**
  * Cody-Waite split constants for π/2 range reduction.
- * PIO2_HI + PIO2_LO = π/2 to extended precision.
+ * PIO2_HI + PIO2_LO = π/2 to extended precision (~106 bits).
+ * Used for the fast path (|n| ≤ 8, i.e., |x| ≤ ~4π).
  * Source: fdlibm e_rem_pio2.c
  */
 const PIO2_HI = 1.5707963267948966; // 0x3FF921FB54442D18 (53 bits of π/2)
 const PIO2_LO = 6.123233995736766e-17; // 0x3C91A62633145C07 (remaining bits)
 const INV_PIO2 = 6.36619772367581382433e-1; // 2/π for quadrant computation
+
+/**
+ * Extended-precision π/2 constants for large-argument range reduction.
+ * Three pairs (hi+tail) representing π/2 to ~151 bits of precision.
+ * Each "hi" constant has its lower mantissa bits zeroed so that
+ * multiplication by small integers n is exact in float64.
+ *
+ * CRITICAL: These constants MUST be constructed from their IEEE 754 hex
+ * bit patterns. JavaScript decimal literals like 1.57079632679489655800e+00
+ * get rounded to the nearest float64 (= Math.PI/2), losing the deliberate
+ * bit truncation that makes the Cody-Waite algorithm work.
+ *
+ * Source: glibc sysdeps/ieee754/dbl-64/e_rem_pio2.c
+ */
+const _pio2Buf = new ArrayBuffer(8);
+const _pio2View = new DataView(_pio2Buf);
+function _hexF64(hi: number, lo: number): number {
+ _pio2View.setUint32(0, hi, false);
+ _pio2View.setUint32(4, lo, false);
+ return _pio2View.getFloat64(0, false);
+}
+const PIO2_1 = _hexF64(0x3ff921fb, 0x54400000); // high 33 bits of π/2
+const PIO2_1T = _hexF64(0x3dd0b461, 0x1a626331); // π/2 - PIO2_1
+const PIO2_2 = _hexF64(0x3dd0b461, 0x1a600000); // high 33 bits of PIO2_1T
+const PIO2_2T = _hexF64(0x3ba3198a, 0x2e037073); // PIO2_1T - PIO2_2
+const PIO2_3 = _hexF64(0x3ba3198a, 0x2e000000); // high 33 bits of PIO2_2T
+const PIO2_3T = _hexF64(0x397b839a, 0x252049c1); // PIO2_2T - PIO2_3
 
 /* ========================================================================== */
 /* Polynomial Coefficients (from fdlibm)                                       */
@@ -283,11 +311,17 @@ export function hypot(x: number, y: number): number {
  * Uses quadrant-based reduction (not octant). Each quadrant is π/2 wide.
  * The reduced value is always in [-π/4, π/4] after adjustment.
  *
- * Uses Cody-Waite two-step reduction, which is accurate for |angle| ≤ ~2²⁰·π.
- * Beyond this range, precision degrades because the quadrant number `n` grows
- * large, causing cancellation in `x - n·PIO2_HI - n·PIO2_LO`. For larger
- * angles, {@link sinCosNormalized} pre-normalizes via floating-point modulo
- * to (-π, π] so that `n ≤ 2` here.
+ * Dual-path Cody-Waite reduction:
+ * - Fast path (|n| ≤ 8, i.e., |x| ≤ ~4π): two-step with full 53-bit π/2
+ *   constants. Covers all normalized angles in physics simulations.
+ * - Extended path (|n| > 8): three-pair iterative reduction with 33-bit-
+ *   truncated constants from glibc e_rem_pio2.c, providing ~151 bits of π/2.
+ *   Covers |x| up to ~10⁶ radians. Beyond that, Payne-Hanek is needed.
+ *
+ * The extended path constants MUST be constructed from IEEE 754 hex bit
+ * patterns (via DataView), not decimal literals, because JavaScript rounds
+ * decimal literals to the nearest float64, destroying the deliberate bit
+ * truncation that prevents cancellation in `x - n·PIO2_k`.
  *
  * Note: This function is `@internal` — the precision boundary is documented
  * on the public {@link sinCos} function.
@@ -297,17 +331,46 @@ export function hypot(x: number, y: number): number {
  * @internal
  */
 function reduceAngle(x: number): [number, number] {
- // Cody-Waite two-step range reduction for precision on large angles.
  // Compute n = round(x / (π/2)) so that x - n*(π/2) ∈ [-π/4, π/4].
  const n = Math.round(x * INV_PIO2);
-
- // Two-step subtraction preserves precision: x - n*PIO2_HI - n*PIO2_LO
- const reduced = x - n * PIO2_HI - n * PIO2_LO;
-
- // n mod 4 gives the quadrant (handle negative modulo)
  const quadrant = ((n % 4) + 4) % 4;
 
- return [reduced, quadrant];
+ if (n >= -8 && n <= 8) {
+  // Fast path: two-step Cody-Waite with full 53-bit π/2 constants.
+  // Precise for |x| ≤ ~4π (covers all normalized angles in physics).
+  return [x - n * PIO2_HI - n * PIO2_LO, quadrant];
+ }
+
+ // Extended path: three-pair glibc reduction with 33-bit-truncated constants.
+ // Each PIO2_k has lower mantissa bits zeroed so n*PIO2_k is exact for
+ // small n, and the iterative subtraction accumulates ~151 bits of π/2.
+ // Covers |x| up to ~2²⁰ (≈10⁶ radians). Beyond that, Payne-Hanek is
+ // needed — but no physics engine operates at that scale.
+ // Source: glibc e_rem_pio2.c medium-range path.
+ let r = x - n * PIO2_1;
+ let w = n * PIO2_1T;
+ let y = r - w;
+
+ // 2nd iteration if cancellation consumed too many bits
+ if (Math.abs(y) < Math.abs(r) * 1.52587890625e-5) {
+  // 2^-16
+  const t = r;
+  w = n * PIO2_2;
+  r = t - w;
+  w = n * PIO2_2T - (t - r - w);
+  y = r - w;
+
+  // 3rd iteration (needed when |n| > ~2^16)
+  if (Math.abs(y) < Math.abs(r) * 1.52587890625e-5) {
+   const t2 = r;
+   w = n * PIO2_3;
+   r = t2 - w;
+   w = n * PIO2_3T - (t2 - r - w);
+   y = r - w;
+  }
+ }
+
+ return [y, quadrant];
 }
 
 /**

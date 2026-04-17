@@ -1,8 +1,9 @@
 /**
- * Bundle size measurement per import path using esbuild.
+ * @file dx/bundle-size.ts
+ * @description Bundle size measurement per import path using esbuild
  *
  * Measures raw and gzip bytes for each configured import statement.
- * Receives a DxConfig — no hardcoded package paths.
+ * Receives a DxConfig -- no hardcoded package paths.
  */
 
 import { execSync } from 'node:child_process';
@@ -11,6 +12,7 @@ import { join } from 'node:path';
 
 import type { DxConfig } from '../harness/dx-types.ts';
 
+/** Measurement of a single import path's bundle size (raw and gzip) */
 export interface BundleSizeResult {
  importPath: string;
  importStatement: string;
@@ -21,10 +23,15 @@ export interface BundleSizeResult {
 const TEMP_DIR = new URL('../../.tmp/', import.meta.url).pathname;
 
 /**
- * Measure bundle size for a specific import statement.
+ * Measure bundle size for a specific import statement
  *
  * Creates a temporary entry file with the import, runs esbuild to
  * bundle it (tree-shaking enabled), and measures the output size.
+ *
+ * @param importStatement - ES module import statement to bundle
+ * @param label - Human-readable label for the import path
+ * @param cwd - Working directory for esbuild resolution
+ * @returns Bundle size measurement, or null if bundling failed
  */
 export function measureBundleSize(
  importStatement: string,
@@ -77,7 +84,10 @@ export function measureBundleSize(
 }
 
 /**
- * Run full bundle size analysis using the provided DxConfig.
+ * Run full bundle size analysis using the provided DxConfig
+ *
+ * @param config - DX configuration with import statements to measure
+ * @returns Array of bundle size measurements per import path
  */
 export function runBundleSizeAnalysis(config: DxConfig): BundleSizeResult[] {
  const results: BundleSizeResult[] = [];

@@ -1,5 +1,6 @@
 /**
- * math2d self-adapter for cross-library comparison.
+ * @file packages/math2d/adapters/math2d-adapter.ts
+ * @description math2d self-adapter for cross-library comparison
  *
  * Wraps @lenguados/math2d into the LibraryAdapter interface using
  * the library's standard configuration (default tier + fdlibm).
@@ -12,6 +13,9 @@ import { join } from 'node:path';
 import type { LibraryAdapter, OperationFn } from '../../../harness/library-adapter.ts';
 import { math2dLoader } from '../loader.ts';
 
+/**
+ * Configuration options for the math2d library adapter
+ */
 export interface Math2dAdapterOptions {
  /** Validation tier to use: 'default' | 'unchecked'. Default: 'unchecked'. */
  tier?: 'default' | 'unchecked';
@@ -21,6 +25,12 @@ export interface Math2dAdapterOptions {
  nativeMath?: boolean;
 }
 
+/**
+ * Create a LibraryAdapter wrapping @lenguados/math2d for cross-library comparison
+ *
+ * @param options - Adapter configuration (tier, build mode, native math toggle)
+ * @returns A LibraryAdapter mapping math2d operations to the standard vocabulary
+ */
 export async function createMath2dAdapter(
  options: Math2dAdapterOptions = {},
 ): Promise<LibraryAdapter> {

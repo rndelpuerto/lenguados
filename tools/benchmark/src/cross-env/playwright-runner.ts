@@ -1,5 +1,6 @@
 /**
- * Playwright cross-browser benchmark runner.
+ * @file cross-env/playwright-runner.ts
+ * @description Playwright cross-browser benchmark runner
  *
  * Injects math2d ESM bundle + benchmark code into isolated browser
  * contexts (Chromium, Firefox, WebKit). Collects results via
@@ -16,8 +17,10 @@ import { resolvePackageRoot } from '../harness/loader-utils.ts';
 const MATH2D_ROOT = resolvePackageRoot('math2d');
 import type { GoldenFile, VerificationResult } from './golden-file.ts';
 
+/** Supported Playwright browser engine names */
 export type BrowserName = 'chromium' | 'firefox' | 'webkit';
 
+/** Determinism verification result for a single browser engine */
 export interface CrossBrowserResult {
  browser: BrowserName;
  engine: string;
@@ -26,8 +29,9 @@ export interface CrossBrowserResult {
 }
 
 /**
- * Load Playwright dynamically (optional dependency).
- * Returns null with a helpful message if not installed.
+ * Load Playwright dynamically (optional dependency)
+ *
+ * @returns Playwright module, or null if not installed
  */
 async function loadPlaywright(): Promise<any | null> {
  try {
@@ -43,8 +47,10 @@ async function loadPlaywright(): Promise<any | null> {
 }
 
 /**
- * Detect the timer resolution available in the browser.
- * Returns resolution in microseconds.
+ * Detect the timer resolution available in the browser
+ *
+ * @param page - Playwright page instance to evaluate in
+ * @returns Timer resolution in microseconds
  */
 async function detectTimerResolution(page: any): Promise<number> {
  return page.evaluate(() => {
@@ -64,10 +70,14 @@ async function detectTimerResolution(page: any): Promise<number> {
 }
 
 /**
- * Run determinism verification across specified browsers.
+ * Run determinism verification across specified browsers
  *
  * Loads the math2d production bundle into each browser, executes
  * the golden file operations, and compares results bit-for-bit.
+ *
+ * @param goldenFile - Reference golden file generated from Node.js
+ * @param browsers - Browser engines to verify against
+ * @returns Array of per-browser verification results
  */
 export async function runCrossBrowserVerification(
  goldenFile: GoldenFile,

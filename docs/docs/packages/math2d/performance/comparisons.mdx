@@ -93,8 +93,8 @@ The comparison uses the **most representative production scenario**:
 ### What about fdlibm determinism?
 
 math2d offers an optional cross-platform determinism guarantee via fdlibm kernels
-that gl-matrix does not have. The cost of fdlibm (~10-30% overhead on transcendental
-operations like `sin`, `cos`, `sqrt`) is measured in the
+that gl-matrix does not have. The cost of fdlibm on transcendental
+operations (`sin`, `cos`, `tan`) is measured in the
 [Auxiliary Performance](./auxiliary) page, not here. Comparing math2d-with-fdlibm
 against gl-matrix-without-fdlibm would be unfair — it penalizes math2d for a feature
 the competitor doesn't offer.

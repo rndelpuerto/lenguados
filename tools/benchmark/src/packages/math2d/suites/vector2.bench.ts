@@ -1,12 +1,24 @@
 /**
- * Vector2 benchmark suite.
+ * @file packages/math2d/suites/vector2.bench.ts
+ * @description Vector2 benchmark suite
  *
- * Covers all Vector2 operations including *CS hot-path variants,
+ * Cover all Vector2 operations including *CS hot-path variants,
  * triality (default/safe/unchecked), and both allocating + out-param forms.
  */
 
 import { definePackageSuite } from '../../../harness/suite-builder.ts';
 
+/**
+ * Define the Vector2 benchmark suite
+ *
+ * @remarks
+ * Benchmarks all Vector2 static operations: arithmetic, scalar reductions,
+ * normalization, direction, interpolation (lerp, slerp, smoothStep),
+ * projection/rejection, reflection, rotation (*CS variants), transform
+ * integration (Rotation2, Matrix2, Matrix3, Transform2, Complex),
+ * component-wise rounding, and predicates. Both determinism modes and all
+ * three validation tiers are measured.
+ */
 export const defineSuite = definePackageSuite({
  name: 'Vector2',
  entity: 'Vector2',

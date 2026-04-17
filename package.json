@@ -1,6 +1,6 @@
 {
  "name": "lenguados",
- "description": "[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)   > **2‑D version** of the *Lenguado* physics‑engine family",
+ "description": "2D version of the Lenguado physics-engine family — deterministic, extensible physics engine for JavaScript/TypeScript",
  "keywords": [],
  "author": "Ricardo Nicolás del Puerto Camacho",
  "license": "Apache-2.0",
@@ -50,7 +50,7 @@
   "tools:bench:cross-env": "npm --prefix tools/benchmark run cross-env --",
   "tools:bench:all": "npm --prefix tools/benchmark run run-all",
   "tools:bench:test": "npm --prefix tools/benchmark run test",
-  "tools:bench:docs-data": "node scripts/generate-docs-data.mjs",
+  "tools:bench:summarize": "npm --prefix tools/benchmark run summarize --",
   "tools:bench:smoke": "npm --prefix tools/benchmark run smoke",
   "tools:bench:setup": "cd tools/benchmark && npm ci",
   "outdated": "npm run outdated:pkgs",

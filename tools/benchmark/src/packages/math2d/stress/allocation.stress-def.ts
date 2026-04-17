@@ -1,5 +1,6 @@
 /**
- * Stress test definition wrapper for zero-allocation verification.
+ * @file packages/math2d/stress/allocation.stress-def.ts
+ * @description Stress test definition wrapper for zero-allocation verification
  *
  * Delegates to {@link runAllocationStress} from the stress test library.
  */
@@ -8,6 +9,13 @@ import type { StressTestDefinition, StressTestOutput } from '../../../harness/st
 import type { DiagnosticReport } from '../../../harness/diagnostics.ts';
 import { runAllocationStress } from '../../../stress/allocation.stress.ts';
 
+/**
+ * Verify that out-param operations allocate zero heap bytes per call
+ *
+ * @remarks
+ * Wraps the shared allocation stress runner, logging per-operation byte
+ * counts and flagging any leak detected.
+ */
 export const stressTest: StressTestDefinition = {
  name: 'allocation',
  run(module: Record<string, unknown>, _options, diagnostics: DiagnosticReport): StressTestOutput {

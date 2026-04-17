@@ -1,5 +1,6 @@
 /**
- * Deterministic kernel benchmark suite.
+ * @file packages/math2d/suites/deterministic.bench.ts
+ * @description Deterministic kernel benchmark suite
  *
  * THE key suite for quantifying the determinism performance cost.
  * Benchmarks all 12 fdlibm kernel functions with both fdlibm and
@@ -9,6 +10,15 @@
 
 import { definePackageSuite } from '../../../harness/suite-builder.ts';
 
+/**
+ * Define the deterministic kernel benchmark suite
+ *
+ * @remarks
+ * Measures trigonometric, inverse-trigonometric, logarithmic, exponential,
+ * hypotenuse, and combined sinCos operations under both fdlibm and native
+ * determinism modes. This is the primary suite for quantifying the
+ * performance cost of cross-platform determinism.
+ */
 export const defineSuite = definePackageSuite({
  name: 'deterministic',
  entity: 'deterministic',

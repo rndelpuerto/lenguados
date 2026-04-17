@@ -1,5 +1,6 @@
 /**
- * Reference oracle wrapper around decimal.js.
+ * @file stress/reference-oracle.ts
+ * @description Reference oracle wrapper around decimal.js
  *
  * Provides high-precision reference values for all 11 scalar deterministic
  * kernel functions. Used by ULP accuracy stress tests to compare
@@ -16,19 +17,36 @@ import { computeReference, clearOracleCache } from '../harness/ulp.ts';
 /* Types                                                                       */
 /* ========================================================================== */
 
+/** Union of all supported scalar deterministic kernel function names */
 export type KernelFunction =
- | 'sin' | 'cos' | 'tan'
- | 'asin' | 'acos' | 'atan' | 'atan2'
- | 'log' | 'exp' | 'pow'
+ | 'sin'
+ | 'cos'
+ | 'tan'
+ | 'asin'
+ | 'acos'
+ | 'atan'
+ | 'atan2'
+ | 'log'
+ | 'exp'
+ | 'pow'
  | 'hypot';
 
+/** Complete list of all 11 scalar deterministic kernel functions */
 export const ALL_KERNEL_FUNCTIONS: KernelFunction[] = [
- 'sin', 'cos', 'tan',
- 'asin', 'acos', 'atan', 'atan2',
- 'log', 'exp', 'pow',
+ 'sin',
+ 'cos',
+ 'tan',
+ 'asin',
+ 'acos',
+ 'atan',
+ 'atan2',
+ 'log',
+ 'exp',
+ 'pow',
  'hypot',
 ];
 
+/** High-precision reference result for a single kernel function evaluation */
 export interface OracleResult {
  fn: string;
  args: number[];
@@ -40,11 +58,15 @@ export interface OracleResult {
 /* ========================================================================== */
 
 /**
- * Generate domain-appropriate input samples for a kernel function.
+ * Generate domain-appropriate input samples for a kernel function
  *
  * Each function has a natural domain. Inputs are sampled across the
  * full valid domain including boundary regions, uniformly distributed
- * with extra density near critical points (0, pi/2, pi, etc.).
+ * with extra density near critical points (0, π/2, π, etc.).
+ *
+ * @param fn - Kernel function name to generate inputs for
+ * @param count - Number of uniformly distributed samples to generate
+ * @returns Array of input argument arrays (1 element for unary, 2 for binary)
  */
 export function generateInputs(fn: KernelFunction, count: number): number[][] {
  const inputs: number[][] = [];
@@ -65,7 +87,7 @@ export function generateInputs(fn: KernelFunction, count: number): number[][] {
    inputs.push([Math.PI / 2], [Math.PI], [2 * Math.PI]);
    // Multiples of pi/2 up to 1000*pi/2
    for (let k = 1; k <= 20; k++) {
-    inputs.push([k * Math.PI / 2]);
+    inputs.push([(k * Math.PI) / 2]);
    }
    break;
   }
@@ -130,7 +152,7 @@ export function generateInputs(fn: KernelFunction, count: number): number[][] {
    const sqrtCount = Math.ceil(Math.sqrt(count));
    for (let i = 0; i < sqrtCount; i++) {
     for (let j = 0; j < sqrtCount; j++) {
-     const base = (i + 1) / sqrtCount * 10;
+     const base = ((i + 1) / sqrtCount) * 10;
      const exp = (j / (sqrtCount - 1)) * 10 - 5;
      inputs.push([base, exp]);
     }
@@ -158,12 +180,13 @@ export function generateInputs(fn: KernelFunction, count: number): number[][] {
 }
 
 /**
- * Compute reference values for a kernel function across all generated inputs.
+ * Compute reference values for a kernel function across all generated inputs
+ *
+ * @param fn - Kernel function name to compute references for
+ * @param sampleCount - Number of uniformly distributed samples to generate
+ * @returns Array of oracle results with high-precision reference values
  */
-export function computeReferenceSet(
- fn: KernelFunction,
- sampleCount: number,
-): OracleResult[] {
+export function computeReferenceSet(fn: KernelFunction, sampleCount: number): OracleResult[] {
  const inputs = generateInputs(fn, sampleCount);
  const results: OracleResult[] = [];
 
@@ -179,7 +202,5 @@ export function computeReferenceSet(
  return results;
 }
 
-/**
- * Clear the oracle cache to free memory after stress runs.
- */
+/** Clear the oracle cache to free memory after stress runs */
 export { clearOracleCache };

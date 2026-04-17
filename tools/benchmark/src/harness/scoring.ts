@@ -1,5 +1,6 @@
 /**
- * Scoring system using geometric mean of normalized ratios.
+ * @file harness/scoring.ts
+ * @description Implement a scoring system using geometric mean of normalized ratios
  *
  * Follows the ACM 1986 standard ("How not to lie with statistics")
  * for aggregating normalized benchmark results. Supports both
@@ -10,12 +11,14 @@
 /* Types                                                                       */
 /* ========================================================================== */
 
+/** Represent the throughput result of a single operation */
 export interface OperationResult {
  operation: string;
  meanNs: number;
  opsPerSec: number;
 }
 
+/** Represent the throughput ratio of an operation between two libraries */
 export interface ComparisonRatio {
  operation: string;
  ratio: number;
@@ -23,6 +26,7 @@ export interface ComparisonRatio {
  referenceOpsPerSec: number;
 }
 
+/** Represent the aggregate score comparing a target library against a reference */
 export interface AggregateScore {
  geometricMean: number;
  ratios: ComparisonRatio[];
@@ -35,7 +39,10 @@ export interface AggregateScore {
 /* ========================================================================== */
 
 /**
- * Convert nanoseconds per iteration to operations per second.
+ * Convert nanoseconds per iteration to operations per second
+ *
+ * @param meanNs - Mean time per operation in nanoseconds
+ * @returns Operations per second, or 0 if meanNs is non-positive
  */
 export function nsToOpsPerSec(meanNs: number): number {
  if (meanNs <= 0) return 0;
@@ -43,11 +50,18 @@ export function nsToOpsPerSec(meanNs: number): number {
 }
 
 /**
- * Normalize a set of operation results against a baseline.
+ * Normalize a set of operation results against a baseline
  *
+ * @remarks
  * Returns per-operation speedup/slowdown ratios.
  * Ratio > 1 means target is faster than reference.
  * Ratio < 1 means target is slower than reference.
+ *
+ * @param target - The target library's operation results
+ * @param reference - The reference/baseline library's operation results
+ * @param targetName - Display name of the target library
+ * @param referenceName - Display name of the reference library
+ * @returns Per-operation comparison ratios for matched operations
  */
 export function computeRatios(
  target: OperationResult[],
@@ -81,12 +95,14 @@ export function computeRatios(
 /* ========================================================================== */
 
 /**
- * Compute the geometric mean of an array of positive numbers.
+ * Compute the geometric mean of an array of positive numbers
  *
+ * @remarks
  * Uses log-space computation to avoid overflow/underflow:
  * geometricMean = exp(mean(ln(values)))
  *
- * Returns 0 if any value is <= 0 or the array is empty.
+ * @param values - Array of positive numbers
+ * @returns The geometric mean, or 0 if any value is non-positive or the array is empty
  */
 export function geometricMean(values: number[]): number {
  if (values.length === 0) return 0;
@@ -106,12 +122,19 @@ export function geometricMean(values: number[]): number {
 /* ========================================================================== */
 
 /**
- * Compute an aggregate score comparing target against reference.
+ * Compute an aggregate score comparing target against reference
  *
+ * @remarks
  * The score is the geometric mean of per-operation throughput ratios.
  * Score > 1 means target is faster overall.
  * Score = 1.0 means neutral (perfectly balanced).
  * Score < 1 means target is slower overall.
+ *
+ * @param target - The target library's operation results
+ * @param reference - The reference/baseline library's operation results
+ * @param targetName - Display name of the target library
+ * @param referenceName - Display name of the reference library
+ * @returns The aggregate score with geometric mean and per-operation ratios
  */
 export function aggregateScore(
  target: OperationResult[],

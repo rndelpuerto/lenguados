@@ -1,5 +1,6 @@
 /**
- * Assertion elimination verification.
+ * @file dx/assertion-elimination.ts
+ * @description Assertion elimination verification
  *
  * Verifies production bundle does not contain assertion function bodies
  * or the DEV_MODE/process.env.NODE_ENV patterns. Confirms development
@@ -10,6 +11,7 @@ import { readFileSync } from 'node:fs';
 
 import type { DxConfig } from '../harness/dx-types.ts';
 
+/** Result of assertion elimination verification across dev and prod bundles */
 export interface AssertionEliminationResult {
  prodBundle: {
   path: string;
@@ -29,7 +31,10 @@ export interface AssertionEliminationResult {
 }
 
 /**
- * Verify that assertion code is eliminated from the production bundle.
+ * Verify that assertion code is eliminated from the production bundle
+ *
+ * @param config - DX configuration with bundle paths and assertion patterns
+ * @returns Assertion elimination verification result
  */
 export function verifyAssertionElimination(config: DxConfig): AssertionEliminationResult {
  const prodPath = config.prodBundle;

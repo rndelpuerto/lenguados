@@ -1,5 +1,6 @@
 /**
- * Zero-allocation verification stress test.
+ * @file stress/allocation.stress.ts
+ * @description Zero-allocation verification stress test
  *
  * Verifies that static methods with out parameter and instance mutator
  * methods produce zero heap allocations over 100K iterations.
@@ -10,6 +11,7 @@ import { measureAllocations } from '../harness/suite.ts';
 import { addFinding } from '../harness/reporter.ts';
 import type { DiagnosticReport } from '../harness/reporter.ts';
 
+/** Result of a zero-allocation verification for a single operation */
 export interface AllocationResult {
  operation: string;
  entity: string;
@@ -24,7 +26,11 @@ const ITERATIONS = 100_000;
 const ZERO_ALLOC_THRESHOLD_BYTES = 1024; // 1 KB
 
 /**
- * Run zero-allocation verification for all core types.
+ * Run zero-allocation verification for all core types
+ *
+ * @param math2d - Loaded math2d module with all core type constructors
+ * @param diagnostics - Diagnostic report to record findings
+ * @returns Array of allocation measurement results per operation
  */
 export function runAllocationStress(
  math2d: Record<string, unknown>,
@@ -112,7 +118,9 @@ export function runAllocationStress(
 
  // Vector2 — instance mutator (should be zero-alloc)
  const vMut = V2.fromValues(3.5, 7.2);
- test('Vector2', 'instance.add', 'instance-mutator', () => { vMut.add(vb); });
+ test('Vector2', 'instance.add', 'instance-mutator', () => {
+  vMut.add(vb);
+ });
 
  // Vector2 — allocating (should allocate)
  test('Vector2', 'add (no out)', 'static-alloc', () => V2.add(va, vb));

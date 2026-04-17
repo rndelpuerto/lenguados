@@ -1,5 +1,6 @@
 /**
- * Cross-library comparison reporter.
+ * @file harness/comparison-reporter.ts
+ * @description Report cross-library comparison results as ASCII tables and JSON
  *
  * Produces ASCII tables and JSON output comparing throughput
  * across libraries with geometric mean aggregate scores.
@@ -9,7 +10,7 @@ import type { ComparisonResult, LibraryBenchmarkResult } from './comparison-runn
 import { padLeft, padRight, formatOpsPerSec } from './format-utils.ts';
 import type { AggregateScore } from './scoring.ts';
 
-/** Operation specification for cross-library comparison vocabulary. */
+/** Specify an operation in the cross-library comparison vocabulary */
 export interface OperationSpec {
  /** Standard operation name (e.g., "vectorAdd") */
  name: string;
@@ -21,6 +22,12 @@ export interface OperationSpec {
  inputCount: number;
 }
 
+/**
+ * Format cross-library comparison results as an ASCII table
+ *
+ * @param result - The comparison result containing library stats and scores
+ * @returns A formatted ASCII table string, or '(no libraries to compare)' if empty
+ */
 export function printComparisonAscii(result: ComparisonResult): string {
  const { libraries, scores, referenceLibrary } = result;
 
@@ -89,6 +96,7 @@ export function printComparisonAscii(result: ComparisonResult): string {
 /* JSON Comparison Output                                                      */
 /* ========================================================================== */
 
+/** Describe the experimental conditions under which the comparison was run */
 export interface ComparisonConditions {
  buildMode: string;
  tier: string;
@@ -96,6 +104,7 @@ export interface ComparisonConditions {
  methodStyle: string;
 }
 
+/** Represent the full JSON output of a cross-library comparison */
 export interface ComparisonJsonOutput {
  conditions?: ComparisonConditions;
  libraries: Array<{ name: string; version: string }>;
@@ -113,6 +122,14 @@ export interface ComparisonJsonOutput {
  }>;
 }
 
+/**
+ * Generate a JSON representation of the cross-library comparison
+ *
+ * @param result - The comparison result with per-library stats and scores
+ * @param vocabulary - The operation vocabulary specifications
+ * @param conditions - Optional experimental conditions metadata
+ * @returns A ComparisonJsonOutput suitable for serialization
+ */
 export function generateComparisonJson(
  result: ComparisonResult,
  vocabulary: OperationSpec[],

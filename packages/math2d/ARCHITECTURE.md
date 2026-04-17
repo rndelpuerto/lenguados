@@ -1,6 +1,6 @@
 # @lenguados/math2d Architecture
 
-This document is the concise code map for the `@lenguados/math2d` package. For expanded design principles and architectural axioms, see the [architecture deep-dive](../../docs/docs/math2d/architecture.md).
+This document is the concise code map for the `@lenguados/math2d` package. For expanded design principles and architectural axioms, see the [architecture deep-dive](../../docs/docs/packages/math2d/architecture.md).
 
 ## Layering Strategy
 

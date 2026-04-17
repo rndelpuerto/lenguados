@@ -1,5 +1,6 @@
 /**
- * Determinism golden file generation and verification.
+ * @file cross-env/golden-file.ts
+ * @description Determinism golden file generation and verification
  *
  * Generates JSON golden files from Node.js with hex-encoded Float64
  * inputs/outputs for all 11 scalar deterministic kernels. Covers 1000+
@@ -17,6 +18,7 @@ import type { KernelFunction } from '../stress/reference-oracle.ts';
 /* Types                                                                       */
 /* ========================================================================== */
 
+/** Single entry in a golden file with hex-encoded inputs and expected output */
 export interface GoldenFileEntry {
  fn: string;
  inputsHex: string[];
@@ -25,6 +27,7 @@ export interface GoldenFileEntry {
  expectedDecimal: number;
 }
 
+/** Complete golden file with generator metadata and all test entries */
 export interface GoldenFile {
  generator: string;
  timestamp: string;
@@ -32,6 +35,7 @@ export interface GoldenFile {
  entries: GoldenFileEntry[];
 }
 
+/** Per-function verification result against a golden file */
 export interface VerificationResult {
  fn: string;
  totalTests: number;
@@ -40,6 +44,7 @@ export interface VerificationResult {
  divergences: DivergenceDetail[];
 }
 
+/** Detailed information about a single bit-level divergence from the golden file */
 export interface DivergenceDetail {
  fn: string;
  inputs: number[];
@@ -53,11 +58,15 @@ export interface DivergenceDetail {
 /* ========================================================================== */
 
 /**
- * Generate a golden file from the current engine's deterministic kernels.
+ * Generate a golden file from the current engine's deterministic kernels
  *
- * Runs all 12 kernel functions with 1000+ domain-sampled inputs
- * (including 0, -0, pi multiples, Cody-Waite boundary, subnormals).
+ * Runs all 11 scalar kernel functions with 1000+ domain-sampled inputs
+ * (including 0, -0, π multiples, Cody-Waite boundary, subnormals).
  * Serializes results as hex-encoded Float64 for bit-exact comparison.
+ *
+ * @param kernelModule - Module containing all kernel function implementations
+ * @param samplesPerFunction - Number of domain-sampled inputs per function
+ * @returns Golden file with all entries and generator metadata
  */
 export function generateGoldenFile(
  kernelModule: Record<string, (...args: number[]) => number>,
@@ -96,14 +105,20 @@ export function generateGoldenFile(
 }
 
 /**
- * Write a golden file to disk.
+ * Write a golden file to disk
+ *
+ * @param path - Absolute file path to write the golden file to
+ * @param goldenFile - Golden file data to serialize as JSON
  */
 export function writeGoldenFile(path: string, goldenFile: GoldenFile): void {
  writeFileSync(path, JSON.stringify(goldenFile, null, 2));
 }
 
 /**
- * Read a golden file from disk.
+ * Read a golden file from disk
+ *
+ * @param path - Absolute file path to read the golden file from
+ * @returns Parsed golden file data
  */
 export function readGoldenFile(path: string): GoldenFile {
  const content = readFileSync(path, 'utf-8');
@@ -115,10 +130,15 @@ export function readGoldenFile(path: string): GoldenFile {
 /* ========================================================================== */
 
 /**
- * Verify a kernel implementation against a golden file.
+ * Verify a kernel implementation against a golden file
  *
  * Compares each output bit-for-bit (via hex comparison). Reports
  * divergences with ULP distance and full diagnostic info.
+ *
+ * @param goldenFile - Reference golden file to compare against
+ * @param kernelModule - Module containing kernel function implementations to verify
+ * @param engineName - Name of the engine being verified (e.g., "V8", "SpiderMonkey")
+ * @returns Array of per-function verification results
  */
 export function verifyAgainstGoldenFile(
  goldenFile: GoldenFile,

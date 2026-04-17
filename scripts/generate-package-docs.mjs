@@ -315,7 +315,7 @@ const PACKAGE_COMPANIONS = [
   output: 'module-exports.md',
   title: 'Module Exports & Internals',
   description: 'Classification decisions and subpath export rationale for {name}',
-  position: 9,
+  position: 10,
  },
 ];
 

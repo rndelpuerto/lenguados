@@ -14,6 +14,7 @@
   "cross-env": "tsx scripts/cross-env.ts",
   "compare": "tsx scripts/compare.ts",
   "run-all": "tsx scripts/run-all.ts",
+  "summarize": "tsx scripts/summarize.ts",
   "smoke": "tsx scripts/smoke.ts",
   "test": "node --experimental-vm-modules ./node_modules/.bin/jest"
  },

@@ -1,9 +1,21 @@
 /**
- * Complex benchmark suite.
+ * @file packages/math2d/suites/complex.bench.ts
+ * @description Complex number operations benchmark suite
+ *
+ * Cover factories, arithmetic, transcendental functions, scalar reductions,
+ * vector application, interpolation, and predicates on the Complex type.
  */
 
 import { definePackageSuite } from '../../../harness/suite-builder.ts';
 
+/**
+ * Define the Complex benchmark suite
+ *
+ * @remarks
+ * Benchmarks all Complex static operations across both determinism modes
+ * and all three validation tiers (default/safe/unchecked) for triality
+ * operations (divide, normalize, reciprocal).
+ */
 export const defineSuite = definePackageSuite({
  name: 'Complex',
  entity: 'Complex',

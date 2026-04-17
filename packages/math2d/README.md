@@ -162,7 +162,7 @@ for (const v of validatedVectors) {
 
 - [Architecture](https://github.com/rndelpuerto/lenguados/blob/main/packages/math2d/ARCHITECTURE.md) -- layered design and dependency rules
 - [Contributing](https://github.com/rndelpuerto/lenguados/blob/main/CONTRIBUTING.md) -- setup, workflow, API conventions
-- [TSDoc Standard](https://github.com/rndelpuerto/lenguados/blob/main/docs/docs/contributing/tsdoc-standard.md) -- canonical tag order, templates
+- [TSDoc Standard](https://github.com/rndelpuerto/lenguados/blob/main/docs/docs/guides/tsdoc-standard.md) -- canonical tag order, templates
 - [Changelog](https://github.com/rndelpuerto/lenguados/blob/main/packages/math2d/CHANGELOG.md) -- version history
 - [Full Documentation](https://rndelpuerto.github.io/lenguados/docs/) -- docs site with deep-dives, design decisions, and API reference
 

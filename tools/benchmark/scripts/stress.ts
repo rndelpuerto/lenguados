@@ -1,5 +1,6 @@
 /**
- * CLI entry point for stress tests.
+ * @file scripts/stress.ts
+ * @description Run numerical stress tests from the CLI
  *
  * Usage: npm run stress -- [--suite=ulp|ieee754|cancellation|singular|overflow|identity|allocation]
  *        [--samples=N] [--package=math2d]

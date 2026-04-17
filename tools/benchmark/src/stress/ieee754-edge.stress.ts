@@ -1,5 +1,6 @@
 /**
- * IEEE 754 edge case stress test.
+ * @file stress/ieee754-edge.stress.ts
+ * @description IEEE 754 edge case stress test
  *
  * Systematically tests all core type operations with the cartesian product
  * of 10 IEEE 754 special values. Verifies NaN propagation per IEEE 754-2019
@@ -10,8 +11,10 @@ import { addFinding } from '../harness/reporter.ts';
 import type { DiagnosticReport } from '../harness/reporter.ts';
 import { IEEE754_SPECIAL_VALUES, specialValuePairs } from './arbitraries.ts';
 
+/** Classification of an IEEE 754 edge case operation result */
 export type ResultClassification = 'finite' | 'NaN' | '+Infinity' | '-Infinity' | 'throw';
 
+/** Result of an IEEE 754 edge case test for a single input combination */
 export interface EdgeCaseResult {
  operation: string;
  entity: string;
@@ -29,7 +32,13 @@ function classify(value: number): ResultClassification {
 }
 
 /**
- * Test a unary operation with all special values.
+ * Test a unary operation with all special values
+ *
+ * @param entity - Name of the entity being tested (e.g., "Vector2")
+ * @param operation - Name of the operation being tested (e.g., "magnitude")
+ * @param fn - Unary function to test
+ * @param diagnostics - Diagnostic report to record findings
+ * @returns Array of edge case results for each special value
  */
 export function testUnaryEdgeCases(
  entity: string,
@@ -53,7 +62,13 @@ export function testUnaryEdgeCases(
 }
 
 /**
- * Test a binary operation with all special value pairs.
+ * Test a binary operation with all special value pairs
+ *
+ * @param entity - Name of the entity being tested (e.g., "Vector2")
+ * @param operation - Name of the operation being tested (e.g., "dot")
+ * @param fn - Binary function to test
+ * @param diagnostics - Diagnostic report to record findings
+ * @returns Array of edge case results for each special value pair
  */
 export function testBinaryEdgeCases(
  entity: string,
@@ -77,8 +92,12 @@ export function testBinaryEdgeCases(
 }
 
 /**
- * Verify NaN propagation: NaN input to unchecked operations should produce NaN output.
+ * Verify NaN propagation: NaN input to unchecked operations should produce NaN output
+ *
  * Per architecture-and-layers.md NaN Propagation Policy: "NaN in → NaN out".
+ *
+ * @param results - Edge case results to check for NaN propagation violations
+ * @param diagnostics - Diagnostic report to record findings
  */
 export function verifyNanPropagation(
  results: EdgeCaseResult[],

@@ -170,10 +170,11 @@ describe('Deterministic kernel parity with Math.*', () => {
    );
   });
 
-  it('KNOWN LIMITATION: Cody-Waite range reduction fails for |x| > ~1.4e17', () => {
-   // sin(2e17) produces values far outside [-1, 1]
-   // This is a fundamental limitation of 2-step Cody-Waite reduction
-   const result = sin(2e17);
+  it('KNOWN LIMITATION: Cody-Waite range reduction degrades for |x| > ~10⁶', () => {
+   // Three-pair Cody-Waite extends correct range to ~10⁶ radians.
+   // Beyond that, precision degrades (Payne-Hanek would be needed).
+   // For physics engine use, angles > 10⁶ radians are nonsensical.
+   const result = sin(2e20);
    expect(Math.abs(result) > 1).toBe(true);
   });
  });

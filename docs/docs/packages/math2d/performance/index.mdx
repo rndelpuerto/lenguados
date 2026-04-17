@@ -97,10 +97,10 @@ export function Math2dPerformance() {
        { key: 'status', label: 'Status' },
       ]}
       data={[
-       { check: 'Assertions in production', status: assertionElimination.prodBundle.containsAssertions ? 'FOUND (issue)' : 'None (correct)' },
+       { check: 'Assertion names in production', status: assertionElimination.prodBundle.containsAssertions ? 'Export stubs present' : 'None' },
        { check: 'DEV_MODE in production', status: assertionElimination.prodBundle.containsDevMode ? 'FOUND (issue)' : 'None (correct)' },
+       { check: 'NODE_ENV guard in production', status: assertionElimination.prodBundle.containsNodeEnv ? 'Present (runtime DCE)' : 'None (static DCE)' },
        { check: 'Assertions in development', status: assertionElimination.devBundle.containsAssertions ? 'Present (correct)' : 'Missing (issue)' },
-       { check: 'Elimination verified', status: assertionElimination.eliminationVerified ? 'YES' : 'NO' },
       ]}
      />
     </>

@@ -1,5 +1,5 @@
 ---
-sidebar_position: 1
+sidebar_position: 2
 title: 'Architecture'
 description: 'Design principles, architectural axioms, and expanded layer rationale'
 ---
@@ -136,7 +136,7 @@ Dead Code Elimination (DCE) is a first-class architectural concern. The two-laye
 By default, `@lenguados/math2d` routes all critical transcendental functions (`sin`, `cos`, `atan2`, `hypot`, `exp`, `log`, `pow`) through **fdlibm bit-exact** (polynomial) implementations abstracted from JavaScript. `Math.sqrt` is used directly because it is an IEEE 754 _required_ operation (correctly rounded, deterministic by standard).
 
 **Benefit:** Perfect network synchronization in lockstep architectures.
-**Cost:** Approximately 4x performance impact compared to native C++ FPU instructions.
+**Cost:** Variable overhead compared to native `Math.*` builtins (which themselves use C++ fdlibm in V8). Measured via the `deterministic` benchmark suite with `fdlibm` vs `native` dimensions.
 
 ### Bypassing for Single-Player / Local Hardware
 
@@ -149,7 +149,7 @@ import { config } from '@lenguados/math2d';
 config.useNativeMath = true;
 ```
 
-When `useNativeMath` is `true`, calls to `sin`, `cos`, and other transcendental functions resolve to the platform's native `Math` methods. This recovers the ~4x performance overhead at the cost of cross-platform bit-exactness. Use this only when deterministic reproducibility across different hardware/browsers is not required.
+When `useNativeMath` is `true`, calls to `sin`, `cos`, and other transcendental functions resolve to the platform's native `Math` methods. This recovers the fdlibm overhead at the cost of cross-platform bit-exactness. Use this only when deterministic reproducibility across different hardware/browsers is not required.
 
 ---
 

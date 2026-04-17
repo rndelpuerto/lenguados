@@ -1,9 +1,22 @@
 /**
- * Transform2 benchmark suite.
+ * @file packages/math2d/suites/transform2.bench.ts
+ * @description Transform2 operations benchmark suite
+ *
+ * Cover factories, composition, inverse triality, point/vector transforms
+ * (including *CS variants), inverse transforms, interpolation, scalar
+ * reductions, and predicates on the Transform2 type.
  */
 
 import { definePackageSuite } from '../../../harness/suite-builder.ts';
 
+/**
+ * Define the Transform2 benchmark suite
+ *
+ * @remarks
+ * Benchmarks all Transform2 static operations across both determinism
+ * modes and all three validation tiers (default/safe/unchecked) for the
+ * inverse triality.
+ */
 export const defineSuite = definePackageSuite({
  name: 'Transform2',
  entity: 'Transform2',

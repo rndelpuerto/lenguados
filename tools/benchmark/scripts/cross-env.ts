@@ -1,5 +1,6 @@
 /**
- * CLI entry point for cross-environment tests.
+ * @file scripts/cross-env.ts
+ * @description Run cross-environment determinism verification from the CLI
  *
  * Usage: npm run cross-env -- [--browsers=chromium,firefox,webkit]
  *        [--generate-golden] [--verify=path/to/golden.json]

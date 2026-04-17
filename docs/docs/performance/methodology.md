@@ -64,7 +64,7 @@ when measuring the cost of determinism.
 Zero-allocation claims are verified empirically:
 
 1. Force garbage collection (`--expose-gc`)
-2. Run 10,000 iterations
+2. Run 100,000 iterations
 3. Measure heap growth via `process.memoryUsage()`
 4. Report bytes-per-operation
 
@@ -96,8 +96,8 @@ repository allow documentation to render without re-running benchmarks.
 
 ## References
 
-- Kalibera, T. and Jones, R. (2020). _Rigorous Benchmarking in Reasonable Time_.
-  Proceedings of the 2013 International Symposium on Memory Management.
+- Kalibera, T. and Jones, R. (2013). _Rigorous Benchmarking in Reasonable Time_.
+  Proceedings of the 2013 ACM SIGPLAN International Symposium on Memory Management (ISMM '13).
 - Marr, S. and Daloze, T. (2016). _Cross-Language Compiler Benchmarking: Are We Fast Yet?_
   Proceedings of the Dynamic Languages Symposium (DLS).
 - Tukey, J.W. (1977). _Exploratory Data Analysis_. Addison-Wesley.
@@ -124,6 +124,6 @@ npm run tools:bench:stress
 # DX analysis (bundle size, tree-shaking)
 npm run tools:bench:dx
 
-# Generate documentation data
-npm run tools:bench:docs-data
+# Generate summaries (consumed by docs build)
+npm run tools:bench:summarize
 ```

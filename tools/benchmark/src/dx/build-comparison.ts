@@ -1,5 +1,6 @@
 /**
- * Development vs production build size comparison.
+ * @file dx/build-comparison.ts
+ * @description Development vs production build size comparison
  *
  * Reports absolute and percentage size difference,
  * estimating the validation code eliminated by DCE.
@@ -10,6 +11,7 @@ import { gzipSync } from 'node:zlib';
 
 import type { DxConfig } from '../harness/dx-types.ts';
 
+/** Comparison of development and production build sizes (raw and gzip) */
 export interface BuildComparisonResult {
  devSize: { raw: number; gzip: number };
  prodSize: { raw: number; gzip: number };
@@ -18,7 +20,10 @@ export interface BuildComparisonResult {
 }
 
 /**
- * Compare development and production build sizes.
+ * Compare development and production build sizes
+ *
+ * @param config - DX configuration with dev and prod bundle paths
+ * @returns Build size comparison with raw and gzip measurements
  */
 export function compareBuildSizes(config: DxConfig): BuildComparisonResult {
  const devContent = readFileSync(config.devBundle);
@@ -41,7 +46,10 @@ export function compareBuildSizes(config: DxConfig): BuildComparisonResult {
 }
 
 /**
- * Format build comparison as human-readable string.
+ * Format build comparison as human-readable string
+ *
+ * @param result - Build comparison result to format
+ * @returns Multi-line formatted string with size details
  */
 export function formatBuildComparison(result: BuildComparisonResult): string {
  const lines: string[] = [];

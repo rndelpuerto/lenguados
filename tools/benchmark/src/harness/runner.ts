@@ -1,5 +1,6 @@
 /**
- * BenchmarkRunner — stable adapter wrapping mitata's API.
+ * @file harness/runner.ts
+ * @description Wrap mitata's API behind a stable adapter interface
  *
  * If mitata introduces breaking changes, only this module needs updating.
  * All suites interact with mitata exclusively through this adapter.
@@ -21,8 +22,10 @@ import type { BenchmarkStats } from './statistics.ts';
 /* Types                                                                       */
 /* ========================================================================== */
 
+/** GC collection strategy: 'once' before group, 'inner' per iteration, or disabled */
 export type GcMode = 'once' | 'inner' | false;
 
+/** Define a single benchmark with its function and optional GC override */
 export interface BenchmarkDefinition {
  /** Human-readable name for this benchmark */
  name: string;
@@ -32,6 +35,7 @@ export interface BenchmarkDefinition {
  gcMode?: GcMode;
 }
 
+/** Capture CPU and memory resource metrics for a benchmark run */
 export interface ResourceMetrics {
  cpuUser: number;
  cpuSystem: number;
@@ -42,6 +46,7 @@ export interface ResourceMetrics {
  arrayBuffers: number;
 }
 
+/** Represent the full result of a single benchmark execution */
 export interface BenchmarkResult {
  name: string;
  stats: BenchmarkStats;
@@ -50,6 +55,7 @@ export interface BenchmarkResult {
  cpuWallClockDivergence: number | null;
 }
 
+/** Represent the results of a benchmark group execution */
 export interface GroupResult {
  name: string;
  benchmarks: BenchmarkResult[];
@@ -59,6 +65,11 @@ export interface GroupResult {
 /* Resource Metrics Collection                                                 */
 /* ========================================================================== */
 
+/**
+ * Capture current CPU and memory resource metrics
+ *
+ * @returns A snapshot of CPU and memory usage
+ */
 function captureResources(): ResourceMetrics {
  const mem = process.memoryUsage();
  const cpu = process.cpuUsage();
@@ -73,6 +84,13 @@ function captureResources(): ResourceMetrics {
  };
 }
 
+/**
+ * Compute the delta between two resource metric snapshots
+ *
+ * @param before - Resource metrics captured before execution
+ * @param after - Resource metrics captured after execution
+ * @returns The difference (after - before) for each metric
+ */
 function resourceDelta(before: ResourceMetrics, after: ResourceMetrics): ResourceMetrics {
  return {
   cpuUser: after.cpuUser - before.cpuUser,
@@ -86,13 +104,16 @@ function resourceDelta(before: ResourceMetrics, after: ResourceMetrics): Resourc
 }
 
 /**
- * Detect CPU vs wall-clock time divergence.
+ * Detect CPU vs wall-clock time divergence
  *
+ * @remarks
  * For CPU-bound math operations, CPU time should be close to wall-clock time.
  * A large divergence indicates GC pauses, OS scheduling, or I/O blocking.
  *
- * Returns the ratio of CPU time to wall-clock time (1.0 = perfect match).
- * Returns null if wall-clock time is too small to measure meaningfully.
+ * @param cpuMicroseconds - Total CPU time in microseconds
+ * @param wallClockNs - Mean wall-clock time per sample in nanoseconds
+ * @param sampleCount - Number of samples collected
+ * @returns The ratio of CPU time to wall-clock time (1.0 = perfect match), or null if too small
  */
 function computeCpuDivergence(
  cpuMicroseconds: number,
@@ -109,13 +130,19 @@ function computeCpuDivergence(
 /* ========================================================================== */
 
 /**
- * Register and run a group of benchmarks, collecting full results.
+ * Register and run a group of benchmarks, collecting full results
  *
+ * @remarks
  * Each benchmark result is passed through do_not_optimize() to prevent
  * V8 from eliminating pure math operations via dead code elimination.
  *
  * Raw iteration timings are extracted from mitata's stats.samples array
  * and fed into our custom statistics engine (bootstrap CI, Tukey outliers).
+ *
+ * @param groupName - Human-readable name for the benchmark group
+ * @param benchmarks - Array of benchmark definitions to execute
+ * @param defaultGcMode - Default GC mode for benchmarks without an override
+ * @returns The group result with per-benchmark statistics, samples, and resources
  */
 export async function runBenchmarkGroup(
  groupName: string,
@@ -182,11 +209,7 @@ export async function runBenchmarkGroup(
    };
 
    const cpuTotalUs = resources.cpuUser + resources.cpuSystem;
-   const cpuDivergence = computeCpuDivergence(
-    cpuTotalUs,
-    stats.mean,
-    rawSamples.length,
-   );
+   const cpuDivergence = computeCpuDivergence(cpuTotalUs, stats.mean, rawSamples.length);
 
    results.push({
     name: trial.alias,
@@ -202,20 +225,23 @@ export async function runBenchmarkGroup(
 }
 
 /**
- * Run a single benchmark outside of a group context.
+ * Run a single benchmark outside of a group context
+ *
+ * @param definition - The benchmark definition to execute
+ * @param gcMode - GC collection strategy for this benchmark
+ * @returns The benchmark result with statistics and resource metrics
+ * @throws {Error} If the benchmark produces no results (possibly errored during execution)
  */
 export async function runSingleBenchmark(
  definition: BenchmarkDefinition,
  gcMode: GcMode = 'once',
 ): Promise<BenchmarkResult> {
- const groupResult = await runBenchmarkGroup(
-  definition.name,
-  [definition],
-  gcMode,
- );
+ const groupResult = await runBenchmarkGroup(definition.name, [definition], gcMode);
  const first = groupResult.benchmarks[0];
  if (!first) {
-  throw new Error(`Benchmark "${definition.name}" produced no results (possibly errored during execution)`);
+  throw new Error(
+   `Benchmark "${definition.name}" produced no results (possibly errored during execution)`,
+  );
  }
  return first;
 }

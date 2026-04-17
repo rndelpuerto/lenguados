@@ -18,19 +18,21 @@ Higher is better.
 - **Hundreds of millions**: Simple component access, scalar operations
 - **Tens of millions**: Complex operations (eigendecomposition, matrix inverse)
 
-The number is derived from the **median** execution time, not the mean, because
-benchmark timing distributions are right-skewed (occasional slow outliers). The median
-is more stable.
+The number is derived from the **mean** execution time (`ops/sec = 1e9 / mean_ns`),
+following the convention used by Criterion.rs, Google Benchmark, JMH, and mitata.
+The mean is the natural reciprocal for throughput and the correct estimand for
+bootstrap confidence intervals and hypothesis tests.
 
 ## Confidence Intervals (CI 95%)
 
 Every measurement includes a **95% confidence interval** shown as `[lo, hi]`.
-This means: if the benchmark were repeated many times, 95% of the measured medians
-would fall within this range.
+This means: if the benchmark were repeated many times, 95% of the measured means
+would fall within this range. Computed via non-parametric percentile bootstrap
+(Efron & Tibshirani, 1993) — no normality assumption required.
 
 **How to read it:**
 
-- Narrow CI (e.g., `[4.8, 5.2]` for a 5.0 ns median) → stable, trustworthy measurement
+- Narrow CI (e.g., `[4.8, 5.2]` for a 5.0 ns mean) → stable, trustworthy measurement
 - Wide CI (e.g., `[3.0, 7.0]`) → noisy measurement, likely due to system load
 
 If two operations have overlapping CIs, their performance difference is **not statistically significant**.
@@ -97,8 +99,9 @@ pull in unrelated code.
 
 ### Assertion Elimination
 
-Verifies that production builds contain **zero** assertion code, `DEV_MODE` checks, or
-`NODE_ENV` references. If any are found, dead-code elimination is not working correctly.
+Verifies that production builds eliminate assertion function bodies and call sites via
+dead-code elimination (DCE). Assertion function names may still appear as empty export
+stubs — this is expected, since they are part of the public API surface.
 
 ## ULP (Unit in the Last Place)
 
@@ -136,8 +139,8 @@ npm run tools:bench:stress
 # DX analysis (bundle size, tree-shaking)
 npm run tools:bench:dx
 
-# Regenerate documentation data
-npm run tools:bench:docs-data
+# Generate summaries (consumed by docs build)
+npm run tools:bench:summarize
 ```
 
 Results are stored as JSON in `tools/benchmark/results/` with full statistical data

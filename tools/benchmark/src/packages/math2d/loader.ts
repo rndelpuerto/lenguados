@@ -1,5 +1,6 @@
 /**
- * Package loader for @lenguados/math2d.
+ * @file packages/math2d/loader.ts
+ * @description Package loader for @lenguados/math2d
  *
  * Implements the PackageLoader interface using shared utilities.
  * This is the ONLY file that knows about math2d's build artifact paths.
@@ -13,6 +14,14 @@ import { resolvePackageRoot, createModuleCache } from '../../harness/loader-util
 const root = resolvePackageRoot('math2d');
 const { getOrLoad } = createModuleCache();
 
+/**
+ * Package loader for @lenguados/math2d build artifacts
+ *
+ * @remarks
+ * Resolves development and production ESM entry points and caches loaded
+ * modules. Exposes the runtime configuration object (e.g., `useNativeMath`)
+ * for determinism toggling.
+ */
 export const math2dLoader: PackageLoader = {
  name: 'math2d',
  root,

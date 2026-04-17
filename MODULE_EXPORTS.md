@@ -191,10 +191,10 @@ For the full build configuration and `package.json` field requirements, see `rol
 
 ## 5. Development vs Production Builds
 
-The engine uses a compile-time constant (`__LENGUADOS_DEV__`) to enable Dead Code Elimination (DCE). This constant is injected by SWC during the Rollup build via global variable replacement:
+The engine uses `process.env.NODE_ENV` to enable Dead Code Elimination (DCE). The assertion guard `process.env.NODE_ENV !== 'production'` is evaluated at build time by bundlers:
 
-- **Development** (`NODE_ENV=development`): `__LENGUADOS_DEV__` resolves to `true`. Assertions are active. Source maps are generated. Bundles are unminified.
-- **Production** (`NODE_ENV=production`): `__LENGUADOS_DEV__` resolves to `false`. Minifiers remove all assertion code. Zero runtime overhead.
+- **Development** (`NODE_ENV=development`): The guard evaluates to `true`. Assertions are active. Source maps are generated. Bundles are unminified.
+- **Production** (`NODE_ENV=production`): Bundlers (Vite, Webpack, Rollup) replace the expression with `false`, and minifiers remove all assertion code via dead-code elimination. Zero runtime overhead.
 
 This means barrel-exported assertions add **zero bytes** to the production bundle. The classification decision for assertions is based on developer experience and semantic clarity, not on bundle impact.
 

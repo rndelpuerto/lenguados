@@ -17,13 +17,13 @@ export default function NoDataFallback(): React.ReactElement {
     margin: '1rem 0',
    }}
   >
-   <Info size={48} style={{ color: 'var(--ifm-color-emphasis-500)', marginBottom: '1rem' }} />
+   <Info size={48} strokeWidth={1.75} aria-hidden="true" style={{ color: 'var(--ifm-color-emphasis-500)', marginBottom: '1rem' }} />
    <h3>Performance data unavailable</h3>
    <p>
     Run the benchmark suite and generate documentation data:
    </p>
    <pre style={{ display: 'inline-block', textAlign: 'left', padding: '0.5rem 1rem' }}>
-    <code>npm run tools:bench:all && npm run tools:bench:docs-data</code>
+    <code>npm run tools:bench:all && npm run tools:bench:summarize</code>
    </pre>
    <p style={{ marginTop: '1rem' }}>
     <Link to="/docs/performance/methodology">

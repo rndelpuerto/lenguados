@@ -1,7 +1,8 @@
 /**
- * CLI entry point for cross-library comparison.
+ * @file scripts/compare.ts
+ * @description Run cross-library performance comparison from the CLI
  *
- * Compares math2d vs gl-matrix under the most representative production scenario:
+ * Compare math2d vs gl-matrix under the most representative production scenario:
  * - Production build (assertions stripped by bundler DCE)
  * - Unchecked tier (equivalent to default after DCE)
  * - Native Math.* (same as gl-matrix — apples-to-apples)

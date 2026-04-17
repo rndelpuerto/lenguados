@@ -1,5 +1,5 @@
 ---
-sidebar_position: 2
+sidebar_position: 7
 title: 'Type Interoperability'
 description: 'Type escalation, rotation drift, and conversion patterns'
 ---
@@ -15,11 +15,11 @@ This document describes how the different layers of the `@lenguados/math2d` pack
 
 ## 1. Type Escalation (The Complexity Gradient)
 
-The package operates on a strict complexity gradient (Layer 2 -> Layer 3 -> Layer 4). Developers must actively "escalate" their mathematical abstractions when encountering specific physical or graphical edge cases.
+The package operates on a strict complexity gradient (Layer 2 -> Layer 3). Developers must actively "escalate" their mathematical abstractions when encountering specific physical or graphical edge cases.
 
 ### 1.1 The Skew/Shear Escalation
 
-- **Context:** `Transform2` (Layer 4) is the semantic wrapper of choice for 90% of game objects. It combines `Vector2` (position), `Rotation2` (orientation), and `Vector2` (scale).
+- **Context:** `Transform2` (Layer 3) is the semantic wrapper of choice for 90% of game objects. It combines `Vector2` (position), `Rotation2` (orientation), and `Vector2` (scale).
 - **The Limitation:** `Transform2` can only represent **Rigid Body transformations** (with optional scaling). If you composite two `Transform2` instances where one has a non-uniform scale and the other has a rotation, the resulting mathematical transformation introduces **Shearing (Skew)**.
 - **Why it was omitted:** Storing shear requires cross-axial components. Adding shear to `Transform2` would bloat the memory footprint by 33% (from 6 floats to 8-9 floats), entirely defeating its purpose as a lightweight object for 2D sprites.
 - **The Solution:** When hierarchical non-uniform scaling combined with rotation is required (e.g., skeletal animation systems or complex UI hierarchies), developers **MUST** escalate to `Matrix3` (`transform.toMatrix3()`), which inherently handles shear.

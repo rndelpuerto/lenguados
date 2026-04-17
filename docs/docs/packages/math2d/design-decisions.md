@@ -1,5 +1,5 @@
 ---
-sidebar_position: 4
+sidebar_position: 5
 title: 'Design Decisions'
 description: 'Architectural decisions, alternatives considered, and industry benchmarks'
 ---
@@ -35,7 +35,7 @@ Based on theoretical failures in abstraction, the following designs have been in
 - **Context:** Developers may expect min/max operations on complex numbers by analogy with real-number types.
 - **Decision:** Do not implement ordering operations on `Complex`.
 - **Alternatives Considered:** Comparison by magnitude, comparison by real part.
-- **Rationale:** Complex numbers inhabit a plane (C), not a real number line (R). They lack a total order relation compatible with their Galois field operations. Python raises `TypeError` for the same reason. Any ordering would be mathematically illegitimate and misleading.
+- **Rationale:** Complex numbers inhabit a plane (C), not a real number line (R). They lack a total order relation compatible with their field operations. Python raises `TypeError` for the same reason. Any ordering would be mathematically illegitimate and misleading.
 
 ### ADR-002: No `Transform2.slerp()`
 
@@ -64,12 +64,12 @@ After exhaustive audit, the following architectural contrasts against standardiz
 - **Alternatives Considered:** Store rotation as a single radian value (simpler API, smaller memory footprint).
 - **Rationale:** Eliminates costly and unnecessary kernel calls (`Math.cos()`, `Math.sin()`) during the 2D vertex/particle update cycle. The unit complex number representation is the standard approach for efficient 2D rotation in physics engines and robotics.
 
-### ADR-005: Dual Validation Pipeline (Strict / Safe / Unchecked)
+### ADR-005: Three-Tier Validation Pipeline (default / Safe / Unchecked)
 
 - **Context:** Statically-typed languages (C++, Rust) can leverage compile-time assertions to omit costly NaN/zero-division validation at runtime. JavaScript lacks these compile-time guarantees.
-- **Decision:** `@lenguados/math2d` implements a dual L0 pipeline: a Safe path that pre-computes division and transformation validations (`divideSafe`, `isNearZero`), and an Unchecked path that requires the consumer to mathematically verify state beforehand to bypass branch-prediction penalties.
+- **Decision:** `@lenguados/math2d` implements a three-tier validation pipeline: a default path with dev-only assertions (stripped in production via DCE), a Safe path that returns fallback values on invalid input (`divideSafe`, `normalizeSafe`), and an Unchecked path that bypasses all validation for hot paths where the caller guarantees valid input.
 - **Alternatives Considered:** Single validation path (always validate), runtime-configurable validation toggle.
-- **Rationale:** The dual-path approach lets simulation code (e.g., physics solvers that guarantee non-zero inputs) run the Unchecked path for 100% linear CPU execution, while application-level code uses the Safe path for robustness.
+- **Rationale:** The three-tier approach lets simulation code (e.g., physics solvers that guarantee non-zero inputs) run the Unchecked path for linear CPU execution, while application-level code uses Safe for robustness and default for development-time error detection.
 
 ### ADR-006: Zero-Allocation Mutation
 

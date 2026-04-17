@@ -4,8 +4,8 @@
  "private": true,
  "scripts": {
   "docusaurus": "docusaurus",
-  "start": "node ../scripts/generate-docs-data.mjs && node ../scripts/generate-package-docs.mjs && docusaurus start",
-  "build": "node ../scripts/generate-docs-data.mjs && node ../scripts/generate-package-docs.mjs && docusaurus build",
+  "start": "node ../scripts/generate-package-docs.mjs && docusaurus start",
+  "build": "node ../scripts/generate-package-docs.mjs && docusaurus build",
   "swizzle": "docusaurus swizzle",
   "deploy": "docusaurus deploy --skip-build",
   "clear": "docusaurus clear",

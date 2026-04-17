@@ -1,5 +1,6 @@
 /**
- * Production build correctness verification.
+ * @file dx/build-correctness.ts
+ * @description Production build correctness verification
  *
  * Runs representative operations against both development and production
  * builds and compares results bit-for-bit. Verifies that production build
@@ -9,6 +10,7 @@
 import { math2dLoader } from '../packages/math2d/loader.ts';
 import { float64ToHex } from '../harness/ulp.ts';
 
+/** Bit-for-bit comparison result for a single operation across dev and prod builds */
 export interface BuildCorrectnessResult {
  operation: string;
  devResultHex: string;
@@ -16,6 +18,7 @@ export interface BuildCorrectnessResult {
  match: boolean;
 }
 
+/** Result of assertion stripping verification for a single invalid-input operation */
 export interface AssertionBehaviorResult {
  operation: string;
  devThrows: boolean;
@@ -24,8 +27,11 @@ export interface AssertionBehaviorResult {
 }
 
 /**
- * Compare dev vs prod build outputs for representative operations.
+ * Compare dev vs prod build outputs for representative operations
+ *
  * All results must be bit-for-bit identical.
+ *
+ * @returns Correctness comparison results and assertion stripping results
  */
 export async function verifyBuildCorrectness(): Promise<{
  correctness: BuildCorrectnessResult[];

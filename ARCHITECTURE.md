@@ -46,7 +46,7 @@ These principles apply across all packages in the engine:
 
 The main package has a strict 6-layer architecture with unidirectional dependencies. See [`packages/math2d/ARCHITECTURE.md`](packages/math2d/ARCHITECTURE.md) for the full code map including:
 
-- Layer diagram (deterministic → auxiliary → core → types → validation → utils)
+- Layer diagram (L0: deterministic → L1: auxiliary → L2: core → L3: utils; types and validation are cross-cutting)
 - Key patterns (out parameter, triality, CS variants, apply vs transform)
 - Zero-check conventions and tolerance constants
 

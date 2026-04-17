@@ -1,5 +1,6 @@
 /**
- * Catastrophic cancellation stress test.
+ * @file stress/cancellation.stress.ts
+ * @description Catastrophic cancellation stress test
  *
  * Detects significant bit loss in subtraction-heavy operations
  * (cross product, determinant) with near-equal inputs.
@@ -10,6 +11,7 @@ import { cancellationBits } from '../harness/ulp.ts';
 import { addFinding } from '../harness/reporter.ts';
 import type { DiagnosticReport } from '../harness/reporter.ts';
 
+/** Result of a cancellation stress test for a single operation and input set */
 export interface CancellationResult {
  operation: string;
  entity: string;
@@ -22,7 +24,11 @@ export interface CancellationResult {
 const CATASTROPHIC_THRESHOLD = 40;
 
 /**
- * Test cross product cancellation with near-parallel vectors.
+ * Test cross product cancellation with near-parallel vectors
+ *
+ * @param crossFn - Cross product function accepting (ax, ay, bx, by)
+ * @param diagnostics - Diagnostic report to record findings
+ * @returns Array of cancellation results across increasing magnitudes
  */
 export function testCrossProductCancellation(
  crossFn: (ax: number, ay: number, bx: number, by: number) => number,
@@ -70,7 +76,11 @@ export function testCrossProductCancellation(
 }
 
 /**
- * Test determinant cancellation with near-singular matrices.
+ * Test determinant cancellation with near-singular matrices
+ *
+ * @param detFn - Determinant function accepting (m00, m01, m10, m11)
+ * @param diagnostics - Diagnostic report to record findings
+ * @returns Array of cancellation results across increasing magnitudes
  */
 export function testDeterminantCancellation(
  detFn: (m00: number, m01: number, m10: number, m11: number) => number,
@@ -86,7 +96,7 @@ export function testDeterminantCancellation(
   const m10 = mag + 0.5;
   const m11 = mag + 1;
 
-  // det = m00*m11 - m01*m10 ≈ 0.75 (exact), but intermediates are ~mag^2
+  // det = m00*m11 - m01*m10 = -0.25 (exact), but intermediates are ~mag^2
   const result = detFn(m00, m01, m10, m11);
   const bits = cancellationBits(m00 * m11, m01 * m10, result);
 

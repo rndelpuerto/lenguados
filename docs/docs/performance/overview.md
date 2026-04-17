@@ -60,8 +60,9 @@ redundant transcendental calls.
 
 Packages that require reproducible results (networked simulations, replay systems,
 deterministic testing) use [fdlibm](https://www.netlib.org/fdlibm/)-based math kernels.
-These produce bit-identical results across platforms at the cost of ~10-30% throughput
-compared to platform-specific `Math.*` implementations.
+These produce bit-identical results across platforms at the cost of some throughput
+compared to native `Math.*` builtins. The exact overhead varies by function and
+is measured in the [Auxiliary Performance](../packages/math2d/performance/auxiliary) page.
 
 ### Dead-Code Elimination
 

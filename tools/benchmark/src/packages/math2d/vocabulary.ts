@@ -1,5 +1,6 @@
 /**
- * Standard operation vocabulary for cross-library comparison.
+ * @file packages/math2d/vocabulary.ts
+ * @description Standard operation vocabulary for cross-library comparison
  *
  * Defines the canonical set of operations that are common across
  * 2D math libraries. Each entry has a precise mathematical
@@ -17,6 +18,7 @@ export type { OperationSpec };
 /* Vector Operations                                                           */
 /* ========================================================================== */
 
+/** Standard vector operation specifications for cross-library comparison */
 export const VECTOR_OPS: OperationSpec[] = [
  {
   name: 'vectorAdd',
@@ -78,6 +80,7 @@ export const VECTOR_OPS: OperationSpec[] = [
 /* Matrix Operations                                                           */
 /* ========================================================================== */
 
+/** Standard matrix operation specifications for cross-library comparison */
 export const MATRIX_OPS: OperationSpec[] = [
  {
   name: 'matrixMultiply',
@@ -133,6 +136,7 @@ export const MATRIX_OPS: OperationSpec[] = [
 /* Rotation Operations                                                         */
 /* ========================================================================== */
 
+/** Standard rotation operation specifications for cross-library comparison */
 export const ROTATION_OPS: OperationSpec[] = [
  {
   name: 'rotationFromAngle',
@@ -158,12 +162,17 @@ export const ROTATION_OPS: OperationSpec[] = [
 /* Full Vocabulary                                                             */
 /* ========================================================================== */
 
+/** Combined vocabulary of all standard operations across all categories */
 export const ALL_OPERATIONS: OperationSpec[] = [...VECTOR_OPS, ...MATRIX_OPS, ...ROTATION_OPS];
 
+/** Set of all standard operation names for quick membership checks */
 export const OPERATION_NAMES = new Set(ALL_OPERATIONS.map((op) => op.name));
 
 /**
- * Get operation spec by name. Returns undefined if not in vocabulary.
+ * Look up an operation specification by its standard name
+ *
+ * @param name - Standard operation name (e.g., "vectorAdd", "matrixMultiply")
+ * @returns The matching OperationSpec, or undefined if not in the vocabulary
  */
 export function getOperationSpec(name: string): OperationSpec | undefined {
  return ALL_OPERATIONS.find((op) => op.name === name);

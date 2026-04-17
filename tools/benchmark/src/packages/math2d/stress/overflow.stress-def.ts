@@ -1,5 +1,6 @@
 /**
- * Stress test definition wrapper for overflow/underflow.
+ * @file packages/math2d/stress/overflow.stress-def.ts
+ * @description Stress test definition wrapper for overflow/underflow
  *
  * Delegates to {@link runOverflowStress} from the stress test library.
  */
@@ -8,6 +9,13 @@ import type { StressTestDefinition, StressTestOutput } from '../../../harness/st
 import type { DiagnosticReport } from '../../../harness/diagnostics.ts';
 import { runOverflowStress } from '../../../stress/overflow.stress.ts';
 
+/**
+ * Verify overflow and underflow behavior across validation tiers
+ *
+ * @remarks
+ * Tests operations with extreme magnitudes (near MAX_VALUE and MIN_VALUE)
+ * and checks that results remain finite or produce expected special values.
+ */
 export const stressTest: StressTestDefinition = {
  name: 'overflow',
  run(module: Record<string, unknown>, _options, diagnostics: DiagnosticReport): StressTestOutput {

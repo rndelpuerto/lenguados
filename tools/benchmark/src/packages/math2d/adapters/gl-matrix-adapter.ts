@@ -1,5 +1,6 @@
 /**
- * gl-matrix adapter for cross-library comparison.
+ * @file packages/math2d/adapters/gl-matrix-adapter.ts
+ * @description gl-matrix adapter for cross-library comparison
  *
  * Maps gl-matrix's functional API (vec2.*, mat3.*) to the standard
  * operation vocabulary. Uses gl-matrix's native idiom: pre-allocated
@@ -14,6 +15,11 @@ import { createRequire } from 'node:module';
 
 import type { LibraryAdapter, OperationFn } from '../../../harness/library-adapter.ts';
 
+/**
+ * Create a LibraryAdapter wrapping gl-matrix for cross-library comparison
+ *
+ * @returns A LibraryAdapter mapping gl-matrix operations to the standard vocabulary
+ */
 export function createGlMatrixAdapter(): LibraryAdapter {
  // Pre-allocate ALL test data (gl-matrix native idiom: typed arrays).
  // No allocations inside benchmark closures — fair comparison.

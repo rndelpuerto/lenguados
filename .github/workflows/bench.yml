@@ -69,11 +69,11 @@ jobs:
       NODE_OPTIONS: '--max-old-space-size=4096'
 
    # ─────────────────────────────────────────────────────────────────────────
-   # Generate documentation summary JSON
-   # Transforms raw results (~100MB) into lightweight summaries (~80KB)
+   # Generate lightweight summary JSON from raw results
+   # The benchmark tool owns this transformation as part of its output.
    # ─────────────────────────────────────────────────────────────────────────
-   - name: Generate benchmark summaries for documentation
-     run: npm run tools:bench:docs-data
+   - name: Generate benchmark summaries
+     run: npm run tools:bench:summarize
 
    # ─────────────────────────────────────────────────────────────────────────
    # Upload summaries as artifact for the docs deploy workflow
@@ -82,6 +82,6 @@ jobs:
      uses: actions/upload-artifact@v4
      with:
       name: benchmark-summaries
-      path: docs/static/benchmark-data/
+      path: tools/benchmark/results/summaries/
       retention-days: 30
       if-no-files-found: warn

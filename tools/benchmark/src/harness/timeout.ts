@@ -1,5 +1,6 @@
 /**
- * Operation timeout watchdog and crash recovery.
+ * @file harness/timeout.ts
+ * @description Enforce operation timeout watchdog and crash recovery
  *
  * Enforces configurable timeout per stress test operation.
  * Catches unhandled exceptions and records them as diagnostic findings.
@@ -13,11 +14,17 @@ import type { DiagnosticReport } from './diagnostics.ts';
 /* ========================================================================== */
 
 /**
- * Execute a function with a timeout watchdog.
+ * Execute a function with a timeout watchdog
  *
- * Note: for synchronous functions, the timeout cannot interrupt execution
+ * @remarks
+ * For synchronous functions, the timeout cannot interrupt execution
  * (JavaScript is single-threaded). It only races against the event loop
  * for async operations.
+ *
+ * @template T - The return type of the function
+ * @param fn - The function to execute (sync or async)
+ * @param timeoutMs - Maximum time in milliseconds before timeout
+ * @returns An object with the result (or null), timeout flag, and error (or null)
  */
 export async function withTimeout<T>(
  fn: () => T | Promise<T>,
@@ -64,10 +71,19 @@ export async function withTimeout<T>(
 /* ========================================================================== */
 
 /**
- * Execute a stress test operation with crash recovery and timeout.
+ * Execute a stress test operation with crash recovery and timeout
  *
+ * @remarks
  * Catches unhandled exceptions, records them as diagnostic findings,
  * and continues the run without terminating.
+ *
+ * @template T - The return type of the function
+ * @param fn - The function to execute (sync or async)
+ * @param entity - The mathematical entity name (for diagnostic reporting)
+ * @param operation - The operation name (for diagnostic reporting)
+ * @param diagnostics - The diagnostic report to record findings in
+ * @param timeoutMs - Maximum time in milliseconds before timeout (default: 30,000)
+ * @returns The function result, or null if timed out or crashed
  */
 export async function runWithRecovery<T>(
  fn: () => T | Promise<T>,

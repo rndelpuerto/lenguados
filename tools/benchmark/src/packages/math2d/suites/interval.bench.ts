@@ -1,9 +1,22 @@
 /**
- * Interval benchmark suite.
+ * @file packages/math2d/suites/interval.bench.ts
+ * @description Interval operations benchmark suite
+ *
+ * Cover factories, arithmetic, set operations, scalar reductions,
+ * predicates, and interpolation on the Interval type.
  */
 
 import { definePackageSuite } from '../../../harness/suite-builder.ts';
 
+/**
+ * Define the Interval benchmark suite
+ *
+ * @remarks
+ * Benchmarks all Interval static operations across all three validation
+ * tiers (default/safe/unchecked) for triality operations (divideScalar,
+ * sqrt). Interval uses only IEEE 754 operations, so the determinism
+ * dimension is not varied.
+ */
 export const defineSuite = definePackageSuite({
  name: 'Interval',
  entity: 'Interval',

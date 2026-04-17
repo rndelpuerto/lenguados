@@ -1,7 +1,5 @@
 import { greet } from './src';
 
-/**
- * Export "greet" as named export
- */
+/** Re-export all public API from src */
 
 export { greet };

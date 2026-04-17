@@ -1,5 +1,6 @@
 /**
- * Near-singular matrix stress test.
+ * @file stress/near-singular.stress.ts
+ * @description Near-singular matrix stress test
  *
  * Tests matrix inversion at determinants from 1e-15 to 1e-5, crossing
  * the MIN_SAFE_DIVISOR = 1e-10 boundary. Includes Hilbert 2x2 as
@@ -9,6 +10,7 @@
 import { addFinding } from '../harness/reporter.ts';
 import type { DiagnosticReport } from '../harness/reporter.ts';
 
+/** Result of a near-singular matrix inversion test for a single determinant and tier */
 export interface SingularityResult {
  determinant: number;
  tier: string;
@@ -18,12 +20,17 @@ export interface SingularityResult {
 }
 
 /**
- * Compute the 2-norm condition number of a 2x2 matrix.
- * cond(A) ≈ frobeniusNorm(A) * frobeniusNorm(A^-1)
+ * Compute the Frobenius-norm condition number of a 2x2 matrix
+ *
+ * cond(A) ≈ frobeniusNorm(A) × frobeniusNorm(A^-1)
+ *
+ * @param m00 - Element at row 0, column 0
+ * @param m01 - Element at row 0, column 1
+ * @param m10 - Element at row 1, column 0
+ * @param m11 - Element at row 1, column 1
+ * @returns Condition number, or Infinity if the matrix is singular
  */
-function conditionNumber2x2(
- m00: number, m01: number, m10: number, m11: number,
-): number {
+function conditionNumber2x2(m00: number, m01: number, m10: number, m11: number): number {
  const normA = Math.sqrt(m00 * m00 + m01 * m01 + m10 * m10 + m11 * m11);
  const det = m00 * m11 - m01 * m10;
  if (Math.abs(det) < 1e-300) return Infinity;
@@ -36,7 +43,11 @@ function conditionNumber2x2(
 }
 
 /**
- * Run near-singular stress test across determinant range.
+ * Run near-singular stress test across determinant range
+ *
+ * @param math2d - Loaded math2d module with Matrix2 constructor
+ * @param diagnostics - Diagnostic report to record findings
+ * @returns Array of singularity test results per determinant and tier
  */
 export function runNearSingularStress(
  math2d: Record<string, unknown>,
@@ -71,7 +82,12 @@ export function runNearSingularStress(
     conditionNumber: cond,
    });
   } catch {
-   results.push({ determinant: targetDet, tier: 'default', behavior: 'throw', conditionNumber: cond });
+   results.push({
+    determinant: targetDet,
+    tier: 'default',
+    behavior: 'throw',
+    conditionNumber: cond,
+   });
   }
 
   // Safe tier (returns identity for singular)
@@ -99,7 +115,12 @@ export function runNearSingularStress(
     conditionNumber: cond,
    });
   } catch {
-   results.push({ determinant: targetDet, tier: 'unchecked', behavior: 'throw', conditionNumber: cond });
+   results.push({
+    determinant: targetDet,
+    tier: 'unchecked',
+    behavior: 'throw',
+    conditionNumber: cond,
+   });
   }
  }
 
@@ -110,8 +131,10 @@ export function runNearSingularStress(
   const inv = M2.inverse(hilbert);
   const product = M2.multiply(hilbert, inv);
   const err = Math.max(
-   Math.abs(product.m00 - 1), Math.abs(product.m11 - 1),
-   Math.abs(product.m01), Math.abs(product.m10),
+   Math.abs(product.m00 - 1),
+   Math.abs(product.m11 - 1),
+   Math.abs(product.m01),
+   Math.abs(product.m10),
   );
 
   results.push({
@@ -133,7 +156,12 @@ export function runNearSingularStress(
    });
   }
  } catch {
-  results.push({ determinant: 1 / 12, tier: 'hilbert-2x2', behavior: 'throw', conditionNumber: hilbertCond });
+  results.push({
+   determinant: 1 / 12,
+   tier: 'hilbert-2x2',
+   behavior: 'throw',
+   conditionNumber: hilbertCond,
+  });
  }
 
  return results;

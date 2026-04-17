@@ -1,5 +1,6 @@
 /**
- * Tree-shaking effectiveness verification.
+ * @file dx/tree-shaking.ts
+ * @description Tree-shaking effectiveness verification
  *
  * Verifies that unused exports are eliminated by bundlers.
  * Tests sideEffects: false is honored.
@@ -9,6 +10,7 @@ import { measureBundleSize } from './bundle-size.ts';
 
 import type { DxConfig } from '../harness/dx-types.ts';
 
+/** Result of tree-shaking effectiveness verification */
 export interface TreeShakingResult {
  fullSize: number;
  minimalSize: number;
@@ -21,7 +23,10 @@ export interface TreeShakingResult {
 const MIN_REDUCTION_PERCENT = 40;
 
 /**
- * Verify tree-shaking by comparing full import vs single-type import.
+ * Verify tree-shaking by comparing full import vs single-type import
+ *
+ * @param config - DX configuration with main entry and minimal import statement
+ * @returns Tree-shaking verification result with size reduction metrics
  */
 export function verifyTreeShaking(config: DxConfig): TreeShakingResult {
  const fullResult = measureBundleSize(

@@ -1,7 +1,8 @@
 /**
- * CLI entry point for DX (Developer Experience) analysis.
+ * @file scripts/dx.ts
+ * @description Run DX (Developer Experience) analysis from the CLI
  *
- * Measures bundle size, tree-shaking, build correctness,
+ * Measure bundle size, tree-shaking, build correctness,
  * assertion elimination, and dev vs prod size comparison.
  */
 

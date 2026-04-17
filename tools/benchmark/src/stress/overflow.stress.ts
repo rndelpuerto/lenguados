@@ -1,5 +1,6 @@
 /**
- * Overflow and underflow boundary stress test.
+ * @file stress/overflow.stress.ts
+ * @description Overflow and underflow boundary stress test
  *
  * Tests at OVERFLOW_THRESHOLD = sqrt(MAX_VALUE/2) ≈ 1.34e154 per
  * testing-deep-patterns.md. Verifies Default/Safe tiers use hypot
@@ -11,6 +12,7 @@ import { addFinding } from '../harness/reporter.ts';
 import type { DiagnosticReport } from '../harness/reporter.ts';
 import { OVERFLOW_THRESHOLD } from './arbitraries.ts';
 
+/** Result of an overflow/underflow boundary test for a single operation and tier */
 export interface OverflowResult {
  test: string;
  tier: string;
@@ -21,7 +23,11 @@ export interface OverflowResult {
 }
 
 /**
- * Run overflow/underflow stress tests.
+ * Run overflow/underflow stress tests
+ *
+ * @param math2d - Loaded math2d module with Vector2 and deterministic functions
+ * @param diagnostics - Diagnostic report to record findings
+ * @returns Array of overflow/underflow test results per operation
  */
 export function runOverflowStress(
  math2d: Record<string, unknown>,
@@ -32,11 +38,19 @@ export function runOverflowStress(
  const results: OverflowResult[] = [];
 
  function record(
-  test: string, tier: string, input: number[], output: number, expected: string,
+  test: string,
+  tier: string,
+  input: number[],
+  output: number,
+  expected: string,
  ): void {
   const isFiniteResult = Number.isFinite(output);
   const entry: OverflowResult = {
-   test, tier, input, output, isFinite: isFiniteResult,
+   test,
+   tier,
+   input,
+   output,
+   isFinite: isFiniteResult,
    expected: expected as OverflowResult['expected'],
   };
   results.push(entry);
@@ -69,11 +83,16 @@ export function runOverflowStress(
  const vOverflow = V2.fromValues(overflowX, overflowX);
  record('magnitude', 'default', [overflowX, overflowX], V2.magnitude(vOverflow), 'finite');
 
- // Magnitude — Unchecked tier uses Math.sqrt(x*x+y*y) → overflows by design
+ // magnitudeSq is single-tier (always x*x + y*y) — expected to overflow
  try {
   const magUnchecked = V2.magnitudeSq(vOverflow);
-  record('magnitudeSq', 'unchecked', [overflowX, overflowX], magUnchecked,
-   magUnchecked === Infinity ? 'overflow' : 'finite');
+  record(
+   'magnitudeSq',
+   'default',
+   [overflowX, overflowX],
+   magUnchecked,
+   magUnchecked === Infinity ? 'overflow' : 'finite',
+  );
  } catch {
   // Expected for some configurations
  }
@@ -97,8 +116,13 @@ export function runOverflowStress(
  // Underflow — near-zero magnitude
  const vUnderflow = V2.fromValues(1e-200, 1e-200);
  const underflowMag = V2.magnitude(vUnderflow);
- record('magnitude (underflow)', 'default', [1e-200, 1e-200], underflowMag,
-  underflowMag > 0 ? 'finite' : 'underflow');
+ record(
+  'magnitude (underflow)',
+  'default',
+  [1e-200, 1e-200],
+  underflowMag,
+  underflowMag > 0 ? 'finite' : 'underflow',
+ );
 
  // Exponential overflow — exp(710) should produce Infinity
  const expOverflow = det.exp(710);

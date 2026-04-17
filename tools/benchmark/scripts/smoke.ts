@@ -1,7 +1,8 @@
 /**
- * Lightweight smoke test for pre-push hook.
+ * @file scripts/smoke.ts
+ * @description Run a lightweight smoke test for the pre-push hook
  *
- * Runs ONLY correctness checks (~15-20s), NOT performance benchmarks.
+ * Execute ONLY correctness checks (~15-20s), NOT performance benchmarks.
  * Designed to catch numerical regressions and build corruption without
  * the variance and time cost of full mitata benchmarks.
  *
@@ -25,10 +26,21 @@ import { existsSync } from 'node:fs';
 const startTime = Date.now();
 let failures = 0;
 
+/**
+ * Log a passing check result
+ *
+ * @param label - Description of the check that passed
+ */
 function pass(label: string): void {
  console.log(`  ✓ ${label}`);
 }
 
+/**
+ * Log a failing check result and increment the failure counter
+ *
+ * @param label - Description of the check that failed
+ * @param detail - Error detail or reason for failure
+ */
 function fail(label: string, detail: string): void {
  console.error(`  ✗ ${label}: ${detail}`);
  failures++;

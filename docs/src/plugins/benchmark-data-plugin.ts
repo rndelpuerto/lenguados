@@ -2,8 +2,12 @@
  * Docusaurus plugin that loads per-package benchmark summary JSON
  * at build time and exposes it via global data for React components.
  *
- * Iterates subdirectories under static/benchmark-data/ — each subdirectory
- * is a package name (e.g., math2d/) containing 4 summary JSON files.
+ * Reads summaries from the benchmark tool's output directory
+ * (tools/benchmark/results/summaries/). Each subdirectory is a
+ * package name (e.g., math2d/) containing 4 summary JSON files.
+ *
+ * The benchmark tool owns summary generation (via `npm run tools:bench:summarize`).
+ * This plugin is a read-only consumer — it never generates or transforms data.
  */
 
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
@@ -34,14 +38,16 @@ export default function benchmarkDataPlugin(context: LoadContext): Plugin<Benchm
   name: 'docusaurus-plugin-benchmark-data',
 
   async loadContent(): Promise<BenchmarkData> {
-   const dataDirectory = join(context.siteDir, 'static', 'benchmark-data');
+   // Read from the benchmark tool's summary output directory.
+   // Path: monorepo-root/tools/benchmark/results/summaries/
+   const summariesDir = join(context.siteDir, '..', 'tools', 'benchmark', 'results', 'summaries');
    const result: BenchmarkData = {};
 
-   if (!existsSync(dataDirectory)) return result;
+   if (!existsSync(summariesDir)) return result;
 
-   const entries = readdirSync(dataDirectory);
+   const entries = readdirSync(summariesDir);
    for (const entry of entries) {
-    const entryPath = join(dataDirectory, entry);
+    const entryPath = join(summariesDir, entry);
     if (!statSync(entryPath).isDirectory()) continue;
 
     result[entry] = {

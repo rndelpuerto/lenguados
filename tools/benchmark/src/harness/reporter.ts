@@ -1,5 +1,6 @@
 /**
- * Benchmark result reporting — JSON and ASCII table formats.
+ * @file harness/reporter.ts
+ * @description Report benchmark results in JSON and ASCII table formats
  *
  * Produces machine-readable JSON with full metadata and statistics,
  * and human-readable ASCII tables for console output. Supports
@@ -29,6 +30,7 @@ import type { BenchmarkResult, GroupResult, ResourceMetrics } from './runner.ts'
 /* Types                                                                       */
 /* ========================================================================== */
 
+/** Contain system metadata captured at benchmark execution time */
 export interface ReportMetadata {
  timestamp: string;
  nodeVersion: string;
@@ -38,6 +40,7 @@ export interface ReportMetadata {
  arch: string;
 }
 
+/** Represent a single benchmark result entry in the JSON report */
 export interface ReportEntry {
  dimensions?: Record<string, string> | undefined;
  operation: string;
@@ -61,6 +64,7 @@ export interface ReportEntry {
  raw?: number[] | undefined;
 }
 
+/** Represent a complete benchmark report with metadata, results, and diagnostics */
 export interface BenchmarkReport {
  metadata: ReportMetadata;
  results: ReportEntry[];
@@ -71,6 +75,11 @@ export interface BenchmarkReport {
 /* Metadata                                                                    */
 /* ========================================================================== */
 
+/**
+ * Retrieve the current git commit hash (short form)
+ *
+ * @returns The short commit hash, or 'unknown' if git is unavailable
+ */
 function getCommitHash(): string {
  try {
   return execSync('git rev-parse --short HEAD', { encoding: 'utf-8' }).trim();
@@ -79,6 +88,11 @@ function getCommitHash(): string {
  }
 }
 
+/**
+ * Collect system metadata for the benchmark report
+ *
+ * @returns A ReportMetadata object with timestamp, Node version, OS, CPU, commit hash, and arch
+ */
 export function collectMetadata(): ReportMetadata {
  const cpuInfo = cpus();
  return {
@@ -95,6 +109,14 @@ export function collectMetadata(): ReportMetadata {
 /* JSON Report                                                                 */
 /* ========================================================================== */
 
+/**
+ * Convert a BenchmarkResult into a serializable ReportEntry
+ *
+ * @param result - The benchmark result to convert
+ * @param dimensions - Optional dimension labels for this result
+ * @param includeRaw - Whether to include raw sample data (default: false)
+ * @returns A ReportEntry suitable for JSON serialization
+ */
 export function benchmarkResultToEntry(
  result: BenchmarkResult,
  dimensions?: Record<string, string>,
@@ -127,6 +149,14 @@ export function benchmarkResultToEntry(
  };
 }
 
+/**
+ * Generate a complete JSON benchmark report from group results
+ *
+ * @param groups - Array of benchmark group results
+ * @param dimensions - Optional dimension labels to attach to each entry
+ * @param includeRaw - Whether to include raw sample arrays (default: false)
+ * @returns A BenchmarkReport with metadata and all result entries
+ */
 export function generateJsonReport(
  groups: GroupResult[],
  dimensions?: Record<string, string>,
@@ -149,6 +179,12 @@ export function generateJsonReport(
 /* ASCII Table Reporter                                                        */
 /* ========================================================================== */
 
+/**
+ * Format benchmark entries as an ASCII table for console output
+ *
+ * @param entries - The report entries to format
+ * @returns A formatted ASCII table string, or '(no results)' if empty
+ */
 export function printAsciiTable(entries: ReportEntry[]): string {
  if (entries.length === 0) return '(no results)';
 
@@ -199,6 +235,12 @@ export function printAsciiTable(entries: ReportEntry[]): string {
 
 const RESULTS_DIR = new URL('../../results/', import.meta.url).pathname;
 
+/**
+ * Persist a benchmark report to disk as timestamped JSON
+ *
+ * @param report - The benchmark report to persist
+ * @returns The absolute path of the written file
+ */
 export function persistReport(report: BenchmarkReport): string {
  mkdirSync(RESULTS_DIR, { recursive: true });
 
@@ -215,7 +257,11 @@ export function persistReport(report: BenchmarkReport): string {
 }
 
 /**
- * Create a "latest" pointer — symlink when possible, copy as Windows fallback.
+ * Create a "latest" pointer via symlink, falling back to copy on Windows
+ *
+ * @param filepath - Absolute path to the source file
+ * @param latestPath - Absolute path for the "latest" pointer
+ * @param filename - Relative filename for the symlink target
  */
 export function createLatestPointer(filepath: string, latestPath: string, filename: string): void {
  try {
@@ -230,6 +276,7 @@ export function createLatestPointer(filepath: string, latestPath: string, filena
 /* Comparison Mode                                                             */
 /* ========================================================================== */
 
+/** Represent a comparison between baseline and current results for one operation */
 export interface ComparisonEntry {
  operation: string;
  baselineMean: number;
@@ -237,14 +284,28 @@ export interface ComparisonEntry {
  regression: RegressionResult;
 }
 
+/**
+ * Load a benchmark report from a JSON file
+ *
+ * @param path - Absolute path to the JSON report file
+ * @returns The parsed BenchmarkReport
+ */
 export async function loadReport(path: string): Promise<BenchmarkReport> {
  const content = await readFile(path, 'utf-8');
  return JSON.parse(content) as BenchmarkReport;
 }
 
 /**
- * Generate synthetic samples from mean/stddev when raw data is unavailable.
- * Uses a simple normal approximation to enable statistical comparison.
+ * Generate synthetic samples from mean/stddev when raw data is unavailable
+ *
+ * @remarks
+ * Uses a Box-Muller transform for normal distribution approximation
+ * to enable statistical comparison when raw samples are not stored.
+ *
+ * @param mean - The mean of the distribution to sample from
+ * @param stddev - The standard deviation of the distribution
+ * @param count - Minimum number of samples to generate (at least 30)
+ * @returns An array of synthetic normal samples
  */
 function generateSyntheticSamples(mean: number, stddev: number, count: number): number[] {
  const n = Math.max(count, 30);
@@ -259,6 +320,14 @@ function generateSyntheticSamples(mean: number, stddev: number, count: number): 
  return samples;
 }
 
+/**
+ * Compare two benchmark reports and detect regressions per operation
+ *
+ * @param baseline - The baseline report to compare against
+ * @param current - The current report to evaluate
+ * @param noiseThreshold - Minimum effect size percentage to flag as regression (default: 2)
+ * @returns An array of comparison entries for matched operations
+ */
 export function compareReports(
  baseline: BenchmarkReport,
  current: BenchmarkReport,
@@ -298,6 +367,12 @@ export function compareReports(
  return comparisons;
 }
 
+/**
+ * Format a comparison table as an ASCII string for console output
+ *
+ * @param comparisons - The comparison entries to format
+ * @returns A formatted ASCII table string, or '(no comparable operations)' if empty
+ */
 export function printComparisonTable(comparisons: ComparisonEntry[]): string {
  if (comparisons.length === 0) return '(no comparable operations)';
 
