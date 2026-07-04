@@ -5,7 +5,16 @@
  */
 
 /**
- * Clamps a value between min and max bounds.
+ * Clamps a value between min and max bounds
+ *
+ * @remarks
+ * The implementation is permissive on the `min > max` configuration: when
+ * `min > max`, a `value` in the overlap `(max, min)` short-circuits through
+ * the ternary and returns `min` (because `value < min` fires first); a
+ * `value > min` returns `max`; a `value < max` returns `min`. This is
+ * intentional — callers that need a stricter contract should validate the
+ * bounds before calling.
+ *
  * @param value - Value to clamp
  * @param min - Lower bound
  * @param max - Upper bound
@@ -27,7 +36,7 @@ export function clamp(value: number, min: number, max: number): number {
 }
 
 /**
- * Returns the sign of a number (-1, 0, or 1).
+ * Returns the sign of a number (-1, 0, or 1)
  * More robust than Math.sign for special cases.
  *
  * @remarks
@@ -43,20 +52,21 @@ export function clamp(value: number, min: number, max: number): number {
  * sign(42);    // 1
  * sign(-3.5);  // -1
  * sign(0);     // 0
- * sign(NaN);   // 0
+ * sign(NaN);   // NaN (propagates per IEEE 754 §6.2)
  * ```
  *
  * @category Arithmetic
  * @since 0.5.0
  */
-export function sign(value: number): -1 | 0 | 1 {
+export function sign(value: number): number {
  if (value > 0) return 1;
  if (value < 0) return -1;
- return 0; // Handles -0, +0, NaN
+ // Propagate NaN per IEEE 754 §6.2 / ECMA-262 §21.3.2.32; +0 and -0 return 0.
+ return value !== value ? value : 0;
 }
 
 /**
- * Saturates value to [0, 1] range.
+ * Saturates value to [0, 1] range
  * Commonly used for colors, interpolation factors.
  * @param value - Value to saturate
  * @returns Saturated value in [0, 1]
@@ -76,106 +86,7 @@ export function saturate(value: number): number {
 }
 
 /**
- * Saturates value to [-1, 1] range.
- * Useful for normalized directions.
- * @param value - Value to saturate
- * @returns Saturated value in [-1, 1]
- *
- * @example
- * ```typescript
- * saturateSigned(-2);   // -1
- * saturateSigned(0.5);  // 0.5
- * saturateSigned(2);    // 1
- * ```
- *
- * @category Arithmetic
- * @since 0.7.0
- */
-export function saturateSigned(value: number): number {
- return clamp(value, -1, 1);
-}
-
-/**
- * Linear mapping from [inMin, inMax] to [outMin, outMax].
- *
- * @remarks
- * For large-magnitude operands, intermediate subtraction `(value - inMin)`
- * and multiplication may lose precision due to floating-point cancellation.
- *
- * @param value - Value to remap
- * @param inMin - Input range minimum
- * @param inMax - Input range maximum
- * @param outMin - Output range minimum
- * @param outMax - Output range maximum
- * @returns Remapped value
- * @throws {RangeError} If inMin === inMax (zero input range)
- *
- * @example
- * ```typescript
- * remap(5, 0, 10, 0, 100);    // 50
- * remap(75, 0, 100, -1, 1);   // 0.5
- * ```
- *
- * @see {@link remapSafe} - Returns outMin if ranges are degenerate
- *
- * @category Arithmetic
- * @since 0.7.0
- */
-export function remap(
- value: number,
- inMin: number,
- inMax: number,
- outMin: number,
- outMax: number,
-): number {
- if (value === inMin) return outMin;
- if (value === inMax) return outMax;
- const inRange = inMax - inMin;
- if (inRange === 0) {
-  throw new RangeError('remap: input range is zero (inMin === inMax)');
- }
- const normalized = (value - inMin) / inRange;
- return outMin + normalized * (outMax - outMin);
-}
-
-/**
- * Linear mapping from [inMin, inMax] to [outMin, outMax] (safe).
- * @param value - Value to remap
- * @param inMin - Input range minimum
- * @param inMax - Input range maximum
- * @param outMin - Output range minimum
- * @param outMax - Output range maximum
- * @returns Remapped value, or outMin if input range is degenerate
- *
- * @example
- * ```typescript
- * remapSafe(5, 0, 10, 0, 100);    // 50
- * remapSafe(5, 5, 5, 0, 100);     // 0 (degenerate input range)
- * ```
- *
- * @see {@link remap} - Throws for degenerate range
- *
- * @category Arithmetic
- * @since 0.7.0
- */
-export function remapSafe(
- value: number,
- inMin: number,
- inMax: number,
- outMin: number,
- outMax: number,
-): number {
- // Boundary early-returns for exact endpoint mapping (matching remap)
- if (value === inMin) return outMin;
- if (value === inMax) return outMax;
- const inRange = inMax - inMin;
- if (inRange === 0) return outMin;
- const normalized = (value - inMin) / inRange;
- return outMin + normalized * (outMax - outMin);
-}
-
-/**
- * Loops value into [min, max) range (strict).
+ * Loops value into [min, max) range (strict)
  * @param value - Value to wrap
  * @param min - Lower bound (inclusive)
  * @param max - Upper bound (exclusive)
@@ -205,7 +116,7 @@ export function loop(value: number, min: number, max: number): number {
 }
 
 /**
- * Loops value into [min, max) range (safe).
+ * Loops value into [min, max) range (safe)
  * @param value - Value to wrap
  * @param min - Lower bound (inclusive)
  * @param max - Upper bound (exclusive)
@@ -230,7 +141,7 @@ export function loopSafe(value: number, min: number, max: number): number {
 }
 
 /**
- * Loops value into [min, max) range (unchecked).
+ * Loops value into [min, max) range (unchecked)
  *
  * @remarks
  * **Precondition:** max > min. Invalid range produces undefined behavior.
@@ -240,8 +151,8 @@ export function loopSafe(value: number, min: number, max: number): number {
  * @param max - Upper bound (exclusive, must be > min)
  * @returns Wrapped value
  *
- * @see {@link loop} — Throws for invalid range
- * @see {@link loopSafe} — Returns min if range is invalid
+ * @see {@link loop} - Throws for invalid range
+ * @see {@link loopSafe} - Returns min if range is invalid
  *
  * @category Arithmetic
  * @since 0.7.0
@@ -253,90 +164,7 @@ export function loopUnchecked(value: number, min: number, max: number): number {
 }
 
 /**
- * Ping-pongs value in [min, max] range (strict).
- * @param value - Value to ping-pong
- * @param min - Lower bound
- * @param max - Upper bound
- * @returns Ping-ponged value
- * @throws {RangeError} If range is invalid (max <= min)
- *
- * @example
- * ```typescript
- * pingPong(3, 0, 2);    // 1 (bounces back from 2)
- * pingPong(5, 0, 2);    // 1 (continues bouncing)
- * ```
- *
- * @see {@link pingPongSafe} - Returns min if invalid
- * @see {@link pingPongUnchecked} - No validation
- *
- * @category Arithmetic
- * @since 0.7.0
- */
-export function pingPong(value: number, min: number, max: number): number {
- const range = max - min;
- if (range <= 0) {
-  throw new RangeError('pingPong: invalid range (max must be greater than min)');
- }
- const doubleRange = range * 2;
- let phase = (value - min) % doubleRange;
- if (phase < 0) phase += doubleRange;
- return phase <= range ? min + phase : max - (phase - range);
-}
-
-/**
- * Ping-pongs value in [min, max] range (safe).
- * @param value - Value to ping-pong
- * @param min - Lower bound
- * @param max - Upper bound
- * @returns Ping-ponged value, or min if range is invalid
- *
- * @example
- * ```typescript
- * pingPongSafe(3, 0, 2);    // 1
- * pingPongSafe(5, 5, 5);    // 5 (return min)
- * ```
- *
- * @see {@link pingPong} — Throws for invalid range
- *
- * @category Arithmetic
- * @since 0.7.0
- */
-export function pingPongSafe(value: number, min: number, max: number): number {
- const range = max - min;
- if (range <= 0) return min;
- const doubleRange = range * 2;
- let phase = (value - min) % doubleRange;
- if (phase < 0) phase += doubleRange;
- return phase <= range ? min + phase : max - (phase - range);
-}
-
-/**
- * Ping-pongs value in [min, max] range (unchecked).
- *
- * @remarks
- * **Precondition:** max > min.
- *
- * @param value - Value to ping-pong
- * @param min - Lower bound
- * @param max - Upper bound (must be > min)
- * @returns Ping-ponged value
- *
- * @see {@link pingPong} — Throws for invalid range
- * @see {@link pingPongSafe} — Returns min if range is invalid
- *
- * @category Arithmetic
- * @since 0.7.0
- */
-export function pingPongUnchecked(value: number, min: number, max: number): number {
- const range = max - min;
- const doubleRange = range * 2;
- let phase = (value - min) % doubleRange;
- if (phase < 0) phase += doubleRange;
- return phase <= range ? min + phase : max - (phase - range);
-}
-
-/**
- * Step function (Heaviside function).
+ * Step function (Heaviside function)
  * Returns 0 if x < edge, else 1.
  *
  * @remarks
@@ -361,7 +189,7 @@ export function step(edge: number, x: number): number {
 }
 
 /**
- * Modulo operation that always returns positive result (strict).
+ * Modulo operation that always returns positive result (strict)
  * @param dividend - Value to divide
  * @param divisor - Divisor (must be positive)
  * @returns Positive modulo result
@@ -388,7 +216,7 @@ export function mod(dividend: number, divisor: number): number {
 }
 
 /**
- * Modulo operation that always returns positive result (safe).
+ * Modulo operation that always returns positive result (safe)
  * @param dividend - Value to divide
  * @param divisor - Divisor
  * @returns Positive modulo result, or 0 if divisor <= 0
@@ -411,7 +239,7 @@ export function modSafe(dividend: number, divisor: number): number {
 }
 
 /**
- * Modulo operation that always returns positive result (unchecked).
+ * Modulo operation that always returns positive result (unchecked)
  *
  * @remarks
  * **Precondition:** divisor > 0.
@@ -420,8 +248,8 @@ export function modSafe(dividend: number, divisor: number): number {
  * @param divisor - Divisor (must be positive)
  * @returns Positive modulo result
  *
- * @see {@link mod} — Throws for non-positive divisor
- * @see {@link modSafe} — Returns 0 if divisor is invalid
+ * @see {@link mod} - Throws for non-positive divisor
+ * @see {@link modSafe} - Returns 0 if divisor is invalid
  *
  * @category Arithmetic
  * @since 0.7.0
@@ -432,7 +260,7 @@ export function modUnchecked(dividend: number, divisor: number): number {
 }
 
 /**
- * Returns the floor of value/divisor.
+ * Returns the floor of value/divisor
  * Useful for grid cell calculations.
  * @param value - Numerator
  * @param divisor - Denominator
@@ -446,8 +274,8 @@ export function modUnchecked(dividend: number, divisor: number): number {
  * floorDivide(6, 3);      // 2
  * ```
  *
- * @see {@link floorDivideSafe} — Returns 0 if divisor is zero
- * @see {@link floorDivideUnchecked} — No validation
+ * @see {@link floorDivideSafe} - Returns 0 if divisor is zero
+ * @see {@link floorDivideUnchecked} - No validation
  *
  * @category Arithmetic
  * @since 0.7.0
@@ -460,12 +288,12 @@ export function floorDivide(value: number, divisor: number): number {
 }
 
 /**
- * Safe floored division. Returns 0 for zero divisor.
+ * Safe floored division. Returns 0 for zero divisor
  * @param value - Numerator
  * @param divisor - Denominator
  * @returns Floor of division, or 0 if divisor is zero
  *
- * @see {@link floorDivide} — Throws for zero divisor
+ * @see {@link floorDivide} - Throws for zero divisor
  *
  * @category Arithmetic
  * @since 0.7.0
@@ -476,7 +304,7 @@ export function floorDivideSafe(value: number, divisor: number): number {
 }
 
 /**
- * Unchecked floored division. No validation.
+ * Unchecked floored division. No validation
  *
  * @remarks
  * **Precondition:** divisor !== 0.
@@ -485,8 +313,8 @@ export function floorDivideSafe(value: number, divisor: number): number {
  * @param divisor - Denominator
  * @returns Floor of division
  *
- * @see {@link floorDivide} — Throws for zero divisor
- * @see {@link floorDivideSafe} — Returns 0 if divisor is zero
+ * @see {@link floorDivide} - Throws for zero divisor
+ * @see {@link floorDivideSafe} - Returns 0 if divisor is zero
  *
  * @category Arithmetic
  * @since 0.7.0

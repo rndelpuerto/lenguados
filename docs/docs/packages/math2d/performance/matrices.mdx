@@ -11,6 +11,8 @@ import {
  TldrBox,
  NoDataFallback,
  MethodologyNote,
+ PartialDataNotice,
+ formatOps,
 } from '@site/src/components/benchmark';
 import { useBenchmarkData } from '@site/src/hooks/use-benchmark-data';
 
@@ -20,12 +22,20 @@ export function MatrixPerformance() {
  const m2 = performance.entities['Matrix2'];
  const m3 = performance.entities['Matrix3'];
  if (!m2 && !m3) return <NoDataFallback />;
- const formatOps = (v) => v >= 1e9 ? `${(v/1e9).toFixed(1)}G` : v >= 1e6 ? `${(v/1e6).toFixed(0)}M` : `${(v/1e3).toFixed(0)}K`;
  return (
   <>
+   <PartialDataNotice summaries={[performance]} />
    <TldrBox>
-    {m2 && <><strong>Matrix2: {m2.operations.length} operations</strong>. </>}
-    {m3 && <><strong>Matrix3: {m3.operations.length} operations</strong>. </>}
+    {m2 && (
+     <>
+      <strong>Matrix2: {m2.operations.length} operations</strong>.{' '}
+     </>
+    )}
+    {m3 && (
+     <>
+      <strong>Matrix3: {m3.operations.length} operations</strong>.{' '}
+     </>
+    )}
     Matrix operations range from simple component access to O(n³) decompositions.
    </TldrBox>
    {m2 && (
@@ -37,7 +47,12 @@ export function MatrixPerformance() {
        columns={[
         { key: 'name', label: 'Operation' },
         { key: 'opsPerSec', label: 'ops/sec', format: (v) => formatOps(Number(v)), align: 'right' },
-        { key: 'median', label: 'Median (ns)', format: (v) => Number(v).toFixed(1), align: 'right' },
+        {
+         key: 'median',
+         label: 'Median (ns)',
+         format: (v) => Number(v).toFixed(1),
+         align: 'right',
+        },
         { key: 'samples', label: 'Samples', align: 'right' },
        ]}
        data={m2.operations}
@@ -61,7 +76,12 @@ export function MatrixPerformance() {
        columns={[
         { key: 'name', label: 'Operation' },
         { key: 'opsPerSec', label: 'ops/sec', format: (v) => formatOps(Number(v)), align: 'right' },
-        { key: 'median', label: 'Median (ns)', format: (v) => Number(v).toFixed(1), align: 'right' },
+        {
+         key: 'median',
+         label: 'Median (ns)',
+         format: (v) => Number(v).toFixed(1),
+         align: 'right',
+        },
         { key: 'samples', label: 'Samples', align: 'right' },
        ]}
        data={m3.operations}

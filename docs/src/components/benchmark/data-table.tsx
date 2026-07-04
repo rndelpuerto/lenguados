@@ -3,6 +3,7 @@
  */
 
 import React, { useState, useMemo } from 'react';
+import { formatOps } from './format';
 
 interface Column {
  key: string;
@@ -20,8 +21,8 @@ interface DataTableProps {
 
 function defaultFormat(value: unknown): string {
  if (typeof value === 'number') {
-  if (value >= 1e6) return `${(value / 1e6).toFixed(1)}M`;
-  if (value >= 1e3) return `${(value / 1e3).toFixed(1)}K`;
+  // Large magnitudes share the site-wide G/M/K formatter.
+  if (value >= 1e3) return formatOps(value);
   if (Number.isInteger(value)) return String(value);
   return value.toFixed(2);
  }
@@ -45,9 +46,7 @@ export default function DataTable({
    if (typeof av === 'number' && typeof bv === 'number') {
     return sortAsc ? av - bv : bv - av;
    }
-   return sortAsc
-    ? String(av).localeCompare(String(bv))
-    : String(bv).localeCompare(String(av));
+   return sortAsc ? String(av).localeCompare(String(bv)) : String(bv).localeCompare(String(av));
   });
  }, [data, sortKey, sortAsc]);
 
@@ -83,11 +82,27 @@ export default function DataTable({
      {columns.map((col) => (
       <th
        key={col.key}
-       onClick={() => handleSort(col.key)}
-       style={{ cursor: 'pointer', textAlign: col.align ?? 'left' }}
+       scope="col"
+       aria-sort={sortKey === col.key ? (sortAsc ? 'ascending' : 'descending') : 'none'}
+       style={{ textAlign: col.align ?? 'left' }}
       >
-       {col.label}
-       {sortKey === col.key ? (sortAsc ? ' \u25B2' : ' \u25BC') : ''}
+       {/* Native button: keyboard focus + Enter/Space activation for sorting */}
+       <button
+        type="button"
+        onClick={() => handleSort(col.key)}
+        style={{
+         background: 'none',
+         border: 'none',
+         padding: 0,
+         font: 'inherit',
+         fontWeight: 'inherit',
+         color: 'inherit',
+         cursor: 'pointer',
+        }}
+       >
+        {col.label}
+        {sortKey === col.key ? (sortAsc ? ' \u25B2' : ' \u25BC') : ''}
+       </button>
       </th>
      ))}
     </tr>

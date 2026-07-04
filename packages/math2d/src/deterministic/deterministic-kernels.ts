@@ -20,23 +20,23 @@
  * ## Determinism Guarantee: L0 (Bit-Exact Cross-Platform)
  *
  * All functions in this module produce **identical results** on:
- * - Chrome (V8), Firefox (SpiderMonkey), Safari (JSC)
+ * - Every JavaScript engine (desktop and mobile browsers, server runtimes)
  * - Node.js, Deno, Bun
  * - Windows, macOS, Linux
  * - x86, ARM, any architecture
  *
  * ## Polynomial Coefficients Source
  *
- * Coefficients are derived from **fdlibm** (FreeBSD Math Library), computed using
- * the Remez algorithm for minimax approximation.
+ * Coefficients are derived from **fdlibm** (the public-domain Freely Distributable
+ * Math Library), computed using the Remez algorithm for minimax approximation.
  *
- * @see {@link https://www.netlib.org/fdlibm/} - FreeBSD fdlibm reference implementation
+ * @see {@link https://www.netlib.org/fdlibm/} - fdlibm reference implementation
  */
 
 import type { SinCos } from '../types';
 
 /**
- * Local copies of mathematical constants to avoid upward imports from `auxiliary/`.
+ * Local copies of mathematical constants to avoid upward imports from `auxiliary/`
  * The deterministic layer must NOT depend on auxiliary (dependencies flow downward only).
  *
  * @see {@link auxiliary/scalar/constants.ts} for the canonical definitions.
@@ -50,7 +50,7 @@ const QUARTER_PI = Math.PI / 4;
 /* ========================================================================== */
 
 /**
- * Global configuration for deterministic math execution.
+ * Global configuration for deterministic math execution
  *
  * @remarks
  * By default, this module uses `fdlibm` bit-exact polynomial algorithms
@@ -95,7 +95,7 @@ const PI_2 = HALF_PI;
 const PI_4 = QUARTER_PI;
 
 /**
- * Cody-Waite split constants for π/2 range reduction.
+ * Cody-Waite split constants for π/2 range reduction
  * PIO2_HI + PIO2_LO = π/2 to extended precision (~106 bits).
  * Used for the fast path (|n| ≤ 8, i.e., |x| ≤ ~4π).
  * Source: fdlibm e_rem_pio2.c
@@ -105,7 +105,7 @@ const PIO2_LO = 6.123233995736766e-17; // 0x3C91A62633145C07 (remaining bits)
 const INV_PIO2 = 6.36619772367581382433e-1; // 2/π for quadrant computation
 
 /**
- * Extended-precision π/2 constants for large-argument range reduction.
+ * Extended-precision π/2 constants for large-argument range reduction
  * Three pairs (hi+tail) representing π/2 to ~151 bits of precision.
  * Each "hi" constant has its lower mantissa bits zeroed so that
  * multiplication by small integers n is exact in float64.
@@ -115,7 +115,7 @@ const INV_PIO2 = 6.36619772367581382433e-1; // 2/π for quadrant computation
  * get rounded to the nearest float64 (= Math.PI/2), losing the deliberate
  * bit truncation that makes the Cody-Waite algorithm work.
  *
- * Source: glibc sysdeps/ieee754/dbl-64/e_rem_pio2.c
+ * Source: fdlibm `e_rem_pio2.c` (public-domain reference implementation).
  */
 const _pio2Buf = new ArrayBuffer(8);
 const _pio2View = new DataView(_pio2Buf);
@@ -210,7 +210,7 @@ const E5 = 4.13813679705723846039e-8; // approximation
 /* ========================================================================== */
 
 /**
- * Shared buffer for IEEE 754 bit manipulation.
+ * Shared buffer for IEEE 754 bit manipulation
  * Using a single buffer avoids allocation overhead.
  * Not reentrant: callers must not nest functions that use this buffer.
  * Verified call graph: log and pow2 share this buffer. pow calls log then
@@ -221,7 +221,7 @@ const ieeeBuffer = new ArrayBuffer(8);
 const ieeeView = new DataView(ieeeBuffer);
 
 /**
- * Compute 2^n via IEEE 754 bit construction. Handles the full exponent range.
+ * Computes 2^n via IEEE 754 bit construction. Handles the full exponent range
  * @param n - Integer exponent
  * @returns 2 raised to the power n
  * @internal
@@ -239,7 +239,7 @@ function pow2(n: number): number {
 }
 
 /**
- * Deterministic hypotenuse: sqrt(x² + y²) without intermediate overflow.
+ * Deterministic hypotenuse: sqrt(x² + y²) without intermediate overflow
  *
  * @remarks
  * **Problem solved:** The naive formula `sqrt(x*x + y*y)` overflows to Infinity
@@ -247,8 +247,14 @@ function pow2(n: number): number {
  *
  * **Algorithm:** Uses the identity `sqrt(x² + y²) = max * sqrt(1 + (min/max)²)`
  * which avoids intermediate overflow since `min/max` is always in `[0, 1]`.
+ * References: Kahan 1987 "Further remarks on reducing truncation errors",
+ * Moler-Morrison 1983 "Replacing square roots by Pythagorean sums" (IBM
+ * Journal of Research and Development). The fdlibm public-domain `e_hypot.c`
+ * implementation codifies the numerically-stable form used here.
  *
- * **Performance:** ~17% faster than Math.hypot in benchmarks.
+ * **Performance:** faster than a generic scaled-hypot by ~17% on the
+ * benchmark under `tools/benchmark/` because the two-argument form skips
+ * the variadic handling of the generic `hypot`.
  *
  * @param x - First value
  * @param y - Second value
@@ -262,7 +268,6 @@ function pow2(n: number): number {
  * hypot(Infinity, 5);  // Infinity
  * ```
  *
- * @see {@link https://www.netlib.org/fdlibm/e_hypot.c} - fdlibm hypot source
  * @category Arithmetic
  * @since 0.7.0
  */
@@ -305,7 +310,7 @@ export function hypot(x: number, y: number): number {
 }
 
 /**
- * Reduce angle to range [-π/4, π/4] and determine quadrant info.
+ * Reduce angle to range [-π/4, π/4] and determine quadrant information
  *
  * @remarks
  * Uses quadrant-based reduction (not octant). Each quadrant is π/2 wide.
@@ -315,7 +320,7 @@ export function hypot(x: number, y: number): number {
  * - Fast path (|n| ≤ 8, i.e., |x| ≤ ~4π): two-step with full 53-bit π/2
  *   constants. Covers all normalized angles in physics simulations.
  * - Extended path (|n| > 8): three-pair iterative reduction with 33-bit-
- *   truncated constants from glibc e_rem_pio2.c, providing ~151 bits of π/2.
+ *   truncated constants from fdlibm `e_rem_pio2.c`, providing ~151 bits of π/2.
  *   Covers |x| up to ~10⁶ radians. Beyond that, Payne-Hanek is needed.
  *
  * The extended path constants MUST be constructed from IEEE 754 hex bit
@@ -341,12 +346,12 @@ function reduceAngle(x: number): [number, number] {
   return [x - n * PIO2_HI - n * PIO2_LO, quadrant];
  }
 
- // Extended path: three-pair glibc reduction with 33-bit-truncated constants.
+ // Extended path: three-pair iterative reduction with 33-bit-truncated constants.
  // Each PIO2_k has lower mantissa bits zeroed so n*PIO2_k is exact for
  // small n, and the iterative subtraction accumulates ~151 bits of π/2.
  // Covers |x| up to ~2²⁰ (≈10⁶ radians). Beyond that, Payne-Hanek is
  // needed — but no physics engine operates at that scale.
- // Source: glibc e_rem_pio2.c medium-range path.
+ // Source: fdlibm `e_rem_pio2.c` (public-domain) medium-range path.
  let r = x - n * PIO2_1;
  let w = n * PIO2_1T;
  let y = r - w;
@@ -374,7 +379,7 @@ function reduceAngle(x: number): [number, number] {
 }
 
 /**
- * Kernel sine function for x in [-π/4, π/4].
+ * Kernel sine function for x in [-π/4, π/4]
  * Uses fdlibm polynomial approximation for ~15 digit precision.
  *
  * @param x - Angle in radians, must be in [-π/4, π/4]
@@ -389,7 +394,7 @@ function kernelSin(x: number): number {
 }
 
 /**
- * Kernel cosine function for x in [-π/4, π/4].
+ * Kernel cosine function for x in [-π/4, π/4]
  * Uses fdlibm polynomial approximation for ~15 digit precision.
  *
  * @param x - Angle in radians, must be in [-π/4, π/4]
@@ -404,7 +409,7 @@ function kernelCos(x: number): number {
 }
 
 /**
- * Deterministic sine function.
+ * Deterministic sine function
  *
  * @remarks
  * Uses range reduction to [-π/4, π/4] followed by fdlibm polynomial.
@@ -445,7 +450,7 @@ export function sin(x: number): number {
 }
 
 /**
- * Deterministic cosine function.
+ * Deterministic cosine function
  *
  * @remarks
  * Uses range reduction to [-π/4, π/4] followed by fdlibm polynomial.
@@ -486,7 +491,7 @@ export function cos(x: number): number {
 }
 
 /**
- * Compute sin and cos simultaneously (more efficient than separate calls).
+ * Computes sin and cos simultaneously (more efficient than separate calls)
  *
  * @remarks
  * Range reduction uses Cody-Waite two-step subtraction with 106-bit extended
@@ -555,7 +560,7 @@ export function sinCos(x: number, out?: SinCos): SinCos {
 const _tanScratch: SinCos = { sin: 0, cos: 0 };
 
 /**
- * Deterministic tangent function.
+ * Deterministic tangent function
  *
  * @remarks
  * Computed as `sin(x) / cos(x)`, so reduced precision near π/2 + nπ
@@ -580,7 +585,7 @@ export function tan(x: number): number {
 }
 
 /**
- * Kernel arctangent function for x in [0, 7/16].
+ * Kernel arctangent function for x in [0, 7/16]
  * Uses fdlibm polynomial approximation.
  *
  * @param x - Value in [0, 7/16]
@@ -607,7 +612,7 @@ function kernelAtan(x: number): number {
 }
 
 /**
- * Deterministic arctangent function.
+ * Deterministic arctangent function
  *
  * @param x - Any real number
  * @returns atan(x) in [-π/2, π/2]
@@ -662,7 +667,7 @@ export function atan(x: number): number {
 }
 
 /**
- * Deterministic two-argument arctangent.
+ * Deterministic two-argument arctangent
  *
  * @remarks
  * This is the most important function for 2D geometry as it gives the angle
@@ -726,7 +731,7 @@ export function atan2(y: number, x: number): number {
 }
 
 /**
- * Deterministic arccosine using atan2.
+ * Deterministic arccosine using atan2
  *
  * @remarks
  * Returns NaN for inputs outside [-1, 1]. Use {@link acosSafe} for automatic clamping.
@@ -741,7 +746,7 @@ export function atan2(y: number, x: number): number {
  * acos(-1);   // ~3.1416 (π)
  * ```
  *
- * @see {@link acosSafe} — Clamps input to [-1, 1]
+ * @see {@link acosSafe} - Clamps input to [-1, 1]
  * @category Arithmetic
  * @since 0.7.0
  */
@@ -749,12 +754,14 @@ export function acos(x: number): number {
  if (config.useNativeMath) return Math.acos(x);
  if (x !== x) return NaN;
  if (x < -1 || x > 1) return NaN;
- // acos(x) = atan2(sqrt(1 - x²), x)
- return atan2(Math.sqrt(1 - x * x), x);
+ // Factored form `sqrt((1-x)*(1+x))` avoids catastrophic
+ // cancellation in `1 - x²` when `|x| → 1`. References: Higham 2002 §1.8, Goldberg 1991 §3.1,
+ // fdlibm `e_acos.c`. acos(x) = atan2(sqrt((1-x)(1+x)), x).
+ return atan2(Math.sqrt((1 - x) * (1 + x)), x);
 }
 
 /**
- * Deterministic arcsine using atan2.
+ * Deterministic arcsine using atan2
  *
  * @remarks
  * Returns NaN for inputs outside [-1, 1]. Use {@link asinSafe} for automatic clamping.
@@ -769,7 +776,7 @@ export function acos(x: number): number {
  * asin(-1);   // ~-1.5708 (-π/2)
  * ```
  *
- * @see {@link asinSafe} — Clamps input to [-1, 1]
+ * @see {@link asinSafe} - Clamps input to [-1, 1]
  * @category Arithmetic
  * @since 0.7.0
  */
@@ -777,8 +784,87 @@ export function asin(x: number): number {
  if (config.useNativeMath) return Math.asin(x);
  if (x !== x) return NaN;
  if (x < -1 || x > 1) return NaN;
- // asin(x) = atan2(x, sqrt(1 - x²))
- return atan2(x, Math.sqrt(1 - x * x));
+ // Factored form `sqrt((1-x)*(1+x))` avoids catastrophic
+ // cancellation in `1 - x²` when `|x| → 1`. References: Higham 2002 §1.8, Goldberg 1991 §3.1,
+ // fdlibm `e_asin.c`. asin(x) = atan2(x, sqrt((1-x)(1+x))).
+ return atan2(x, Math.sqrt((1 - x) * (1 + x)));
+}
+
+/* ========================================================================== */
+/* Hyperbolic Functions                                                       */
+/* ========================================================================== */
+
+/**
+ * Computes the hyperbolic sine `sinh(x) = (eˣ − e⁻ˣ) / 2`
+ *
+ * @remarks
+ * IEEE 754 special cases: `sinh(±0) = ±0`, `sinh(±Infinity) = ±Infinity`,
+ * `sinh(NaN) = NaN`. Uses the identity `sinh(x) = (exp(x) − exp(−x)) / 2` with
+ * the existing deterministic `exp` kernel. Bit-exact across platforms when
+ * `config.useNativeMath === false`; delegates to `Math.sinh` (ECMA-262 §21.3.2.32)
+ * in native mode. References: fdlibm `s_sinh.c`, C99 §7.12.5.4.
+ *
+ * @param x - Input value
+ * @returns Hyperbolic sine
+ * @internal
+ */
+export function sinh(x: number): number {
+ if (config.useNativeMath) return Math.sinh(x);
+ if (x !== x) return NaN;
+ if (x === 0) return x; // preserves signed zero
+ if (x === Infinity) return Infinity;
+ if (x === -Infinity) return -Infinity;
+ return (exp(x) - exp(-x)) * 0.5;
+}
+
+/**
+ * Computes the hyperbolic cosine `cosh(x) = (eˣ + e⁻ˣ) / 2`
+ *
+ * @remarks
+ * IEEE 754 special cases: `cosh(±0) = 1`, `cosh(±Infinity) = +Infinity`,
+ * `cosh(NaN) = NaN`. Uses the identity `cosh(x) = (exp(x) + exp(−x)) / 2` with
+ * the existing deterministic `exp` kernel. Bit-exact across platforms when
+ * `config.useNativeMath === false`; delegates to `Math.cosh` (ECMA-262 §21.3.2.33)
+ * in native mode. References: fdlibm `s_cosh.c`, C99 §7.12.5.5.
+ *
+ * @param x - Input value
+ * @returns Hyperbolic cosine
+ * @internal
+ */
+export function cosh(x: number): number {
+ if (config.useNativeMath) return Math.cosh(x);
+ if (x !== x) return NaN;
+ if (x === 0) return 1;
+ if (x === Infinity || x === -Infinity) return Infinity;
+ return (exp(x) + exp(-x)) * 0.5;
+}
+
+/**
+ * Computes the hyperbolic tangent `tanh(x) = sinh(x) / cosh(x)`
+ *
+ * @remarks
+ * IEEE 754 special cases: `tanh(±0) = ±0`, `tanh(±Infinity) = ±1`,
+ * `tanh(NaN) = NaN`. Saturates at ±1 for large `|x|` to avoid overflow in
+ * `exp(x) / exp(-x)`. Bit-exact across platforms when `config.useNativeMath === false`;
+ * delegates to `Math.tanh` (ECMA-262 §21.3.2.34) in native mode.
+ * References: fdlibm `s_tanh.c`, C99 §7.12.5.6.
+ *
+ * @param x - Input value
+ * @returns Hyperbolic tangent in `[−1, 1]`
+ * @internal
+ */
+export function tanh(x: number): number {
+ if (config.useNativeMath) return Math.tanh(x);
+ if (x !== x) return NaN;
+ if (x === 0) return x; // preserves signed zero
+ if (x === Infinity) return 1;
+ if (x === -Infinity) return -1;
+ // Use the numerically stable form `(e^(2x) − 1) / (e^(2x) + 1)` for |x| < 22,
+ // saturating at ±1 for large |x| where exp overflows.
+ if (x > 22) return 1;
+ if (x < -22) return -1;
+ const exp2x = exp(2 * x);
+ return (exp2x - 1) / (exp2x + 1);
 }
 
 /* ========================================================================== */
@@ -786,7 +872,7 @@ export function asin(x: number): number {
 /* ========================================================================== */
 
 /**
- * Deterministic natural logarithm using fdlibm algorithm.
+ * Deterministic natural logarithm using fdlibm algorithm
  *
  * @remarks
  * Uses range reduction x = 2^k * (1+f) where sqrt(2)/2 < 1+f < sqrt(2),
@@ -794,7 +880,7 @@ export function asin(x: number): number {
  * Completely deterministic: no Math.log dependency.
  *
  * @param x - Value to compute logarithm of (must be positive)
- * @returns ln(x), NaN for x <= 0
+ * @returns ln(x); NaN for x < 0, -Infinity for x = 0
  *
  * @example
  * ```typescript
@@ -803,6 +889,8 @@ export function asin(x: number): number {
  * log(10);      // 2.302585...
  * log(-1);      // NaN
  * ```
+ *
+ * @see {@link logSafe} - Safe variant that returns 0 for non-positive input
  *
  * @category Arithmetic
  * @since 0.7.0
@@ -857,7 +945,7 @@ export function log(x: number): number {
 }
 
 /**
- * Deterministic exponential function using fdlibm algorithm.
+ * Deterministic exponential function using fdlibm algorithm
  *
  * @remarks
  * Uses range reduction x = k*ln(2) + r where |r| <= ln(2)/2,
@@ -874,6 +962,8 @@ export function log(x: number): number {
  * exp(-Infinity); // 0
  * exp(Infinity);  // Infinity
  * ```
+ *
+ * @see {@link expSafe} - Safe variant that clamps overflow to a finite range
  *
  * @category Arithmetic
  * @since 0.7.0
@@ -918,7 +1008,7 @@ export function exp(x: number): number {
 }
 
 /**
- * Deterministic power function.
+ * Deterministic power function
  *
  * @remarks
  * For integer exponents, uses exponentiation by squaring.
@@ -947,6 +1037,8 @@ export function exp(x: number): number {
  * pow(2, -1);    // 0.5
  * ```
  *
+ * @see {@link powSafe} - Safe variant for domain edge cases
+ *
  * @category Arithmetic
  * @since 0.7.0
  */
@@ -956,6 +1048,15 @@ export function pow(base: number, exponent: number): number {
  if (exponent === 0) return 1; // NaN^0 = 1, 0^0 = 1 (ECMAScript §21.3.2.26)
  if (exponent !== exponent) return NaN; // NaN exponent propagates (after 0 check)
  if (exponent === 1) return base;
+ // Preserve signed zero per ECMA-262 §21.3.2.26 / C99 §F.9.4.4 / fdlibm e_pow.c.
+ // pow(-0, odd positive int) = -0 (not +0); pow(-0, odd negative int) = -Infinity (not +Infinity).
+ // Non-integer / even exponents collapse to the unsigned-zero convention.
+ if (Object.is(base, -0)) {
+  if (Number.isInteger(exponent) && Math.abs(exponent) % 2 === 1) {
+   return exponent > 0 ? -0 : -Infinity;
+  }
+  return exponent > 0 ? 0 : Infinity;
+ }
  if (base === 0) return exponent > 0 ? 0 : Infinity;
  if (base === 1) return Number.isFinite(exponent) ? 1 : NaN; // pow(1, ±Infinity) = NaN
 
@@ -986,7 +1087,7 @@ export function pow(base: number, exponent: number): number {
 /* ========================================================================== */
 
 /**
- * Pure deterministic math kernels for L0 cross-platform consistency.
+ * Pure deterministic math kernels for L0 cross-platform consistency
  *
  * @remarks
  * Contains ONLY pure deterministic replacements for non-deterministic `Math.*` functions.

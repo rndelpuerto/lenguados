@@ -8,7 +8,7 @@ import { normalizeRadians } from './normalization';
 import { angleDifference } from './operations';
 
 /**
- * Shared iteration logic for angle unwrapping.
+ * Shared iteration logic for angle unwrapping
  * Writes unwrapped values into `output` starting from index 0.
  *
  * @param input - Source angles to read from
@@ -86,7 +86,7 @@ export function unwrapAngles(angles: number[], reference?: number): number[] {
 }
 
 /**
- * Unwraps angles in-place.
+ * Unwraps angles in-place
  *
  * @remarks
  * More memory efficient than unwrapAngles for large arrays.
@@ -116,7 +116,7 @@ export function unwrapAnglesInPlace(angles: number[], reference?: number): numbe
 }
 
 /**
- * Streaming unwrapper for angles in radians.
+ * Streaming unwrapper for angles in radians
  * Maintains continuity across calls by accumulating shortest-arc deltas.
  *
  * @remarks
@@ -141,11 +141,16 @@ export function unwrapAnglesInPlace(angles: number[], reference?: number): numbe
  * @since 0.7.0
  */
 export class AngleUnwrapper {
+ // The `_value = 0` default is NOT a valid initial angle — it is a placeholder
+ // that is only consumed after `_initialized` flips to `true`. Explicit
+ // `reset(0)` followed by `update(theta)` is distinguished from the default
+ // pre-initialised state because `_initialized` tracks whether the stored
+ // `_value` represents user intent (true) or the placeholder (false).
  private _initialized = false;
  private _value = 0;
 
  /**
-  * Creates a new angle unwrapper.
+  * Creates a new angle unwrapper
   * @param initialAngle - Optional initial angle
   */
  constructor(initialAngle?: number) {
@@ -156,7 +161,7 @@ export class AngleUnwrapper {
  }
 
  /**
-  * Whether the unwrapper has received at least one angle.
+  * Whether the unwrapper has received at least one angle
   * Distinguishes uninitialized state from "initialized at 0".
   * @returns True if the unwrapper has been initialized
   * @category Accessor
@@ -167,7 +172,7 @@ export class AngleUnwrapper {
  }
 
  /**
-  * Feeds a new wrapped angle and returns the continuous (unwrapped) value.
+  * Feeds a new wrapped angle and returns the continuous (unwrapped) value
   * On first call, it initializes to the provided angle.
   * @param theta - Wrapped angle in radians
   * @returns Unwrapped angle in radians
@@ -187,7 +192,7 @@ export class AngleUnwrapper {
  }
 
  /**
-  * Returns the last unwrapped value.
+  * Returns the last unwrapped value
   * @returns The last unwrapped value
   *
   * @category Normalization
@@ -198,7 +203,7 @@ export class AngleUnwrapper {
  }
 
  /**
-  * Resets the internal state. If `theta` is provided, sets it as the starting value.
+  * Resets the internal state. If `theta` is provided, sets it as the starting value
   * @param theta - Optional new starting angle
   *
   * @category Normalization

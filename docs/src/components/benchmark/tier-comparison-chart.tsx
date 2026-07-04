@@ -4,7 +4,9 @@
  */
 
 import React from 'react';
+import { useChartPalette } from '../../hooks/use-chart-palette';
 import BenchmarkChart from './benchmark-chart';
+import { formatOps } from './format';
 import type { EChartsOption } from 'echarts';
 
 interface TierData {
@@ -20,17 +22,11 @@ interface TierComparisonChartProps {
  title?: string;
 }
 
-function formatOps(value: number): string {
- if (value >= 1e9) return `${(value / 1e9).toFixed(1)}G`;
- if (value >= 1e6) return `${(value / 1e6).toFixed(0)}M`;
- if (value >= 1e3) return `${(value / 1e3).toFixed(0)}K`;
- return String(Math.round(value));
-}
-
 export default function TierComparisonChart({
  data,
  title,
 }: TierComparisonChartProps): React.ReactElement {
+ const palette = useChartPalette();
  const operations = data.map((d) => d.name);
 
  const series: EChartsOption['series'] = [
@@ -38,7 +34,7 @@ export default function TierComparisonChart({
    name: 'default',
    type: 'bar',
    data: data.map((d) => d.default.opsPerSec),
-   itemStyle: { color: '#0072B2' },
+   itemStyle: { color: palette.primary },
   },
  ];
 
@@ -47,7 +43,7 @@ export default function TierComparisonChart({
    name: 'safe',
    type: 'bar',
    data: data.map((d) => d.safe?.opsPerSec ?? 0),
-   itemStyle: { color: '#009E73' },
+   itemStyle: { color: palette.tertiary },
   });
  }
 
@@ -56,7 +52,7 @@ export default function TierComparisonChart({
    name: 'unchecked',
    type: 'bar',
    data: data.map((d) => d.unchecked?.opsPerSec ?? 0),
-   itemStyle: { color: '#E69F00' },
+   itemStyle: { color: palette.quaternary },
    label: {
     show: true,
     position: 'top',
@@ -77,7 +73,7 @@ export default function TierComparisonChart({
    formatter: (params: unknown) => {
     const items = params as Array<{ seriesName: string; value: number; marker: string }>;
     const lines = items.map((p) => `${p.marker} ${p.seriesName}: ${formatOps(p.value)} ops/sec`);
-    return `${(items[0] as { name: string }).name}<br/>${lines.join('<br/>')}`;
+    return `${(items[0] as unknown as { name: string }).name}<br/>${lines.join('<br/>')}`;
    },
   },
   legend: { bottom: 0 },

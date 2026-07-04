@@ -5,9 +5,9 @@
  *
  * @remarks
  * This module provides fundamental scalar operations including:
- * - Arithmetic operations (clamp, sign, saturate, remap, mod, loop, pingPong, etc.)
+ * - Arithmetic operations (clamp, sign, saturate, mod, loop, floorDivide, etc.)
  * - Comparison operations (nearEquals, isNearZero, relativeEquals, etc.)
- * - Interpolation operations (lerp, inverseLerp, smoothStep, smootherStep, etc.)
+ * - Interpolation operations (lerp, lerpClamped, inverseLerp, smoothStep, etc.)
  * - Mathematical constants
  */
 

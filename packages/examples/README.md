@@ -9,22 +9,31 @@
 
 ### Canvas Hello
 
-Minimal canvas demo that validates the build pipeline and rendering setup.
+Canvas demo that exercises the real `@lenguados/math2d` API: a square modeled as four `Vector2` corners, rotated with a pre-normalized `Rotation2`, and rasterized onto a 2D canvas. The math2d code it uses is bundled into the built artifact, so the demo is self-contained.
+
+The package root is intentionally an empty barrel — each example is consumed through its subpath:
 
 ```typescript
-import { helloCanvas } from '@lenguados/examples';
+import { drawRotatingSquare, helloCanvas } from '@lenguados/examples/canvas-hello/index';
 
 helloCanvas('my-canvas-id');
+const corners = drawRotatingSquare('my-canvas-id', Math.PI / 4);
 ```
 
-Open `src/canvas-hello/demo.html` in a browser to see it in action.
+To see it in a browser, build first, then serve `packages/examples/lib` with any static file server (ES modules do not load from `file://`) and open `/assets/canvas-hello/demo.html`:
+
+```bash
+npm run build
+# serve packages/examples/lib with any static file server, then open
+# /assets/canvas-hello/demo.html
+```
 
 ## Adding New Examples
 
-1. Create a directory under `src/` (e.g., `src/my-example/`)
-2. Export the entry point from the package root
-3. Add a corresponding `demo.html` for browser testing
-4. Register the subpath export in `package.json` under `exports`
+1. Create a directory under `src/` (e.g., `src/my-example/`) with an `index.ts` entry point
+2. Register the directory in `module-internals.json` (the build derives entry points and subpath bundles from it)
+3. Register the subpath export in `package.json` under `exports` (the package root stays an empty barrel by design — examples are consumed via subpaths)
+4. Add a corresponding `demo.html` for browser testing and a `*.dom.spec.ts` test under `test/`
 
 ## Documentation
 

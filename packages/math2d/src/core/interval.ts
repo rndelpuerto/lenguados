@@ -18,6 +18,7 @@ import {
 } from '../auxiliary/scalar/comparison';
 import { EPSILON, TAU } from '../auxiliary/scalar/constants';
 import { lerp, smoothStep } from '../auxiliary/scalar/interpolation';
+import { pow } from '../deterministic/deterministic-kernels';
 import type { IntervalLike, ReadonlyIntervalLike } from '../types';
 import { assert, assertNonNegative } from '../validation/assert';
 
@@ -26,7 +27,7 @@ import { assert, assertNonNegative } from '../validation/assert';
 /* ========================================================================== */
 
 /**
- * Readonly view of an {@link Interval} instance.
+ * Readonly view of an {@link Interval} instance
  *
  * @category Types
  * @since 0.7.0
@@ -41,7 +42,7 @@ export { isIntervalLike } from '../types';
 /* ========================================================================== */
 
 /**
- * Permanently freezes an {@link Interval} instance so it can no longer be mutated.
+ * Permanently freezes an {@link Interval} instance so it can no longer be mutated
  *
  * @remarks
  * - The returned object keeps its original reference; no new memory is allocated.
@@ -68,7 +69,7 @@ export function freezeInterval(interval: Interval): ReadonlyInterval {
 /* ========================================================================== */
 
 /**
- * Mutable closed interval with deterministic arithmetic and comparisons.
+ * Mutable closed interval with deterministic arithmetic and comparisons
  *
  * @remarks
  * - **Design:** Closed interval `[min, max]` with `min <= max` invariant. Instance
@@ -123,7 +124,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Validates interval bounds. Allows ±Infinity but rejects NaN.
+  * Validates interval bounds. Allows ±Infinity but rejects NaN
   * @remarks Infinity is valid for intervals like [0, +∞).
   *
   * @param value - Value to validate
@@ -146,89 +147,104 @@ export class Interval implements IntervalLike {
  /* ======================================================================== */
 
  /**
-  * Zero interval [0, 0].
+  * Zero interval [0, 0]
   * @category Constant
   * @since 0.7.0
   */
- public static readonly ZERO = Object.freeze(new Interval(0, 0)) as ReadonlyInterval;
+ public static readonly ZERO = /* @__PURE__ */ Object.freeze(
+  /* @__PURE__ */ new Interval(0, 0),
+ ) as ReadonlyInterval;
 
  /**
-  * Number of elements when serialized to an array.
+  * Number of elements when serialized to an array
   * @category Constant
   * @since 0.7.0
   */
  public static readonly ELEMENT_COUNT = 2;
 
  /**
-  * Unit interval [0, 1].
+  * Unit interval [0, 1]
   * @category Constant
   * @since 0.7.0
   */
- public static readonly UNIT = Object.freeze(new Interval(0, 1)) as ReadonlyInterval;
-
- /**
-  * Symmetric unit interval [-1, 1].
-  * @category Constant
-  * @since 0.7.0
-  */
- public static readonly SYMMETRIC_UNIT = Object.freeze(new Interval(-1, 1)) as ReadonlyInterval;
-
- /**
-  * Positive half-line [0, +∞).
-  * @category Constant
-  * @since 0.7.0
-  */
- public static readonly POSITIVE = Object.freeze(
-  new Interval(0, Number.POSITIVE_INFINITY),
+ public static readonly UNIT = /* @__PURE__ */ Object.freeze(
+  /* @__PURE__ */ new Interval(0, 1),
  ) as ReadonlyInterval;
 
  /**
-  * Negative half-line (-∞, 0].
+  * Symmetric unit interval [-1, 1]
   * @category Constant
   * @since 0.7.0
   */
- public static readonly NEGATIVE = Object.freeze(
-  new Interval(Number.NEGATIVE_INFINITY, 0),
+ public static readonly SYMMETRIC_UNIT = /* @__PURE__ */ Object.freeze(
+  /* @__PURE__ */ new Interval(-1, 1),
  ) as ReadonlyInterval;
 
  /**
-  * Full real line (-∞, +∞).
+  * Positive half-line [0, +∞)
   * @category Constant
   * @since 0.7.0
   */
- public static readonly FULL = Object.freeze(
-  new Interval(Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY),
+ public static readonly POSITIVE = /* @__PURE__ */ Object.freeze(
+  /* @__PURE__ */ new Interval(0, 1 / 0),
  ) as ReadonlyInterval;
 
  /**
-  * Epsilon interval [-ε, ε].
+  * Negative half-line (-∞, 0]
   * @category Constant
   * @since 0.7.0
   */
- public static readonly EPSILON_INTERVAL = Object.freeze(
-  new Interval(-EPSILON, EPSILON),
+ public static readonly NEGATIVE = /* @__PURE__ */ Object.freeze(
+  /* @__PURE__ */ new Interval(-1 / 0, 0),
  ) as ReadonlyInterval;
 
  /**
-  * Degrees interval [0, 360].
+  * Full real line (-∞, +∞)
   * @category Constant
   * @since 0.7.0
   */
- public static readonly DEGREES = Object.freeze(new Interval(0, 360)) as ReadonlyInterval;
+ public static readonly FULL = /* @__PURE__ */ Object.freeze(
+  /* @__PURE__ */ new Interval(-1 / 0, 1 / 0),
+ ) as ReadonlyInterval;
 
  /**
-  * Radians interval [0, 2π].
+  * Epsilon interval [-ε, ε]
+  *
+  * @remarks
+  * The literal `±1e-10` initializer is intentional; bit-exactness against
+  * `±EPSILON` is verified by test.
+  *
   * @category Constant
   * @since 0.7.0
   */
- public static readonly RADIANS = Object.freeze(new Interval(0, TAU)) as ReadonlyInterval;
+ public static readonly EPSILON_INTERVAL = /* @__PURE__ */ Object.freeze(
+  /* @__PURE__ */ new Interval(-1e-10, 1e-10),
+ ) as ReadonlyInterval;
+
+ /**
+  * Degrees interval [0, 360]
+  * @category Constant
+  * @since 0.7.0
+  */
+ public static readonly DEGREES = /* @__PURE__ */ Object.freeze(
+  /* @__PURE__ */ new Interval(0, 360),
+ ) as ReadonlyInterval;
+
+ /**
+  * Radians interval [0, 2π]
+  * @category Constant
+  * @since 0.7.0
+  */
+ public static readonly RADIANS = /* @__PURE__ */ Object.freeze(
+  /* @__PURE__ */ new Interval(0, TAU),
+ ) as ReadonlyInterval;
 
  /* ======================================================================== */
  /* Constructor                                                              */
  /* ======================================================================== */
 
  /**
-  * Creates a new Interval with the given bounds.
+  * Creates a new Interval with the given bounds
   *
   * @param min - Lower bound of the interval. @defaultValue `0`
   * @param max - Upper bound of the interval. @defaultValue `0`
@@ -244,7 +260,7 @@ export class Interval implements IntervalLike {
  /* ======================================================================== */
 
  /**
-  * Creates an interval from a single value [v, v].
+  * Creates an interval from a single value [v, v]
   * @param value - Value for both min and max
   * @param out - Optional output interval
   * @returns Degenerate interval
@@ -260,12 +276,14 @@ export class Interval implements IntervalLike {
   * @since 0.7.0
   */
  public static fromValue(value: number, out?: Interval): Interval {
-  const sanitized = this.sanitize(value, 'Interval.fromValue:value');
-  return this.ensureOut(out).setDirect(sanitized, sanitized);
+  if (__LENGUADOS_DEV__) {
+   Interval.sanitize(value, 'Interval.fromValue:value');
+  }
+  return this.ensureOut(out).setDirect(value, value);
  }
 
  /**
-  * Creates an interval from center and radius [center - radius, center + radius].
+  * Creates an interval from center and radius [center - radius, center + radius]
   * @param center - Center value
   * @param radius - Half-width (must be non-negative)
   * @param out - Optional output interval
@@ -283,22 +301,20 @@ export class Interval implements IntervalLike {
   * @since 0.7.0
   */
  public static fromCenterRadius(center: number, radius: number, out?: Interval): Interval {
-  const sanitizedCenter = this.sanitize(center, 'Interval.fromCenterRadius:center');
-  const sanitizedRadius = this.sanitize(radius, 'Interval.fromCenterRadius:radius');
-  // Development assertion (catch errors early)
-  assertNonNegative(sanitizedRadius, 'Interval.fromCenterRadius:radius');
+  if (__LENGUADOS_DEV__) {
+   Interval.sanitize(center, 'Interval.fromCenterRadius:center');
+   Interval.sanitize(radius, 'Interval.fromCenterRadius:radius');
+   assertNonNegative(radius, 'Interval.fromCenterRadius:radius');
+  }
   // Production throw (always enforced)
-  if (sanitizedRadius < 0) {
+  if (radius < 0) {
    throw new RangeError('Interval.fromCenterRadius: radius must be non-negative');
   }
-  return this.ensureOut(out).setDirect(
-   sanitizedCenter - sanitizedRadius,
-   sanitizedCenter + sanitizedRadius,
-  );
+  return this.ensureOut(out).setDirect(center - radius, center + radius);
  }
 
  /**
-  * Creates an interval from an array [min, max].
+  * Creates an interval from an array [min, max]
   * @param array - Source array
   * @param offset - Index offset (default: 0)
   * @param out - Optional output interval
@@ -319,22 +335,28 @@ export class Interval implements IntervalLike {
   */
  public static fromArray(array: ArrayLike<number>, offset = 0, out?: Interval): Interval {
   // Development assertions
-  assertNonNegative(offset, 'Interval.fromArray:offset');
-  assert(array.length >= 2, 'Interval.fromArray: array must have at least 2 elements');
+  if (__LENGUADOS_DEV__) {
+   assertNonNegative(offset, 'Interval.fromArray:offset');
+   assert(array.length >= 2, 'Interval.fromArray: array must have at least 2 elements');
+  }
   // Production bounds check (always enforced)
   if (offset < 0 || offset + Interval.ELEMENT_COUNT > array.length) {
    throw new RangeError(
-    `Interval.fromArray: offset ${offset} is out of bounds for array of length ${array.length}`,
+    `Interval.fromArray: offset ${offset} out of bounds for array length ${array.length}`,
    );
   }
-  const minValue = this.sanitize(array[offset]!, 'Interval.fromArray:min');
-  const maxValue = this.sanitize(array[offset + 1]!, 'Interval.fromArray:max');
-  this.assertOrder(minValue, maxValue, 'Interval.fromArray');
+  const minValue = array[offset]!;
+  const maxValue = array[offset + 1]!;
+  if (__LENGUADOS_DEV__) {
+   Interval.sanitize(minValue, 'Interval.fromArray:min');
+   Interval.sanitize(maxValue, 'Interval.fromArray:max');
+   Interval.assertOrder(minValue, maxValue, 'Interval.fromArray');
+  }
   return this.ensureOut(out).setDirect(minValue, maxValue);
  }
 
  /**
-  * Creates an interval from a plain object.
+  * Creates an interval from a plain object
   * @param object - Object with min and max properties
   * @param out - Optional output interval
   * @returns Interval from object
@@ -351,14 +373,18 @@ export class Interval implements IntervalLike {
   * @since 0.7.0
   */
  public static fromObject(object: ReadonlyIntervalLike, out?: Interval): Interval {
-  const minValue = this.sanitize(object.min, 'Interval.fromObject:min');
-  const maxValue = this.sanitize(object.max, 'Interval.fromObject:max');
-  this.assertOrder(minValue, maxValue, 'Interval.fromObject');
+  const minValue = object.min;
+  const maxValue = object.max;
+  if (__LENGUADOS_DEV__) {
+   Interval.sanitize(minValue, 'Interval.fromObject:min');
+   Interval.sanitize(maxValue, 'Interval.fromObject:max');
+   Interval.assertOrder(minValue, maxValue, 'Interval.fromObject');
+  }
   return this.ensureOut(out).setDirect(minValue, maxValue);
  }
 
  /**
-  * Creates an interval from individual min and max values.
+  * Creates an interval from individual min and max values
   * @param min - Minimum bound
   * @param max - Maximum bound
   * @param out - Optional output interval
@@ -376,14 +402,16 @@ export class Interval implements IntervalLike {
   * @since 0.7.0
   */
  public static fromValues(min: number, max: number, out?: Interval): Interval {
-  const minValue = this.sanitize(min, 'Interval.fromValues:min');
-  const maxValue = this.sanitize(max, 'Interval.fromValues:max');
-  this.assertOrder(minValue, maxValue, 'Interval.fromValues');
-  return this.ensureOut(out).setDirect(minValue, maxValue);
+  if (__LENGUADOS_DEV__) {
+   Interval.sanitize(min, 'Interval.fromValues:min');
+   Interval.sanitize(max, 'Interval.fromValues:max');
+   Interval.assertOrder(min, max, 'Interval.fromValues');
+  }
+  return this.ensureOut(out).setDirect(min, max);
  }
 
  /**
-  * Creates an interval from two values in any order.
+  * Creates an interval from two values in any order
   *
   * @remarks
   * Unlike {@link fromValues}, this does not require `a ≤ b`.
@@ -407,7 +435,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Creates a deep copy of an interval.
+  * Creates a deep copy of an interval
   * @param source - Interval to clone
   * @param out - Optional output interval
   * @returns A new Interval with identical values
@@ -428,7 +456,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Copies values from source into destination (alloc-free).
+  * Copies values from source into destination (alloc-free)
   * @param source - Source interval
   * @param destination - Target interval to receive the copy
   * @returns The destination interval
@@ -452,7 +480,7 @@ export class Interval implements IntervalLike {
  /* ======================================================================== */
 
  /**
-  * Adds two intervals.
+  * Adds two intervals
   * @param a - First interval
   * @param b - Second interval
   * @param out - Optional output interval
@@ -466,7 +494,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Subtracts two intervals.
+  * Subtracts two intervals
   * @param a - First interval
   * @param b - Second interval
   * @param out - Optional output interval
@@ -484,7 +512,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Multiplies two intervals.
+  * Multiplies two intervals
   * @param a - First interval
   * @param b - Second interval
   * @param out - Optional output interval
@@ -506,7 +534,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Multiplies an interval's bounds by a scalar.
+  * Multiplies an interval's bounds by a scalar
   * @param interval - Input interval
   * @param scalar - Scalar multiplier
   * @param out - Optional output interval
@@ -527,13 +555,16 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Divides an interval's bounds by a scalar.
+  * Divides an interval's bounds by a scalar
   * @param interval - Input interval
   * @param scalar - Scalar divisor (must not be zero)
   * @param out - Optional output interval
   * @returns Interval with bounds divided by scalar
   *
   * @throws {RangeError} If scalar is zero
+  *
+  * @see {@link divideScalarSafe} - Returns ZERO on zero scalar
+  * @see {@link divideScalarUnchecked} - No validation, for hot paths
   *
   * @category Arithmetic
   * @since 0.7.0
@@ -550,7 +581,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Divides an interval's bounds by a scalar (safe version).
+  * Divides an interval's bounds by a scalar (safe version)
   * @param interval - Input interval
   * @param scalar - Scalar divisor
   * @param out - Optional output interval
@@ -573,7 +604,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Divides an interval's bounds by a scalar without validation (for hot paths).
+  * Divides an interval's bounds by a scalar without validation (for hot paths)
   *
   * @remarks
   * **WARNING:** This method performs no validation.
@@ -600,7 +631,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Negates an interval.
+  * Negates an interval
   * @param interval - Interval to negate
   * @param out - Optional output interval
   * @returns Negated interval
@@ -613,7 +644,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Returns the absolute value of an interval (Moore's definition).
+  * Returns the absolute value of an interval (Moore's definition)
   *
   * @remarks
   * Three cases:
@@ -646,7 +677,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Returns the square of an interval.
+  * Returns the square of an interval
   * @param interval - Interval to square
   * @param out - Optional output interval
   * @returns Squared interval
@@ -672,11 +703,14 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Returns the square root of an interval.
+  * Returns the square root of an interval
   * @param interval - Interval (must be non-negative)
   * @param out - Optional output interval
   * @returns Square root interval
   * @throws {RangeError} If interval contains negative values
+  *
+  * @see {@link sqrtSafe} - Clamps negatives, never throws
+  * @see {@link sqrtUnchecked} - No validation, for hot paths
   *
   * @category Arithmetic
   * @since 0.7.0
@@ -685,11 +719,13 @@ export class Interval implements IntervalLike {
   if (interval.min < 0) {
    throw new RangeError('Interval.sqrt: interval contains negative values');
   }
-  return Interval.ensureOut(out).setDirect(sqrtSafe(interval.min), sqrtSafe(interval.max));
+  // Post-validation: both bounds are non-negative. IEEE 754 Math.sqrt is exact
+  // on the validated domain; sqrtSafe would add a redundant negative-guard.
+  return Interval.ensureOut(out).setDirect(Math.sqrt(interval.min), Math.sqrt(interval.max));
  }
 
  /**
-  * Returns the square root of an interval (safe version).
+  * Returns the square root of an interval (safe version)
   * @param interval - Interval
   * @param out - Optional output interval
   * @returns Square root interval, or `[0, 0]` if fully negative; clamps min to 0 if partially negative
@@ -709,7 +745,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Returns the square root of an interval without validation (for hot paths).
+  * Returns the square root of an interval without validation (for hot paths)
   *
   * @remarks
   * **Precondition:** Interval must be non-negative.
@@ -732,11 +768,122 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Returns the reciprocal of an interval.
+  * Raises an interval to an integer power (IEEE 1788-2015 §10.5.10)
+  *
+  * @remarks
+  * Even exponents wrap a sign-crossing interval to `[0, mag(iv)^n]`; odd
+  * exponents preserve monotonicity. Negative integer exponents require the
+  * interval to avoid zero.
+  *
+  * @param interval - Base interval
+  * @param n - Integer exponent
+  * @param out - Optional output interval
+  * @returns Interval raised to the integer power
+  * @throws {TypeError} If `n` is not a finite integer
+  * @throws {RangeError} If `n < 0` and the interval contains zero
+  *
+  * @see {@link powSafe} - Returns fallback instead of throwing
+  * @see {@link powUnchecked} - No validation, for hot paths
+  *
+  * @category Arithmetic
+  * @since 0.7.0
+  */
+ public static pow(interval: ReadonlyIntervalLike, n: number, out?: Interval): Interval {
+  if (!Number.isInteger(n)) {
+   throw new TypeError(`Interval.pow: exponent must be an integer, got ${n}`);
+  }
+  if (n < 0 && interval.min <= 0 && interval.max >= 0) {
+   throw new RangeError('Interval.pow: negative exponent requires interval not containing zero');
+  }
+  return Interval.powUnchecked(interval, n, out);
+ }
+
+ /**
+  * Raises an interval to an integer power with a fallback
+  *
+  * @remarks
+  * Returns `fallback` when the exponent is negative and the interval contains
+  * zero, or when the exponent is not a finite integer. Otherwise matches
+  * {@link pow}.
+  *
+  * @param interval - Base interval
+  * @param n - Integer exponent
+  * @param fallback - Fallback returned on invalid domain. @defaultValue `Interval.ZERO`
+  * @param out - Optional output interval
+  * @returns Interval raised to the integer power, or fallback
+  *
+  * @see {@link pow} - Strict variant that throws
+  * @see {@link powUnchecked} - No validation, for hot paths
+  *
+  * @category Arithmetic
+  * @since 0.7.0
+  */
+ public static powSafe(
+  interval: ReadonlyIntervalLike,
+  n: number,
+  fallback: ReadonlyIntervalLike = Interval.ZERO,
+  out?: Interval,
+ ): Interval {
+  if (!Number.isInteger(n)) {
+   return Interval.ensureOut(out).setDirect(fallback.min, fallback.max);
+  }
+  if (n < 0 && interval.min <= 0 && interval.max >= 0) {
+   return Interval.ensureOut(out).setDirect(fallback.min, fallback.max);
+  }
+  return Interval.powUnchecked(interval, n, out);
+ }
+
+ /**
+  * Raises an interval to an integer power without validation
+  *
+  * @remarks
+  * **Precondition:** `n` is a finite integer; if `n < 0` the interval avoids
+  * zero. Handles the even-exponent sign-crossing case.
+  *
+  * @param interval - Base interval
+  * @param n - Integer exponent
+  * @param out - Optional output interval
+  * @returns Interval raised to the integer power
+  *
+  * @see {@link pow} - Strict variant that throws
+  * @see {@link powSafe} - Returns fallback on invalid domain
+  *
+  * @category Arithmetic
+  * @since 0.7.0
+  */
+ public static powUnchecked(interval: ReadonlyIntervalLike, n: number, out?: Interval): Interval {
+  const target = Interval.ensureOut(out);
+  if (n === 0) {
+   return target.setDirect(1, 1);
+  }
+  const min = interval.min;
+  const max = interval.max;
+  const even = (n & 1) === 0;
+  if (even) {
+   if (min >= 0) {
+    return target.setDirect(pow(min, n), pow(max, n));
+   }
+   if (max <= 0) {
+    return target.setDirect(pow(max, n), pow(min, n));
+   }
+   // Sign-crossing even power: min of |·|^n is 0; max is the larger |endpoint|^n.
+   return target.setDirect(0, Math.max(pow(-min, n), pow(max, n)));
+  }
+  // Odd exponent preserves monotonicity; positive n keeps bound order, negative inverts.
+  const a = pow(min, n);
+  const b = pow(max, n);
+  return target.setDirect(Math.min(a, b), Math.max(a, b));
+ }
+
+ /**
+  * Returns the reciprocal of an interval
   * @param interval - Interval (must not contain zero)
   * @param out - Optional output interval
   * @returns Reciprocal interval
   * @throws {RangeError} If interval contains zero
+  *
+  * @see {@link reciprocalSafe} - Returns ZERO if interval contains zero
+  * @see {@link reciprocalUnchecked} - No validation, for hot paths
   *
   * @category Arithmetic
   * @since 0.7.0
@@ -754,7 +901,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Returns the reciprocal of an interval (safe version).
+  * Returns the reciprocal of an interval (safe version)
   * @param interval - Interval
   * @param out - Optional output interval
   * @returns Reciprocal interval, or ZERO if interval contains zero
@@ -777,7 +924,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Returns the reciprocal of an interval without validation (for hot paths).
+  * Returns the reciprocal of an interval without validation (for hot paths)
   *
   * @remarks
   * **Precondition:** Interval must not contain zero.
@@ -809,7 +956,7 @@ export class Interval implements IntervalLike {
  /* ======================================================================== */
 
  /**
-  * Applies Math.floor to both bounds.
+  * Applies Math.floor to both bounds
   * @param interval - Input interval
   * @param out - Optional output interval
   * @returns Interval with floored bounds
@@ -822,7 +969,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Applies Math.ceil to both bounds.
+  * Applies Math.ceil to both bounds
   * @param interval - Input interval
   * @param out - Optional output interval
   * @returns Interval with ceiled bounds
@@ -835,7 +982,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Applies Math.round to both bounds.
+  * Applies Math.round to both bounds
   * @param interval - Input interval
   * @param out - Optional output interval
   * @returns Interval with rounded bounds
@@ -848,7 +995,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Applies Math.trunc to both bounds.
+  * Applies Math.trunc to both bounds
   * @param interval - Input interval
   * @param out - Optional output interval
   * @returns Interval with truncated bounds
@@ -861,7 +1008,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Component-wise sign of both bounds.
+  * Component-wise sign of both bounds
   * @param interval - Input interval
   * @param out - Optional output interval
   * @returns Interval with sign of each bound (-1, 0, or 1)
@@ -874,7 +1021,17 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Component-wise minimum of two intervals.
+  * Component-wise minimum of two intervals
+  *
+  * @remarks
+  * Name clash note: `Interval` has no single-value `min` / `max` accessors
+  * (the bounds are exposed via the `min` / `max` instance properties). These
+  * static `min` / `max` methods take two intervals and return an interval,
+  * unlike the component-wise `Vector2.min` / `Matrix2.min` / `Matrix3.min`
+  * which each produce a new instance of their own type. Callers confused
+  * with the property-access name should use `interval.min` for the lower
+  * bound.
+  *
   * @param a - First interval
   * @param b - Second interval
   * @param out - Optional output interval
@@ -888,7 +1045,11 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Component-wise maximum of two intervals.
+  * Component-wise maximum of two intervals
+  *
+  * @remarks
+  * See {@link min} for the naming-clash note against the `max` bound property.
+  *
   * @param a - First interval
   * @param b - Second interval
   * @param out - Optional output interval
@@ -902,7 +1063,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Clamps bounds between min and max intervals.
+  * Clamps bounds between min and max intervals
   * @param interval - Input interval
   * @param minI - Per-bound minima
   * @param maxI - Per-bound maxima
@@ -929,7 +1090,7 @@ export class Interval implements IntervalLike {
  /* ======================================================================== */
 
  /**
-  * Linear interpolation between two intervals (unclamped).
+  * Linear interpolation between two intervals (unclamped)
   *
   * @remarks
   * The interpolation factor `t` is NOT clamped — values outside [0, 1] will
@@ -954,7 +1115,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Samples a value within an interval using linear interpolation.
+  * Samples a value within an interval using linear interpolation
   *
   * @remarks
   * Samples a point WITHIN the interval, unlike {@link lerp}
@@ -973,7 +1134,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Linear interpolation with t clamped to [0, 1].
+  * Linear interpolation with t clamped to [0, 1]
   * @param a - Start interval
   * @param b - End interval
   * @param t - Interpolation factor (clamped to [0, 1])
@@ -993,7 +1154,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Smooth interpolation between two intervals using smoothStep easing.
+  * Smooth interpolation between two intervals using smoothStep easing
   *
   * @remarks
   * Uses Hermite smoothStep for ease-in-out effect.
@@ -1026,13 +1187,22 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Finds where a value falls within an interval, returning normalized position.
+  * Finds where a value falls within an interval, returning normalized position
   *
   * @remarks
-  * This is the inverse of lerp: `Interval.inverseLerp(interval, Interval.lerp(interval, t)) ≈ t`
+  * Inverse of `lerp`: `Interval.inverseLerp(interval, Interval.lerp(interval, t)) ≈ t`.
+  *
+  * Asymmetry with {@link lerp}: `inverseLerp` has an EPSILON dead-zone on
+  * the interval width. When `width = max − min` falls within `EPSILON` of
+  * zero (a degenerate interval), the function returns `0` rather than
+  * propagating the division-by-zero Infinity. `lerp` has no dead-zone and
+  * accepts any `t` (including outside `[0, 1]` for extrapolation). This
+  * divergence is intentional: `inverseLerp` is a normalisation accessor,
+  * and a degenerate interval cannot meaningfully normalise any value.
   *
   * @param interval - Reference interval
   * @param value - Value to find normalized position of
+  *
   * @returns Normalized position [0, 1] for values in [min, max], or 0 if interval is degenerate
   *
   * @example
@@ -1042,6 +1212,8 @@ export class Interval implements IntervalLike {
   * Interval.inverseLerp(interval, 75);  // 0.75
   * Interval.inverseLerp(interval, 150); // 1.5 (extrapolated)
   * ```
+  *
+  * @see {@link lerp} - Forward interpolation (no dead-zone; allows extrapolation)
   *
   * @category Interpolation
   * @since 0.7.0
@@ -1055,7 +1227,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Clamps a value to the interval bounds.
+  * Clamps a value to the interval bounds
   *
   * @param interval - Reference interval
   * @param value - Value to clamp
@@ -1081,7 +1253,7 @@ export class Interval implements IntervalLike {
  /* ======================================================================== */
 
  /**
-  * Exact equality (bit-identical).
+  * Exact equality (bit-identical)
   *
   * @remarks
   * Use {@link nearEquals} for comparing results of floating-point operations.
@@ -1098,7 +1270,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Approximate equality using relative tolerance.
+  * Approximate equality using relative tolerance
   *
   * @remarks
   * Uses relative tolerance: `|a - b| <= epsilon * max(1, |a|, |b|)` per bound.
@@ -1120,7 +1292,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Tests if an interval is degenerate (zero width).
+  * Tests if an interval is degenerate (zero width)
   *
   * @remarks
   * Uses relative tolerance for comparing min and max bounds.
@@ -1137,7 +1309,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Tests if two intervals overlap.
+  * Tests if two intervals overlap
   * @param a - First interval
   * @param b - Second interval
   * @returns True if intervals overlap
@@ -1157,7 +1329,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Tests if an interval contains a value.
+  * Tests if an interval contains a value
   * @param interval - Interval
   * @param value - Value to test
   * @returns True if value is within interval
@@ -1170,7 +1342,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Strict containment check (exclusive bounds).
+  * Strict containment check (exclusive bounds)
   *
   * @remarks
   * Unlike {@link contains}, this excludes the boundary values.
@@ -1194,7 +1366,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Tests if one interval is a subset of another.
+  * Tests if one interval is a subset of another
   *
   * @remarks
   * An interval A is a subset of B if A.min >= B.min AND A.max <= B.max.
@@ -1217,7 +1389,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Returns the gap distance between two intervals.
+  * Returns the gap distance between two intervals
   *
   * @remarks
   * If the intervals overlap, the distance is zero. Otherwise, the distance
@@ -1241,7 +1413,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Tests if both bounds are finite numbers.
+  * Tests if both bounds are finite numbers
   * @param interval - Interval to test
   * @returns True if both bounds are finite
   *
@@ -1253,7 +1425,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Tests if both bounds are exactly zero.
+  * Tests if both bounds are exactly zero
   * @param interval - Interval to test
   * @returns True if min = 0 and max = 0
   *
@@ -1265,7 +1437,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Tests if both bounds are near zero.
+  * Tests if both bounds are near zero
   * @param interval - Interval to test
   * @param epsilon - Tolerance. @defaultValue `EPSILON`
   * @returns True if both bounds are within epsilon of zero
@@ -1278,7 +1450,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Tests if any bound is NaN.
+  * Tests if any bound is NaN
   * @param interval - Interval to test
   * @returns True if any bound is NaN
   *
@@ -1290,7 +1462,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Tests if any bound is infinite (±Infinity).
+  * Tests if any bound is infinite (±Infinity)
   *
   * @remarks
   * Distinguishes infinity from NaN. Use {@link isFinite} to check for both.
@@ -1313,7 +1485,7 @@ export class Interval implements IntervalLike {
  /* ======================================================================== */
 
  /**
-  * Returns the width of an interval.
+  * Returns the width of an interval
   * @param interval - Interval
   * @returns Width (max - min)
   *
@@ -1325,7 +1497,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Returns the center of an interval.
+  * Returns the center of an interval
   * @param interval - Interval
   * @returns Center ((min + max) / 2)
   *
@@ -1337,7 +1509,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Returns the radius (half-width) of an interval.
+  * Returns the radius (half-width) of an interval
   * @param interval - Interval
   * @returns Radius ((max - min) / 2)
   *
@@ -1348,68 +1520,184 @@ export class Interval implements IntervalLike {
   return (interval.max - interval.min) * 0.5;
  }
 
+ /**
+  * Returns the magnitude `mag([min, max]) = max(|min|, |max|)`
+  *
+  * @remarks
+  * IEEE 1788-2015 §10.5.7 magnitude — the largest absolute value attained on
+  * the interval. For a proper interval it equals `max(|min|, |max|)`.
+  *
+  * @param interval - Interval
+  * @returns Magnitude of the interval
+  *
+  * @see {@link mig} - Mignitude (smallest absolute value)
+  *
+  * @category Computed
+  * @since 0.7.0
+  */
+ public static mag(interval: ReadonlyIntervalLike): number {
+  return Math.max(Math.abs(interval.min), Math.abs(interval.max));
+ }
+
+ /**
+  * Returns the mignitude `mig([min, max]) = min(|x|) for x ∈ [min, max]`
+  *
+  * @remarks
+  * IEEE 1788-2015 §10.5.7 mignitude — the smallest absolute value attained on
+  * the interval. `0` when the interval spans zero, otherwise `min(|min|, |max|)`.
+  *
+  * @param interval - Interval
+  * @returns Mignitude of the interval
+  *
+  * @see {@link mag} - Magnitude (largest absolute value)
+  *
+  * @category Computed
+  * @since 0.7.0
+  */
+ public static mig(interval: ReadonlyIntervalLike): number {
+  if (interval.min <= 0 && interval.max >= 0) return 0;
+  return Math.min(Math.abs(interval.min), Math.abs(interval.max));
+ }
+
  /* ======================================================================== */
  /* Static Set Operations                                                    */
  /* ======================================================================== */
 
  /**
-  * Computes the convex hull (smallest enclosing interval) of multiple values/intervals.
+  * Returns the hull (smallest enclosing interval) of two intervals
   *
   * @remarks
-  * Supports two calling conventions:
-  * - **Array form**: `hull([a, b, c], out?)` — `second` serves as optional output parameter
-  * - **Varargs form**: `hull(a, b, c, ...)` — `second` is another value to include in the hull
+  * The hull is the smallest interval containing both inputs. For an array or
+  * variadic set of intervals, use {@link Interval.hullOf} instead.
   *
-  * @param first - Array of values/intervals, or first value
-  * @param second - Optional second value or output parameter (when first is array)
-  * @param rest - Additional values (when using varargs)
-  * @returns Interval enclosing all inputs
+  * @param a - First interval
+  * @param b - Second interval
+  * @param out - Optional output interval
+  * @returns Hull containing both `a` and `b`
+  *
+  * @see {@link Interval.hullOf} - array / varargs form
   *
   * @category Set Operations
   * @since 0.7.0
   */
- public static hull(
-  first: ReadonlyArray<number | ReadonlyIntervalLike> | number | ReadonlyIntervalLike,
-  second?: number | ReadonlyIntervalLike | Interval,
-  ...rest: Array<number | ReadonlyIntervalLike>
- ): Interval {
-  if (Array.isArray(first)) {
-   return Interval.computeHull(first, second instanceof Interval ? second : undefined);
-  }
-  const values = [first, second as number | ReadonlyIntervalLike, ...rest].filter(
-   (value): value is number | ReadonlyIntervalLike => value !== undefined,
-  );
-  return Interval.computeHull(values);
+ public static hull(a: ReadonlyIntervalLike, b: ReadonlyIntervalLike, out?: Interval): Interval {
+  const minValue = Math.min(a.min, b.min);
+  const maxValue = Math.max(a.max, b.max);
+  return Interval.ensureOut(out).setDirect(minValue, maxValue);
  }
 
- private static computeHull(
-  values: ReadonlyArray<number | ReadonlyIntervalLike>,
-  out?: Interval,
- ): Interval {
+ /**
+  * Returns the hull of an array of intervals or numbers, throwing on empty input
+  *
+  * @remarks
+  * Throws `RangeError` on empty input; callers needing a fallback use
+  * {@link Interval.hullOfSafe}. NaN propagates per IEEE 754 §6.2 through
+  * `Math.min` / `Math.max`. Numbers in the input are treated as point intervals `[n, n]`.
+  *
+  * @param values - Array of intervals or numbers to hull
+  * @param out - Optional output interval
+  * @returns Smallest interval containing every input value
+  * @throws {RangeError} If `values` is empty
+  *
+  * @see {@link Interval.hull} - binary form
+  * @see {@link Interval.hullOfSafe} - Safe variant with empty-input fallback
+  * @see {@link Interval.hullOfUnchecked} - Unchecked variant (GIGO)
+  *
+  * @category Set Operations
+  * @since 0.7.0
+  */
+ public static hullOf(values: ArrayLike<number | ReadonlyIntervalLike>, out?: Interval): Interval {
   if (values.length === 0) {
-   throw new RangeError('Interval.hull: values array cannot be empty');
+   throw new RangeError('Interval.hullOf: values array cannot be empty');
   }
   let minValue = Number.POSITIVE_INFINITY;
   let maxValue = Number.NEGATIVE_INFINITY;
 
-  for (const entry of values) {
+  for (let index = 0; index < values.length; index++) {
+   const entry = values[index]!;
    if (typeof entry === 'number') {
-    const sanitized = this.sanitize(entry, 'Interval.hull:value');
-    minValue = Math.min(minValue, sanitized);
-    maxValue = Math.max(maxValue, sanitized);
+    minValue = Math.min(minValue, entry);
+    maxValue = Math.max(maxValue, entry);
    } else {
-    const intervalMin = this.sanitize(entry.min, 'Interval.hull:min');
-    const intervalMax = this.sanitize(entry.max, 'Interval.hull:max');
-    minValue = Math.min(minValue, intervalMin);
-    maxValue = Math.max(maxValue, intervalMax);
+    minValue = Math.min(minValue, entry.min);
+    maxValue = Math.max(maxValue, entry.max);
    }
   }
 
-  return this.ensureOut(out).setDirect(minValue, maxValue);
+  return Interval.ensureOut(out).setDirect(minValue, maxValue);
  }
 
  /**
-  * Returns the union of two intervals.
+  * Returns the hull of an array with a fallback for empty input
+  *
+  * @remarks
+  * Safe-tier variant of {@link Interval.hullOf}. Returns the empty-interval sentinel
+  * `{min: +Infinity, max: -Infinity}` (or a caller-provided `fallback`) when `values`
+  * is empty. NaN propagates per IEEE 754 §6.2 — it is never a domain error.
+  *
+  * @param values - Array of intervals or numbers to hull
+  * @param fallback - Interval to return when `values` is empty; default is the empty sentinel
+  * @param out - Optional output interval
+  * @returns Hull of inputs, or `fallback` if empty
+  *
+  * @see {@link Interval.hullOf} - strict variant that throws
+  * @see {@link Interval.hullOfUnchecked} - Unchecked variant (GIGO)
+  *
+  * @category Set Operations
+  * @since 0.7.0
+  */
+ public static hullOfSafe(
+  values: ArrayLike<number | ReadonlyIntervalLike>,
+  fallback?: ReadonlyIntervalLike,
+  out?: Interval,
+ ): Interval {
+  if (values.length === 0) {
+   const emptyMin = fallback?.min ?? Number.POSITIVE_INFINITY;
+   const emptyMax = fallback?.max ?? Number.NEGATIVE_INFINITY;
+   return Interval.ensureOut(out).setDirect(emptyMin, emptyMax);
+  }
+  return Interval.hullOf(values, out);
+ }
+
+ /**
+  * Returns the hull of an array without empty-input validation (GIGO contract)
+  *
+  * @remarks
+  * Unchecked tier of {@link Interval.hullOf}. Empty input produces the degenerate
+  * `[+Infinity, -Infinity]` interval (violates `min ≤ max` invariant). Caller
+  * guarantees `values.length > 0` for well-formed output.
+  *
+  * @param values - Array of intervals or numbers to hull (MUST be non-empty)
+  * @param out - Optional output interval
+  * @returns Hull of inputs; degenerate `[+Infinity, -Infinity]` for empty input
+  *
+  * @see {@link Interval.hullOf} - strict variant with empty-input validation
+  * @see {@link Interval.hullOfSafe} - Safe variant with fallback
+  *
+  * @category Set Operations
+  * @since 0.7.0
+  */
+ public static hullOfUnchecked(
+  values: ArrayLike<number | ReadonlyIntervalLike>,
+  out?: Interval,
+ ): Interval {
+  let minValue = Number.POSITIVE_INFINITY;
+  let maxValue = Number.NEGATIVE_INFINITY;
+  for (let index = 0; index < values.length; index++) {
+   const entry = values[index]!;
+   if (typeof entry === 'number') {
+    minValue = Math.min(minValue, entry);
+    maxValue = Math.max(maxValue, entry);
+   } else {
+    minValue = Math.min(minValue, entry.min);
+    maxValue = Math.max(maxValue, entry.max);
+   }
+  }
+  return Interval.ensureOut(out).setDirect(minValue, maxValue);
+ }
+
+ /**
+  * Returns the union of two intervals
   * @param a - First interval
   * @param b - Second interval
   * @param out - Optional output interval
@@ -1430,7 +1718,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Returns the intersection of two intervals.
+  * Returns the intersection of two intervals
   *
   * @remarks
   * If the intervals do not overlap, returns `undefined` to represent the
@@ -1466,7 +1754,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Expands an interval symmetrically by a delta.
+  * Expands an interval symmetrically by a delta
   * @param interval - Source interval
   * @param delta - Amount to expand each side (must be non-negative)
   * @param out - Optional output interval
@@ -1484,11 +1772,13 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Returns the smallest interval that contains both the original interval and a value.
+  * Returns the smallest interval that contains both the original interval and a value
   *
   * @remarks
   * If the value is already within the interval, the result is the original interval
-  * unchanged. Otherwise, the interval is expanded on the appropriate side.
+  * unchanged. Otherwise, the interval is expanded on the appropriate side. Name
+  * preserved as the gerund `enclosing` (matches `containing`, `intersecting` within
+  * the Set Operations category); no `enclose` alias.
   *
   * @param interval - Source interval
   * @param value - Value to enclose
@@ -1502,6 +1792,9 @@ export class Interval implements IntervalLike {
   * Interval.enclosing({ min: 2, max: 5 }, 3);  // [2, 5] (already contained)
   * ```
   *
+  * @see {@link hull} - Smallest interval enclosing two intervals
+  * @see {@link hullOf} - Smallest interval enclosing an array of values / intervals
+  *
   * @category Set Operations
   * @since 0.7.0
   */
@@ -1513,7 +1806,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Shrinks an interval symmetrically by a delta.
+  * Shrinks an interval symmetrically by a delta
   * If delta exceeds half the interval width, returns the midpoint as a degenerate interval.
   * @param interval - Source interval
   * @param delta - Amount to shrink each side (must be non-negative)
@@ -1543,7 +1836,7 @@ export class Interval implements IntervalLike {
  /* ======================================================================== */
 
  /**
-  * Sets the min and max bounds.
+  * Sets the min and max bounds
   * @param minValue - Minimum bound
   * @param maxValue - Maximum bound
   * @returns This for chaining
@@ -1553,16 +1846,18 @@ export class Interval implements IntervalLike {
   * @since 0.7.0
   */
  set(minValue: number, maxValue: number): this {
-  const sanitizedMin = Interval.sanitize(minValue, 'Interval.set:min');
-  const sanitizedMax = Interval.sanitize(maxValue, 'Interval.set:max');
-  Interval.assertOrder(sanitizedMin, sanitizedMax, 'Interval.set');
-  this.min = sanitizedMin;
-  this.max = sanitizedMax;
+  if (__LENGUADOS_DEV__) {
+   Interval.sanitize(minValue, 'Interval.set:min');
+   Interval.sanitize(maxValue, 'Interval.set:max');
+   Interval.assertOrder(minValue, maxValue, 'Interval.set');
+  }
+  this.min = minValue;
+  this.max = maxValue;
   return this;
  }
 
  /**
-  * Copies values from another interval.
+  * Copies values from another interval
   *
   * @remarks
   * Trusted fast path — does not validate min <= max. Use set() for validated
@@ -1575,26 +1870,30 @@ export class Interval implements IntervalLike {
   * @since 0.7.0
   */
  copy(other: ReadonlyIntervalLike): this {
-  this.min = other.min;
-  this.max = other.max;
-  return this;
+  return this.setDirect(other.min, other.max);
  }
 
  /**
-  * Sets this interval from array values.
+  * Sets this interval from array values
   * @param array - Source array [min, max]
   * @param offset - Starting index (default 0)
   * @returns This for chaining
+  * @throws {RangeError} If offset is negative or the array lacks two elements from offset
   *
   * @category Mutator
   * @since 0.7.0
   */
  setFromArray(array: ArrayLike<number>, offset = 0): this {
+  if (offset < 0 || offset + Interval.ELEMENT_COUNT > array.length) {
+   throw new RangeError(
+    `Interval.setFromArray: offset ${offset} out of bounds for array length ${array.length}`,
+   );
+  }
   return this.set(array[offset]!, array[offset + 1]!);
  }
 
  /**
-  * Resets this interval to zero [0, 0].
+  * Resets this interval to zero [0, 0]
   * @returns This for chaining
   *
   * @category Mutator
@@ -1611,7 +1910,7 @@ export class Interval implements IntervalLike {
  /* ======================================================================== */
 
  /**
-  * Returns the width of this interval.
+  * Returns the width of this interval
   * @returns Width (max - min)
   *
   * @category Computed
@@ -1622,7 +1921,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Returns the center of this interval.
+  * Returns the center of this interval
   * @returns Center ((min + max) / 2)
   *
   * @category Computed
@@ -1633,7 +1932,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Returns the radius (half-width) of this interval.
+  * Returns the radius (half-width) of this interval
   * @returns Radius ((max - min) / 2)
   *
   * @category Computed
@@ -1643,12 +1942,40 @@ export class Interval implements IntervalLike {
   return (this.max - this.min) * 0.5;
  }
 
+ /**
+  * Returns the magnitude `mag([min, max]) = max(|min|, |max|)` (IEEE 1788-2015 §10.5.7)
+  *
+  * @returns Magnitude of this interval
+  *
+  * @see {@link mig} - Mignitude (smallest absolute value)
+  *
+  * @category Computed
+  * @since 0.7.0
+  */
+ mag(): number {
+  return Interval.mag(this);
+ }
+
+ /**
+  * Returns the mignitude `mig([min, max]) = min(|x|) for x ∈ [min, max]` (IEEE 1788-2015 §10.5.7)
+  *
+  * @returns Mignitude of this interval
+  *
+  * @see {@link mag} - Magnitude (largest absolute value)
+  *
+  * @category Computed
+  * @since 0.7.0
+  */
+ mig(): number {
+  return Interval.mig(this);
+ }
+
  /* ======================================================================== */
  /* Instance Comparison                                                      */
  /* ======================================================================== */
 
  /**
-  * Tests if this interval is degenerate (zero width).
+  * Tests if this interval is degenerate (zero width)
   *
   * @remarks
   * Uses relative tolerance for comparing min and max bounds.
@@ -1666,7 +1993,7 @@ export class Interval implements IntervalLike {
  /* ------ Set Operations ------ */
 
  /**
-  * Tests if this interval contains a value.
+  * Tests if this interval contains a value
   * @param value - Value to test
   * @returns True if value is within interval
   *
@@ -1678,7 +2005,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Tests if this interval strictly contains a value (exclusive bounds).
+  * Tests if this interval strictly contains a value (exclusive bounds)
   * @param value - Value to test
   * @returns True if value is strictly within interval
   *
@@ -1690,7 +2017,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Tests if this interval overlaps another.
+  * Tests if this interval overlaps another
   * @param other - Other interval
   * @returns True if intervals overlap
   *
@@ -1702,7 +2029,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Tests if this interval is a subset of another.
+  * Tests if this interval is a subset of another
   * @param other - Other interval
   * @returns True if this is contained in other
   *
@@ -1718,7 +2045,7 @@ export class Interval implements IntervalLike {
  /* ======================================================================== */
 
  /**
-  * Applies Math.floor to both bounds.
+  * Applies Math.floor to both bounds
   * @returns This for chaining
   * @category Transform
   * @since 0.7.0
@@ -1730,7 +2057,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Applies Math.ceil to both bounds.
+  * Applies Math.ceil to both bounds
   * @returns This for chaining
   * @category Transform
   * @since 0.7.0
@@ -1742,7 +2069,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Applies Math.round to both bounds.
+  * Applies Math.round to both bounds
   * @returns This for chaining
   * @category Transform
   * @since 0.7.0
@@ -1754,7 +2081,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Applies Math.trunc to both bounds.
+  * Applies Math.trunc to both bounds
   * @returns This for chaining
   * @category Transform
   * @since 0.7.0
@@ -1766,7 +2093,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Component-wise sign of both bounds.
+  * Component-wise sign of both bounds
   * @returns This for chaining
   * @category Transform
   * @since 0.7.0
@@ -1778,7 +2105,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Clamps bounds between min and max intervals.
+  * Clamps bounds between min and max intervals
   * @param minI - Per-bound minima
   * @param maxI - Per-bound maxima
   * @returns This for chaining
@@ -1796,7 +2123,7 @@ export class Interval implements IntervalLike {
  /* ======================================================================== */
 
  /**
-  * Adds another interval to this one in place.
+  * Adds another interval to this one in place
   * @param other - Interval to add
   * @returns This for chaining
   *
@@ -1810,7 +2137,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Subtracts another interval from this one in place.
+  * Subtracts another interval from this one in place
   * @param other - Interval to subtract
   * @returns This for chaining
   *
@@ -1826,7 +2153,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Multiplies with another interval in place.
+  * Multiplies with another interval in place
   * @param other - Interval to multiply by
   * @returns This for chaining
   *
@@ -1844,10 +2171,13 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Divides this interval's bounds by a scalar in place.
+  * Divides this interval's bounds by a scalar in place
   * @param scalar - Scalar divisor
   * @returns This for chaining
   * @throws {RangeError} If scalar is zero
+  *
+  * @see {@link divideScalarSafe} - Returns [0,0] on zero
+  * @see {@link divideScalarUnchecked} - No validation, for hot paths
   *
   * @category Arithmetic
   * @since 0.7.0
@@ -1870,7 +2200,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Divides this interval's bounds by a scalar in place, returning [0, 0] on zero scalar.
+  * Divides this interval's bounds by a scalar in place, returning [0, 0] on zero scalar
   * @param scalar - Scalar divisor
   * @returns This for chaining
   *
@@ -1899,7 +2229,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Divides this interval's bounds by a scalar in place without validation.
+  * Divides this interval's bounds by a scalar in place without validation
   *
   * @remarks
   * **Precondition:** `scalar ≠ 0`. Calling with zero produces Infinity/NaN.
@@ -1928,7 +2258,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Multiplies this interval's bounds by a scalar in place.
+  * Multiplies this interval's bounds by a scalar in place
   * @param scalar - Scalar multiplier
   * @returns This for chaining
   *
@@ -1936,13 +2266,15 @@ export class Interval implements IntervalLike {
   * @since 0.7.0
   */
  multiplyScalar(scalar: number): this {
-  const sanitizedScalar = Interval.sanitize(scalar, 'Interval.multiplyScalar:scalar');
-  if (sanitizedScalar >= 0) {
-   this.min *= sanitizedScalar;
-   this.max *= sanitizedScalar;
+  // NaN propagates per IEEE 754 §6.2; the operation is total so any finite or
+  // non-finite scalar flows through IEEE arithmetic directly, matching the static
+  // counterpart.
+  if (scalar >= 0) {
+   this.min *= scalar;
+   this.max *= scalar;
   } else {
-   const newMin = this.max * sanitizedScalar;
-   const newMax = this.min * sanitizedScalar;
+   const newMin = this.max * scalar;
+   const newMax = this.min * scalar;
    this.min = newMin;
    this.max = newMax;
   }
@@ -1950,7 +2282,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Negates this interval in place.
+  * Negates this interval in place
   * @returns This for chaining
   *
   * @category Arithmetic
@@ -1965,7 +2297,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Takes the absolute value of this interval in place (Moore's definition).
+  * Takes the absolute value of this interval in place (Moore's definition)
   * @returns This for chaining
   *
   * @category Arithmetic
@@ -1988,7 +2320,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Squares this interval in place.
+  * Squares this interval in place
   * @returns This for chaining
   *
   * @category Arithmetic
@@ -2011,9 +2343,12 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Computes the square root of this interval in place.
+  * Computes the square root of this interval in place
   * @returns This for chaining
   * @throws {RangeError} If interval contains negative values
+  *
+  * @see {@link sqrtSafe} - Clamps negatives, never throws
+  * @see {@link sqrtUnchecked} - No validation, for hot paths
   *
   * @category Arithmetic
   * @since 0.7.0
@@ -2028,7 +2363,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Computes the square root of this interval in place (safe version).
+  * Computes the square root of this interval in place (safe version)
   * @returns This for chaining, set to `[0, 0]` if fully negative; clamps min to 0 if partially negative
   *
   * @see {@link sqrt} - Throws if contains negative values
@@ -2049,7 +2384,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Computes the square root of this interval in place without validation (for hot paths).
+  * Computes the square root of this interval in place without validation (for hot paths)
   *
   * @remarks
   * **Precondition:** Interval must be non-negative.
@@ -2070,9 +2405,12 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Computes the reciprocal of this interval in place.
+  * Computes the reciprocal of this interval in place
   * @returns This for chaining
   * @throws {RangeError} If interval contains zero
+  *
+  * @see {@link reciprocalSafe} - Returns ZERO if contains zero
+  * @see {@link reciprocalUnchecked} - No validation, for hot paths
   *
   * @category Arithmetic
   * @since 0.7.0
@@ -2089,7 +2427,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Computes the reciprocal of this interval in place (safe version).
+  * Computes the reciprocal of this interval in place (safe version)
   * @returns This for chaining, set to ZERO if interval contains zero
   *
   * @see {@link reciprocal} - Throws if contains zero
@@ -2112,7 +2450,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Computes the reciprocal of this interval in place without validation (for hot paths).
+  * Computes the reciprocal of this interval in place without validation (for hot paths)
   *
   * @remarks
   * **Precondition:** Interval must not contain zero.
@@ -2139,7 +2477,7 @@ export class Interval implements IntervalLike {
  /* ======================================================================== */
 
  /**
-  * Intersects with another interval in place.
+  * Intersects with another interval in place
   *
   * @remarks
   * If there is no overlap between the intervals, this method returns `undefined`
@@ -2165,7 +2503,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Unions with another interval in place.
+  * Unions with another interval in place
   * @param other - Other interval
   * @returns This for chaining
   *
@@ -2179,7 +2517,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Expands this interval symmetrically by a delta.
+  * Expands this interval symmetrically by a delta
   * @param delta - Amount to expand each side (must be non-negative)
   * @returns This for chaining
   * @throws {RangeError} If delta is negative
@@ -2197,7 +2535,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Shrinks this interval symmetrically by a delta.
+  * Shrinks this interval symmetrically by a delta
   * If delta exceeds half the width, collapses to the midpoint.
   * @param delta - Amount to shrink each side (must be non-negative)
   * @returns This for chaining
@@ -2225,7 +2563,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Expands this interval to include a value.
+  * Expands this interval to include a value
   *
   * @remarks
   * If the value is already within the interval, this is a no-op.
@@ -2249,7 +2587,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Returns the gap distance between this interval and another.
+  * Returns the gap distance between this interval and another
   *
   * @remarks
   * If the intervals overlap, the distance is zero.
@@ -2271,7 +2609,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Exact equality (bit-identical).
+  * Exact equality (bit-identical)
   *
   * @remarks
   * Use {@link nearEquals} for comparing results of floating-point operations.
@@ -2287,7 +2625,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Approximate equality using relative tolerance.
+  * Approximate equality using relative tolerance
   *
   * @remarks
   * Uses relative tolerance: `|a - b| <= epsilon * max(1, |a|, |b|)` per bound.
@@ -2304,7 +2642,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Returns true if all bounds are finite.
+  * Returns true if all bounds are finite
   * @returns True if no NaN or Infinity values
   *
   * @category Comparison
@@ -2315,7 +2653,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Tests if this interval is exactly [0, 0].
+  * Tests if this interval is exactly [0, 0]
   * @returns True if both bounds are exactly zero
   *
   * @category Comparison
@@ -2326,7 +2664,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Tests if this interval is near zero.
+  * Tests if this interval is near zero
   * @param epsilon - Tolerance (default: EPSILON)
   * @returns True if both bounds are within epsilon of zero
   *
@@ -2338,7 +2676,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Returns true if any bound is NaN.
+  * Returns true if any bound is NaN
   * @returns True if any NaN value exists
   *
   * @category Comparison
@@ -2349,7 +2687,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Returns true if any bound is infinite (±Infinity).
+  * Returns true if any bound is infinite (±Infinity)
   * @returns True if any ±Infinity value exists
   *
   * @category Comparison
@@ -2364,7 +2702,7 @@ export class Interval implements IntervalLike {
  /* ======================================================================== */
 
  /**
-  * Samples a value within this interval using linear interpolation.
+  * Samples a value within this interval using linear interpolation
   *
   * @remarks
   * This method samples a point WITHIN the interval, unlike {@link lerp}
@@ -2390,7 +2728,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Linear interpolation towards another interval in place.
+  * Linear interpolation towards another interval in place
   *
   * @remarks
   * Interpolates BETWEEN this interval and another interval,
@@ -2417,7 +2755,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Linear interpolation with t clamped to [0, 1].
+  * Linear interpolation with t clamped to [0, 1]
   * @param other - Target interval
   * @param t - Interpolation factor (clamped to [0, 1])
   * @returns This for chaining
@@ -2430,7 +2768,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Smooth interpolation towards another interval using smoothStep easing.
+  * Smooth interpolation towards another interval using smoothStep easing
   * @param other - Target interval
   * @param t - Interpolation factor (clamped to [0, 1])
   * @returns This for chaining
@@ -2444,7 +2782,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Returns the inverse lerp (normalized position of value in interval).
+  * Returns the inverse lerp (normalized position of value in interval)
   * @param value - Value to find position of
   * @returns Normalized position [0, 1] (or 0 if degenerate)
   *
@@ -2460,7 +2798,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Clamps a value to this interval.
+  * Clamps a value to this interval
   * @param value - Value to clamp
   * @returns Clamped value
   *
@@ -2471,42 +2809,24 @@ export class Interval implements IntervalLike {
   return clamp(value, this.min, this.max);
  }
 
- /**
-  * Interpolates between two intervals, returning a new interval.
-  *
-  * @remarks
-  * Unlike {@link lerp}, this method does not mutate `this` and
-  * returns a new interval (or uses the `out` parameter).
-  *
-  * @param other - Target interval
-  * @param t - Interpolation factor [0, 1], clamped
-  * @param out - Optional output interval
-  * @returns Interpolated interval (new instance unless out is provided)
-  *
-  * @category Interpolation
-  * @since 0.7.0
-  */
- lerpInterval(other: ReadonlyIntervalLike, t: number, out?: Interval): Interval {
-  return Interval.lerp(this, other, t, out);
- }
-
  /* ======================================================================== */
  /* Instance Accessors                                                       */
  /* ======================================================================== */
 
  /**
-  * Returns the negated interval without modifying this one.
+  * Returns the negated interval without modifying this one
+  *
   * @returns New negated interval
   *
   * @category Accessor
   * @since 0.7.0
   */
  public get negated(): Interval {
-  return new Interval(-this.max, -this.min);
+  return Interval.negate(this);
  }
 
  /**
-  * Returns an expanded interval (by EPSILON) without modifying this one.
+  * Returns an expanded interval (by EPSILON) without modifying this one
   * @returns New expanded interval
   *
   * @category Accessor
@@ -2517,7 +2837,8 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Returns the reciprocal interval without modifying this one.
+  * Returns the reciprocal interval without modifying this one
+  *
   * @returns New reciprocal interval
   * @throws {RangeError} If interval contains zero
   *
@@ -2525,30 +2846,19 @@ export class Interval implements IntervalLike {
   * @since 0.7.0
   */
  public get reciprocated(): Interval {
-  if (this.contains(0)) {
-   throw new RangeError('Interval.reciprocated: interval contains zero');
-  }
-  const recipMin = 1 / this.min;
-  const recipMax = 1 / this.max;
-  return new Interval(Math.min(recipMin, recipMax), Math.max(recipMin, recipMax));
+  return Interval.reciprocal(this);
  }
 
  /**
-  * Returns the squared interval without modifying this one.
+  * Returns the squared interval without modifying this one
+  *
   * @returns New squared interval
   *
   * @category Accessor
   * @since 0.7.0
   */
  public get squared(): Interval {
-  if (this.min >= 0) {
-   return new Interval(this.min * this.min, this.max * this.max);
-  }
-  if (this.max <= 0) {
-   return new Interval(this.max * this.max, this.min * this.min);
-  }
-  const extreme = Math.max(this.min * this.min, this.max * this.max);
-  return new Interval(0, extreme);
+  return Interval.square(this);
  }
 
  /* ======================================================================== */
@@ -2556,11 +2866,12 @@ export class Interval implements IntervalLike {
  /* ======================================================================== */
 
  /**
-  * Writes to array or typed array.
+  * Writes to array or typed array
   *
   * @param out - Optional destination array. If not provided, returns a new tuple
   * @param offset - Write offset. @defaultValue `0`
   * @returns The output array, or a new tuple if no output was provided
+  * @throws {RangeError} If offset is negative or the output array lacks two elements from offset
   *
   * @example
   * ```typescript
@@ -2582,13 +2893,18 @@ export class Interval implements IntervalLike {
   if (!out) {
    return [this.min, this.max];
   }
+  if (offset < 0 || offset + 2 > out.length) {
+   throw new RangeError(
+    `Interval.toArray: offset ${offset} out of bounds for array length ${out.length}`,
+   );
+  }
   out[offset] = this.min;
   out[offset + 1] = this.max;
   return out;
  }
 
  /**
-  * Converts the interval to a plain object.
+  * Converts the interval to a plain object
   * @returns Object with min and max properties
   *
   * @example
@@ -2606,7 +2922,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Converts the interval to a JSON-serializable object.
+  * Converts the interval to a JSON-serializable object
   * Called automatically by JSON.stringify().
   * @returns Object suitable for JSON serialization
   *
@@ -2625,7 +2941,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Creates a human-readable string representation.
+  * Creates a human-readable string representation
   * Uses mathematical interval notation [min, max].
   * @param precision - Number of decimal places (default: 4)
   * @returns Formatted string
@@ -2645,7 +2961,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Creates a deep copy of this interval.
+  * Creates a deep copy of this interval
   * @returns New Interval with identical bounds
   *
   * @example
@@ -2663,7 +2979,7 @@ export class Interval implements IntervalLike {
  }
 
  /**
-  * Iterator for array destructuring.
+  * Iterator for array destructuring
   * @returns Iterator yielding min then max
   *
   * @example

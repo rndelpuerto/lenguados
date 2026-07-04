@@ -1,0 +1,71 @@
+# .github/dependabot.yml
+version: 2
+
+updates:
+ # ─────────────────────────────────────────────────────────────────────────────
+ # Root npm workspace (covers packages/* and docs via the root lockfile).
+ # Minor + patch updates are grouped into a single weekly PR; majors stay
+ # individual so breaking upgrades get dedicated review.
+ # ─────────────────────────────────────────────────────────────────────────────
+ - package-ecosystem: npm
+   directory: /
+   schedule:
+    interval: weekly
+   commit-message:
+    prefix: build(deps)
+   groups:
+    npm-minor-and-patch:
+     applies-to: version-updates
+     update-types:
+      - minor
+      - patch
+
+ # ─────────────────────────────────────────────────────────────────────────────
+ # Benchmark laboratory — standalone package with its own lockfile
+ # (tools/benchmark/package-lock.json), not part of the npm workspaces.
+ # ─────────────────────────────────────────────────────────────────────────────
+ - package-ecosystem: npm
+   directory: /tools/benchmark
+   schedule:
+    interval: weekly
+   commit-message:
+    prefix: build(deps)
+   groups:
+    bench-minor-and-patch:
+     applies-to: version-updates
+     update-types:
+      - minor
+      - patch
+
+ # ─────────────────────────────────────────────────────────────────────────────
+ # Docusaurus site manifest (docs/package.json). The docs workspace resolves
+ # through the root lockfile; this entry keeps its declared ranges current.
+ # ─────────────────────────────────────────────────────────────────────────────
+ - package-ecosystem: npm
+   directory: /docs
+   schedule:
+    interval: weekly
+   commit-message:
+    prefix: build(deps)
+   groups:
+    docs-minor-and-patch:
+     applies-to: version-updates
+     update-types:
+      - minor
+      - patch
+
+ # ─────────────────────────────────────────────────────────────────────────────
+ # GitHub Actions used by the workflows in .github/workflows/.
+ # ─────────────────────────────────────────────────────────────────────────────
+ - package-ecosystem: github-actions
+   directory: /
+   schedule:
+    interval: weekly
+   commit-message:
+    prefix: build(deps)
+   groups:
+    actions-minor-and-patch:
+     applies-to: version-updates
+     update-types:
+      - minor
+      - patch

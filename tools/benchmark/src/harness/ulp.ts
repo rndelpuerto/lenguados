@@ -70,8 +70,7 @@ function toOrderedInt(unsignedBits: bigint): bigint {
 
 /** Represent either a numeric ULP distance or a special-value mismatch description */
 export type UlpResult =
- | { kind: 'ulp'; distance: number }
- | { kind: 'special'; description: string };
+ { kind: 'ulp'; distance: number } | { kind: 'special'; description: string };
 
 /**
  * Compute the ULP distance between two float64 values
@@ -220,6 +219,9 @@ const ORACLE_FN_MAP: Record<
  exp: (x) => x.exp(),
  pow: (base, exp) => base.pow(exp),
  hypot: (x, y) => x.pow(2).plus(y.pow(2)).sqrt(),
+ sinh: (x) => x.sinh(),
+ cosh: (x) => x.cosh(),
+ tanh: (x) => x.tanh(),
 };
 
 /**
@@ -233,7 +235,7 @@ const oracleCache = new Map<string, number>();
  *
  * @remarks
  * Supported functions: sin, cos, tan, asin, acos, atan, atan2,
- * log, exp, pow, hypot.
+ * log, exp, pow, hypot, sinh, cosh, tanh.
  *
  * @param fn - The mathematical function name (e.g., 'sin', 'atan2')
  * @param args - The function arguments as float64 values

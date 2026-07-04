@@ -104,6 +104,27 @@ describe('filterCells', () => {
   const filtered = filterCells(allCells, { environment: 'chromium' as 'chromium' });
   expect(filtered).toHaveLength(0);
  });
+
+ it('does not exclude cells that omit the filtered axis (heterogeneous packages)', () => {
+  const cells = [
+   { environment: 'node', buildMode: 'production', determinism: 'fdlibm', entity: 'Vector2' },
+   { environment: 'node', buildMode: 'production', entity: 'JSON' },
+  ] as DimensionCell[];
+  const filtered = filterCells(cells, { determinism: 'fdlibm' });
+  expect(filtered).toHaveLength(2);
+  const excluded = filterCells(
+   [
+    {
+     environment: 'node',
+     buildMode: 'production',
+     determinism: 'native',
+     entity: 'Vector2',
+    } as DimensionCell,
+   ],
+   { determinism: 'fdlibm' },
+  );
+  expect(excluded).toHaveLength(0);
+ });
 });
 
 describe('parseDimensionFilter', () => {

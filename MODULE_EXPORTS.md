@@ -38,7 +38,7 @@ import { CoreType, utilityFn } from '@lenguados/<package>';
 - A consumer who imports the package expects these symbols to be available
 - Removing them would make the package incomplete
 
-**Build:** Barrel modules are re-exported from the root `index.ts`. They are bundled into the main entry point. No separate build artifact is produced.
+**Build:** Barrel modules are re-exported from the root `index.ts`. In the preserved-module output tree, each module keeps its own file; the root entry is a thin facade that re-exports it (see the preserved-module distribution in Section 4).
 
 ### Option 2 — Internal
 
@@ -134,11 +134,11 @@ If a symbol controls behavior of other symbols through shared state (e.g., a con
 
 Each package has one mandatory entry point (`index.ts`) and zero or more internal entry points. The build system produces three output formats per entry point:
 
-| Format     | Directory     | Pattern                               | Purpose             |
-| ---------- | ------------- | ------------------------------------- | ------------------- |
-| CommonJS   | `lib/cjs/`    | `*.development.js`, `*.production.js` | Node.js `require()` |
-| ES Module  | `lib/esm/`    | `*.development.js`, `*.production.js` | Bundler `import`    |
-| TypeScript | `lib/@types/` | `*.d.ts`                              | Type declarations   |
+| Format     | Directory     | Pattern                                                              | Purpose             |
+| ---------- | ------------- | -------------------------------------------------------------------- | ------------------- |
+| CommonJS   | `lib/cjs/`    | `*.development.js`, `*.production.js`                                | Node.js `require()` |
+| ES Module  | `lib/esm/`    | `*.development.js`, `*.production.js`, `module.js` (production root) | Bundler `import`    |
+| TypeScript | `lib/@types/` | `*.d.ts`                                                             | Type declarations   |
 
 ### The `module-internals.json` Convention
 
@@ -185,16 +185,30 @@ Every package includes three root-level entry files that bridge CJS and ESM cons
 
 CJS uses a single file with a runtime `if/else` on `process.env.NODE_ENV` because `require()` is evaluated at runtime. ESM uses two separate files because `import` statements are statically analyzed — bundlers resolve the correct file at build time through the `development` and `default` conditions in the `exports` field.
 
+### Preserved-module distribution
+
+The published `lib/` output is a **multi-module tree with preserved module boundaries**, not a single pre-bundled file. The root entry (`module.js` for production ESM, `index.development.js` for development) is a thin facade re-exporting from per-module files that mirror the source layout. This is what makes consumer-side dead-code elimination real: a bundler importing one type pulls only that type's dependency graph (measured: a single-type import is roughly one quarter of the full-library payload), and shared infrastructure — the deterministic kernels, the runtime `config`, assertion state, the default random source — resolves to exactly **one** module across every entry point, so state observed through the main module and through any subpath export is always the same instance.
+
+Three consequences of this layout:
+
+- `lib/esm/package.json` declares `{"type": "module", "sideEffects": false}`. Both fields are load-bearing: the `type` field makes plain-Node imports parse the tree as ES modules without re-parsing overhead, and `sideEffects` must be restated there because that file is the nearest `package.json` for every tree module — omitting it silently disables whole-module elimination in consumer bundlers.
+- Frozen class constants use pure-call annotations (`/* @__PURE__ */`) that are preserved through minification, so a class whose exports are unused is eligible for elimination even though its constants allocate at module-evaluation time.
+- Internal layer files (`lib/esm/auxiliary/*`, `core/*`, `deterministic/*`, `types/*`, `chunks/*`) are **not public API**: the exports map denies direct deep imports of them, covering the `esm/` and `cjs/` paths as well as the bare `./lib/<layer>/*` specifier form. The `./lib/*` and `./*` wildcard exports remain for the blessed escape hatches but are candidates for removal in a future major version — they bypass the development/production conditions.
+
+The build targets ES2022 (native class static fields). Consumers on older toolchains transpile the package as part of their own build, which is standard practice for modern library distributions.
+
 For the full build configuration and `package.json` field requirements, see `rollup.config.mjs`.
 
 ---
 
 ## 5. Development vs Production Builds
 
-The engine uses `process.env.NODE_ENV` to enable Dead Code Elimination (DCE). The assertion guard `process.env.NODE_ENV !== 'production'` is evaluated at build time by bundlers:
+Dead Code Elimination (DCE) for assertions happens at the **library build step**, not in the consumer's bundler. Every dev-only assertion call site is wrapped in an `if (__LENGUADOS_DEV__) { ... }` block. The build-time constant substitution (configured in `rollup.config.mjs`) replaces `__LENGUADOS_DEV__` with the literal `false` for production library builds (and `true` for development builds); the build pipeline minifier then eliminates the resulting `if (false) { ... }` blocks — call sites, label strings, and assertion bodies all removed.
 
-- **Development** (`NODE_ENV=development`): The guard evaluates to `true`. Assertions are active. Source maps are generated. Bundles are unminified.
-- **Production** (`NODE_ENV=production`): Bundlers (Vite, Webpack, Rollup) replace the expression with `false`, and minifiers remove all assertion code via dead-code elimination. Zero runtime overhead.
+- **Development artifacts** (`*.development.js`): Built with `__LENGUADOS_DEV__ = true`. Assertions are active. Source maps are generated. Bundles are unminified.
+- **Production artifacts** (`*.production.js`, `module.js`): Built with `__LENGUADOS_DEV__ = false`. Assertion code is already eliminated from the shipped files — zero runtime overhead regardless of the consumer's bundler.
+
+Consumers select between the two prebuilt trees through the `development` / `default` conditions in the `exports` field (Section 4). `process.env.NODE_ENV` plays exactly one role in this system: the CJS entry file `main.js` reads it at runtime to `require()` the development or production tree, because `require()` cannot be resolved through static export conditions. The full rationale for the library-side model is recorded in the math2d package's `DESIGN_DECISIONS.md` (ADR-017).
 
 This means barrel-exported assertions add **zero bytes** to the production bundle. The classification decision for assertions is based on developer experience and semantic clarity, not on bundle impact.
 

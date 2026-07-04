@@ -2,19 +2,30 @@
  * @file cross-env/playwright-runner.ts
  * @description Playwright cross-browser benchmark runner
  *
- * Injects math2d ESM bundle + benchmark code into isolated browser
- * contexts (Chromium, Firefox, WebKit). Collects results via
+ * Injects the target package's ESM bundle + benchmark code into isolated
+ * browser contexts (Chromium, Firefox, WebKit). The bundle path and the
+ * kernel-exposing snippet come from the package's CrossEnvConfig — this
+ * module never names a specific package. Collects results via
  * page.evaluate(). Annotates results with detected timer resolution.
+ *
+ * The production ESM dist is a module TREE (thin entry importing relative
+ * sibling modules) — relative specifiers cannot resolve inside an inlined
+ * `<script type="module">` (it has no base URL), so the entry + expose
+ * snippet are PRE-FLATTENED with esbuild (an explicit lab devDependency)
+ * into a temporary self-contained module under `.tmp/` before injection.
+ * With `minify: false` the transform is a near-identity module concatenation:
+ * kernel number literals and arithmetic pass through untouched, so golden
+ * verification stays bit-exact. A flat single-file bundle degenerates to a
+ * single-module concatenation.
  *
  * Requires playwright as an optional dependency.
  */
 
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { mkdirSync, readFileSync, rmSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-import { resolvePackageRoot } from '../harness/loader-utils.ts';
-
-const MATH2D_ROOT = resolvePackageRoot('math2d');
+import type { CrossEnvConfig } from './cross-env-types.ts';
 import type { GoldenFile, VerificationResult } from './golden-file.ts';
 
 /** Supported Playwright browser engine names */
@@ -26,6 +37,68 @@ export interface CrossBrowserResult {
  engine: string;
  timerResolutionUs: number;
  verificationResults: VerificationResult[];
+}
+
+/** Requested browser that could not run, with the human-readable cause */
+export interface SkippedBrowser {
+ browser: BrowserName;
+ reason: string;
+}
+
+/**
+ * Full cross-browser verification report
+ *
+ * @remarks
+ * Skips are DATA, not policy: the runner records every requested browser
+ * that could not execute (Playwright absent, engine not installed, launch
+ * failure) and leaves the pass/fail decision to the caller. The CLI fails
+ * on skips by default and downgrades to warnings only under an explicit
+ * `--allow-missing-browsers` opt-out — a silent skip in CI would remove
+ * the verification's purpose while reporting green.
+ */
+export interface CrossBrowserVerificationReport {
+ results: CrossBrowserResult[];
+ skipped: SkippedBrowser[];
+}
+
+const TEMP_DIR = fileURLToPath(new URL('../../.tmp/', import.meta.url));
+
+/**
+ * Pre-flatten the browser bundle entry + expose snippet into one module
+ *
+ * @remarks
+ * esbuild bundles a synthetic entry that imports the package's module
+ * namespace as `__benchModule` and appends the package's expose snippet.
+ * Bundling the snippet TOGETHER with the entry lets it reach exports through
+ * their PUBLIC export names — robust against minifier-mangled internal
+ * identifiers in the shipped tree, where a bare `sin` binding no longer
+ * exists at module top level.
+ *
+ * @param bundlePath - Absolute path of the package's browser ESM entry
+ * @param exposeSnippet - Package snippet assigning `window.__benchKernels`
+ * @returns Absolute path of the flattened temp file (caller must clean up)
+ */
+async function flattenForInjection(bundlePath: string, exposeSnippet: string): Promise<string> {
+ const esbuild = await import('esbuild');
+ mkdirSync(TEMP_DIR, { recursive: true });
+ const outFile = join(TEMP_DIR, `browser-inject-${process.pid}-${Date.now()}.mjs`);
+
+ await esbuild.build({
+  stdin: {
+   contents: `import * as __benchModule from ${JSON.stringify(bundlePath)};\n${exposeSnippet}\n`,
+   resolveDir: dirname(bundlePath),
+   sourcefile: 'bench-inject-entry.mjs',
+   loader: 'js',
+  },
+  bundle: true,
+  format: 'esm',
+  minify: false,
+  write: true,
+  outfile: outFile,
+  logLevel: 'silent',
+ });
+
+ return outFile;
 }
 
 /**
@@ -72,60 +145,122 @@ async function detectTimerResolution(page: any): Promise<number> {
 /**
  * Run determinism verification across specified browsers
  *
- * Loads the math2d production bundle into each browser, executes
- * the golden file operations, and compares results bit-for-bit.
+ * Pre-flattens the configured package bundle, loads it into each browser,
+ * executes the golden file operations, and compares results bit-for-bit.
  *
  * @param goldenFile - Reference golden file generated from Node.js
+ * @param config - Package cross-env configuration (bundle path + expose snippet)
  * @param browsers - Browser engines to verify against
- * @returns Array of per-browser verification results
+ * @returns Report with per-browser verification results and skipped browsers
+ * @throws {Error} When the built bundle cannot be flattened for injection —
+ * a broken build state must never degrade to a skip
  */
 export async function runCrossBrowserVerification(
  goldenFile: GoldenFile,
+ config: Pick<CrossEnvConfig, 'browserBundlePath' | 'exposeSnippet'>,
  browsers: BrowserName[] = ['chromium', 'firefox', 'webkit'],
-): Promise<CrossBrowserResult[]> {
+): Promise<CrossBrowserVerificationReport> {
  const pw = await loadPlaywright();
- if (!pw) return [];
-
- const bundlePath = join(MATH2D_ROOT, 'lib', 'esm', 'module.js');
- let bundleCode: string;
- try {
-  bundleCode = readFileSync(bundlePath, 'utf-8');
- } catch {
-  console.error(`  Cannot read math2d bundle at ${bundlePath}. Run npm run dist first.`);
-  return [];
+ if (!pw) {
+  return {
+   results: [],
+   skipped: browsers.map((browser) => ({ browser, reason: 'Playwright is not installed' })),
+  };
  }
 
+ // Pre-flatten the entry (tree or flat) + expose snippet into ONE
+ // self-contained module — an inlined <script type="module"> cannot resolve
+ // relative imports.
+ const bundlePath = config.browserBundlePath;
+ let flattenedPath: string;
+ let bundleCode: string;
+ try {
+  flattenedPath = await flattenForInjection(bundlePath, config.exposeSnippet);
+  bundleCode = readFileSync(flattenedPath, 'utf-8');
+ } catch (err: unknown) {
+  const msg = err instanceof Error ? err.message.split('\n')[0] : String(err);
+  throw new Error(
+   `Cannot flatten package bundle at ${bundlePath} (${msg}). Run npm run dist first.`,
+  );
+ }
+
+ try {
+  return await runBrowsers(pw, goldenFile, bundleCode, browsers);
+ } finally {
+  rmSync(flattenedPath, { force: true });
+ }
+}
+
+/**
+ * Execute the golden-file verification in each requested browser engine
+ *
+ * @param pw - Loaded Playwright module
+ * @param goldenFile - Reference golden file generated from Node.js
+ * @param bundleCode - Flattened self-contained module code to inject
+ * @param browsers - Browser engines to verify against
+ * @returns Report with per-browser verification results and skipped browsers
+ */
+async function runBrowsers(
+ pw: any,
+ goldenFile: GoldenFile,
+ bundleCode: string,
+ browsers: BrowserName[],
+): Promise<CrossBrowserVerificationReport> {
  const results: CrossBrowserResult[] = [];
+ const skipped: SkippedBrowser[] = [];
 
  for (const browserName of browsers) {
   const browserType = pw[browserName];
   if (!browserType) {
-   console.warn(`  Browser ${browserName} not available in Playwright, skipping.`);
+   skipped.push({ browser: browserName, reason: 'not available in this Playwright build' });
    continue;
   }
 
-  const browser = await browserType.launch();
+  // Launch failures (missing browser binaries — `npx playwright install <name>`
+  // not run) are recorded as skips, not crashes, so the remaining engines
+  // still verify; the CALLER decides whether skips fail the run.
+  let browser;
+  try {
+   browser = await browserType.launch();
+  } catch (err: unknown) {
+   const msg = err instanceof Error ? err.message.split('\n')[0] : String(err);
+   skipped.push({ browser: browserName, reason: `launch failed: ${msg}` });
+   continue;
+  }
   const context = await browser.newContext();
   const page = await context.newPage();
 
   try {
-   // Detect timer resolution
-   const timerRes = await detectTimerResolution(page);
-
-   // Inject math2d bundle as a <script> so its fdlibm kernels execute in-browser.
-   // This tests the ACTUAL fdlibm implementation across engines, not native Math.*.
+   // Inject the flattened bundle as a <script> so its deterministic kernels
+   // execute in-browser — testing the ACTUAL implementation across engines,
+   // not native Math.*. The expose snippet (from the package's
+   // CrossEnvConfig) is already compiled into the flattened module and
+   // assigns the kernel record to window.__benchKernels.
+   //
+   // The FIRST classic script installs the esbuild `keepNames` helper shim:
+   // tsx decorates named functions inside page.evaluate callbacks with
+   // module-scoped `__name(fn, "fn")` calls, and Playwright serializes
+   // callbacks via Function.prototype.toString() — without the shim, every
+   // callback containing a named inner function crashes in-browser with
+   // "ReferenceError: __name is not defined". It lives in the injected HTML
+   // (not page.addInitScript) because setContent is not a navigation, so
+   // init scripts do not apply to this document — verified empirically.
    await page.setContent(`
-    <html><head><script type="module">
+    <html><head><script>
+    globalThis.__name = (target, value) => Object.defineProperty(target, 'name', { value, configurable: true });
+    </script><script type="module">
     ${bundleCode}
-    // Expose deterministic kernels on window for the evaluate() call
-    window.__math2d = { sin, cos, tan, asin, acos, atan, atan2, log, exp, pow, hypot, config };
-    // Ensure fdlibm mode (not native)
-    window.__math2d.config.useNativeMath = false;
     </script></head><body></body></html>
    `);
 
+   // Detect timer resolution (after setContent so the shim guards every
+   // evaluate on this page, current and future)
+   const timerRes = await detectTimerResolution(page);
+
    // Wait for the module to load
-   await page.waitForFunction(() => (window as any).__math2d !== undefined, { timeout: 5000 });
+   await page.waitForFunction(() => (window as any).__benchKernels !== undefined, {
+    timeout: 5000,
+   });
 
    const verificationResults = await page.evaluate(
     ({ entries }: { entries: typeof goldenFile.entries }) => {
@@ -162,21 +297,12 @@ export async function runCrossBrowserVerification(
       return f64[0]!;
      }
 
-     // Use math2d's fdlibm kernels injected via the script tag
-     const m2d = (window as any).__math2d;
-     const kernels: Record<string, (...args: number[]) => number> = {
-      sin: m2d.sin,
-      cos: m2d.cos,
-      tan: m2d.tan,
-      asin: m2d.asin,
-      acos: m2d.acos,
-      atan: m2d.atan,
-      atan2: m2d.atan2,
-      log: m2d.log,
-      exp: m2d.exp,
-      pow: m2d.pow,
-      hypot: m2d.hypot,
-     };
+     // Use the package's deterministic kernels injected via the script tag;
+     // dispatch is by golden-entry function name on the exposed record.
+     const kernels = (window as any).__benchKernels as Record<
+      string,
+      (...args: number[]) => number
+     >;
 
      const fnMap = new Map<string, (typeof results)[0]>();
 
@@ -251,5 +377,5 @@ export async function runCrossBrowserVerification(
   }
  }
 
- return results;
+ return { results, skipped };
 }

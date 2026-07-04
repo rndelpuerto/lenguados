@@ -11,6 +11,8 @@ import {
  TldrBox,
  NoDataFallback,
  MethodologyNote,
+ PartialDataNotice,
+ formatOps,
 } from '@site/src/components/benchmark';
 import { useBenchmarkData } from '@site/src/hooks/use-benchmark-data';
 
@@ -21,15 +23,15 @@ export function Vector2Performance() {
  if (!entity) return <NoDataFallback />;
  const ops = entity.operations;
  const tierComparison = entity.tierComparison;
- const formatOps = (v) => v >= 1e9 ? `${(v/1e9).toFixed(1)}G` : v >= 1e6 ? `${(v/1e6).toFixed(0)}M` : `${(v/1e3).toFixed(0)}K`;
  const medianOps = [...ops].sort((a, b) => a.opsPerSec - b.opsPerSec);
  const median = medianOps[Math.floor(medianOps.length / 2)]?.opsPerSec ?? 0;
- const fastest = ops.reduce((best, o) => o.opsPerSec > best.opsPerSec ? o : best, ops[0]);
+ const fastest = ops.reduce((best, o) => (o.opsPerSec > best.opsPerSec ? o : best), ops[0]);
  return (
   <>
+   <PartialDataNotice summaries={[performance]} />
    <TldrBox>
-    <strong>{ops.length} operations</strong> measured — median throughput {formatOps(median)} ops/sec,
-    peak {formatOps(fastest.opsPerSec)} ops/sec ({fastest.name}).
+    <strong>{ops.length} operations</strong> measured — median throughput {formatOps(median)}{' '}
+    ops/sec, peak {formatOps(fastest.opsPerSec)} ops/sec ({fastest.name}).
    </TldrBox>
    <h3>All Operations</h3>
    <OperationBarChart data={ops} title="Vector2 — ops/sec by operation" />
@@ -39,7 +41,12 @@ export function Vector2Performance() {
       { key: 'name', label: 'Operation' },
       { key: 'opsPerSec', label: 'ops/sec', format: (v) => formatOps(Number(v)), align: 'right' },
       { key: 'median', label: 'Median (ns)', format: (v) => Number(v).toFixed(1), align: 'right' },
-      { key: 'outlierPercent', label: 'Outliers %', format: (v) => `${Number(v).toFixed(1)}%`, align: 'right' },
+      {
+       key: 'outlierPercent',
+       label: 'Outliers %',
+       format: (v) => `${Number(v).toFixed(1)}%`,
+       align: 'right',
+      },
       { key: 'samples', label: 'Samples', align: 'right' },
      ]}
      data={ops}
@@ -50,24 +57,41 @@ export function Vector2Performance() {
     <>
      <h3>Validation Tier Comparison</h3>
      <p>
-      Operations with <code>Safe</code> and <code>Unchecked</code> variants show the
-      cost of input validation. In production builds, <code>default</code> assertions
-      are stripped, making it equivalent to <code>unchecked</code>.
+      Operations with <code>Safe</code> and <code>Unchecked</code> variants show the cost of input
+      validation. In production builds, <code>default</code> assertions are stripped, making it
+      equivalent to <code>unchecked</code>.
      </p>
-     <TierComparisonChart
-      data={tierComparison.operations}
-      title="Vector2 — Tier Comparison"
-     />
+     <TierComparisonChart data={tierComparison.operations} title="Vector2 — Tier Comparison" />
      <MethodologyNote summary="Tier comparison data">
       <DataTable
        columns={[
         { key: 'name', label: 'Operation' },
-        { key: 'defaultOps', label: 'Default', format: (v) => formatOps(Number(v)), align: 'right' },
-        { key: 'safeOps', label: 'Safe', format: (v) => v ? formatOps(Number(v)) : '—', align: 'right' },
-        { key: 'uncheckedOps', label: 'Unchecked', format: (v) => v ? formatOps(Number(v)) : '—', align: 'right' },
-        { key: 'speedup', label: 'Speedup', format: (v) => v ? `${Number(v).toFixed(2)}x` : '—', align: 'right' },
+        {
+         key: 'defaultOps',
+         label: 'Default',
+         format: (v) => formatOps(Number(v)),
+         align: 'right',
+        },
+        {
+         key: 'safeOps',
+         label: 'Safe',
+         format: (v) => (v ? formatOps(Number(v)) : '—'),
+         align: 'right',
+        },
+        {
+         key: 'uncheckedOps',
+         label: 'Unchecked',
+         format: (v) => (v ? formatOps(Number(v)) : '—'),
+         align: 'right',
+        },
+        {
+         key: 'speedup',
+         label: 'Speedup',
+         format: (v) => (v ? `${Number(v).toFixed(2)}x` : '—'),
+         align: 'right',
+        },
        ]}
-       data={tierComparison.operations.map(t => ({
+       data={tierComparison.operations.map((t) => ({
         name: t.name,
         defaultOps: t.default.opsPerSec,
         safeOps: t.safe?.opsPerSec,

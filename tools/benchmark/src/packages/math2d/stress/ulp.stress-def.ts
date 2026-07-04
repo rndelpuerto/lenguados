@@ -7,7 +7,7 @@
 
 import type { StressTestDefinition, StressTestOutput } from '../../../harness/stress-types.ts';
 import type { DiagnosticReport } from '../../../harness/diagnostics.ts';
-import { runUlpAccuracyStress } from '../../../stress/ulp-accuracy.stress.ts';
+import { runUlpAccuracyStress } from './ulp-accuracy.stress.ts';
 
 /**
  * Measure ULP (unit in the last place) accuracy of deterministic kernel functions

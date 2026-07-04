@@ -15,7 +15,7 @@
 import { SMALLEST_NORMAL } from '../scalar/constants';
 
 /**
- * Tests if value is positive infinity.
+ * Tests if value is positive infinity
  * @param value - Value to test
  * @returns True if positive infinity
  *
@@ -35,7 +35,7 @@ export function isPositiveInfinity(value: number): boolean {
 }
 
 /**
- * Tests if value is negative infinity.
+ * Tests if value is negative infinity
  * @param value - Value to test
  * @returns True if negative infinity
  *
@@ -55,7 +55,7 @@ export function isNegativeInfinity(value: number): boolean {
 }
 
 /**
- * Tests if value is any infinity.
+ * Tests if value is any infinity
  * @param value - Value to test
  * @returns True if positive or negative infinity
  *
@@ -75,7 +75,7 @@ export function isInfinity(value: number): boolean {
 }
 
 /**
- * Tests if value is a denormal number.
+ * Tests if value is a denormal number
  *
  * @remarks
  * Denormal (or subnormal) numbers are very small numbers that
@@ -102,33 +102,7 @@ export function isDenormal(value: number): boolean {
 }
 
 /**
- * Flushes denormal (subnormal) values to zero.
- *
- * @remarks
- * Denormal numbers cause 10–100x performance penalties on some CPUs
- * (x86 without FTZ/DAZ flags). This function is a numerical hygiene
- * utility for physics loops that may produce denormal intermediates.
- *
- * @param value - Value to flush
- * @returns The value unchanged if normal, or 0 if denormal
- *
- * @example
- * ```typescript
- * flushDenormal(5e-324);   // 0 (denormal flushed)
- * flushDenormal(1.5);      // 1.5 (normal, unchanged)
- * flushDenormal(0);        // 0 (zero is not denormal)
- * ```
- *
- * @see {@link isDenormal} - For testing without flushing
- * @category Guards
- * @since 0.7.0
- */
-export function flushDenormal(value: number): number {
- return isDenormal(value) ? 0 : value;
-}
-
-/**
- * Tests if value is in range [min, max].
+ * Tests if value is in range [min, max]
  * @param value - Value to test
  * @param min - Lower bound (inclusive)
  * @param max - Upper bound (inclusive)
@@ -142,7 +116,8 @@ export function flushDenormal(value: number): number {
  * isInRange(-1, 0, 10);      // false
  * ```
  *
- * @see {@link inRange} For epsilon-tolerant range checking
+ * @see {@link inRange} - Epsilon-tolerant range check
+ *
  * @category Guards
  * @since 0.7.0
  */

@@ -503,14 +503,63 @@ export function detectRegression(
 /* ========================================================================== */
 
 /**
+ * Maximum number of samples fed to the bootstrap CI.
+ *
+ * @remarks
+ * Beyond this count the percentile CI of the mean is statistically saturated,
+ * while the bootstrap cost grows as O(resamples * n). mitata collects tens of
+ * thousands of timing samples for fast operations (40k-78k observed), and
+ * consecutive timings are serially correlated, so the effective sample size is
+ * far below the raw count; a tighter CI computed from every raw sample would be
+ * overconfident. A uniform stride subsample de-correlates the series and bounds
+ * the cost (previously an unbounded O(10000 * n) per operation caused the
+ * cross-library comparison to stall for minutes after the benchmark phase).
+ */
+const BOOTSTRAP_MAX_SAMPLES = 10_000;
+
+/**
+ * Bootstrap resamples for benchmark CIs — above the standard percentile-CI
+ * minimum of 1000 (Efron and Tibshirani 1993) with low Monte Carlo error.
+ */
+const BOOTSTRAP_RESAMPLES = 2_000;
+
+/**
+ * Uniform stride subsample: returns at most `cap` elements evenly spaced across
+ * the series (preserves coverage and de-correlates adjacent timings). Returns
+ * the input unchanged when it already fits within `cap`.
+ *
+ * @param data - The full sample series
+ * @param cap - Maximum number of elements to retain
+ * @returns A subsample of at most `cap` evenly spaced elements
+ */
+function strideSubsample(data: number[], cap: number): number[] {
+ if (data.length <= cap) return data;
+ const stride = Math.ceil(data.length / cap);
+ const out: number[] = [];
+ for (let i = 0; i < data.length; i += stride) {
+  out.push(data[i]!);
+ }
+ return out;
+}
+
+/**
  * Compute full benchmark statistics from raw nanosecond measurements
+ *
+ * @remarks
+ * Descriptive stats, ops/sec, and outlier classification use the full sample
+ * array (precise point estimates). The bootstrap CI uses a stride-subsampled,
+ * cost-bounded view (see {@link BOOTSTRAP_MAX_SAMPLES}).
  *
  * @param dataNs - Raw timing samples in nanoseconds
  * @returns Complete BenchmarkStats with descriptive stats, CI, outliers, and ops/sec
  */
 export function benchmarkStats(dataNs: number[]): BenchmarkStats {
  const desc = descriptiveStats(dataNs);
- const ci95 = bootstrapCI(dataNs, 0.95);
+ const ci95 = bootstrapCI(
+  strideSubsample(dataNs, BOOTSTRAP_MAX_SAMPLES),
+  0.95,
+  BOOTSTRAP_RESAMPLES,
+ );
  const outliers = classifyOutliers(dataNs);
  const opsPerSec = desc.mean > 0 ? 1e9 / desc.mean : 0;
 

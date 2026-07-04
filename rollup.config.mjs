@@ -6,11 +6,11 @@ import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import json from '@rollup/plugin-json';
 import peerDepsExternal from 'rollup-plugin-peer-deps-external';
-import filesize from 'rollup-plugin-filesize';
 import polyfillNode from 'rollup-plugin-polyfill-node';
 import { visualizer } from 'rollup-plugin-visualizer';
 import { dts } from 'rollup-plugin-dts';
 import { swc, minify } from 'rollup-plugin-swc3';
+import terser from '@rollup/plugin-terser';
 import copy from 'rollup-plugin-copy';
 
 // Compute __dirname in ESM
@@ -46,7 +46,7 @@ const FormatTypes = Object.freeze({
 
 const FORMATS = Object.freeze(Object.values(FormatTypes));
 const EXTENSIONS = Object.freeze(['.ts', '.js']);
-const TARGET_JS = 'es2020';
+const TARGET_JS = 'es2022';
 
 // -------------------------
 // Paths
@@ -90,6 +90,9 @@ const INTERNALS_LIST = Object.freeze(loadInternals());
 // -------------------------
 // Entry Points
 // -------------------------
+// Stable lexicographic order: chunk/module emission is sensitive to entry
+// insertion order, and byte-stable output across builds keeps the published
+// bundle-size budgets reproducible.
 const entryPoints = Object.freeze(
  Array.from(
   new Set([
@@ -109,14 +112,23 @@ const entryPoints = Object.freeze(
      .map((f) => path.join(srcDir, f));
    }),
   ]),
- ),
+ ).sort(),
 );
 
 // -------------------------
 // Externals Setup
 // -------------------------
 const { dependencies = {}, peerDependencies = {} } = pkgJson;
-const pkgKeys = Object.freeze([...Object.keys(dependencies), ...Object.keys(peerDependencies)]);
+// First-party workspace packages are NEVER externalized: the published-package
+// guarantee is zero runtime dependencies, so any @lenguados/* usage is bundled
+// (tree-shaken subset as preserved relative modules). Declaring one as an
+// optional peerDependency (types resolution for consumers) must not reverse
+// that.
+const pkgKeys = Object.freeze(
+ [...Object.keys(dependencies), ...Object.keys(peerDependencies)].filter(
+  (name) => !name.startsWith('@lenguados/'),
+ ),
+);
 const baseExternal = Object.freeze([...pkgKeys]);
 const cjsExternal = Object.freeze(['crypto', 'buffer', 'process', 'http', ...baseExternal]);
 const esmExternal = baseExternal;
@@ -179,7 +191,8 @@ const buildPlugins = (format) => {
   // Copy all non-TypeScript assets (HTML, CSS, images, JSON) into the package’s lib/assets directory.
   // - Executes only for the ES module build to prevent redundant operations for other formats.
   // - Uses the `writeBundle` hook to run after the bundle is fully written.
-  // - `copyOnce: true` ensures assets are copied only once in watch mode.
+  // - `copyOnce` is disabled under watch so edited assets are re-copied on rebuild;
+  //   single-run builds keep the copy-once behavior.
   // - `flatten: false` preserves the original directory structure under `lib/assets`.
   // - `verbose: true` outputs each file as it’s copied for clear visibility.
   if (format === FormatTypes.ES_MODULE) {
@@ -193,20 +206,53 @@ const buildPlugins = (format) => {
       },
      ],
      hook: 'writeBundle',
-     copyOnce: true,
+     copyOnce: !process.env.ROLLUP_WATCH,
      flatten: false,
      verbose: true,
     }),
    );
   }
 
-  // Post-processing in production: cleanup, size report, bundle stats
+  // Post-processing in production: cleanup, size report, bundle stats.
+  // ESM minifies with terser because `format.preserve_annotations` keeps the
+  // `@__PURE__` pure-call annotations in the SHIPPED files — consumer bundlers
+  // need them to drop unused frozen-constant classes. The swc minifier strips
+  // all annotations (measured), so it is reserved for CJS, where consumers do
+  // not tree-shake and annotations are irrelevant.
   if (IS_PRODUCTION) {
-   plugins.push(
-    minify({ compress: true, mangle: true, module: format === FormatTypes.ES_MODULE }),
-    filesize(),
-    visualizer({ filename: STATS_FILE, open: false }),
-   );
+   if (format === FormatTypes.ES_MODULE) {
+    plugins.push(
+     terser({
+      module: true,
+      compress: true,
+      mangle: true,
+      format: { comments: false, preserve_annotations: true },
+     }),
+    );
+   } else {
+    plugins.push(minify({ compress: true, mangle: true, module: false }));
+   }
+   plugins.push(visualizer({ filename: STATS_FILE, open: false }));
+  }
+
+  // The ESM tree ships its own `{"type":"module"}` marker so plain-Node
+  // consumers resolve the `.js` files as ES modules without the
+  // double-parse warning, and Node 24 `require()` of the tree works.
+  // `sideEffects: false` MUST be restated here: this file becomes the
+  // NEAREST package.json for every tree module, shadowing the package
+  // root's flag — without it, consumer bundlers treat every module as
+  // side-effectful and whole-module elimination silently dies (measured).
+  if (format === FormatTypes.ES_MODULE) {
+   plugins.push({
+    name: 'emit-esm-package-type',
+    generateBundle() {
+     this.emitFile({
+      type: 'asset',
+      fileName: 'package.json',
+      source: '{\n "type": "module",\n "sideEffects": false\n}\n',
+     });
+    },
+   });
   }
  }
 
@@ -231,32 +277,88 @@ const generateFileName = (rel, format) => {
  return `${rel}.d.ts`;
 };
 
-const makeOutputConfig = (format, entry) => {
- const rel = entry === rootEntry ? 'index' : path.relative(srcDir, entry).replace(/\.ts$/, '');
+// Per-module file naming for the preserved-modules tree. Every module keeps
+// its source-relative path with an environment suffix — the suffix is
+// mandatory because `npm run dist` layers the development and production
+// passes into the same lib/ directory without cleaning between them. The
+// root barrel keeps its historical entry names (`module.js` production ESM,
+// `index.<env>.js` otherwise) so package.json exports, the three root entry
+// files, and every downstream tool keep resolving unchanged paths.
+const treeEntryFileNames = (format) => (chunkInfo) => {
+ const id = chunkInfo.facadeModuleId ?? '';
 
- const dir = format === FormatTypes.TYPES ? TYPES_DIR_NAME : format;
-
- return {
-  file: path.join(pkgDir, BUILD_DIR_NAME, dir, generateFileName(rel, format)),
-  format,
-  sourcemap: format !== FormatTypes.TYPES && !IS_PRODUCTION,
-  exports: format === FormatTypes.COMMONJS ? 'named' : undefined,
- };
+ if (id === rootEntry) {
+  return generateFileName('index', format);
+ }
+ if (id.startsWith(srcDir + path.sep)) {
+  // Normalize to forward slashes: path.relative emits backslashes on
+  // Windows, and Rollup file-name patterns require POSIX separators.
+  const rel = path.relative(srcDir, id).split(path.sep).join('/').replace(/\.ts$/, '');
+  return generateFileName(rel, format);
+ }
+ // Virtual/helper modules (polyfills, injected helpers) — internal, never
+ // part of the public exports map.
+ return `chunks/[name].${ENV}.js`;
 };
 
 // -------------------------
-// Config Generator
+// Config Generators
 // -------------------------
-const makeConfig = (entry, format) => ({
- input: entry,
+// Types remain one declaration bundle per entry point (unchanged contract).
+const makeTypesConfig = (entry) => {
+ const rel = entry === rootEntry ? 'index' : path.relative(srcDir, entry).replace(/\.ts$/, '');
+
+ return {
+  input: entry,
+  external: EXTERNALS_MAP.get(FormatTypes.TYPES),
+  plugins: PLUGINS_MAP.get(FormatTypes.TYPES),
+  treeshake: { moduleSideEffects: false },
+  maxParallelFileOps: MAX_PARALLEL_OPS,
+  perf: true,
+  output: {
+   file: path.join(
+    pkgDir,
+    BUILD_DIR_NAME,
+    TYPES_DIR_NAME,
+    generateFileName(rel, FormatTypes.TYPES),
+   ),
+   format: FormatTypes.TYPES,
+   sourcemap: false,
+  },
+ };
+};
+
+// CJS and ESM emit ONE multi-entry build each with preserved module
+// boundaries. Preserved modules (instead of per-entry self-contained
+// bundles) are what make consumer-side whole-module elimination work in
+// every bundler, and they guarantee shared state — deterministic kernels,
+// `config`, assertion enablement, the default RandomSource — exists exactly
+// once across all published entries (per-entry duplication is a determinism
+// defect: entries would each own an isolated mutable state realm).
+const makeTreeConfig = (format) => ({
+ input: [...entryPoints],
  external: EXTERNALS_MAP.get(format),
  plugins: PLUGINS_MAP.get(format),
  treeshake: { moduleSideEffects: false },
  maxParallelFileOps: MAX_PARALLEL_OPS,
  perf: true,
- output: makeOutputConfig(format, entry),
+ output: {
+  dir: path.join(pkgDir, BUILD_DIR_NAME, format),
+  format,
+  preserveModules: true,
+  preserveModulesRoot: srcDir,
+  entryFileNames: treeEntryFileNames(format),
+  chunkFileNames: `chunks/[name].${ENV}.js`,
+  hoistTransitiveImports: false,
+  sourcemap: !IS_PRODUCTION,
+  exports: format === FormatTypes.COMMONJS ? 'named' : undefined,
+ },
 });
 
-const configs = FORMATS.flatMap((format) => entryPoints.map((entry) => makeConfig(entry, format)));
+const configs = [
+ makeTreeConfig(FormatTypes.COMMONJS),
+ makeTreeConfig(FormatTypes.ES_MODULE),
+ ...entryPoints.map((entry) => makeTypesConfig(entry)),
+];
 
 export default configs;

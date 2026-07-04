@@ -69,7 +69,7 @@ export const defineSuite = definePackageSuite({
   add('Complex.sqrt (out)', () => C.sqrt(a, out));
   add('Complex.exp (out)', () => C.exp(a, out));
   add('Complex.log (out)', () => C.log(a, out));
-  add('Complex.pow (out)', () => C.pow(a, 2.0, out));
+  add('Complex.powScalar (out)', () => C.powScalar(a, 2.0, out));
 
   // Scalar reductions
   add('Complex.magnitude', () => C.magnitude(a));

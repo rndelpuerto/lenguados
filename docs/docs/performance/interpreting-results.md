@@ -2,6 +2,7 @@
 sidebar_position: 3
 title: Interpreting Results
 description: How to read benchmark metrics — ops/sec, confidence intervals, outliers, tier comparisons, cross-library ratios, and DX analysis.
+kind: benchmark-comparison
 ---
 
 # Interpreting Results
@@ -14,21 +15,21 @@ No prior statistics background is assumed.
 The primary metric. It measures how many times an operation can execute per second.
 Higher is better.
 
-- **Millions (M)**: Typical for arithmetic operations (add, subtract, multiply)
-- **Hundreds of millions**: Simple component access, scalar operations
-- **Tens of millions**: Complex operations (eigendecomposition, matrix inverse)
+- **Billions (G)**: Trivial scalar kernels (clamp, lerp, step)
+- **Hundreds of millions (M)**: Simple component arithmetic (add, dot, multiplyScalar)
+- **Tens of millions**: Transcendental kernels and matrix operations (sin, atan2, inverse, eigendecompose)
+- **Millions**: Heavy composite operations (slerp, transform conversions)
 
-The number is derived from the **mean** execution time (`ops/sec = 1e9 / mean_ns`),
-following the convention used by Criterion.rs, Google Benchmark, JMH, and mitata.
-The mean is the natural reciprocal for throughput and the correct estimand for
-bootstrap confidence intervals and hypothesis tests.
+The number is derived from the **mean** execution time (`ops/sec = 1e9 / mean_ns`), following established conventions in micro-benchmark reporting. The mean is the natural reciprocal for throughput and the correct estimand for bootstrap confidence intervals and hypothesis tests.
 
 ## Confidence Intervals (CI 95%)
 
-Every measurement includes a **95% confidence interval** shown as `[lo, hi]`.
-This means: if the benchmark were repeated many times, 95% of the measured means
-would fall within this range. Computed via non-parametric percentile bootstrap
-(Efron & Tibshirani, 1993) — no normality assumption required.
+Every measurement records a **95% confidence interval** as `[lo, hi]` in the stored
+summary data (`tools/benchmark/results/`); the documentation tables currently surface
+ops/sec, median, and sample counts. The interval means: if the benchmark were repeated
+many times, 95% of the measured means would fall within this range. Computed via
+non-parametric percentile bootstrap (Efron & Tibshirani, 1993) — no normality
+assumption required.
 
 **How to read it:**
 
@@ -66,7 +67,7 @@ real-world speedup is typically smaller than the development-mode measurement sh
 
 ## Cross-Library Comparison Ratios
 
-When comparing against another library (e.g., gl-matrix):
+When comparing against an external library (see dedicated comparison pages linked from each package's performance index):
 
 | Ratio             | Meaning                                |
 | ----------------- | -------------------------------------- |
@@ -74,12 +75,18 @@ When comparing against another library (e.g., gl-matrix):
 | **0.975 - 1.025** | Effectively equivalent (a "tie")       |
 | **< 0.975**       | The other library is faster (a "loss") |
 
-The **2.5% equivalence threshold** accounts for measurement noise. Differences smaller
-than 2.5% are not reliably reproducible across runs.
+The **2.5% equivalence threshold** is a classification convention for a single run:
+differences below it are within the measurement resolution of that run, so they are
+reported as ties rather than wins or losses. It is **not** a reproducibility bound —
+run-to-run variance on a shared machine is far larger than 2.5%, because thermal state,
+background load, and JIT/GC state shift between runs.
 
 **Geometric mean** provides a single aggregate score across all operations in a comparison.
 It weights each operation equally regardless of absolute throughput, so a 2x win on a
-fast operation counts the same as a 2x win on a slow one.
+fast operation counts the same as a 2x win on a slow one. Like every wall-clock figure,
+it is a single-run estimate: read it as a band, not a point. Back-to-back runs of the
+identical build on the same machine can shift the aggregate by double-digit percentages,
+so only shifts well beyond that envelope indicate a real change.
 
 ## Bundle Size & DX Metrics
 
@@ -109,11 +116,15 @@ ULP measures floating-point accuracy for deterministic math kernels:
 
 - **0 ULP**: The result is the closest representable `float64` to the true mathematical answer
 - **1 ULP**: Off by one bit in the 52-bit significand — the smallest possible rounding error
-- **2+ ULP**: Unusual for elementary functions; worth investigating
+- **2+ ULP**: Measured on tangent, inverse-trigonometric, and composite functions, where
+  rounding compounds across internal steps; for sin, cos, log, exp, and hypot, more than
+  1 ULP is worth investigating
 
-For packages using fdlibm deterministic kernels, 1 ULP accuracy across all operations
-means the cross-platform determinism guarantee introduces **no meaningful accuracy loss**
-compared to native `Math.*`.
+The fdlibm deterministic kernels target 1 ULP or less for the primitive trigonometric,
+exponential, and logarithmic functions; composite functions such as `pow` may reach
+single-digit ULP. At these magnitudes the cross-platform determinism guarantee introduces
+**no meaningful accuracy loss** compared to native `Math.*` — see each package's accuracy
+page for the measured per-function maxima.
 
 ## Running Benchmarks Locally
 
@@ -138,6 +149,9 @@ npm run tools:bench:stress
 
 # DX analysis (bundle size, tree-shaking)
 npm run tools:bench:dx
+
+# Bundle-size budget gate (fails when a budgeted import exceeds its gzip budget)
+npm run tools:bench:size
 
 # Generate summaries (consumed by docs build)
 npm run tools:bench:summarize

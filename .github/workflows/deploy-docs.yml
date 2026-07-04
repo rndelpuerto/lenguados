@@ -30,9 +30,11 @@ jobs:
  build:
   name: Build Documentation
   runs-on: ubuntu-latest
-  # Run if: bench succeeded, OR manual dispatch, OR not triggered by workflow_run
+  # Run if: bench succeeded (workflow_run trigger, already main-filtered), OR
+  # manual dispatch FROM MAIN ONLY — the site must never be built/published
+  # from any other ref (checkout uses the dispatching ref).
   if: >-
-   github.event_name == 'workflow_dispatch' ||
+   (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') ||
    github.event.workflow_run.conclusion == 'success'
 
   permissions:
@@ -45,7 +47,7 @@ jobs:
    # Checkout
    # ─────────────────────────────────────────────────────────────────────────
    - name: Checkout repository
-     uses: actions/checkout@v4
+     uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
      with:
       fetch-depth: 1
 
@@ -53,7 +55,7 @@ jobs:
    # Setup Environment
    # ─────────────────────────────────────────────────────────────────────────
    - name: Set up Node.js and enable npm cache
-     uses: actions/setup-node@v4
+     uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
      with:
       node-version-file: '.nvmrc'
       cache: npm
@@ -63,19 +65,39 @@ jobs:
 
    # ─────────────────────────────────────────────────────────────────────────
    # Download benchmark summaries from the bench workflow
-   # If triggered by workflow_run, download from the triggering run.
-   # If triggered manually or benchmarks not available, docs build will
-   # show NoDataFallback components on performance pages.
+   # workflow_run trigger: download from the triggering run. A successful
+   # bench run MUST have produced the artifact — its absence is an anomaly,
+   # so this step is NOT failure-tolerant (no continue-on-error): the deploy
+   # fails rather than silently publishing fallback pages.
    # ─────────────────────────────────────────────────────────────────────────
-   - name: Download benchmark summaries
+   - name: Download benchmark summaries (from triggering bench run)
      if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success'
-     uses: actions/download-artifact@v4
+     uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
      with:
       name: benchmark-summaries
       path: tools/benchmark/results/summaries/
       run-id: ${{ github.event.workflow_run.id }}
       github-token: ${{ secrets.GITHUB_TOKEN }}
-     continue-on-error: true
+
+   # ─────────────────────────────────────────────────────────────────────────
+   # Manual dispatch: fetch the summaries artifact of the LATEST successful
+   # bench run on main instead of building the site with fallback pages.
+   # gh requires GH_TOKEN explicitly (it does not auto-read the job token);
+   # the job's `actions: read` permission suffices for cross-run downloads.
+   # Fails with a clear message when no successful bench run exists.
+   # ─────────────────────────────────────────────────────────────────────────
+   - name: Download benchmark summaries (latest successful bench run)
+     if: github.event_name == 'workflow_dispatch'
+     env:
+      GH_TOKEN: ${{ github.token }}
+     run: |
+      run_id=$(gh run list --repo "$GITHUB_REPOSITORY" -w 'Run Benchmark Suite' -s success -b main -L 1 --json databaseId --jq '.[0].databaseId')
+      if [ -z "$run_id" ] || [ "$run_id" = "null" ]; then
+       echo "::error::No successful bench run found on main — run the bench workflow first; refusing to publish docs without benchmark data."
+       exit 1
+      fi
+      echo "Fetching benchmark-summaries from bench run $run_id"
+      gh run download "$run_id" --repo "$GITHUB_REPOSITORY" -n benchmark-summaries -D tools/benchmark/results/summaries/
 
    # ─────────────────────────────────────────────────────────────────────────
    # Build Docusaurus site
@@ -91,10 +113,10 @@ jobs:
    # Configure and upload for GitHub Pages
    # ─────────────────────────────────────────────────────────────────────────
    - name: Configure GitHub Pages deployment
-     uses: actions/configure-pages@v4
+     uses: actions/configure-pages@1f0c5cde4bc74cd7e1254d0cb4de8d49e9068c7d # v4.0.0
 
    - name: Upload built site as artifact
-     uses: actions/upload-pages-artifact@v3
+     uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3.0.1
      with:
       path: docs/build
 
@@ -118,4 +140,4 @@ jobs:
   steps:
    - name: Deploy static site to Pages
      id: deploy-pages
-     uses: actions/deploy-pages@v4
+     uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5

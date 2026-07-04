@@ -4,19 +4,11 @@
  *
  * These interfaces wrap the per-module result types into top-level
  * report structures that include metadata and are written to
- * `results/stress-latest.json` and `results/dx-latest.json`.
+ * `results/{package}/stress-latest.json` and `results/{package}/dx-latest.json`.
  */
 
 import type { ReportMetadata } from './reporter.ts';
 import type { DiagnosticReport } from './diagnostics.ts';
-
-import type { UlpAccuracyResult } from '../stress/ulp-accuracy.stress.ts';
-import type { EdgeCaseResult } from '../stress/ieee754-edge.stress.ts';
-import type { CancellationResult } from '../stress/cancellation.stress.ts';
-import type { SingularityResult } from '../stress/near-singular.stress.ts';
-import type { OverflowResult } from '../stress/overflow.stress.ts';
-import type { IdentityResult } from '../stress/identity.stress.ts';
-import type { AllocationResult } from '../stress/allocation.stress.ts';
 
 import type { BundleSizeResult } from '../dx/bundle-size.ts';
 import type { TreeShakingResult } from '../dx/tree-shaking.ts';
@@ -28,19 +20,19 @@ import type { BuildComparisonResult } from '../dx/build-comparison.ts';
 /* Stress Report                                                               */
 /* ========================================================================== */
 
-/** Represent a complete stress test report with metadata and per-suite results */
+/**
+ * Represent a complete stress test report with metadata and per-suite results
+ *
+ * @remarks
+ * Suite result shapes are package knowledge (each stress implementation lives
+ * under its package's extension directory), so the report carries them as
+ * opaque per-suite entry arrays keyed by suite name — consumers that need the
+ * concrete shape import it from the owning package extension.
+ */
 export interface StressReport {
  metadata: ReportMetadata;
  samples: number;
- suites: {
-  ulp?: UlpAccuracyResult[];
-  ieee754?: EdgeCaseResult[];
-  cancellation?: CancellationResult[];
-  nearSingular?: SingularityResult[];
-  overflow?: OverflowResult[];
-  identity?: IdentityResult[];
-  allocation?: AllocationResult[];
- };
+ suites: Record<string, unknown[]>;
  diagnostics: DiagnosticReport;
 }
 
@@ -66,13 +58,6 @@ export interface DxReport {
 /* ========================================================================== */
 
 export type {
- UlpAccuracyResult,
- EdgeCaseResult,
- CancellationResult,
- SingularityResult,
- OverflowResult,
- IdentityResult,
- AllocationResult,
  BundleSizeResult,
  TreeShakingResult,
  BuildCorrectnessResult,

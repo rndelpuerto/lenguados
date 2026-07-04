@@ -15,39 +15,39 @@ import { join } from 'node:path';
 
 import type { LoadContext, Plugin } from '@docusaurus/types';
 
-interface PackageBenchmarkData {
- performance: unknown | null;
- comparison: unknown | null;
- stress: unknown | null;
- dx: unknown | null;
-}
+import type { AllBenchmarkData } from '../types/benchmark-summaries';
 
-type BenchmarkData = Record<string, PackageBenchmarkData>;
-
-function loadJsonFile(filepath: string): unknown | null {
+function loadJsonFile<T>(filepath: string): T | null {
  if (!existsSync(filepath)) return null;
  try {
-  return JSON.parse(readFileSync(filepath, 'utf-8'));
+  return JSON.parse(readFileSync(filepath, 'utf-8')) as T;
  } catch {
   return null;
  }
 }
 
-export default function benchmarkDataPlugin(context: LoadContext): Plugin<BenchmarkData> {
+export default function benchmarkDataPlugin(context: LoadContext): Plugin<AllBenchmarkData> {
  return {
   name: 'docusaurus-plugin-benchmark-data',
 
-  async loadContent(): Promise<BenchmarkData> {
+  async loadContent(): Promise<AllBenchmarkData> {
    // Read from the benchmark tool's summary output directory.
    // Path: monorepo-root/tools/benchmark/results/summaries/
-   const summariesDir = join(context.siteDir, '..', 'tools', 'benchmark', 'results', 'summaries');
-   const result: BenchmarkData = {};
+   const summariesDirectory = join(
+    context.siteDir,
+    '..',
+    'tools',
+    'benchmark',
+    'results',
+    'summaries',
+   );
+   const result: AllBenchmarkData = {};
 
-   if (!existsSync(summariesDir)) return result;
+   if (!existsSync(summariesDirectory)) return result;
 
-   const entries = readdirSync(summariesDir);
+   const entries = readdirSync(summariesDirectory);
    for (const entry of entries) {
-    const entryPath = join(summariesDir, entry);
+    const entryPath = join(summariesDirectory, entry);
     if (!statSync(entryPath).isDirectory()) continue;
 
     result[entry] = {

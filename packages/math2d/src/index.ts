@@ -77,9 +77,6 @@
  *
  * // Parsing/serialization
  * import { parseVector2, formatMatrix3 } from '@lenguados/math2d/utils/parse';
- *
- * // Performance measurement
- * import { measure, MeasurementCollector } from '@lenguados/math2d/utils/performance';
  * ```
  */
 

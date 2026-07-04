@@ -1,18 +1,22 @@
 /**
  * @file validation/assert.ts
- * @module @lenguados/math2d
+ * @module @lenguados/math2d/validation
  * @description Debug assertions for development-time validation
  *
  * @remarks
- * **Pattern**: Development-only assertions with compile-time DCE.
+ * **Pattern**: Development-only assertions with library-side build-time DCE.
  *
  * This module provides debug-only validation that is **completely eliminated**
- * in production builds via Dead Code Elimination (DCE). The `process.env.NODE_ENV`
- * ecosystem standard is used to safely trigger minifier pruning (e.g., in Vite, Webpack, Rollup).
+ * in production builds via Dead Code Elimination (DCE) at the library build step.
+ * The build-time constant substitution (configured in `rollup.config.mjs`) replaces
+ * every literal occurrence of `__LENGUADOS_DEV__` with `false` for production library
+ * bundles and `true` for development library bundles. The subsequent minification
+ * strips `if (false) { ... }` blocks entirely.
  *
  * **Zero-Overhead Production**:
- * - Development: `process.env.NODE_ENV !== 'production'` → assertions active
- * - Production: `process.env.NODE_ENV === 'production'` → all assertion code eliminated
+ * - Development bundle (`__LENGUADOS_DEV__ = true` literal): assertions active
+ * - Production bundle (`__LENGUADOS_DEV__ = false` literal): assertion call sites,
+ *   bodies, and string literals all removed at library build time
  *
  * **Two-Layer Protection System**:
  * 1. **Assertions** (this module): Catch errors early in development (eliminated in prod)
@@ -63,30 +67,31 @@ import {
 /* ========================================================================== */
 
 /**
- * Resolves the development mode flag.
+ * Compile-time development-mode flag
  *
  * @remarks
- * **Industry Standard DCE (Dead Code Elimination)**:
- * Modern bundlers (Vite, Webpack, Rollup) automatically replace `process.env.NODE_ENV !== 'production'`
- * with `false` during a production build. This guarantees that all `assert` functions
- * become unreachable (e.g. `if (false) { ... }`) and are completely stripped from the final bundle by minifiers,
- * providing zero-overhead development assertions.
+ * **Library-side build-time DCE**:
+ * The build-time constant substitution (configured at `rollup.config.mjs`
+ * `jsc.transform.optimizer.globals.vars`) replaces every literal occurrence of
+ * `__LENGUADOS_DEV__` with `false` in production library bundles and `true` in
+ * development library bundles. Subsequent minification eliminates
+ * `if (false) { ... }` blocks entirely — including the assertion
+ * call sites and their string literals — so the library's production bundles are
+ * self-contained and have zero assertion overhead, independently of any consumer
+ * bundler configuration.
  *
  * @internal
  */
-declare const process: { env: { NODE_ENV: string } } | undefined;
+declare const __LENGUADOS_DEV__: boolean;
 
-const DEV_MODE: boolean =
- typeof process !== 'undefined' && process.env && process.env.NODE_ENV === 'production'
-  ? false
-  : true;
+const DEV_MODE: boolean = __LENGUADOS_DEV__;
 
 /* ========================================================================== */
 /* Runtime State (Development Only)                                            */
 /* ========================================================================== */
 
 /**
- * Runtime assertions state for development.
+ * Runtime assertions state for development
  * Only used when DEV_MODE is true.
  * @internal
  */
@@ -97,24 +102,30 @@ let assertionsEnabled = true;
 /* ========================================================================== */
 
 /**
- * Enables or disables assertions globally at runtime.
+ * Enables or disables assertions globally at runtime
  *
  * @remarks
- * **Development only**: This function only has effect when `process.env.NODE_ENV !== 'production'`
- * (development build). In production builds, assertions are
- * eliminated at compile-time via DCE (Dead Code Elimination).
+ * **Development only**: this function only has effect when consuming the
+ * development library bundle (where `__LENGUADOS_DEV__` resolved to `true` at
+ * library build time). In production library bundles the entire `if (DEV_MODE)`
+ * branch in every assertion call site has been eliminated by the minifier, so
+ * `setAssertionsEnabled` is a literal no-op — the stored module-internal
+ * `assertionsEnabled` variable can still be toggled, but no assertion code is
+ * reachable to read it. This is intentional: application code that toggles
+ * assertions must not produce divergent runtime behaviour between dev and prod.
  *
  * The `safe*` functions in `auxiliary/numeric/safety.ts` remain active
- * regardless of this setting.
+ * regardless of this setting — they are the always-on safety net that
+ * survives production DCE.
  *
  * @param enabled - `true` to enable assertions, `false` to disable
  *
  * @example
  * ```typescript
- * // Temporarily disable assertions for performance testing
+ * // Temporarily disable assertions for profiling (development only).
  * setAssertionsEnabled(false);
  *
- * // Re-enable for debugging
+ * // Re-enable for debugging.
  * setAssertionsEnabled(true);
  * ```
  *
@@ -126,11 +137,14 @@ export function setAssertionsEnabled(enabled: boolean): void {
 }
 
 /**
- * Returns the current assertions state.
+ * Returns the current assertions state
  *
  * @remarks
- * In development: Returns the runtime state set by {@link setAssertionsEnabled}.
- * In production: Always returns `false` (assertions are compile-time eliminated).
+ * In the development library bundle: returns the runtime state set by
+ * {@link setAssertionsEnabled}. In the production library bundle: the
+ * `DEV_MODE` short-circuit evaluates `false && assertionsEnabled` at the
+ * literal level after the build-time constant substitution, and the call
+ * typically reduces to a literal `return false;` after minification.
  *
  * @returns `true` if assertions are enabled, `false` otherwise
  *
@@ -153,7 +167,7 @@ export function areAssertionsEnabled(): boolean {
 /* ========================================================================== */
 
 /**
- * Asserts that a value is finite (not NaN, not Infinity).
+ * Asserts that a value is finite (not NaN, not Infinity)
  *
  * @remarks
  * No-op when assertions are disabled. Zero runtime cost in production.
@@ -171,6 +185,8 @@ export function areAssertionsEnabled(): boolean {
  * }
  * ```
  *
+ * @see {@link ensureFinite} - Always-active Safe variant that returns a fallback
+ *
  * @category Assertion
  * @since 0.7.0
  */
@@ -186,7 +202,7 @@ export function assertFinite(value: number, name?: string): void {
 }
 
 /**
- * Asserts that a value is not zero.
+ * Asserts that a value is not zero
  *
  * @remarks
  * Uses strict equality (`=== 0`). For near-zero checks, use `isNearZero`.
@@ -204,6 +220,8 @@ export function assertFinite(value: number, name?: string): void {
  * }
  * ```
  *
+ * @see {@link divideSafe} - Always-active Safe variant that returns a fallback on zero
+ *
  * @category Assertion
  * @since 0.7.0
  */
@@ -219,7 +237,7 @@ export function assertNonZero(value: number, name?: string): void {
 }
 
 /**
- * Asserts that a value is within a range (inclusive).
+ * Asserts that a value is within a range (inclusive)
  *
  * @remarks
  * Uses inclusive bounds: `min ≤ value ≤ max`.
@@ -252,7 +270,7 @@ export function assertRange(value: number, min: number, max: number, name?: stri
 }
 
 /**
- * Asserts that a value is strictly positive (> 0).
+ * Asserts that a value is strictly positive (> 0)
  *
  * @remarks
  * Zero is not considered positive. Use `assertNonNegative` for ≥ 0.
@@ -285,7 +303,7 @@ export function assertPositive(value: number, name?: string): void {
 }
 
 /**
- * Asserts that a value is non-negative (≥ 0).
+ * Asserts that a value is non-negative (≥ 0)
  *
  * @remarks
  * Zero is considered valid. Use `assertPositive` for strictly > 0.
@@ -297,11 +315,12 @@ export function assertPositive(value: number, name?: string): void {
  *
  * @example
  * ```typescript
- * function setMass(m: number): void {
- *   assertNonNegative(m, 'mass');
- *   this.mass = m;
+ * function setBound(value: number): void {
+ *   assertNonNegative(value, 'bound');
  * }
  * ```
+ *
+ * @see {@link sqrtSafe} - Always-active Safe variant that clamps negative input to 0
  *
  * @category Assertion
  * @since 0.7.0
@@ -318,7 +337,7 @@ export function assertNonNegative(value: number, name?: string): void {
 }
 
 /**
- * Asserts that a value is a safe JavaScript integer.
+ * Asserts that a value is a safe JavaScript integer
  *
  * @remarks
  * Safe integers are integers that can be exactly represented as
@@ -354,7 +373,7 @@ export function assertSafeInteger(value: number, name?: string): void {
 /* ========================================================================== */
 
 /**
- * Asserts a generic boolean condition.
+ * Asserts a generic boolean condition
  *
  * @remarks
  * Base assertion for any custom validation logic.
@@ -387,7 +406,7 @@ export function assert(condition: boolean, message?: string): void {
 /* ========================================================================== */
 
 /**
- * Asserts that Vector2-like components are finite.
+ * Asserts that Vector2-like components are finite
  *
  * @remarks
  * Validates both components are finite (not NaN, not Infinity).
@@ -423,7 +442,7 @@ export function assertVector2(x: number, y: number, name?: string): void {
 }
 
 /**
- * Asserts that Matrix2-like elements are finite.
+ * Asserts that Matrix2-like elements are finite
  *
  * @remarks
  * Validates all 4 elements are finite (not NaN, not Infinity).
@@ -473,7 +492,7 @@ export function assertMatrix2(
 }
 
 /**
- * Asserts that Matrix3-like elements are finite.
+ * Asserts that Matrix3-like elements are finite
  *
  * @remarks
  * Validates all 9 elements are finite (not NaN, not Infinity).
@@ -550,7 +569,7 @@ export function assertMatrix3(
 }
 
 /**
- * Asserts that Rotation2-like components are finite.
+ * Asserts that Rotation2-like components are finite
  *
  * @remarks
  * Validates both cos and sin are finite (not NaN, not Infinity).
@@ -587,7 +606,7 @@ export function assertRotation2(cos: number, sin: number, name?: string): void {
 }
 
 /**
- * Asserts that Rotation2-like components are finite AND form a unit rotation.
+ * Asserts that Rotation2-like components are finite AND form a unit rotation
  *
  * @remarks
  * Validates that cos and sin are finite AND that cos² + sin² ≈ 1 within
@@ -634,7 +653,7 @@ export function assertRotation2Normalized(
 }
 
 /**
- * Asserts that Complex-like components are finite.
+ * Asserts that Complex-like components are finite
  *
  * @remarks
  * Validates both real and imag are finite (not NaN, not Infinity).
@@ -670,7 +689,7 @@ export function assertComplex(real: number, imag: number, name?: string): void {
 }
 
 /**
- * Asserts that Interval components are finite and properly ordered.
+ * Asserts that Interval components are finite and properly ordered
  *
  * @remarks
  * Validates both components are finite AND min <= max.
@@ -709,7 +728,7 @@ export function assertInterval(min: number, max: number, name?: string): void {
 }
 
 /**
- * Asserts that Transform2 components are finite.
+ * Asserts that Transform2 components are finite
  *
  * @remarks
  * Validates all 6 components are finite (not NaN, not Infinity).
@@ -773,7 +792,75 @@ export function assertTransform2(
 /* ========================================================================== */
 
 /**
- * Asserts that an object has valid Vector2-like shape with finite components.
+ * Flat-key tuples for the six `assert*Like` shapes that admit a uniform
+ * key iteration. `Transform2Like` is intentionally excluded — its nested
+ * structure (`{ position, rotation, scale }`) does not reduce to a flat
+ * list and is handled bespoke in `assertTransform2Like`.
+ *
+ * @internal
+ */
+const VECTOR2_KEYS = ['x', 'y'] as const;
+/** @internal */
+const ROTATION2_KEYS = ['cos', 'sin'] as const;
+/** @internal */
+const COMPLEX_KEYS = ['real', 'imag'] as const;
+/** @internal */
+const INTERVAL_KEYS = ['min', 'max'] as const;
+/** @internal */
+const MATRIX2_KEYS = ['m00', 'm01', 'm10', 'm11'] as const;
+/** @internal */
+const MATRIX3_KEYS = ['m00', 'm01', 'm02', 'm10', 'm11', 'm12', 'm20', 'm21', 'm22'] as const;
+
+/**
+ * Shared shape-and-finiteness check for the `assert*Like` family
+ *
+ * @remarks
+ * Centralises the pattern "runtime type guard + every declared key is a finite
+ * number" so the six flat-shape `assert*Like` callers do not reinvent the
+ * pre-check + loop on every core type. `assertIntervalLike` routes through
+ * this helper and then appends the `min ≤ max` invariant; `assertTransform2Like`
+ * is excluded because its nested shape (`position`, `rotation`, `scale`) would
+ * not decompose cleanly into a flat key list.
+ *
+ * The helper is a no-op when assertions are disabled or in production builds
+ * (eliminated via DCE together with its callers).
+ *
+ * @param value - Unknown candidate to validate
+ * @param typeName - Human-readable type label used in the `TypeError` message (e.g. `'Vector2Like'`)
+ * @param isLike - Type-guard predicate that checks the shape of `value`
+ * @param keys - Flat list of numeric property names that must each be finite
+ * @param name - Optional caller-facing label for error messages
+ * @throws {TypeError} If `value` fails the type guard
+ * @throws {Error} If any `key` in `value` is not a finite number
+ *
+ * @internal
+ * @category Helpers
+ * @since 0.7.0
+ */
+function validateShape(
+ value: unknown,
+ typeName: string,
+ isLike: (v: unknown) => boolean,
+ keys: readonly string[],
+ name?: string,
+): void {
+ /* istanbul ignore next -- DCE: eliminated in production */
+ if (!DEV_MODE) return;
+ if (!assertionsEnabled) return;
+ const label = name ?? 'value';
+ if (!isLike(value)) {
+  throw new TypeError(`[math2d] Expected ${typeName} for ${label}, got ${typeof value}`);
+ }
+ const numericView = value as Record<string, number>;
+ for (const key of keys) {
+  if (!Number.isFinite(numericView[key])) {
+   throw new Error(`[math2d] ${label}.${key} must be a finite number`);
+  }
+ }
+}
+
+/**
+ * Asserts that an object has valid Vector2-like shape with finite components
  *
  * @remarks
  * Validates that object has `x` and `y` numeric properties that are finite.
@@ -782,7 +869,8 @@ export function assertTransform2(
  *
  * @param value - Object to validate
  * @param name - Object name for error messages (optional)
- * @throws {Error} If assertions enabled and object is not Vector2-like or has invalid components
+ * @throws {TypeError} If assertions enabled and object is not Vector2-like
+ * @throws {Error} If assertions enabled and any component is not finite
  *
  * @example
  * ```typescript
@@ -796,20 +884,11 @@ export function assertTransform2(
  * @since 0.7.0
  */
 export function assertVector2Like(value: unknown, name?: string): asserts value is Vector2Like {
- /* istanbul ignore next -- DCE: eliminated in production */
- if (!DEV_MODE) return;
- if (!assertionsEnabled) return;
- const label = name ?? 'value';
- if (!isVector2Like(value)) {
-  throw new TypeError(`[math2d] Expected Vector2Like for ${label}, got ${typeof value}`);
- }
- if (!Number.isFinite(value.x) || !Number.isFinite(value.y)) {
-  throw new Error(`[math2d] ${label}.x and .y must be finite numbers`);
- }
+ validateShape(value, 'Vector2Like', isVector2Like, VECTOR2_KEYS, name);
 }
 
 /**
- * Asserts that an object has valid Rotation2-like shape with finite elements.
+ * Asserts that an object has valid Rotation2-like shape with finite elements
  *
  * @remarks
  * Validates that object has `cos` and `sin` numeric properties that are finite.
@@ -818,7 +897,8 @@ export function assertVector2Like(value: unknown, name?: string): asserts value 
  *
  * @param value - Object to validate
  * @param name - Object name for error messages (optional)
- * @throws {Error} If assertions enabled and object is not Rotation2-like or has invalid elements
+ * @throws {TypeError} If assertions enabled and object is not Rotation2-like
+ * @throws {Error} If assertions enabled and any element is not finite
  *
  * @example
  * ```typescript
@@ -832,20 +912,11 @@ export function assertVector2Like(value: unknown, name?: string): asserts value 
  * @since 0.7.0
  */
 export function assertRotation2Like(value: unknown, name?: string): asserts value is Rotation2Like {
- /* istanbul ignore next -- DCE: eliminated in production */
- if (!DEV_MODE) return;
- if (!assertionsEnabled) return;
- const label = name ?? 'value';
- if (!isRotation2Like(value)) {
-  throw new TypeError(`[math2d] Expected Rotation2Like for ${label}, got ${typeof value}`);
- }
- if (!Number.isFinite(value.cos) || !Number.isFinite(value.sin)) {
-  throw new Error(`[math2d] ${label}.cos and .sin must be finite numbers`);
- }
+ validateShape(value, 'Rotation2Like', isRotation2Like, ROTATION2_KEYS, name);
 }
 
 /**
- * Asserts that an object has valid Matrix2-like shape with finite elements.
+ * Asserts that an object has valid Matrix2-like shape with finite elements
  *
  * @remarks
  * Validates that object has `m00`, `m01`, `m10`, `m11` numeric properties that are finite.
@@ -854,7 +925,8 @@ export function assertRotation2Like(value: unknown, name?: string): asserts valu
  *
  * @param value - Object to validate
  * @param name - Object name for error messages (optional)
- * @throws {Error} If assertions enabled and object is not Matrix2-like or has invalid elements
+ * @throws {TypeError} If assertions enabled and object is not Matrix2-like
+ * @throws {Error} If assertions enabled and any element is not finite
  *
  * @example
  * ```typescript
@@ -868,22 +940,11 @@ export function assertRotation2Like(value: unknown, name?: string): asserts valu
  * @since 0.7.0
  */
 export function assertMatrix2Like(value: unknown, name?: string): asserts value is Matrix2Like {
- /* istanbul ignore next -- DCE: eliminated in production */
- if (!DEV_MODE) return;
- if (!assertionsEnabled) return;
- const label = name ?? 'value';
- if (!isMatrix2Like(value)) {
-  throw new TypeError(`[math2d] Expected Matrix2Like for ${label}, got ${typeof value}`);
- }
- for (const key of ['m00', 'm01', 'm10', 'm11'] as const) {
-  if (!Number.isFinite(value[key])) {
-   throw new Error(`[math2d] ${label}.${key} must be a finite number`);
-  }
- }
+ validateShape(value, 'Matrix2Like', isMatrix2Like, MATRIX2_KEYS, name);
 }
 
 /**
- * Asserts that an object has valid Matrix3-like shape with finite elements.
+ * Asserts that an object has valid Matrix3-like shape with finite elements
  *
  * @remarks
  * Validates that object has `m00`..`m22` numeric properties that are finite.
@@ -892,7 +953,8 @@ export function assertMatrix2Like(value: unknown, name?: string): asserts value 
  *
  * @param value - Object to validate
  * @param name - Object name for error messages (optional)
- * @throws {Error} If assertions enabled and object is not Matrix3-like or has invalid elements
+ * @throws {TypeError} If assertions enabled and object is not Matrix3-like
+ * @throws {Error} If assertions enabled and any element is not finite
  *
  * @example
  * ```typescript
@@ -906,22 +968,11 @@ export function assertMatrix2Like(value: unknown, name?: string): asserts value 
  * @since 0.7.0
  */
 export function assertMatrix3Like(value: unknown, name?: string): asserts value is Matrix3Like {
- /* istanbul ignore next -- DCE: eliminated in production */
- if (!DEV_MODE) return;
- if (!assertionsEnabled) return;
- const label = name ?? 'value';
- if (!isMatrix3Like(value)) {
-  throw new TypeError(`[math2d] Expected Matrix3Like for ${label}, got ${typeof value}`);
- }
- for (const key of ['m00', 'm01', 'm02', 'm10', 'm11', 'm12', 'm20', 'm21', 'm22'] as const) {
-  if (!Number.isFinite(value[key])) {
-   throw new Error(`[math2d] ${label}.${key} must be a finite number`);
-  }
- }
+ validateShape(value, 'Matrix3Like', isMatrix3Like, MATRIX3_KEYS, name);
 }
 
 /**
- * Asserts that an object has valid Complex-like shape with finite components.
+ * Asserts that an object has valid Complex-like shape with finite components
  *
  * @remarks
  * Validates that object has `real` and `imag` numeric properties that are finite.
@@ -930,7 +981,8 @@ export function assertMatrix3Like(value: unknown, name?: string): asserts value 
  *
  * @param value - Object to validate
  * @param name - Object name for error messages (optional)
- * @throws {Error} If assertions enabled and object is not Complex-like or has invalid components
+ * @throws {TypeError} If assertions enabled and object is not Complex-like
+ * @throws {Error} If assertions enabled and any component is not finite
  *
  * @example
  * ```typescript
@@ -944,20 +996,11 @@ export function assertMatrix3Like(value: unknown, name?: string): asserts value 
  * @since 0.7.0
  */
 export function assertComplexLike(value: unknown, name?: string): asserts value is ComplexLike {
- /* istanbul ignore next -- DCE: eliminated in production */
- if (!DEV_MODE) return;
- if (!assertionsEnabled) return;
- const label = name ?? 'value';
- if (!isComplexLike(value)) {
-  throw new TypeError(`[math2d] Expected ComplexLike for ${label}, got ${typeof value}`);
- }
- if (!Number.isFinite(value.real) || !Number.isFinite(value.imag)) {
-  throw new Error(`[math2d] ${label}.real and .imag must be finite numbers`);
- }
+ validateShape(value, 'ComplexLike', isComplexLike, COMPLEX_KEYS, name);
 }
 
 /**
- * Asserts that an object has valid Interval-like shape with finite bounds.
+ * Asserts that an object has valid Interval-like shape with finite bounds
  *
  * @remarks
  * Validates that object has `min` and `max` numeric properties that are finite.
@@ -967,7 +1010,8 @@ export function assertComplexLike(value: unknown, name?: string): asserts value 
  *
  * @param value - Object to validate
  * @param name - Object name for error messages (optional)
- * @throws {Error} If assertions enabled and object is not Interval-like or has invalid bounds
+ * @throws {TypeError} If assertions enabled and object is not Interval-like
+ * @throws {Error} If assertions enabled and any bound is not finite or min > max
  *
  * @example
  * ```typescript
@@ -981,34 +1025,37 @@ export function assertComplexLike(value: unknown, name?: string): asserts value 
  * @since 0.7.0
  */
 export function assertIntervalLike(value: unknown, name?: string): asserts value is IntervalLike {
+ validateShape(value, 'IntervalLike', isIntervalLike, INTERVAL_KEYS, name);
  /* istanbul ignore next -- DCE: eliminated in production */
  if (!DEV_MODE) return;
  if (!assertionsEnabled) return;
- const label = name ?? 'value';
- if (!isIntervalLike(value)) {
-  throw new TypeError(`[math2d] Expected IntervalLike for ${label}, got ${typeof value}`);
- }
- if (!Number.isFinite(value.min) || !Number.isFinite(value.max)) {
-  throw new Error(`[math2d] ${label}.min and .max must be finite numbers`);
- }
- if (value.min > value.max) {
+ const typed = value as IntervalLike;
+ if (typed.min > typed.max) {
+  const label = name ?? 'value';
   throw new Error(
-   `[math2d] ${label}.min (${value.min}) must not exceed ${label}.max (${value.max})`,
+   `[math2d] ${label}.min (${typed.min}) must not exceed ${label}.max (${typed.max})`,
   );
  }
 }
 
 /**
- * Asserts that an object has valid Transform2-like shape.
+ * Asserts that an object has valid Transform2-like shape
  *
  * @remarks
  * Validates that object has `position` (Vector2-like), `rotation` (Rotation2-like), and `scale` (Vector2-like).
  * No-op when assertions are disabled. In production builds, this function
  * is eliminated via DCE. For runtime shape validation, use `isTransform2Like()`.
  *
+ * Unlike the other six `assert*Like` helpers, this function does NOT route
+ * through the shared `validateShape` helper. Transform2Like has a nested
+ * structure (`{ position: Vector2Like, rotation: Rotation2Like, scale: Vector2Like }`)
+ * whose finite-number fields live one level deeper than a flat `*_KEYS` tuple
+ * can express, so the shape and finite checks are kept inline here.
+ *
  * @param value - Object to validate
  * @param name - Object name for error messages (optional)
- * @throws {Error} If assertions enabled and object is not Transform2-like
+ * @throws {TypeError} If assertions enabled and object is not Transform2-like
+ * @throws {Error} If assertions enabled and any component is not finite
  *
  * @example
  * ```typescript

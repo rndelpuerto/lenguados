@@ -5,7 +5,7 @@
 
 > Shared utilities for the Lenguado physics-engine family.
 
-This package provides cross-cutting utilities consumed by other `@lenguados/*` packages. It is not intended for direct end-user consumption.
+This package provides cross-cutting utilities intended for consumption by other `@lenguados/*` packages (none consume it yet — it holds the shared-utility layer for when a real cross-package need appears). It is published to npm so that sibling packages can depend on it; direct end-user consumption is possible but is not the design target.
 
 ## Installation
 
@@ -19,8 +19,10 @@ npm install @lenguados/common
 
 Type-safe JSON parser that returns `undefined` on malformed input instead of throwing.
 
+The package root is intentionally an empty barrel — utilities are consumed through their subpaths:
+
 ```typescript
-import { parseJSONData } from '@lenguados/common';
+import { parseJSONData } from '@lenguados/common/utils/parse-json-data';
 
 const result = parseJSONData<{ x: number; y: number }>('{"x":1,"y":2}');
 // result: { x: 1, y: 2 }

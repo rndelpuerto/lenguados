@@ -1,0 +1,495 @@
+{
+  "generatedBy": "packages/math2d/scripts/generate-svd-fixtures.mjs",
+  "seed": "0x3a39e21c",
+  "count": 30,
+  "schema": {
+    "M": "[m00, m01, m10, m11] (column-major Matrix2)",
+    "sigma": "[σ_x, σ_y] under Convention A (signed σ_y)",
+    "detM": "m00·m11 − m10·m01",
+    "fNorm": "√(m00² + m01² + m10² + m11²)",
+    "conditionExpected": "σ_x / |σ_y|, +Infinity for σ_y = 0",
+    "note": "Human-readable description"
+  },
+  "fixtures": [
+    {
+      "M": [
+        1,
+        0,
+        0,
+        1
+      ],
+      "sigma": [
+        1,
+        1
+      ],
+      "detM": 1,
+      "fNorm": 1.4142135623730951,
+      "conditionExpected": 1,
+      "note": "Identity matrix; σ = (1, 1), det = 1"
+    },
+    {
+      "M": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "sigma": [
+        0,
+        0
+      ],
+      "detM": 0,
+      "fNorm": 0,
+      "conditionExpected": null,
+      "note": "Zero matrix; σ = (0, 0), det = 0"
+    },
+    {
+      "M": [
+        0.7071067811865476,
+        0.7071067811865475,
+        -0.7071067811865475,
+        0.7071067811865476
+      ],
+      "sigma": [
+        1,
+        1
+      ],
+      "detM": 1,
+      "fNorm": 1.4142135623730951,
+      "conditionExpected": 1,
+      "note": "Pure rotation π/4; σ = (1, 1), det = 1"
+    },
+    {
+      "M": [
+        3,
+        0,
+        0,
+        2
+      ],
+      "sigma": [
+        3,
+        2
+      ],
+      "detM": 6,
+      "fNorm": 3.605551275463989,
+      "conditionExpected": 1.5,
+      "note": "Pure axis-aligned scale (3, 2); σ = (3, 2), det = 6"
+    },
+    {
+      "M": [
+        1,
+        0,
+        0,
+        -1
+      ],
+      "sigma": [
+        1,
+        -1
+      ],
+      "detM": -1,
+      "fNorm": 1.4142135623730951,
+      "conditionExpected": 1,
+      "note": "Reflection diag(1, -1); σ = (1, -1), det = -1 (Convention A signed σ_y)"
+    },
+    {
+      "M": [
+        -36,
+        -60,
+        -44,
+        64
+      ],
+      "sigma": [
+        88.26327068408284,
+        -56.01423969088863
+      ],
+      "detM": -4944,
+      "fNorm": 104.53707476297583,
+      "conditionExpected": 1.5757291569279284,
+      "note": "Random seeded #1: M = [[-36, -44], [-60, 64]] (row notation)"
+    },
+    {
+      "M": [
+        58,
+        21,
+        40,
+        9
+      ],
+      "sigma": [
+        73.9425759769974,
+        -4.300634591076808
+      ],
+      "detM": -318,
+      "fNorm": 74.06753674856482,
+      "conditionExpected": 17.193410509792557,
+      "note": "Random seeded #2: M = [[58, 40], [21, 9]] (row notation)"
+    },
+    {
+      "M": [
+        -85,
+        -4,
+        70,
+        -71
+      ],
+      "sigma": [
+        120.06501487925263,
+        52.596503705520625
+      ],
+      "detM": 6315,
+      "fNorm": 131.08012816594282,
+      "conditionExpected": 2.282756579248639,
+      "note": "Random seeded #3: M = [[-85, 70], [-4, -71]] (row notation)"
+    },
+    {
+      "M": [
+        38,
+        -85,
+        -75,
+        89
+      ],
+      "sigma": [
+        147.66231305107186,
+        -20.269220616670236
+      ],
+      "detM": -2993,
+      "fNorm": 149.04697246170417,
+      "conditionExpected": 7.285051351684847,
+      "note": "Random seeded #4: M = [[38, -75], [-85, 89]] (row notation)"
+    },
+    {
+      "M": [
+        7,
+        29,
+        41,
+        -72
+      ],
+      "sigma": [
+        85.82467352502661,
+        -19.72626204638365
+      ],
+      "detM": -1693,
+      "fNorm": 88.06247782114696,
+      "conditionExpected": 4.350782389649972,
+      "note": "Random seeded #5: M = [[7, 41], [29, -72]] (row notation)"
+    },
+    {
+      "M": [
+        -57,
+        -48,
+        -85,
+        -48
+      ],
+      "sigma": [
+        122.31625333870251,
+        -10.987910137161963
+      ],
+      "detM": -1344,
+      "fNorm": 122.8087944733601,
+      "conditionExpected": 11.131894219358372,
+      "note": "Random seeded #6: M = [[-57, -85], [-48, -48]] (row notation)"
+    },
+    {
+      "M": [
+        26,
+        -12,
+        -64,
+        -71
+      ],
+      "sigma": [
+        95.9975784993564,
+        -27.22985351153962
+      ],
+      "detM": -2614,
+      "fNorm": 99.78476837674175,
+      "conditionExpected": 3.5254533579724914,
+      "note": "Random seeded #7: M = [[26, -64], [-12, -71]] (row notation)"
+    },
+    {
+      "M": [
+        39,
+        45,
+        -32,
+        67
+      ],
+      "sigma": [
+        80.94298218344937,
+        50.07228410258311
+      ],
+      "detM": 4053,
+      "fNorm": 95.17877914745492,
+      "conditionExpected": 1.6165226658648415,
+      "note": "Random seeded #8: M = [[39, -32], [45, 67]] (row notation)"
+    },
+    {
+      "M": [
+        -33,
+        -55,
+        72,
+        17
+      ],
+      "sigma": [
+        90.40744494822037,
+        37.5964612421768
+      ],
+      "detM": 3399,
+      "fNorm": 97.91322688993556,
+      "conditionExpected": 2.404679641678581,
+      "note": "Random seeded #9: M = [[-33, 72], [-55, 17]] (row notation)"
+    },
+    {
+      "M": [
+        -16,
+        -22,
+        -94,
+        -57
+      ],
+      "sigma": [
+        112.78271878478543,
+        -10.24979724248274
+      ],
+      "detM": -1156,
+      "fNorm": 113.24751652906124,
+      "conditionExpected": 11.00340973744636,
+      "note": "Random seeded #10: M = [[-16, -94], [-22, -57]] (row notation)"
+    },
+    {
+      "M": [
+        1,
+        0,
+        0,
+        0.000001
+      ],
+      "sigma": [
+        1,
+        0.000001
+      ],
+      "detM": 0.000001,
+      "fNorm": 1.0000000000005,
+      "conditionExpected": 1000000,
+      "note": "Near-singular diag(1, 1/1e+6); σ = (1, 0.000001), κ = 1e+6"
+    },
+    {
+      "M": [
+        1,
+        0,
+        0,
+        1e-9
+      ],
+      "sigma": [
+        1,
+        1e-9
+      ],
+      "detM": 1e-9,
+      "fNorm": 1,
+      "conditionExpected": 999999999.9999999,
+      "note": "Near-singular diag(1, 1/1e+9); σ = (1, 1e-9), κ = 1e+9"
+    },
+    {
+      "M": [
+        1,
+        0,
+        0,
+        1e-12
+      ],
+      "sigma": [
+        1,
+        1e-12
+      ],
+      "detM": 1e-12,
+      "fNorm": 1,
+      "conditionExpected": 1000000000000,
+      "note": "Near-singular diag(1, 1/1e+12); σ = (1, 1e-12), κ = 1e+12"
+    },
+    {
+      "M": [
+        1,
+        0,
+        0,
+        1e-14
+      ],
+      "sigma": [
+        1,
+        1e-14
+      ],
+      "detM": 1e-14,
+      "fNorm": 1,
+      "conditionExpected": 100000000000000,
+      "note": "Near-singular diag(1, 1/1e+14); σ = (1, 1e-14), κ = 1e+14"
+    },
+    {
+      "M": [
+        1,
+        0,
+        0,
+        1e-15
+      ],
+      "sigma": [
+        1,
+        1e-15
+      ],
+      "detM": 1e-15,
+      "fNorm": 1,
+      "conditionExpected": 999999999999999.9,
+      "note": "Near-singular diag(1, 1/1e+15); σ = (1, 1e-15), κ = 1e+15"
+    },
+    {
+      "M": [
+        1,
+        0,
+        0,
+        2.220446049250313e-16
+      ],
+      "sigma": [
+        1,
+        2.220446049250313e-16
+      ],
+      "detM": 2.220446049250313e-16,
+      "fNorm": 1,
+      "conditionExpected": 4503599627370496,
+      "note": "Identity perturbed by EPSILON in m11; σ = (1, EPSILON), κ ≈ 4.5e15"
+    },
+    {
+      "M": [
+        1e-150,
+        0,
+        0,
+        1e-150
+      ],
+      "sigma": [
+        1e-150,
+        1e-150
+      ],
+      "detM": 1e-300,
+      "fNorm": 1.4142135623730952e-150,
+      "conditionExpected": 1,
+      "note": "Tiny uniform scale near the underflow regime; σ = (1e-150, 1e-150), κ = 1"
+    },
+    {
+      "M": [
+        1,
+        2,
+        1,
+        2
+      ],
+      "sigma": [
+        3.1622776601683795,
+        0
+      ],
+      "detM": 0,
+      "fNorm": 3.1622776601683795,
+      "conditionExpected": null,
+      "note": "Rank-1 outer product; σ_min = 0 exactly, det = 0"
+    },
+    {
+      "M": [
+        1,
+        0,
+        0,
+        1e-150
+      ],
+      "sigma": [
+        1,
+        1e-150
+      ],
+      "detM": 1e-150,
+      "fNorm": 1,
+      "conditionExpected": 1e+150,
+      "note": "Very ill-conditioned diag matrix; σ = (1, 1e-150), κ = 1e150 — analytical oracle limit"
+    },
+    {
+      "M": [
+        1e+75,
+        0,
+        0,
+        1e+75
+      ],
+      "sigma": [
+        1e+75,
+        1e+75
+      ],
+      "detM": 9.999999999999998e+149,
+      "fNorm": 1.4142135623730949e+75,
+      "conditionExpected": 1,
+      "note": "Near-large-scale uniform; σ = (1e75, 1e75), κ = 1 — fixture below traceSq² overflow boundary"
+    },
+    {
+      "M": [
+        2,
+        0,
+        0,
+        -3
+      ],
+      "sigma": [
+        3,
+        -2
+      ],
+      "detM": -6,
+      "fNorm": 3.605551275463989,
+      "conditionExpected": 1.5,
+      "note": "Mixed-sign scale diag(2, -3); det = -6"
+    },
+    {
+      "M": [
+        0,
+        1,
+        1,
+        0
+      ],
+      "sigma": [
+        1,
+        -1
+      ],
+      "detM": -1,
+      "fNorm": 1.4142135623730951,
+      "conditionExpected": 1,
+      "note": "Anti-diagonal swap [[0, 1], [1, 0]] (row notation); det = -1, reflection"
+    },
+    {
+      "M": [
+        -1,
+        0,
+        0,
+        1
+      ],
+      "sigma": [
+        1,
+        -1
+      ],
+      "detM": -1,
+      "fNorm": 1.4142135623730951,
+      "conditionExpected": 1,
+      "note": "Reflection across y-axis; det = -1"
+    },
+    {
+      "M": [
+        0.8660254037844387,
+        0,
+        0,
+        -0.8660254037844387
+      ],
+      "sigma": [
+        0.8660254037844387,
+        -0.8660254037844387
+      ],
+      "detM": -0.7500000000000001,
+      "fNorm": 1.2247448713915892,
+      "conditionExpected": 1,
+      "note": "Scaled reflection; det = -cos²(π/6) ≈ -0.75"
+    },
+    {
+      "M": [
+        2,
+        1,
+        1,
+        -2
+      ],
+      "sigma": [
+        2.23606797749979,
+        -2.23606797749979
+      ],
+      "detM": -5,
+      "fNorm": 3.1622776601683795,
+      "conditionExpected": 1,
+      "note": "General reflection-class matrix; det = -5"
+    }
+  ]
+}

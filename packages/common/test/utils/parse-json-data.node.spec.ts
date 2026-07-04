@@ -2,6 +2,8 @@
  * Unit‑tests for parseJSONData<T>().
  * Runs in the “node” Jest project.
  */
+import { describe, expect, it } from '@jest/globals';
+
 import { parseJSONData } from '../../src/utils/parse-json-data';
 
 interface User {

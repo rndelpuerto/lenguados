@@ -7,7 +7,7 @@
 import { saturate } from './arithmetic';
 
 /**
- * Linear interpolation between two values.
+ * Linear interpolation between two values
  *
  * @remarks
  * Uses the standard form `a + (b - a) * t` which guarantees monotonicity.
@@ -18,6 +18,12 @@ import { saturate } from './arithmetic';
  * The interpolation factor t is not clamped, allowing extrapolation
  * for t values outside [0, 1]. Use {@link lerpClamped} when you need
  * to ensure the result stays within [a, b].
+ *
+ * Non-finite inputs propagate NaN per IEEE 754-2019 §6.3: `lerp(Infinity,
+ * Infinity, 0.5)` evaluates `b − a = Infinity − Infinity = NaN`, which
+ * returns NaN. The `t === 0` and `t === 1` fast paths short-circuit BEFORE
+ * the subtraction, so `lerp(Infinity, Infinity, 0) === Infinity` and
+ * `lerp(Infinity, Infinity, 1) === Infinity` are well-defined.
  *
  * @param a - Start value
  * @param b - End value
@@ -33,7 +39,8 @@ import { saturate } from './arithmetic';
  * lerp(0, 10, -0.5);   // -5 (extrapolation)
  * ```
  *
- * @see {@link lerpClamped} — clamped interpolation
+ * @see {@link lerpClamped} - Clamped interpolation
+ *
  * @category Interpolation
  * @since 0.5.0
  */
@@ -44,7 +51,7 @@ export function lerp(a: number, b: number, t: number): number {
 }
 
 /**
- * Clamped linear interpolation.
+ * Clamped linear interpolation
  * Clamps t to [0, 1] before interpolating.
  *
  * @remarks
@@ -63,7 +70,7 @@ export function lerp(a: number, b: number, t: number): number {
  * lerpClamped(0, 10, -0.5);  // 0 (clamped, not -5)
  * ```
  *
- * @see {@link lerp} — unclamped interpolation
+ * @see {@link lerp} - unclamped interpolation
  * @category Interpolation
  * @since 0.7.0
  */
@@ -74,7 +81,7 @@ export function lerpClamped(a: number, b: number, t: number): number {
 }
 
 /**
- * Inverse linear interpolation (strict).
+ * Inverse linear interpolation (strict)
  * Returns t such that lerp(a, b, t) = value.
  * @param a - Start value
  * @param b - End value
@@ -89,8 +96,8 @@ export function lerpClamped(a: number, b: number, t: number): number {
  * inverseLerp(0, 10, 10);    // 1
  * ```
  *
- * @see {@link inverseLerpSafe} — Returns 0 if range is degenerate
- * @see {@link inverseLerpUnchecked} — No validation
+ * @see {@link inverseLerpSafe} - Returns 0 if range is degenerate
+ * @see {@link inverseLerpUnchecked} - No validation
  *
  * @category Interpolation
  * @since 0.7.0
@@ -104,7 +111,7 @@ export function inverseLerp(a: number, b: number, value: number): number {
 }
 
 /**
- * Inverse linear interpolation (safe).
+ * Inverse linear interpolation (safe)
  * @param a - Start value
  * @param b - End value
  * @param value - Value to find t for
@@ -116,7 +123,7 @@ export function inverseLerp(a: number, b: number, value: number): number {
  * inverseLerpSafe(5, 5, 3);      // 0 (degenerate range)
  * ```
  *
- * @see {@link inverseLerp} — Throws for degenerate range
+ * @see {@link inverseLerp} - Throws for degenerate range
  *
  * @category Interpolation
  * @since 0.7.0
@@ -128,7 +135,7 @@ export function inverseLerpSafe(a: number, b: number, value: number): number {
 }
 
 /**
- * Inverse linear interpolation (unchecked).
+ * Inverse linear interpolation (unchecked)
  *
  * @remarks
  * **Precondition:** a !== b.
@@ -138,8 +145,8 @@ export function inverseLerpSafe(a: number, b: number, value: number): number {
  * @param value - Value to find t for
  * @returns Interpolation factor t
  *
- * @see {@link inverseLerp} — Throws for degenerate range
- * @see {@link inverseLerpSafe} — Returns 0 if range is degenerate
+ * @see {@link inverseLerp} - Throws for degenerate range
+ * @see {@link inverseLerpSafe} - Returns 0 if range is degenerate
  *
  * @category Interpolation
  * @since 0.7.0
@@ -149,7 +156,7 @@ export function inverseLerpUnchecked(a: number, b: number, value: number): numbe
 }
 
 /**
- * Cubic Hermite interpolation (smooth step).
+ * Cubic Hermite interpolation (smooth step)
  * Maps [edge0, edge1] to [0, 1] with smooth curve.
  *
  * @remarks
@@ -183,36 +190,4 @@ export function smoothStep(edge0: number, edge1: number, x: number): number {
  }
  const t = saturate((x - edge0) / range);
  return t * t * (3 - 2 * t);
-}
-
-/**
- * Quintic Hermite interpolation (smoother step).
- * Even smoother than smoothStep.
- *
- * @remarks
- * Produces an even smoother transition than smoothStep with zero
- * first and second derivatives at the boundaries.
- *
- * @param edge0 - Lower edge
- * @param edge1 - Upper edge
- * @param x - Input value
- * @returns Result in [0, 1]
- *
- * @example
- * ```typescript
- * smootherStep(0, 1, 0.5);   // 0.5
- * smootherStep(0, 10, 5);    // 0.5
- * ```
- *
- * @category Interpolation
- * @since 0.7.0
- */
-export function smootherStep(edge0: number, edge1: number, x: number): number {
- const range = edge1 - edge0;
- if (range === 0) {
-  // When edges are equal, use step function behavior
-  return x < edge0 ? 0 : 1;
- }
- const t = saturate((x - edge0) / range);
- return t * t * t * (t * (t * 6 - 15) + 10);
 }

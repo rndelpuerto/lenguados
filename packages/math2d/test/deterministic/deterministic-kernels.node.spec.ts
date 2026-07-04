@@ -11,12 +11,15 @@ import {
  atan,
  atan2,
  cos,
+ cosh,
  exp,
  log,
  pow,
  sin,
  sinCos,
+ sinh,
  tan,
+ tanh,
 } from '../../src/deterministic/deterministic-kernels';
 
 const PI = Math.PI;
@@ -226,6 +229,95 @@ describe('DeterministicKernels L0 Functions', () => {
    expect(asin(2)).toBeNaN();
    expect(asin(-2)).toBeNaN();
   });
+
+  it('should propagate NaN', () => {
+   expect(acos(Number.NaN)).toBeNaN();
+   expect(asin(Number.NaN)).toBeNaN();
+  });
+
+  // V9-Deterministic-01: factored sqrt((1-x)*(1+x)) preserves precision near ±1
+  it('acos preserves accuracy near x = 1 (Higham 2002 §1.8 cancellation fix)', () => {
+   // Near +1: true acos(1 - 1e-15) ≈ 4.47e-8 radians
+   // Naive sqrt(1 - x²) loses precision; factored form preserves it.
+   const near1 = 1 - 1e-15;
+   const result = acos(near1);
+   expect(result).toBeGreaterThan(0);
+   expect(Number.isFinite(result)).toBe(true);
+   expect(result).toBeLessThan(1e-6); // should be order 1e-8, not a wild value
+  });
+
+  it('asin preserves accuracy near x = 1', () => {
+   // asin(1 - 1e-15) should approach π/2, with the defect being small
+   const near1 = 1 - 1e-15;
+   const result = asin(near1);
+   expect(Math.abs(result - PI / 2)).toBeLessThan(1e-6);
+   expect(Number.isFinite(result)).toBe(true);
+  });
+
+  it('acos and asin match the complementary identity acos(x) + asin(x) = π/2', () => {
+   for (const x of [-0.99, -0.5, 0, 0.5, 0.99]) {
+    expect(acos(x) + asin(x)).toBeCloseTo(PI / 2, 12);
+   }
+  });
+ });
+
+ // V9-Complex-05: scalar hyperbolic kernels at L0 (fdlibm s_sinh.c / s_cosh.c / s_tanh.c; C99 §7.12.5)
+ describe('sinh / cosh / tanh', () => {
+  it('sinh computes hyperbolic sine at key values', () => {
+   expect(sinh(0)).toBe(0);
+   expect(sinh(1)).toBeCloseTo(Math.sinh(1), 12);
+   expect(sinh(-1)).toBeCloseTo(Math.sinh(-1), 12);
+   expect(sinh(2)).toBeCloseTo(Math.sinh(2), 12);
+  });
+
+  it('sinh handles special cases per IEEE 754', () => {
+   expect(Object.is(sinh(0), 0)).toBe(true);
+   expect(Object.is(sinh(-0), -0)).toBe(true); // preserves signed zero
+   expect(sinh(Number.POSITIVE_INFINITY)).toBe(Number.POSITIVE_INFINITY);
+   expect(sinh(Number.NEGATIVE_INFINITY)).toBe(Number.NEGATIVE_INFINITY);
+   expect(sinh(Number.NaN)).toBeNaN();
+  });
+
+  it('cosh computes hyperbolic cosine at key values', () => {
+   expect(cosh(0)).toBe(1);
+   expect(cosh(1)).toBeCloseTo(Math.cosh(1), 12);
+   expect(cosh(-1)).toBeCloseTo(Math.cosh(-1), 12);
+   expect(cosh(2)).toBeCloseTo(Math.cosh(2), 12);
+  });
+
+  it('cosh handles special cases per IEEE 754', () => {
+   expect(cosh(0)).toBe(1);
+   expect(cosh(-0)).toBe(1);
+   expect(cosh(Number.POSITIVE_INFINITY)).toBe(Number.POSITIVE_INFINITY);
+   expect(cosh(Number.NEGATIVE_INFINITY)).toBe(Number.POSITIVE_INFINITY);
+   expect(cosh(Number.NaN)).toBeNaN();
+  });
+
+  it('tanh computes hyperbolic tangent at key values', () => {
+   expect(tanh(0)).toBe(0);
+   expect(tanh(1)).toBeCloseTo(Math.tanh(1), 12);
+   expect(tanh(-1)).toBeCloseTo(Math.tanh(-1), 12);
+   expect(tanh(5)).toBeCloseTo(Math.tanh(5), 12);
+  });
+
+  it('tanh saturates at ±1 for large |x| and handles IEEE 754 edges', () => {
+   expect(Object.is(tanh(0), 0)).toBe(true);
+   expect(Object.is(tanh(-0), -0)).toBe(true);
+   expect(tanh(Number.POSITIVE_INFINITY)).toBe(1);
+   expect(tanh(Number.NEGATIVE_INFINITY)).toBe(-1);
+   expect(tanh(Number.NaN)).toBeNaN();
+   // Saturation beyond |x| > 22 to avoid exp overflow
+   expect(tanh(100)).toBe(1);
+   expect(tanh(-100)).toBe(-1);
+  });
+
+  it('sinh²(x) + 1 = cosh²(x) — hyperbolic Pythagorean identity', () => {
+   for (const x of [-2, -1, 0, 0.5, 1, 2, 3]) {
+    const s = sinh(x);
+    const c = cosh(x);
+    expect(c * c - s * s).toBeCloseTo(1, 12);
+   }
+  });
  });
 
  describe('pow', () => {
@@ -261,6 +353,33 @@ describe('DeterministicKernels L0 Functions', () => {
    expect(pow(Infinity, 0)).toBe(1);
    expect(pow(-Infinity, 0)).toBe(1);
    expect(pow(0, 0)).toBe(1);
+  });
+
+  // V9-Deterministic-02: signed-zero preservation per ECMA-262 §21.3.2.26 / C99 §F.9.4.4 / fdlibm e_pow.c
+  it('pow(-0, odd positive integer) returns -0', () => {
+   expect(Object.is(pow(-0, 1), -0)).toBe(true);
+   expect(Object.is(pow(-0, 3), -0)).toBe(true);
+   expect(Object.is(pow(-0, 5), -0)).toBe(true);
+  });
+
+  it('pow(-0, odd negative integer) returns -Infinity', () => {
+   expect(pow(-0, -1)).toBe(Number.NEGATIVE_INFINITY);
+   expect(pow(-0, -3)).toBe(Number.NEGATIVE_INFINITY);
+  });
+
+  it('pow(-0, even integer) collapses sign (ECMA-262 §21.3.2.26)', () => {
+   expect(Object.is(pow(-0, 2), 0)).toBe(true); // +0 (not -0)
+   expect(pow(-0, -2)).toBe(Number.POSITIVE_INFINITY);
+  });
+
+  it('pow(-0, non-integer) collapses sign (ECMA-262 §21.3.2.26)', () => {
+   expect(Object.is(pow(-0, 0.5), 0)).toBe(true);
+   expect(pow(-0, -0.5)).toBe(Number.POSITIVE_INFINITY);
+  });
+
+  it('pow(+0, odd positive integer) still returns +0 (unchanged)', () => {
+   expect(Object.is(pow(0, 1), 0)).toBe(true);
+   expect(Object.is(pow(0, 3), 0)).toBe(true);
   });
  });
 

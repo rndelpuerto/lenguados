@@ -4,18 +4,53 @@
  * @description Safe arithmetic operations that handle edge cases gracefully
  *
  * @remarks
- * This module provides operations that return safe numeric values
- * instead of NaN/Infinity. For boolean predicates (type guards),
- * see {@link ./guards}.
+ * This module provides operations that substitute a caller-chosen fallback
+ * (or zero) for **domain violations** — not for every non-finite input. The
+ * Safe contract is "finite-in, finite-out for valid domain; fallback on
+ * domain error; NaN propagates through unchanged". Examples:
+ *
+ * - `divideSafe(1, 0) → fallback` (domain violation: division by zero).
+ * - `divideSafe(Infinity, 2) → Infinity` (IEEE 754 arithmetic; not a domain
+ *   violation — `Infinity / finite` is well-defined).
+ * - `divideSafe(1, NaN) → NaN` (NaN propagates per IEEE 754-2019 §6.2).
+ * - `sqrtSafe(-1) → fallback` (domain violation: negative radicand).
+ * - `sqrtSafe(NaN) → NaN` (NaN propagates).
+ *
+ * For boolean predicates (type guards), see {@link ./guards}. For the
+ * strict-variant assertions that throw on invalid input, see
+ * `validation/assert.ts` and the reciprocal `@see` cross-links.
  *
  * **Determinism Guarantee**: Mathematical operations that could vary across
  * JavaScript engines are delegated to deterministic-kernels.
+ *
+ * @see {@link ../../validation/assert} - Assertion cousins that throw on invalid input
  */
 
 import { acos, asin, exp, log, pow } from '../../deterministic/deterministic-kernels';
 import { HALF_PI, PI } from '../scalar/constants';
+
+/* ========================================================================== */
+/* DEV_MODE flag (DCE-friendly)                                                */
+/* ========================================================================== */
+
 /**
- * Minimum safe value for division operations.
+ * Development-mode flag used by dev-only assertions inside L1 safety functions
+ *
+ * @remarks
+ * Replaced by the build-time constant substitution (configured in `rollup.config.mjs`
+ * `jsc.transform.optimizer.globals.vars.__LENGUADOS_DEV__`): `false` in production
+ * library bundles, `true` in development library bundles. The minifier
+ * eliminates `if (DEV_MODE) { ... }` and `if (!DEV_MODE) { ... }` blocks at
+ * library build time, so production library bundles are self-contained and
+ * have zero dev-assertion overhead.
+ *
+ * @internal
+ */
+declare const __LENGUADOS_DEV__: boolean;
+/* istanbul ignore next -- DCE */
+const DEV_MODE: boolean = __LENGUADOS_DEV__;
+/**
+ * Minimum safe value for division operations
  * Below this value, division results may produce numerically degenerate outputs
  * in geometric contexts (normalization, inverse, projection).
  *
@@ -28,7 +63,7 @@ import { HALF_PI, PI } from '../scalar/constants';
  * - `MIN_SAFE_DIVISOR`: division safety threshold ("will dividing by this produce garbage?")
  *
  * Common values in game engines and graphics libraries range from `1e-8` to
- * `~1.19e-7` (float32 epsilon). Our value of `1e-10` is more conservative,
+ * `~1.19e-7` (float32 epsilon). The value `1e-10` is more conservative,
  * appropriate for double-precision arithmetic.
  *
  * @constant {number}
@@ -38,7 +73,7 @@ import { HALF_PI, PI } from '../scalar/constants';
 export const MIN_SAFE_DIVISOR = 1e-10;
 
 /**
- * Safe division with fallback to 0.
+ * Safe division with fallback to 0
  *
  * @remarks
  * Default threshold is {@link MIN_SAFE_DIVISOR} (1e-10).
@@ -59,6 +94,8 @@ export const MIN_SAFE_DIVISOR = 1e-10;
  * divideSafe(10, 0, 0.1);         // 0 (custom epsilon)
  * ```
  *
+ * @see {@link assertNonZero} - Strict assertion variant that throws on zero input
+ *
  * @category Safety
  * @since 0.7.0
  */
@@ -71,7 +108,7 @@ export function divideSafe(
 }
 
 /**
- * Safe reciprocal (1/x).
+ * Safe reciprocal (1/x)
  *
  * @remarks
  * Default threshold is {@link MIN_SAFE_DIVISOR} (1e-10).
@@ -101,7 +138,7 @@ export function reciprocalSafe(value: number, epsilon: number = MIN_SAFE_DIVISOR
 /* ========================================================================== */
 
 /**
- * Safe square root (clamps negative values to 0).
+ * Safe square root (clamps negative values to 0)
  *
  * @remarks
  * Uses `Math.sqrt` which is IEEE 754 required — correctly rounded and
@@ -109,6 +146,8 @@ export function reciprocalSafe(value: number, epsilon: number = MIN_SAFE_DIVISOR
  *
  * @param x - Value to compute square root of
  * @returns Square root of x, or 0 for negative values
+ *
+ * @see {@link assertNonNegative} - Strict assertion variant that throws on negative input
  *
  * @category Safety
  * @since 0.7.0
@@ -118,7 +157,7 @@ export function sqrtSafe(x: number): number {
 }
 
 /**
- * Safe deterministic arc cosine (clamps input to [-1, 1]).
+ * Safe deterministic arc cosine (clamps input to [-1, 1])
  *
  * @remarks
  * Uses deterministic math for cross-platform reproducibility.
@@ -139,7 +178,7 @@ export function acosSafe(x: number): number {
 }
 
 /**
- * Safe deterministic arc sine (clamps input to [-1, 1]).
+ * Safe deterministic arc sine (clamps input to [-1, 1])
  *
  * @remarks
  * Uses deterministic math for cross-platform reproducibility.
@@ -160,41 +199,47 @@ export function asinSafe(x: number): number {
 }
 
 /**
- * Safe logarithm (returns 0 for non-positive values).
+ * Computes the natural or base-`b` logarithm, returning `0` as a fallback for non-positive input
  *
  * @remarks
- * Uses deterministic math for cross-platform reproducibility.
- * Returns 0 (not -Infinity) for non-positive inputs, consistent
- * with the Safe convention: fallbacks are always finite and usable.
+ * NaN propagates per IEEE 754 §6.2: NaN in → NaN out. The `0` fallback triggers
+ * only for domain errors (non-positive `value`, invalid `base`), never for NaN.
+ * Finite-positive inputs flow through the deterministic `log` kernel. Returns
+ * `+Infinity` for `value === +Infinity` per IEEE 754.
+ *
+ * **References**: IEEE 754-2019 §6.2, C99 Annex F §F.10 ¶11, Kahan 1997.
  *
  * @param value - Value to take logarithm of
  * @param base - Logarithm base (default: Math.E for natural log)
- * @returns Logarithm or 0 for non-positive values
+ * @returns Natural or base-`b` log; `NaN` when any input is NaN; `0` for non-positive
+ *          `value` or invalid `base`
  *
  * @example
  * ```typescript
  * logSafe(Math.E);         // 1
  * logSafe(10, 10);         // 1
  * logSafe(100, 10);        // 2
- * logSafe(0);              // 0 (safe fallback)
- * logSafe(-1);             // 0 (safe fallback)
+ * logSafe(0);              // 0 (domain fallback)
+ * logSafe(-1);             // 0 (domain fallback)
+ * logSafe(NaN);            // NaN (propagates per IEEE 754 §6.2)
+ * logSafe(Infinity);       // Infinity (IEEE 754 required)
  * ```
+ *
+ * @see {@link log} - deterministic strict kernel
  *
  * @category Safety
  * @since 0.7.0
  */
 export function logSafe(value: number, base: number = Math.E): number {
- if (!Number.isFinite(value) || value <= 0) {
-  return 0;
- }
- if (base <= 0 || base === 1 || !Number.isFinite(base)) {
-  return 0;
- }
+ // NaN short-circuits BEFORE the domain check per the canonical Safe contract (IEEE 754 §6.2).
+ if (value !== value || base !== base) return Number.NaN;
+ if (value <= 0) return 0;
+ if (base <= 0 || base === 1 || !Number.isFinite(base)) return 0;
  return base === Math.E ? log(value) : log(value) / log(base);
 }
 
 /**
- * Safe exponential function (handles extreme values gracefully).
+ * Safe exponential function (handles extreme values gracefully)
  *
  * @remarks
  * Uses deterministic math for cross-platform reproducibility.
@@ -215,7 +260,7 @@ export function expSafe(x: number): number {
 }
 
 /**
- * Safe power that handles edge cases.
+ * Safe power that handles edge cases
  *
  * @remarks
  * Uses deterministic math for cross-platform reproducibility.
@@ -266,7 +311,7 @@ export function powSafe(base: number, exponent: number): number {
 }
 
 /**
- * Kahan compensated summation for improved precision.
+ * Kahan compensated summation for improved precision
  *
  * @remarks
  * Kahan compensated summation (1965). The branchless inner loop makes it
@@ -284,7 +329,7 @@ export function powSafe(base: number, exponent: number): number {
  * robustSum(values);  // Closer to 100000 than naive sum
  * ```
  *
- * @see {@link neumaierSum} — improved variant for varying-magnitude inputs
+ * @see {@link neumaierSum} - improved variant for varying-magnitude inputs
  * @category Safety
  * @since 0.7.0
  */
@@ -292,10 +337,11 @@ export function robustSum(values: readonly number[]): number {
  let sum = 0;
  let compensation = 0;
 
+ // NaN and Infinity propagate per IEEE 754-2019 §6.2 / §6.3: any NaN in the
+ // input flows through to the result; `+Infinity + (-Infinity)` yields NaN;
+ // pure-`+Infinity` streams yield `+Infinity`.
  for (const value of values) {
-  // Sanitize: non-finite values become 0
-  const sanitized = Number.isFinite(value) ? value : 0;
-  const y = sanitized - compensation;
+  const y = value - compensation;
   const t = sum + y;
   compensation = t - sum - y;
   sum = t;
@@ -305,7 +351,7 @@ export function robustSum(values: readonly number[]): number {
 }
 
 /**
- * Neumaier compensated summation for improved precision.
+ * Neumaier compensated summation for improved precision
  *
  * @remarks
  * Improved compensated summation (Neumaier, 1974). More accurate than
@@ -322,7 +368,7 @@ export function robustSum(values: readonly number[]): number {
  * // Naive sum might give 0 due to rounding
  * ```
  *
- * @see {@link robustSum} — branchless Kahan variant for uniform-magnitude hot paths
+ * @see {@link robustSum} - branchless Kahan variant for uniform-magnitude hot paths
  * @category Safety
  * @since 0.7.0
  */
@@ -330,17 +376,17 @@ export function neumaierSum(values: readonly number[]): number {
  let sum = 0;
  let compensation = 0;
 
+ // NaN and Infinity propagate per IEEE 754 §6.2 / §6.3.
+ // Matches Python `statistics.fsum` semantics — non-finite inputs flow through.
  for (const value of values) {
-  // Sanitize: non-finite values become 0
-  const sanitized = Number.isFinite(value) ? value : 0;
-  const t = sum + sanitized;
+  const t = sum + value;
 
-  if (Math.abs(sum) >= Math.abs(sanitized)) {
+  if (Math.abs(sum) >= Math.abs(value)) {
    // sum is bigger, low-order digits of value are lost
-   compensation += sum - t + sanitized;
+   compensation += sum - t + value;
   } else {
    // value is bigger, low-order digits of sum are lost
-   compensation += sanitized - t + sum;
+   compensation += value - t + sum;
   }
 
   sum = t;
@@ -350,7 +396,7 @@ export function neumaierSum(values: readonly number[]): number {
 }
 
 /**
- * Compensated product using error-free transformation.
+ * Compensated product using error-free transformation
  *
  * @remarks
  * Veltkamp splitting multiplies inputs by `2^27 + 1` (~1.34e8).
@@ -381,23 +427,22 @@ export function neumaierSum(values: readonly number[]): number {
  * @since 0.7.0
  */
 export function compensatedProduct(a: number, b: number): { product: number; error: number } {
- // Sanitize: non-finite values become 0
- const sanitizedA = Number.isFinite(a) ? a : 0;
- const sanitizedB = Number.isFinite(b) ? b : 0;
- const product = sanitizedA * sanitizedB;
+ // NaN and Infinity propagate per IEEE 754-2019 §6.2 / §6.3: the product follows
+ // IEEE arithmetic — NaN × anything = NaN; Infinity × 0 = NaN.
+ const product = a * b;
 
- // Veltkamp splitting for error-free multiplication
+ // Veltkamp splitting for error-free multiplication (overflow-unsafe beyond |x| > ~1.34e300).
  const split = 134217729; // 2^27 + 1
 
  // Split a
- const c = split * sanitizedA;
- const aHigh = c - (c - sanitizedA);
- const aLow = sanitizedA - aHigh;
+ const c = split * a;
+ const aHigh = c - (c - a);
+ const aLow = a - aHigh;
 
  // Split b
- const d = split * sanitizedB;
- const bHigh = d - (d - sanitizedB);
- const bLow = sanitizedB - bHigh;
+ const d = split * b;
+ const bHigh = d - (d - b);
+ const bLow = b - bHigh;
 
  // Compute error term
  const error1 = product - aHigh * bHigh;
@@ -409,17 +454,20 @@ export function compensatedProduct(a: number, b: number): { product: number; err
 }
 
 /**
- * Ensures finite value, replaces NaN/Infinity.
+ * Ensures finite value, replaces NaN/Infinity
  *
  * @remarks
  * Use when you need to guarantee a finite result from calculations
  * that might produce NaN or Infinity.
  *
- * If the fallback itself is non-finite, it is silently replaced with 0.
+ * If the fallback itself is non-finite, production builds silently replace it
+ * with 0; development builds throw a RangeError to surface the caller error.
  *
  * @param value - Value to check
  * @param fallback - Replacement for non-finite values (default: 0)
  * @returns Finite value or fallback
+ *
+ * @throws {RangeError} In development builds, if fallback is non-finite
  *
  * @example
  * ```typescript
@@ -430,10 +478,21 @@ export function compensatedProduct(a: number, b: number): { product: number; err
  * ensureFinite(NaN, 1);          // 1 (custom fallback)
  * ```
  *
+ * @see {@link assertFinite} - Strict assertion variant that throws on non-finite input
+ *
  * @category Safety
  * @since 0.7.0
  */
 export function ensureFinite(value: number, fallback: number = 0): number {
+ // DEV-mode fallback guard. In production this branch is DCE'd;
+ // in development it signals to the caller that the provided `fallback` is itself
+ // non-finite (typically a bug in the caller's fallback-computation path).
+ /* istanbul ignore next -- DCE */
+ if (DEV_MODE && !Number.isFinite(fallback)) {
+  throw new RangeError(
+   `ensureFinite: fallback must be finite (got ${fallback}); replace the caller-supplied fallback with a finite value`,
+  );
+ }
  if (!Number.isFinite(fallback)) fallback = 0;
  return Number.isFinite(value) ? value : fallback;
 }

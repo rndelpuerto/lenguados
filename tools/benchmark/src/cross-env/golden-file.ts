@@ -3,16 +3,16 @@
  * @description Determinism golden file generation and verification
  *
  * Generates JSON golden files from Node.js with hex-encoded Float64
- * inputs/outputs for all 11 scalar deterministic kernels. Covers 1000+
- * inputs per function including boundary values.
+ * inputs/outputs for every scalar deterministic kernel declared by the
+ * package's cross-env configuration. Covers 1000+ inputs per function
+ * including boundary values.
  */
 
 import { writeFileSync, readFileSync } from 'node:fs';
 
 import { float64ToHex, hexToFloat64, ulpDistance } from '../harness/ulp.ts';
 import type { UlpResult } from '../harness/ulp.ts';
-import { generateInputs, ALL_KERNEL_FUNCTIONS } from '../stress/reference-oracle.ts';
-import type { KernelFunction } from '../stress/reference-oracle.ts';
+import type { CrossEnvConfig } from './cross-env-types.ts';
 
 /* ========================================================================== */
 /* Types                                                                       */
@@ -60,25 +60,27 @@ export interface DivergenceDetail {
 /**
  * Generate a golden file from the current engine's deterministic kernels
  *
- * Runs all 11 scalar kernel functions with 1000+ domain-sampled inputs
- * (including 0, -0, π multiples, Cody-Waite boundary, subnormals).
+ * Runs every declared scalar kernel function with 1000+ domain-sampled
+ * inputs (including 0, -0, π multiples, Cody-Waite boundary, subnormals).
  * Serializes results as hex-encoded Float64 for bit-exact comparison.
  *
  * @param kernelModule - Module containing all kernel function implementations
+ * @param oracle - Package kernel vocabulary and input generation (from its CrossEnvConfig)
  * @param samplesPerFunction - Number of domain-sampled inputs per function
  * @returns Golden file with all entries and generator metadata
  */
 export function generateGoldenFile(
  kernelModule: Record<string, (...args: number[]) => number>,
+ oracle: Pick<CrossEnvConfig, 'kernelFunctions' | 'generateInputs'>,
  samplesPerFunction = 1000,
 ): GoldenFile {
  const entries: GoldenFileEntry[] = [];
 
- for (const fn of ALL_KERNEL_FUNCTIONS) {
+ for (const fn of oracle.kernelFunctions) {
   const impl = kernelModule[fn];
   if (typeof impl !== 'function') continue;
 
-  const inputs = generateInputs(fn, samplesPerFunction);
+  const inputs = oracle.generateInputs(fn, samplesPerFunction);
 
   for (const args of inputs) {
    try {

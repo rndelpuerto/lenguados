@@ -7,7 +7,7 @@
 
 import type { StressTestDefinition, StressTestOutput } from '../../../harness/stress-types.ts';
 import type { DiagnosticReport } from '../../../harness/diagnostics.ts';
-import { runNearSingularStress } from '../../../stress/near-singular.stress.ts';
+import { runNearSingularStress } from './near-singular.stress.ts';
 
 /**
  * Test matrix inversion and solve behavior near the singularity boundary

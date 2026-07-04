@@ -19,7 +19,7 @@
 /* ========================================================================== */
 
 /**
- * Defines a uniform random number source with optional seeding.
+ * Defines a uniform random number source with optional seeding
  *
  * @remarks
  * Implementations must provide uniform distribution in [0, 1).
@@ -30,7 +30,7 @@
  */
 export interface RandomSource {
  /**
-  * Generates a random number in the range [0, 1).
+  * Generates a random number in the range [0, 1)
   *
   * @returns A random number in [0, 1)
   *
@@ -40,7 +40,7 @@ export interface RandomSource {
  next(): number;
 
  /**
-  * Generates a random integer in the range [0, max).
+  * Generates a random integer in the range [0, max)
   *
   * @param max - Exclusive upper bound (must be positive)
   * @returns A random integer in [0, max)
@@ -51,7 +51,7 @@ export interface RandomSource {
  nextInt(max: number): number;
 
  /**
-  * Seeds the random number generator when supported.
+  * Seeds the random number generator when supported
   *
   * @remarks
   * Not all sources support seeding (for example, Math.random()).
@@ -69,14 +69,17 @@ export interface RandomSource {
 /* ========================================================================== */
 
 /**
- * Non-deterministic random source backed by `Math.random`.
+ * Non-deterministic random source backed by `Math.random`
  *
  * @remarks
- * This source is not seedable and is not deterministic.
+ * This source is not seedable and is not deterministic. Obtain the
+ * process-wide instance through {@link getDefaultRandomSource}; direct
+ * construction of additional instances is not supported (the class has no
+ * per-instance state).
  *
  * @example
  * ```typescript
- * const rng = new MathRandomSource();
+ * const rng = getDefaultRandomSource();
  * const value = rng.next();       // random number in [0, 1)
  * const index = rng.nextInt(10);  // random integer in [0, 10)
  * ```
@@ -86,8 +89,25 @@ export interface RandomSource {
  * @public
  */
 export class MathRandomSource implements RandomSource {
+ /** @internal */
+ private constructor() {
+  // Intentionally private. Use `getDefaultRandomSource()` to obtain
+  // the process-wide instance.
+ }
+
  /**
-  * Generates a random number using Math.random().
+  * Internal factory used by the default-source helper
+  *
+  * @returns A new `MathRandomSource` instance
+  *
+  * @internal
+  */
+ public static create(): MathRandomSource {
+  return new MathRandomSource();
+ }
+
+ /**
+  * Generates a random number using Math.random()
   *
   * @returns A random number in [0, 1)
   *
@@ -99,17 +119,21 @@ export class MathRandomSource implements RandomSource {
  }
 
  /**
-  * Generates a random integer using Math.random().
+  * Generates a random integer using Math.random()
   *
-  * @param max - Exclusive upper bound
+  * @param max - Exclusive upper bound; must be an integer in `[1, Number.MAX_SAFE_INTEGER]`
   * @returns A random integer in [0, max)
+  *
+  * @throws {RangeError} If `max` is not an integer, not positive, or exceeds `Number.MAX_SAFE_INTEGER`
   *
   * @category Accessor
   * @since 0.7.0
   */
  nextInt(max: number): number {
-  if (max <= 0 || !Number.isInteger(max) || max !== max) {
-   throw new TypeError(`MathRandomSource.nextInt: max must be a positive integer, got ${max}`);
+  if (!Number.isInteger(max) || max <= 0 || max > Number.MAX_SAFE_INTEGER) {
+   throw new RangeError(
+    `MathRandomSource.nextInt: max must be a positive integer in [1, Number.MAX_SAFE_INTEGER], got ${max}`,
+   );
   }
   return Math.floor(Math.random() * max);
  }
@@ -120,7 +144,7 @@ export class MathRandomSource implements RandomSource {
 /* ========================================================================== */
 
 /**
- * SplitMix32 seed expansion function.
+ * SplitMix32 seed expansion function
  * Expands a single 32-bit seed into a full 128-bit xoshiro128++ state.
  *
  * @remarks
@@ -195,7 +219,7 @@ function xoshiro128pp(s: [number, number, number, number]): number {
 }
 
 /**
- * Deterministic random source using xoshiro128++ algorithm.
+ * Deterministic random source using xoshiro128++ algorithm
  *
  * @remarks
  * Uses xoshiro128++ (Blackman & Vigna, 2021) with 4 × uint32 state for
@@ -217,15 +241,25 @@ export class SeededRandomSource implements RandomSource {
  private state: [number, number, number, number];
 
  /**
-  * Creates a new seeded random source.
+  * Creates a new seeded random source
   *
-  * @param seed - Initial seed value. Defaults to sub-millisecond timestamp
+  * @remarks
+  * Default-seed entropy: when `seed` is `undefined`, the constructor derives
+  * a single 32-bit seed from `performance.now() * 1000 | 0` (or `Date.now() |
+  * 0` as fallback). The `| 0` truncation discards every bit above 32, so two
+  * sources constructed within the same microsecond tick receive identical
+  * seeds. Callers that need independent streams started at the same moment
+  * MUST supply an explicit `seed` (e.g. a per-stream index) rather than rely
+  * on the timestamp default.
+  *
+  * @param seed - Initial seed value. Defaults to sub-millisecond timestamp (32-bit truncated)
   */
  constructor(seed?: number) {
   if (seed !== undefined) {
    this.state = splitMix32(seed | 0);
   } else {
-   // Sub-millisecond uniqueness with Date.now() fallback
+   // Sub-millisecond uniqueness with Date.now() fallback. See constructor
+   // @remarks for the 32-bit truncation caveat.
    const now =
     typeof globalThis.performance !== 'undefined'
      ? (globalThis.performance.now() * 1000) | 0
@@ -235,7 +269,7 @@ export class SeededRandomSource implements RandomSource {
  }
 
  /**
-  * Generates the next random number.
+  * Generates the next random number
   *
   * @remarks
   * Uses xoshiro128++ algorithm with 32-bit state for deterministic generation.
@@ -251,38 +285,58 @@ export class SeededRandomSource implements RandomSource {
  }
 
  /**
-  * Generates a random integer in [0, max).
+  * Returns an unbiased random integer in `[0, max)`
   *
   * @remarks
-  * Uses rejection sampling with modulo debiasing to eliminate bias.
+  * Two `xoshiro128++` draws are combined into a 53-bit raw value (top 27 bits of
+  * the first draw + top 26 bits of the second), then rejection-sampled over
+  * `2^53 % max` to preserve uniformity.
   *
-  * @param max - Exclusive upper bound
-  * @returns A random integer in [0, max)
+  * **Supported range**: `1 ≤ max ≤ Number.MAX_SAFE_INTEGER` (`2^53 − 1`).
   *
-  * @throws {TypeError} If max is not a positive integer
+  * **References**: Blackman & Vigna 2021 (xoshiro128++ specification);
+  * Lemire 2019, "Fast Random Integer Generation in an Interval".
+  *
+  * @param max - Exclusive upper bound; must be an integer in `[1, Number.MAX_SAFE_INTEGER]`
+  * @returns A random integer in `[0, max)`
+  *
+  * @throws {RangeError} If `max` is not an integer, not positive, or exceeds `Number.MAX_SAFE_INTEGER`
+  *
+  * @example
+  * ```typescript
+  * const rng = new SeededRandomSource(42);
+  * rng.nextInt(100);                       // in [0, 100)
+  * rng.nextInt(Number.MAX_SAFE_INTEGER);   // full safe-integer range
+  * ```
   *
   * @category Accessor
   * @since 0.7.0
   */
  nextInt(max: number): number {
-  if (max <= 0 || !Number.isInteger(max) || max !== max) {
-   throw new TypeError(`SeededRandomSource.nextInt: max must be a positive integer, got ${max}`);
+  if (!Number.isInteger(max) || max <= 0 || max > Number.MAX_SAFE_INTEGER) {
+   throw new RangeError(
+    `SeededRandomSource.nextInt: max must be a positive integer in [1, Number.MAX_SAFE_INTEGER], got ${max}`,
+   );
   }
 
-  // Rejection sampling: discard values in [0, 2^32 % max) so remaining range divides evenly
-  const maxU32 = 0x100000000; // 2^32
-  const reject = maxU32 % max;
+  // Compose two xoshiro128++ draws into a 53-bit unbiased raw value.
+  // Top 27 bits of `hi` + top 26 bits of `lo` = 53 bits = Number.MAX_SAFE_INTEGER + 1.
+  // Rejection sample over 2^53 % max so the residual range divides max evenly.
+  const MAX_RAW = 0x20000000000000; // 2^53
+  const reject = MAX_RAW % max;
 
   let raw: number;
   do {
-   raw = xoshiro128pp(this.state);
+   const hi = xoshiro128pp(this.state); // uint32
+   const lo = xoshiro128pp(this.state); // uint32
+   raw = (hi >>> 5) * 0x4000000 + (lo >>> 6);
   } while (raw < reject);
 
   return raw % max;
  }
 
  /**
-  * Re-seeds the generator using SplitMix32 expansion.
+  * Re-seeds the generator using SplitMix32 expansion
   *
   * @param seed - New seed value
   *
@@ -294,7 +348,7 @@ export class SeededRandomSource implements RandomSource {
  }
 
  /**
-  * Returns the current internal state as a 4-element uint32 array.
+  * Returns the current internal state as a 4-element uint32 array
   *
   * @remarks
   * Useful for saving and restoring random generator state.
@@ -309,27 +363,43 @@ export class SeededRandomSource implements RandomSource {
  }
 
  /**
-  * Restores a previously saved state.
+  * Restores a previously saved state
+  *
+  * @remarks
+  * Every component must be a finite integer in `[0, 2³²)`. The all-zero state
+  * is the absorbing fixed point of xoshiro128++ (outputs only 0 forever) and
+  * is rejected. NaN, Infinity, and non-integer components are rejected
+  * **before** the uint32 coercion so callers get a precise diagnostic rather
+  * than a silent `>>> 0 → 0` coercion.
   *
   * @param state - 4-element uint32 state array from {@link getState}
   *
-  * @throws {RangeError} If state is not a 4-element array or is all zeros
+  * @throws {RangeError} If state is not a 4-element array, contains a
+  *         non-finite or non-integer component, or is all zeros.
   *
   * @category Configuration
   * @since 0.7.0
   */
  restoreState(state: [number, number, number, number]): void {
   if (!Array.isArray(state) || state.length !== 4) {
-   throw new RangeError('State must be a 4-element array');
+   throw new RangeError('SeededRandomSource.restoreState: state must be a 4-element array');
   }
-  // Convert to uint32 first — NaN and non-integer values coerce to 0 via >>> 0
+  for (let index = 0; index < 4; index++) {
+   const component = state[index]!;
+   if (!Number.isInteger(component)) {
+    throw new RangeError(
+     `SeededRandomSource.restoreState: state[${index}] must be a finite integer; got ${component}`,
+    );
+   }
+  }
+  // Safe uint32 coercion on integer inputs (no silent NaN → 0 collapse).
   const s0 = state[0] >>> 0;
   const s1 = state[1] >>> 0;
   const s2 = state[2] >>> 0;
   const s3 = state[3] >>> 0;
   if (s0 === 0 && s1 === 0 && s2 === 0 && s3 === 0) {
    throw new RangeError(
-    'State must not be all zeros (NaN and non-integer values are coerced to 0 via >>> 0)',
+    'SeededRandomSource.restoreState: state must not be all zeros (xoshiro128++ absorbing fixed point)',
    );
   }
   this.state = [s0, s1, s2, s3];
@@ -341,19 +411,32 @@ export class SeededRandomSource implements RandomSource {
 /* ========================================================================== */
 
 /**
- * Global default random source (module-private).
+ * Global default random source (module-private)
  * @internal
  */
-let defaultRandomSource: RandomSource = new MathRandomSource();
+let defaultRandomSource: RandomSource = MathRandomSource.create();
 
 /**
- * Sets the global default random source.
+ * Sets the global default random source
+ *
+ * @remarks
+ * Process-wide mutation — the replacement applies to every module that
+ * calls {@link getDefaultRandomSource} afterwards. Test suites that swap
+ * the default source MUST capture the previous source and restore it in
+ * `afterEach` / `afterAll`, otherwise later tests inherit the mutated
+ * source and lose determinism.
  *
  * @param source - New default random source
  *
  * @example
  * ```typescript
+ * const previous = getDefaultRandomSource();
  * setDefaultRandomSource(new SeededRandomSource(42));
+ * try {
+ *   // ...test code...
+ * } finally {
+ *   setDefaultRandomSource(previous);
+ * }
  * ```
  *
  * @category Configuration
@@ -365,7 +448,7 @@ export function setDefaultRandomSource(source: RandomSource): void {
 }
 
 /**
- * Returns the global default random source.
+ * Returns the global default random source
  *
  * @returns Current default random source
  *

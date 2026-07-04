@@ -23,12 +23,12 @@ import type { BuildMode } from './dimensions.ts';
  * ```typescript
  * const loader: PackageLoader = {
  *  name: 'math2d',
- *  root: '/path/to/packages/math2d',
+ *  root: '/path/to/packages/mypkg',
  *  entryPoints: {
- *   development: '/path/to/packages/math2d/lib/esm/math2d.development.js',
- *   production: '/path/to/packages/math2d/lib/esm/math2d.production.js',
+ *   development: '/path/to/packages/mypkg/lib/esm/mypkg.development.js',
+ *   production: '/path/to/packages/mypkg/lib/esm/mypkg.production.js',
  *  },
- *  mainEntry: '/path/to/packages/math2d/main.mjs',
+ *  mainEntry: '/path/to/packages/mypkg/main.mjs',
  *  async load(mode) {
  *   return import(this.entryPoints[mode]);
  *  },

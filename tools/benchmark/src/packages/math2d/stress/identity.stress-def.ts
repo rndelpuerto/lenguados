@@ -7,7 +7,7 @@
 
 import type { StressTestDefinition, StressTestOutput } from '../../../harness/stress-types.ts';
 import type { DiagnosticReport } from '../../../harness/diagnostics.ts';
-import { runIdentityStress } from '../../../stress/identity.stress.ts';
+import { runIdentityStress } from './identity.stress.ts';
 
 /**
  * Verify mathematical identities hold under floating-point arithmetic

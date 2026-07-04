@@ -1,0 +1,6 @@
+# .github/ISSUE_TEMPLATE/config.yml
+blank_issues_enabled: false
+contact_links:
+ - name: Report a security vulnerability
+   url: https://github.com/rndelpuerto/lenguados/blob/main/SECURITY.md
+   about: Never open a public issue for a vulnerability — follow the private reporting process in SECURITY.md.

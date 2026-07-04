@@ -1,0 +1,78 @@
+# .github/workflows/scorecard.yml
+name: OpenSSF Scorecard
+
+# ───────────────────────────────────────────────────────────────────────────────
+# Supply-chain security posture analysis (https://github.com/ossf/scorecard).
+# Trigger:
+# - Weekly schedule (scorecard checks drift over time — new advisories, new
+#   dependency releases — even when the repository itself does not change).
+# - On push to main (re-score after every change to the default branch).
+# ───────────────────────────────────────────────────────────────────────────────
+on:
+ schedule:
+  - cron: '30 4 * * 1' # Mondays 04:30 UTC
+ push:
+  branches:
+   - main
+
+# Default-deny: every permission the job needs is declared on the job itself.
+permissions: read-all
+
+jobs:
+ # ─────────────────────────────────────────────────────────────────────────────
+ # Job: analysis
+ # Runs the OpenSSF scorecard checks, publishes the results to the public
+ # OpenSSF REST API (enables the scorecard badge), and uploads the SARIF to
+ # GitHub code scanning so findings appear in the Security tab.
+ # ─────────────────────────────────────────────────────────────────────────────
+ analysis:
+  name: Scorecard analysis
+  runs-on: ubuntu-latest
+  timeout-minutes: 30
+
+  permissions:
+   contents: read # Required for actions/checkout
+   security-events: write # Upload SARIF results to code scanning
+   id-token: write # publish_results: verifies the run's identity via OIDC
+
+  steps:
+   # ─────────────────────────────────────────────────────────────────────────
+   # Checkout
+   # persist-credentials: false — scorecard requires a credential-free
+   # checkout (the job token must not linger in .git/config).
+   # ─────────────────────────────────────────────────────────────────────────
+   - name: Checkout repository
+     uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+     with:
+      persist-credentials: false
+
+   # ─────────────────────────────────────────────────────────────────────────
+   # Scorecard analysis
+   # publish_results: true — publishes to the OpenSSF results API, enabling
+   # the public badge and inclusion in the scorecard dataset. Requires the
+   # id-token: write permission above; results are signed via OIDC.
+   # ─────────────────────────────────────────────────────────────────────────
+   - name: Run OpenSSF Scorecard analysis
+     uses: ossf/scorecard-action@4eaacf0543bb3f2c246792bd56e8cdeffafb205a # v2.4.3
+     with:
+      results_file: results.sarif
+      results_format: sarif
+      publish_results: true
+
+   # ─────────────────────────────────────────────────────────────────────────
+   # Retain the raw SARIF as a run artifact for offline inspection.
+   # ─────────────────────────────────────────────────────────────────────────
+   - name: Upload scorecard SARIF artifact
+     uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+     with:
+      name: scorecard-sarif
+      path: results.sarif
+      retention-days: 5
+
+   # ─────────────────────────────────────────────────────────────────────────
+   # Surface findings in the repository Security tab (code scanning).
+   # ─────────────────────────────────────────────────────────────────────────
+   - name: Upload SARIF to code scanning
+     uses: github/codeql-action/upload-sarif@02c5e83432fe5497fd85b873b6c9f16a8578e1d9 # v3.37.0
+     with:
+      sarif_file: results.sarif

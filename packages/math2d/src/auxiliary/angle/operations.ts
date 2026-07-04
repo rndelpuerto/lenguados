@@ -14,7 +14,7 @@ import { normalizeRadians, normalizeRadiansPositive } from './normalization';
 export type { SinCos } from '../../types';
 
 /**
- * Computes sine and cosine of an angle simultaneously.
+ * Computes sine and cosine of an angle simultaneously
  * Uses deterministic math for cross-platform reproducibility.
  *
  * @remarks
@@ -45,50 +45,12 @@ export function sinCos(angle: number, out?: SinCos): SinCos {
  return deterministicSinCos(angle, out);
 }
 
-/**
- * Computes sine and cosine of a normalized angle.
- * Normalizes the angle to (-π, π] before computing.
- *
- * @remarks
- * Uses deterministic math (`sin`, `cos` from deterministic-kernels).
- *
- * Prefer this over {@link sinCos} for accumulated angles exceeding ~2²⁰·π
- * (~3.3e6 radians), where Cody-Waite range reduction loses precision due to
- * large quadrant numbers `n` in the `n·(π/2)` subtraction. This function
- * normalizes the angle to (-π, π] first via floating-point modulo
- * ({@link normalizeRadians}), ensuring the subsequent Cody-Waite reduction
- * operates on a small angle with `n ≤ 2`.
- *
- * **Not Payne-Hanek:** The pre-normalization uses IEEE 754 remainder (`%`),
- * not arbitrary-precision reduction. For `|angle| > ~2⁵³ / τ` (~1.4e15),
- * the modulo itself loses all significant digits. In practice, 2D physics
- * simulations rarely accumulate angles beyond a few thousand radians, so
- * this is not a concern for typical use cases.
- *
- * @param angle - Angle in radians (will be normalized)
- * @param out - Optional output object to write sin/cos into (zero-allocation)
- * @returns Object with sin and cos properties
- *
- * @example
- * ```typescript
- * const { sin, cos } = sinCosNormalized(5 * Math.PI);
- * // Equivalent to sinCos(Math.PI)
- * ```
- *
- * @category Arithmetic
- * @since 0.7.0
- */
-export function sinCosNormalized(angle: number, out?: SinCos): SinCos {
- const normalized = normalizeRadians(angle);
- return deterministicSinCos(normalized, out);
-}
-
 /* ========================================================================== */
 /* Angle Operations                                                          */
 /* ========================================================================== */
 
 /**
- * Signed shortest-arc delta in radians: rotate from `from` to `to`.
+ * Signed shortest-arc delta in radians: rotate from `from` to `to`
  * Result is in (-PI, PI].
  *
  * @remarks
@@ -96,6 +58,13 @@ export function sinCosNormalized(angle: number, out?: SinCos): SinCos {
  * `angleDifference(0, PI)` and `angleDifference(PI, 0)` both return `+PI`
  * (not `+PI` and `-PI` respectively). This is inherent to the convention and
  * matches the CCW-positive rotation direction used by the library.
+ *
+ * Uses subtraction + normalisation, so non-finite inputs propagate: either
+ * argument being NaN yields NaN; `Infinity - Infinity` yields NaN; finite
+ * minus `±Infinity` yields `∓Infinity` before normalisation, which then
+ * produces NaN. For the atan2-based cousin see {@link angleFromVectors},
+ * whose Infinity behaviour diverges (finite `atan2(∞, finite)` returns a
+ * finite principal angle rather than NaN).
  *
  * @param from - Starting angle in radians
  * @param to - Target angle in radians
@@ -108,6 +77,8 @@ export function sinCosNormalized(angle: number, out?: SinCos): SinCos {
  * angleDifference(-Math.PI, Math.PI);     // 0 (same angle)
  * ```
  *
+ * @see {@link angleFromVectors} - atan2-based angle between two 2D vectors
+ *
  * @category Arithmetic
  * @since 0.7.0
  */
@@ -116,7 +87,7 @@ export function angleDifference(from: number, to: number): number {
 }
 
 /**
- * Absolute shortest-arc distance in radians.
+ * Absolute shortest-arc distance in radians
  * Always positive, in [0, π].
  * @param a - First angle in radians
  * @param b - Second angle in radians
@@ -137,17 +108,19 @@ export function angleDistance(a: number, b: number): number {
 }
 
 /**
- * Tests if angles are approximately equal.
+ * Tests if angles are approximately equal
  * @param a - First angle in radians
  * @param b - Second angle in radians
  * @param epsilon - Tolerance (default: EPSILON)
  * @returns True if angles are within epsilon
  *
+ * @throws {RangeError} If epsilon is negative or NaN
+ *
  * @example
  * ```typescript
  * anglesNearEqual(0, 2 * Math.PI);              // true (same angle)
  * anglesNearEqual(-Math.PI, Math.PI);           // true (same angle)
- * anglesNearEqual(0, 0.0000000001);             // true (within epsilon)
+ * anglesNearEqual(0, 0.00000000001);            // true (within epsilon)
  * anglesNearEqual(0, 0.1);                      // false
  * ```
  *
@@ -158,11 +131,16 @@ export function anglesNearEqual(a: number, b: number, epsilon: number = EPSILON)
  if (!(epsilon >= 0)) {
   throw new RangeError(`anglesNearEqual: epsilon must be non-negative, got ${epsilon}`);
  }
+ // Fast-path `a === b` returns true only when both are finite.
+ // NaN !== NaN (IEEE 754 §5.11) so `a === b` naturally returns false for NaN.
+ // The fast-path skips angleDistance's normalization when inputs are
+ // bit-identical finite numbers.
+ if (a === b && Number.isFinite(a)) return true;
  return angleDistance(a, b) <= epsilon;
 }
 
 /**
- * Calculates angle bisector.
+ * Calculates angle bisector
  * Returns angle halfway between a and b (shortest path).
  *
  * @remarks
@@ -190,11 +168,18 @@ export function angleBisector(a: number, b: number): number {
 }
 
 /**
- * Tests if angle is between start and end (CCW).
+ * Tests if angle is between start and end (CCW)
  *
  * @remarks
  * Uses counter-clockwise convention. The arc from start to end
  * is traversed in the positive (CCW) direction.
+ *
+ * All three angles are normalised into the half-open canonical range
+ * `[0, TAU)`. Because the normalisation collapses `TAU` back to `0`, an
+ * arc that would subtend exactly one full revolution (e.g. `start = 0`,
+ * `end = TAU`) becomes the zero-length arc from `0` to `0` — NOT a full
+ * circle match. To represent "any angle qualifies", callers must special
+ * case the full-revolution input before calling this predicate.
  *
  * When start === end after normalization, the arc is a single point (not a full circle).
  * Only the exact boundary angle matches (with `inclusive = true`).
@@ -240,7 +225,7 @@ export function isAngleBetween(
 }
 
 /**
- * Clamps angle to arc between min and max.
+ * Clamps angle to arc between min and max
  *
  * @remarks
  * Clamps to the nearest boundary of the CCW arc from min to max.
@@ -265,6 +250,11 @@ export function isAngleBetween(
 export function clampAngle(angle: number, min: number, max: number): number {
  // IEEE 754 §6.2: propagate NaN — prevents silent conversion to valid angle
  if (angle !== angle || min !== min || max !== max) return NaN;
+ // Non-finite bounds cannot define a meaningful arc, so return the input angle
+ // unchanged. Without this guard, `±Infinity` would normalize to NaN inside
+ // `normalizeRadians`, and `isAngleBetween`'s wrap-around branch would accept
+ // any angle silently.
+ if (!Number.isFinite(min) || !Number.isFinite(max)) return angle;
 
  // Normalize all angles to (-PI, PI]
  const normAngle = normalizeRadians(angle);
@@ -285,7 +275,7 @@ export function clampAngle(angle: number, min: number, max: number): number {
 }
 
 /**
- * Computes the directed angle from vector1 to vector2.
+ * Computes the directed angle from vector1 to vector2
  *
  * @remarks
  * Uses deterministic math (`atan2` from deterministic-kernels).

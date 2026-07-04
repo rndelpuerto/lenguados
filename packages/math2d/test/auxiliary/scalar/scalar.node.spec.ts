@@ -27,7 +27,6 @@ import {
  lerp,
  lerpClamped,
  smoothStep,
- smootherStep,
 } from '../../../src/auxiliary/scalar/interpolation';
 
 const HALF_PI = PI / 2;
@@ -202,25 +201,6 @@ describe('Scalar functions', () => {
   });
  });
 
- describe('smootherStep', () => {
-  it('below edge0 returns 0', () => {
-   expect(smootherStep(0, 1, -0.5)).toBe(0);
-  });
-
-  it('above edge1 returns 1', () => {
-   expect(smootherStep(0, 1, 1.5)).toBe(1);
-  });
-
-  it('at midpoint returns ~0.5', () => {
-   expect(smootherStep(0, 1, 0.5)).toBeCloseTo(0.5);
-  });
-
-  it('at edges returns 0 and 1', () => {
-   expect(smootherStep(0, 1, 0)).toBe(0);
-   expect(smootherStep(0, 1, 1)).toBe(1);
-  });
- });
-
  describe('epsilonEquals', () => {
   it('returns true for numbers within eps', () => {
    expect(epsilonEquals(1.000001, 1.000002, 1e-5)).toBe(true);
@@ -331,8 +311,9 @@ describe('Scalar functions', () => {
  });
 
  describe('NaN/Infinity edge cases', () => {
-  it('sign(NaN) returns 0 (NaN is neither > 0 nor < 0)', () => {
-   expect(sign(NaN)).toBe(0);
+  // V9-Scalar-01: sign propagates NaN per IEEE 754 §6.2 (was sign(NaN)=0 pre-V9)
+  it('sign(NaN) propagates NaN per IEEE 754 §6.2', () => {
+   expect(sign(Number.NaN)).toBeNaN();
   });
 
   it('compare(1e308, 1e308) returns 0', () => {

@@ -3,7 +3,9 @@
  */
 
 import React from 'react';
+import { useChartPalette } from '../../hooks/use-chart-palette';
 import BenchmarkChart from './benchmark-chart';
+import { formatOps } from './format';
 import type { EChartsOption } from 'echarts';
 
 interface OperationData {
@@ -18,18 +20,12 @@ interface OperationBarChartProps {
  height?: number;
 }
 
-function formatOps(value: number): string {
- if (value >= 1e9) return `${(value / 1e9).toFixed(1)}G`;
- if (value >= 1e6) return `${(value / 1e6).toFixed(0)}M`;
- if (value >= 1e3) return `${(value / 1e3).toFixed(0)}K`;
- return String(Math.round(value));
-}
-
 export default function OperationBarChart({
  data,
  title,
  height,
 }: OperationBarChartProps): React.ReactElement {
+ const palette = useChartPalette();
  const sorted = [...data].sort((a, b) => b.opsPerSec - a.opsPerSec);
  const chartHeight = height ?? Math.max(300, sorted.length * 28 + 80);
 
@@ -59,11 +55,11 @@ export default function OperationBarChart({
    {
     type: 'bar',
     data: sorted.map((d) => d.opsPerSec),
-    itemStyle: { color: '#0072B2' },
+    itemStyle: { color: palette.primary },
     label: {
      show: true,
      position: 'right',
-     formatter: (p: { value: number }) => formatOps(p.value),
+     formatter: (p) => formatOps(Number((p as { value: number }).value)),
      fontSize: 10,
     },
    },

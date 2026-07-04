@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 import clsx from 'clsx';
 import { Blocks, Compass, FileCode, Globe, Play, Wrench, Zap } from 'lucide-react';
 import Heading from '@theme/Heading';
+import Link from '@docusaurus/Link';
 
 import styles from './styles.module.css';
 
@@ -112,7 +113,7 @@ export default function HomepageFeatures(): ReactNode {
        <div key={pkg.name} className={clsx('col col--4')}>
         <div className={styles.packageCard}>
          <Heading as="h3">
-          <a href={pkg.to}>
+          <Link to={pkg.to}>
            <pkg.icon
             size={18}
             strokeWidth={1.75}
@@ -120,7 +121,7 @@ export default function HomepageFeatures(): ReactNode {
             aria-hidden="true"
            />
            {pkg.name}
-          </a>
+          </Link>
          </Heading>
          <p>{pkg.description}</p>
         </div>

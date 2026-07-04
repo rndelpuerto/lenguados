@@ -62,7 +62,6 @@ export const defineSuite = definePackageSuite({
 
   // Guards (IEEE 754 only)
   add('isDenormal', () => m.isDenormal(5e-324));
-  add('flushDenormal', () => m.flushDenormal(5e-324));
 
   // Compensated arithmetic (IEEE 754 only)
   add('robustSum', () => m.robustSum([1e16, 1, -1e16, 1]));

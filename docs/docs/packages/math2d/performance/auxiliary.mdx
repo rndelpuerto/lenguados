@@ -11,6 +11,8 @@ import {
  InsightCallout,
  NoDataFallback,
  MethodologyNote,
+ PartialDataNotice,
+ formatOps,
 } from '@site/src/components/benchmark';
 import { useBenchmarkData } from '@site/src/hooks/use-benchmark-data';
 
@@ -22,17 +24,17 @@ export function AuxiliaryPerformance() {
  if (!aux) {
   return (
    <TldrBox>
-    Auxiliary/scalar benchmark data is not yet available.
-    Run <code>npm run tools:bench:all</code> with auxiliary suites to generate this data.
+    Auxiliary/scalar benchmark data is not yet available. Run <code>npm run tools:bench:all</code>{' '}
+    with auxiliary suites to generate this data.
    </TldrBox>
   );
  }
- const formatOps = (v) => v >= 1e9 ? `${(v/1e9).toFixed(1)}G` : v >= 1e6 ? `${(v/1e6).toFixed(0)}M` : `${(v/1e3).toFixed(0)}K`;
  return (
   <>
+   <PartialDataNotice summaries={[performance]} />
    <TldrBox>
-    <strong>{aux.operations.length} scalar operations</strong> measured.
-    Auxiliary functions form the foundation layer — they underpin all higher-level types.
+    <strong>{aux.operations.length} scalar operations</strong> measured. Auxiliary functions form
+    the foundation layer — they underpin all higher-level types.
    </TldrBox>
    <h3>All Operations</h3>
    <OperationBarChart data={aux.operations} title="Auxiliary — ops/sec" />
@@ -66,18 +68,18 @@ of transcendental functions (`sin`, `cos`, `tan`, `atan2`, etc.) to guarantee
 bit-identical results across platforms.
 
 <InsightCallout>
- **fdlibm trades throughput for determinism** — native `Math.sin` delegates to
- the platform's C++ libm (which may use SIMD) producing subtly different results on
- different CPUs. fdlibm produces identical results everywhere, which is essential
- for networked simulations, replay systems, and unit test reproducibility.
+ **fdlibm trades throughput for determinism** — native `Math.sin` delegates to the platform's C++
+ libm (which may use SIMD) producing subtly different results on different CPUs. fdlibm produces
+ identical results everywhere, which is essential for networked simulations, replay systems, and
+ unit test reproducibility.
 </InsightCallout>
 
 ## Triality on Scalar Operations
 
-Some scalar operations have the same default/safe/unchecked tier pattern:
+Some scalar operations have the same default/safe/unchecked tier pattern. For example, floored division:
 
-- `divideSafe(a, b)` — returns fallback for `b === 0`
-- `divideUnchecked(a, b)` — no check, may produce `Infinity` or `NaN`
-- `clampAngle` — clamps an angle to a given range
+- `floorDivide(a, b)` — throws `RangeError` when `b === 0`
+- `floorDivideSafe(a, b)` — returns `0` for `b === 0`
+- `floorDivideUnchecked(a, b)` — no check, may produce `Infinity` or `NaN`
 
 For measurement methodology, see [Methodology](../../../performance/methodology).

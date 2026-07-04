@@ -1,0 +1,18 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Cross-environment determinism golden file
+# ─────────────────────────────────────────────────────────────────────────────
+# The committed golden file at `tools/benchmark/baselines/golden.json` contains
+# ~11,000 hex-encoded Float64 reference values produced by the deterministic
+# kernel generator. When the file is regenerated (rare event — Node major
+# upgrade, deliberate kernel optimisation, accepted drift), the resulting diff
+# spans every line; a line-by-line text diff is unreviewable and offers no
+# semantic value to reviewers.
+#
+# Marking the file with the `binary` macro (which unsets `diff`, `merge`, and
+# `text`) makes `git diff` and PR review interfaces display "Binary files
+# differ" instead of a multi-megabyte line-by-line diff. Reviewers focus on
+# the PR description (regeneration trigger + new state hash) and rely on the
+# CI smoke step to verify the regenerated file matches the current kernel
+# output. See `packages/math2d/DESIGN_DECISIONS.md` ADR-018 and
+# `tools/benchmark/README.md` for the regeneration flow.
+tools/benchmark/baselines/golden.json binary

@@ -41,12 +41,13 @@ const sidebars: SidebarsConfig = {
      items: [
       'packages/math2d/overview',
       'packages/math2d/architecture',
-      'packages/math2d/design-decisions',
-      'packages/math2d/edge-cases',
-      'packages/math2d/interoperability',
       'packages/math2d/design-philosophy',
-      'packages/math2d/tsdoc-standard',
+      'packages/math2d/edge-cases',
+      'packages/math2d/design-decisions',
+      'packages/math2d/contributing',
+      'packages/math2d/interoperability',
       'packages/math2d/testing-strategy',
+      'packages/math2d/tsdoc-standard',
       'packages/math2d/module-exports',
       {
        type: 'category',

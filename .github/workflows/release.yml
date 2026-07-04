@@ -1,3 +1,4 @@
+# .github/workflows/release.yml
 name: Publish Monorepo Packages to npm
 
 # ───────────────────────────────────────────────────────────────────────────────
@@ -16,10 +17,10 @@ jobs:
   name: Publish packages to npm
   runs-on: ubuntu-latest
 
-  # Permissions: we only need to read repo contents and mint an OIDC token.
+  # Permissions: minimal set for a publish + release job.
   permissions:
-   contents: read # Required for actions/checkout
-   id-token: write # Optional: if using OIDC for auth
+   contents: write # checkout + creating the GitHub Release from the pushed tag
+   id-token: write # Required: mints the OIDC token that signs the npm provenance attestation
 
   steps:
    # ─────────────────────────────────────────────────────────────────────────
@@ -27,16 +28,36 @@ jobs:
    # Retrieves the repository code.
    # ─────────────────────────────────────────────────────────────────────────
    - name: Checkout repository
-     uses: actions/checkout@v4
+     uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
      with:
       fetch-depth: 0
+
+   # ─────────────────────────────────────────────────────────────────────────
+   # Tag Provenance
+   # Releases publish the tagged commit's tree (detached HEAD), so Lerna's
+   # allowBranch never runs here. Enforce the only-main intent for real:
+   # the tagged commit must already be part of origin/main.
+   # Two load-bearing git subtleties:
+   #   1. For annotated tags (Lerna creates these), GITHUB_SHA is the TAG
+   #      OBJECT sha, not the commit. `git merge-base` peels it automatically;
+   #      do NOT replace this with `rev-list | grep` or a GitHub API compare.
+   #   2. Resolving that tag object locally requires the `fetch-depth: 0`
+   #      checkout above — do not shallow it.
+   # ─────────────────────────────────────────────────────────────────────────
+   - name: Verify tag provenance (commit must be on main)
+     run: |
+      git fetch origin main
+      git merge-base --is-ancestor "$GITHUB_SHA" origin/main || {
+       echo "::error::Tag ${GITHUB_REF_NAME} points at ${GITHUB_SHA}, which is not an ancestor of origin/main — release tags must be cut from main. Merge the commit into main, then re-create the tag."
+       exit 1
+      }
 
    # ─────────────────────────────────────────────────────────────────────────
    # Setup Environment
    # Installs Node.js and project dependencies.
    # ─────────────────────────────────────────────────────────────────────────
    - name: Set up Node.js
-     uses: actions/setup-node@v4
+     uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
      with:
       node-version-file: '.nvmrc'
       registry-url: 'https://registry.npmjs.org'
@@ -48,10 +69,90 @@ jobs:
      run: npm ci
 
    # ─────────────────────────────────────────────────────────────────────────
-   # Publishing
-   # Publish all packages with Lerna.
+   # Build & Verify Distribution
+   # lib/ is gitignored, so the clean checkout has no build output. Build
+   # dev + production bundles, then assert every publishable tarball would
+   # contain the exports-critical artifacts (--ignore-scripts inside the
+   # verifier, so the gate validates THIS build, not a lifecycle rebuild).
    # ─────────────────────────────────────────────────────────────────────────
-   - name: Publish packages via Lerna
+   - name: Build production distribution
+     run: npm run dist
+
+   # ───────────────────────────────────────────────────────────────────────
+   # Quality gates before publish: the full unit suite and the determinism
+   # smoke MUST pass — publishing is the one action that cannot be unwound.
+   # ───────────────────────────────────────────────────────────────────────
+   - name: Run unit test suite
+     run: npm run test:unit
+
+   - name: Install benchmark tool dependencies
+     run: npm run tools:bench:setup
+
+   - name: Verify determinism and build correctness (smoke)
+     run: npm run tools:bench:smoke
+
+   - name: Verify package tarball contents
+     run: node scripts/verify-tarball.mjs
+
+   # ─────────────────────────────────────────────────────────────────────────
+   # Publishing
+   # Publish all packages with Lerna, attaching an npm provenance attestation.
+   #
+   # Provenance is enabled HERE via NPM_CONFIG_PROVENANCE — deliberately NOT
+   # via `publishConfig.provenance` in the packages' package.json. Verified
+   # empirically (npm 11.11.0 against a throwaway Verdaccio 6 registry):
+   #   - `publishConfig.provenance: true` makes `npm run publish:local` fail
+   #     with EUSAGE "Automatic provenance generation not supported for
+   #     provider: null" — provenance needs a CI OIDC provider AND a registry
+   #     that accepts attestations, neither of which exists locally.
+   #   - A plain publish to the same Verdaccio succeeds.
+   # Scoping the option to this workflow keeps the local Verdaccio flow
+   # working while releases to registry.npmjs.org get signed provenance.
+   # Lerna reads npm_config_* environment variables (case-insensitive) into
+   # its npm config, so the env var below reaches libnpmpublish; the sigstore
+   # signature uses the job's OIDC token (`id-token: write` above).
+   # ─────────────────────────────────────────────────────────────────────────
+   - name: Publish packages via Lerna (with npm provenance)
      run: npx lerna publish from-package --yes
      env:
       NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      NPM_CONFIG_PROVENANCE: 'true'
+
+   # ─────────────────────────────────────────────────────────────────────────
+   # GitHub Release
+   # After a successful publish, create a GitHub Release for the pushed tag
+   # using the matching root CHANGELOG.md section (Keep a Changelog format:
+   # "## [X.Y.Z] - date") as the release notes. Exact-string matching via
+   # awk index() — no regex, so prerelease versions with dots/hyphens are
+   # safe. If the section is missing (anomaly: packages are already on npm,
+   # so failing here could not unwind anything), warn and fall back to
+   # GitHub's auto-generated notes rather than leaving no release at all.
+   # Prerelease tags (v1.2.3-alpha.0 / -beta.0) are marked as prereleases.
+   # Idempotent: a re-run of a partially failed job skips an existing release.
+   # ─────────────────────────────────────────────────────────────────────────
+   - name: Create GitHub Release with CHANGELOG notes
+     env:
+      GH_TOKEN: ${{ github.token }}
+     run: |
+      if gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+       echo "Release $GITHUB_REF_NAME already exists — skipping creation."
+       exit 0
+      fi
+      version="${GITHUB_REF_NAME#v}"
+      notes_file="$(mktemp)"
+      awk -v ver="$version" '
+       index($0, "## [" ver "]") == 1 { found = 1; next }
+       found && index($0, "## [") == 1 { exit }
+       found { print }
+      ' CHANGELOG.md > "$notes_file"
+      prerelease_flag=""
+      case "$version" in *-*) prerelease_flag="--prerelease" ;; esac
+      if [ -s "$notes_file" ]; then
+       gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --verify-tag \
+        --title "$GITHUB_REF_NAME" --notes-file "$notes_file" $prerelease_flag
+      else
+       echo "::warning::No '## [$version]' section found in CHANGELOG.md — creating the release with auto-generated notes instead."
+       gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --verify-tag \
+        --title "$GITHUB_REF_NAME" --generate-notes $prerelease_flag
+      fi
+      rm -f "$notes_file"

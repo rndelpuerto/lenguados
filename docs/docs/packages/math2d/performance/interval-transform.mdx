@@ -10,6 +10,8 @@ import {
  TldrBox,
  NoDataFallback,
  MethodologyNote,
+ PartialDataNotice,
+ formatOps,
 } from '@site/src/components/benchmark';
 import { useBenchmarkData } from '@site/src/hooks/use-benchmark-data';
 
@@ -21,15 +23,14 @@ export function IntervalTransformPerformance() {
  if (!interval && !transform) {
   return (
    <TldrBox>
-    Interval and Transform2 benchmark data is not yet available.
-    Run <code>npm run tools:bench:all</code> with interval and transform suites
-    to generate this data.
+    Interval and Transform2 benchmark data is not yet available. Run{' '}
+    <code>npm run tools:bench:all</code> with interval and transform suites to generate this data.
    </TldrBox>
   );
  }
- const formatOps = (v) => v >= 1e9 ? `${(v/1e9).toFixed(1)}G` : v >= 1e6 ? `${(v/1e6).toFixed(0)}M` : `${(v/1e3).toFixed(0)}K`;
  return (
   <>
+   <PartialDataNotice summaries={[performance]} />
    {interval && (
     <>
      <h3>Interval Operations</h3>
@@ -39,7 +40,12 @@ export function IntervalTransformPerformance() {
        columns={[
         { key: 'name', label: 'Operation' },
         { key: 'opsPerSec', label: 'ops/sec', format: (v) => formatOps(Number(v)), align: 'right' },
-        { key: 'median', label: 'Median (ns)', format: (v) => Number(v).toFixed(1), align: 'right' },
+        {
+         key: 'median',
+         label: 'Median (ns)',
+         format: (v) => Number(v).toFixed(1),
+         align: 'right',
+        },
         { key: 'samples', label: 'Samples', align: 'right' },
        ]}
        data={interval.operations}
@@ -57,7 +63,12 @@ export function IntervalTransformPerformance() {
        columns={[
         { key: 'name', label: 'Operation' },
         { key: 'opsPerSec', label: 'ops/sec', format: (v) => formatOps(Number(v)), align: 'right' },
-        { key: 'median', label: 'Median (ns)', format: (v) => Number(v).toFixed(1), align: 'right' },
+        {
+         key: 'median',
+         label: 'Median (ns)',
+         format: (v) => Number(v).toFixed(1),
+         align: 'right',
+        },
         { key: 'samples', label: 'Samples', align: 'right' },
        ]}
        data={transform.operations}
@@ -79,9 +90,9 @@ Performance analysis for `Interval` (1D ranges with set operations) and `Transfo
 
 ## Key Characteristics
 
-- **Interval set operations** (`union`, `intersection`, `contains`) are branch-heavy due to
+- **Interval set operations** (`union`, `intersect`, `contains`) are branch-heavy due to
   min/max comparisons but operate on only 2 floats
-- **Transform2 composition** decomposes into Scale, Rotate, Translate steps — the `compose`
+- **Transform2 composition** decomposes into Scale, Rotate, Translate steps — the `multiply`
   operation is the hot path in scene graph traversal
 - **Transform2 inverse** requires computing the inverse of the rotation and negating the
   scaled translation

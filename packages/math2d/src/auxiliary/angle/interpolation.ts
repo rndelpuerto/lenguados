@@ -10,11 +10,15 @@ import { smoothStep } from '../scalar/interpolation';
 import { angleDifference } from './operations';
 
 /**
- * Interpolates between angles using shortest path.
+ * Interpolates between angles using shortest path
  *
  * @remarks
  * Works for any real t (not only [0, 1]). Extrapolation continues
  * linearly in angle space and may produce values outside (-PI, PI].
+ *
+ * Endpoint-exact: `t === 0` returns `from` and `t === 1` returns `to`
+ * bit-for-bit. The `t === 0` guard also returns `from` when `to` is
+ * non-finite, avoiding the `NaN * 0` trap. See EDGE_CASES §11.
  *
  * @param from - Start angle in radians
  * @param to - End angle in radians
@@ -32,11 +36,13 @@ import { angleDifference } from './operations';
  * @since 0.7.0
  */
 export function lerpAngle(from: number, to: number, t: number): number {
+ if (t === 0) return from;
+ if (t === 1) return to;
  return from + angleDifference(from, to) * t;
 }
 
 /**
- * Interpolates between angles using shortest path, clamping t to [0, 1].
+ * Interpolates between angles using shortest path, clamping t to [0, 1]
  * Prevents extrapolation beyond the target angles.
  *
  * @param from - Start angle in radians
@@ -62,7 +68,7 @@ export function lerpAngleClamped(from: number, to: number, t: number): number {
 }
 
 /**
- * Smooth step interpolation for angles.
+ * Smooth step interpolation for angles
  * @param from - Start angle in radians
  * @param to - End angle in radians
  * @param t - Interpolation factor [0, 1]

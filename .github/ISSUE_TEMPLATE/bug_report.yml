@@ -1,0 +1,92 @@
+# .github/ISSUE_TEMPLATE/bug_report.yml
+name: Bug report
+description: Report a defect in a @lenguados package or the repository tooling
+title: 'bug: '
+labels:
+ - bug
+body:
+ - type: markdown
+   attributes:
+    value: |
+     Thanks for reporting a bug. A minimal, self-contained reproduction is the single most useful thing you can provide.
+
+     **Do not report security vulnerabilities here** — follow the private process in [SECURITY.md](https://github.com/rndelpuerto/lenguados/blob/main/SECURITY.md).
+
+ - type: dropdown
+   id: package
+   attributes:
+    label: Affected package
+    description: Where does the bug live?
+    options:
+     - '@lenguados/math2d'
+     - '@lenguados/common'
+     - '@lenguados/examples'
+     - Documentation site (docs/)
+     - Benchmark laboratory (tools/benchmark)
+     - Monorepo / build infrastructure
+     - Not sure
+   validations:
+    required: true
+
+ - type: input
+   id: version
+   attributes:
+    label: Version
+    description: Published package version (`npm ls @lenguados/math2d`), or the commit SHA when building from source
+    placeholder: '0.6.0'
+   validations:
+    required: true
+
+ - type: textarea
+   id: reproduction
+   attributes:
+    label: Steps to reproduce
+    description: Minimal code or exact command sequence that triggers the bug
+    placeholder: |
+     ```typescript
+     import { Vector2 } from '@lenguados/math2d';
+
+     const v = Vector2.fromValues(1, 2);
+     // ...
+     ```
+   validations:
+    required: true
+
+ - type: textarea
+   id: expected
+   attributes:
+    label: Expected behavior
+    description: What should happen?
+   validations:
+    required: true
+
+ - type: textarea
+   id: actual
+   attributes:
+    label: Actual behavior
+    description: What happens instead? Include the exact output, error message, or stack trace
+   validations:
+    required: true
+
+ - type: textarea
+   id: environment
+   attributes:
+    label: Environment
+    description: Runtime details — especially relevant for determinism reports
+    placeholder: |
+     Node.js: 24.14.1
+     OS: macOS 15.4 (arm64)
+     Browser/engine (if applicable): Chrome 137
+     Bundler (if applicable): esbuild 0.25
+   validations:
+    required: false
+
+ - type: checkboxes
+   id: checklist
+   attributes:
+    label: Pre-submission checklist
+    options:
+     - label: I searched the existing issues and this bug has not been reported yet
+       required: true
+     - label: This is not a security vulnerability (those follow the private process in SECURITY.md)
+       required: true

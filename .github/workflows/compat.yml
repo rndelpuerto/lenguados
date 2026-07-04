@@ -1,0 +1,98 @@
+# .github/workflows/compat.yml
+name: Node Compatibility Matrix
+
+# ───────────────────────────────────────────────────────────────────────────────
+# Trigger:
+# - On every pull request to main, before merge.
+# - Manually via workflow_dispatch (main-gated: the matrix proves properties of
+#   what ships, so manual runs from any other ref are refused).
+# ───────────────────────────────────────────────────────────────────────────────
+on:
+ pull_request:
+  branches: [main]
+ workflow_dispatch:
+
+concurrency:
+ group: compat-${{ github.ref }}
+ cancel-in-progress: true
+
+jobs:
+ # ─────────────────────────────────────────────────────────────────────────────
+ # Job: compat
+ # Build, test, and determinism-smoke the monorepo across Node.js majors.
+ #
+ # The load-bearing check is the LAST step: the fdlibm deterministic-kernel
+ # golden file (tools/benchmark/baselines/golden.json) MUST be bit-exact on
+ # every Node major — the kernels are polynomial approximations evaluated in
+ # pure IEEE 754 double arithmetic, so engine version must not change a single
+ # bit. Proven locally on Node 22 vs 24 before this workflow existed; the
+ # matrix keeps that guarantee continuously verified (see
+ # packages/math2d/DESIGN_DECISIONS.md ADR-018).
+ #
+ # Note: the repo declares `engines.node: ^24.14.0`, so npm emits EBADENGINE
+ # warnings on 22.x/26.x — expected and harmless (engine-strict is off). The
+ # matrix intentionally runs outside the supported engine to prove the
+ # determinism contract holds beyond it.
+ # ─────────────────────────────────────────────────────────────────────────────
+ compat:
+  name: Node ${{ matrix.node-version }} compatibility
+  # Manual dispatch must come from main; pull_request runs are already
+  # main-targeted by the trigger filter.
+  if: github.event_name != 'workflow_dispatch' || github.ref == 'refs/heads/main'
+  runs-on: ubuntu-latest
+  timeout-minutes: 30
+
+  permissions:
+   contents: read
+
+  strategy:
+   fail-fast: false # one Node major failing must not mask results on the others
+   matrix:
+    node-version: [22.x, 24.x, 26.x]
+
+  steps:
+   # ─────────────────────────────────────────────────────────────────────────
+   # Checkout
+   # ─────────────────────────────────────────────────────────────────────────
+   - name: Checkout repository
+     uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+     with:
+      fetch-depth: 1
+
+   # ─────────────────────────────────────────────────────────────────────────
+   # Setup Environment
+   # Matrix Node version (NOT .nvmrc — the point is to vary the engine).
+   # ─────────────────────────────────────────────────────────────────────────
+   - name: Set up Node.js ${{ matrix.node-version }}
+     uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+     with:
+      node-version: ${{ matrix.node-version }}
+      cache: npm
+      # Cache key covers exactly the lockfiles this workflow installs
+      # (root npm ci + tools:bench:setup).
+      cache-dependency-path: |
+       package-lock.json
+       tools/benchmark/package-lock.json
+
+   - name: Install monorepo dependencies
+     run: npm ci
+
+   # ─────────────────────────────────────────────────────────────────────────
+   # Build & Test on this Node major
+   # ─────────────────────────────────────────────────────────────────────────
+   - name: Build development + production bundles
+     run: npm run dist
+
+   - name: Run unit test suite
+     run: npm run test:unit
+
+   # ─────────────────────────────────────────────────────────────────────────
+   # Determinism golden gate: the committed golden file must be reproduced
+   # bit-for-bit by THIS Node major. Any mismatch is a cross-version
+   # determinism break in the fdlibm kernel path and must block the merge.
+   # ─────────────────────────────────────────────────────────────────────────
+   - name: Install benchmark tool dependencies
+     run: npm run tools:bench:setup
+
+   - name: Verify determinism golden file (bit-exact across Node majors)
+     run: npm run tools:bench:smoke

@@ -106,10 +106,9 @@ describe('Deterministic kernel parity with Math.*', () => {
    '-Infinity,-0.5',
    '-Infinity,Infinity',
    '-Infinity,-Infinity',
-   // Category 3: Signed zero lost (fdlibm semantics — cannot occur via library API)
-   '-0,3',
-   '-0,-1',
-   '-0,-3',
+   // V9-Deterministic-02: signed-zero cases `-0,1` / `-0,3` / `-0,-1` / `-0,-3` NO LONGER
+   // deviate — the kernel now preserves `-0` and `-Infinity` per ECMA-262 §21.3.2.26 /
+   // C99 §F.9.4.4 / fdlibm `e_pow.c`. Previously KNOWN_DEVIATIONS entries are removed.
   ]);
 
   for (const base of POW_SPECIALS) {

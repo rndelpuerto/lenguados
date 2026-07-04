@@ -145,6 +145,7 @@ packages/**/bundle-stats.html
 tools/benchmark/results/
 tools/benchmark/node_modules/
 tools/benchmark/dist/
+tools/benchmark/.tmp/
 
 # AI agent configuration (local only)
 CLAUDE.md
@@ -154,3 +155,7 @@ openspec/
 
 # System files
 .DS_Store
+
+# Legal files copied into packages at pack time (source of truth: repository root)
+packages/*/LICENSE
+packages/*/NOTICE

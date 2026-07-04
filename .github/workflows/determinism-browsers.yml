@@ -1,0 +1,122 @@
+# .github/workflows/determinism-browsers.yml
+name: Cross-Browser Determinism
+
+# ───────────────────────────────────────────────────────────────────────────────
+# Verifies the committed determinism golden file bit-for-bit across Chromium
+# (V8), Firefox (SpiderMonkey), and WebKit (JavaScriptCore) via Playwright.
+#
+# Cadence is EVENT-TRIGGERED, not per-PR: the per-PR Node golden gate
+# (pr-validation smoke + compat matrix) already catches every kernel-numerics
+# change, and browser engine binaries only change when Playwright is bumped
+# in tools/benchmark/package-lock.json. The path filters below enumerate the
+# complete set of drift-capable events; the monthly cron is a backstop for
+# runner-image/OS-level drift no path filter can see.
+# See packages/math2d/DESIGN_DECISIONS.md ADR-018.
+#
+# Verification is fail-loud end to end: any bit divergence in any engine and
+# any browser that fails to launch exits non-zero (no --allow-missing-browsers
+# here — that opt-out is for local machines only).
+# ───────────────────────────────────────────────────────────────────────────────
+on:
+ pull_request:
+  paths:
+   - 'packages/math2d/src/deterministic/**'
+   - 'tools/benchmark/baselines/golden.json'
+   - 'tools/benchmark/src/cross-env/**'
+   - 'tools/benchmark/scripts/cross-env.ts'
+   - 'tools/benchmark/package-lock.json'
+   - '.nvmrc'
+   - '.github/workflows/determinism-browsers.yml'
+   # Build-pipeline files shape the emitted kernel bytes. The per-PR Node
+   # golden gate already catches byte-level drift (same bundle everywhere);
+   # these are included for engine-behavior drift on newly emitted syntax.
+   # The root lockfile is deliberately absent: it changes on every weekly
+   # dependency bump and would turn the event trigger into noise.
+   - 'scripts/build.mjs'
+   - 'rollup.config.mjs'
+ workflow_dispatch:
+ schedule:
+  # Monthly backstop (03:17 UTC on the 4th — off the busy top-of-hour slots)
+  - cron: '17 3 4 * *'
+
+concurrency:
+ group: determinism-browsers-${{ github.ref }}
+ cancel-in-progress: true
+
+jobs:
+ verify:
+  name: Verify golden across browser engines
+  runs-on: ubuntu-latest
+  timeout-minutes: 30
+
+  permissions:
+   contents: read
+
+  steps:
+   # ─────────────────────────────────────────────────────────────────────────
+   # Checkout
+   # ─────────────────────────────────────────────────────────────────────────
+   - name: Checkout repository
+     uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+     with:
+      fetch-depth: 1
+
+   # ─────────────────────────────────────────────────────────────────────────
+   # Setup Environment
+   # ─────────────────────────────────────────────────────────────────────────
+   - name: Set up Node.js
+     uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+     with:
+      node-version-file: '.nvmrc'
+      cache: npm
+      cache-dependency-path: |
+       package-lock.json
+       tools/benchmark/package-lock.json
+
+   - name: Install monorepo dependencies
+     run: npm ci
+
+   - name: Install benchmark tool dependencies
+     run: npm run tools:bench:setup
+
+   # ─────────────────────────────────────────────────────────────────────────
+   # Playwright browsers — cached keyed on the benchmark lockfile, which is
+   # the single source of the pinned Playwright (and therefore browser-build)
+   # version. A lockfile bump is exactly the event that invalidates the cache.
+   # ─────────────────────────────────────────────────────────────────────────
+   - name: Cache Playwright browsers
+     id: playwright-cache
+     uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+     with:
+      path: ~/.cache/ms-playwright
+      key: playwright-${{ runner.os }}-${{ hashFiles('tools/benchmark/package-lock.json') }}
+
+   # `--no-install` pins npx to the lockfile-installed playwright inside
+   # tools/benchmark — if the optional dependency failed to install, this
+   # fails loudly instead of npx fetching an unpinned version from the
+   # registry.
+   - name: Install Playwright browsers
+     if: steps.playwright-cache.outputs.cache-hit != 'true'
+     working-directory: tools/benchmark
+     run: npx --no-install playwright install --with-deps chromium firefox webkit
+
+   # WebKit/Firefox host libraries are provided by --with-deps on a cache
+   # miss; on a cache hit the browser binaries are restored but the host
+   # libraries are not, so install them unconditionally when cached.
+   - name: Install Playwright host dependencies (cache hit)
+     if: steps.playwright-cache.outputs.cache-hit == 'true'
+     working-directory: tools/benchmark
+     run: npx --no-install playwright install-deps chromium firefox webkit
+
+   # ─────────────────────────────────────────────────────────────────────────
+   # Build production bundles (the verification injects the shipped ESM tree)
+   # ─────────────────────────────────────────────────────────────────────────
+   - name: Build development + production bundles
+     run: npm run dist
+
+   # ─────────────────────────────────────────────────────────────────────────
+   # Verify the committed golden file across all three engines. Exits
+   # non-zero on any divergence or any browser that could not run.
+   # ─────────────────────────────────────────────────────────────────────────
+   - name: Verify determinism golden across chromium, firefox, webkit
+     run: npm run tools:bench:cross-env -- --verify=baselines/golden.json --browsers=chromium,firefox,webkit

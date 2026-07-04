@@ -1,0 +1,10 @@
+# Generated build output (nested .gitignore files hide these from git but not from Prettier)
+docs/build/
+docs/.docusaurus/
+docs/docs/api/
+
+# Committed reference artifacts — regeneration is a deliberate, reviewed action;
+# Prettier must never rewrite them (see DESIGN_DECISIONS.md ADR-018)
+tools/benchmark/baselines/
+tools/benchmark/results/
+packages/math2d/test/core/matrix2-svd-fixtures.json

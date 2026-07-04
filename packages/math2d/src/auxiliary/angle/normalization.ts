@@ -8,7 +8,7 @@ import { loop } from '../scalar/arithmetic';
 import { PI, TAU } from '../scalar/constants';
 
 /**
- * Normalizes an angle to (-PI, PI] range.
+ * Normalizes an angle to (-PI, PI] range
  * Standard signed angle representation matching the mathematical
  * principal argument Arg(z) and IEEE 754 atan2 output convention.
  *
@@ -42,7 +42,7 @@ export function normalizeRadians(radians: number): number {
 }
 
 /**
- * Normalizes an angle to [0, TAU) range.
+ * Normalizes an angle to [0, TAU) range
  * Useful for progress, winding calculations.
  * @param radians - Angle in radians
  * @returns Normalized angle in [0, TAU)
@@ -64,7 +64,7 @@ export function normalizeRadiansPositive(radians: number): number {
 }
 
 /**
- * Normalizes degrees to (-180, 180].
+ * Normalizes degrees to (-180, 180]
  * @param degrees - Angle in degrees
  * @returns Normalized angle in (-180, 180]
  *
@@ -86,7 +86,7 @@ export function normalizeDegrees(degrees: number): number {
 }
 
 /**
- * Normalizes degrees to [0, 360).
+ * Normalizes degrees to [0, 360)
  * @param degrees - Angle in degrees
  * @returns Normalized angle in [0, 360)
  *

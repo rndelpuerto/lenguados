@@ -34,6 +34,56 @@ export interface ComparisonResult {
  referenceLibrary: string;
 }
 
+/** One planned bench registration: operation group + adapter + mitata alias */
+export interface PlannedRegistration {
+ operation: string;
+ adapterName: string;
+ alias: string;
+ opFn: () => unknown;
+}
+
+/* ========================================================================== */
+/* Registration Planning                                                       */
+/* ========================================================================== */
+
+/**
+ * Plan bench registrations OPERATION-MAJOR
+ *
+ * @remarks
+ * One contiguous block per operation containing every library's bench for
+ * that operation, adjacent in execution order. Library-major registration
+ * executed each library as a disjoint temporal block minutes apart, so
+ * time-varying machine state (thermal, tenancy, GC pressure) hit the
+ * libraries differentially and the published ratio absorbed that drift
+ * (measured: same-commit geometric-mean ratio swings up to ±27.5% between
+ * back-to-back runs). Adjacent paired execution cancels shared-machine
+ * interference to first order.
+ *
+ * @param adapters - Library adapters to benchmark, in registration order
+ * @param filter - Operation names to include
+ * @returns Ordered registrations: all adapters of operation N precede operation N+1
+ */
+export function planOperationMajorRegistration(
+ adapters: LibraryAdapter[],
+ filter: Set<string>,
+): PlannedRegistration[] {
+ const operationMaps = new Map(adapters.map((a) => [a.name, a.getOperations()]));
+ const plan: PlannedRegistration[] = [];
+ for (const operation of filter) {
+  for (const adapter of adapters) {
+   const opFn = operationMaps.get(adapter.name)!.get(operation);
+   if (!opFn) continue;
+   plan.push({
+    operation,
+    adapterName: adapter.name,
+    alias: `${adapter.name}::${operation}`,
+    opFn,
+   });
+  }
+ }
+ return plan;
+}
+
 /* ========================================================================== */
 /* Runner                                                                      */
 /* ========================================================================== */
@@ -60,22 +110,33 @@ export async function runComparison(
 ): Promise<ComparisonResult> {
  const filter = operationFilter ?? vocabularyNames;
 
- // Register all benchmarks across all libraries
+ // Register benchmarks from the operation-major plan (see
+ // planOperationMajorRegistration for the pairing rationale): one mitata
+ // group per operation, every library's bench for it adjacent.
+ const plan = planOperationMajorRegistration(adapters, filter);
+ const registered = new Map(adapters.map((a) => [a.name, 0]));
+
+ const byOperation = new Map<string, PlannedRegistration[]>();
+ for (const entry of plan) {
+  const list = byOperation.get(entry.operation) ?? [];
+  list.push(entry);
+  byOperation.set(entry.operation, list);
+ }
+
  let totalOps = 0;
- for (const adapter of adapters) {
-  const ops = adapter.getOperations();
-  let adapterOps = 0;
-  group(adapter.name, () => {
-   for (const [opName, opFn] of ops) {
-    if (!filter.has(opName)) continue;
-    bench(`${adapter.name}::${opName}`, () => {
-     do_not_optimize(opFn());
+ for (const [operation, entries] of byOperation) {
+  group(operation, () => {
+   for (const entry of entries) {
+    bench(entry.alias, () => {
+     do_not_optimize(entry.opFn());
     }).gc('once');
-    adapterOps++;
+    registered.set(entry.adapterName, registered.get(entry.adapterName)! + 1);
+    totalOps++;
    }
   });
-  totalOps += adapterOps;
-  console.log(`  Registered ${adapterOps} operations for ${adapter.name}`);
+ }
+ for (const adapter of adapters) {
+  console.log(`  Registered ${registered.get(adapter.name)} operations for ${adapter.name}`);
  }
 
  // Execute all benchmarks with identical measurement

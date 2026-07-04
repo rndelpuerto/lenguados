@@ -18,10 +18,11 @@ lenguados/
 
 ```mermaid
 graph LR
- common["@lenguados/common"] --> math2d["@lenguados/math2d"] --> examples["@lenguados/examples"]
+ math2d["@lenguados/math2d"] -->|bundled build-time dep| examples["@lenguados/examples"]
+ common["@lenguados/common"] -.->|intended direction; no edge yet| math2d
 ```
 
-Dependencies flow left-to-right only. Each package is independently publishable to npm.
+Actual edges only: `examples` consumes `math2d` as a build-time dependency whose used subset is bundled into the example artifacts (published packages ship zero runtime dependencies). `common` is currently dependency-free and unconsumed by the other packages — the dashed arrow records the intended layering (common under math2d) for when a real shared utility need appears. Dependencies flow left-to-right only. Each package is independently publishable to npm.
 
 ## Shared Infrastructure
 
@@ -39,15 +40,15 @@ These principles apply across all packages in the engine:
 
 1. **Determinism** — Cross-platform bit-exact results for networked lockstep. Each package chooses the appropriate deterministic strategy for its domain.
 2. **Zero-Allocation** — No heap allocations in hot paths. Static methods accept `out` parameters; instance methods mutate `this`.
-3. **Layered Protection** — Dev-only assertions (tree-shaked in production) combined with always-active safe fallbacks. Three tiers per fallible operation: strict, safe, unchecked.
+3. **Layered Protection** — Dev-only assertions (eliminated from production library builds) combined with always-active safe fallbacks. Three tiers per fallible operation: strict, safe, unchecked.
 4. **Modularity** — Independent packages for each engine layer. Use only what you need. Each package follows strict layered dependencies with unidirectional data flow.
 
 ## @lenguados/math2d Internals
 
-The main package has a strict 6-layer architecture with unidirectional dependencies. See [`packages/math2d/ARCHITECTURE.md`](packages/math2d/ARCHITECTURE.md) for the full code map including:
+The main package has a strict layered architecture (five layers plus two cross-cutting concerns) with unidirectional dependencies. See [`packages/math2d/ARCHITECTURE.md`](packages/math2d/ARCHITECTURE.md) for the full code map including:
 
-- Layer diagram (L0: deterministic → L1: auxiliary → L2: core → L3: utils; types and validation are cross-cutting)
+- Layer diagram (L0: deterministic → L1: auxiliary → L2: core → L3: composite (Transform2) → L4: utils; types and validation are cross-cutting)
 - Key patterns (out parameter, triality, CS variants, apply vs transform)
 - Zero-check conventions and tolerance constants
 
-For expanded design principles and architectural axioms, see the [math2d architecture deep-dive](https://rndelpuerto.github.io/lenguados/docs/packages/math2d/architecture).
+The same document is rendered on the docs site as the [math2d architecture deep-dive](https://rndelpuerto.github.io/lenguados/docs/packages/math2d/architecture).

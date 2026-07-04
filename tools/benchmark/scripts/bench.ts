@@ -55,6 +55,27 @@ const suiteFilter = args.find((a) => a.startsWith('--suite='))?.split('=')[1];
 const compareFile = args.find((a) => a.startsWith('--compare='))?.split('=')[1];
 const dimFilter = parseDimensionFilter(args);
 
+// Run-scope provenance: publishable ("full") ⇔ suite/tier/entity-unfiltered AND
+// covering the canonical publication cell (production build, fdlibm determinism,
+// node environment). A --build=production --determinism=fdlibm run therefore
+// still classifies as full (it IS the canonical cell).
+const scopeFilters: Record<string, string> = {};
+if (suiteFilter) scopeFilters['suite'] = suiteFilter;
+for (const [axis, value] of Object.entries(dimFilter)) {
+ if (value !== undefined) scopeFilters[axis] = String(value);
+}
+const coversCanonicalCell =
+ (dimFilter.buildMode === undefined || dimFilter.buildMode === 'production') &&
+ (dimFilter.determinism === undefined || dimFilter.determinism === 'fdlibm') &&
+ (dimFilter.environment === undefined || dimFilter.environment === 'node');
+const runScope =
+ !suiteFilter &&
+ dimFilter.tier === undefined &&
+ dimFilter.entity === undefined &&
+ coversCanonicalCell
+  ? { full: true as const }
+  : { full: false as const, filters: scopeFilters };
+
 console.log('\n  Discovering benchmark suites...');
 const suites = await discoverSuites(packageName, suiteFilter ? new RegExp(suiteFilter) : undefined);
 console.log(`  Found ${suites.length} suites.\n`);
@@ -80,7 +101,7 @@ for (const suite of suites) {
    // Clear accumulated benchmarks from previous cell to prevent
    // duplication — setup() pushes to the shared entries array.
    suite.benchmarks.length = 0;
-   if (suite.setup) await suite.setup(ctx.math2d);
+   if (suite.setup) await suite.setup(ctx.module);
 
    // Filter benchmarks to only those relevant to this cell's tier/determinism.
    // Tier-tagged benchmarks only run in their matching tier cell.
@@ -132,8 +153,8 @@ for (const suite of suites) {
 // Print ASCII table
 console.log('\n' + printAsciiTable(allEntries) + '\n');
 
-// Generate and persist report
-const report = generateJsonReport(allGroups, undefined, false);
+// Generate and persist report (package-namespaced, with run-scope provenance)
+const report = generateJsonReport(allGroups, undefined, false, packageName, runScope);
 const filepath = persistReport(report);
 console.log(`  Results saved to: ${filepath}`);
 

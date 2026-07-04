@@ -1,34 +1,43 @@
 /**
- * Hook to access benchmark summary data loaded by the benchmark data plugin.
+ * Hooks to access benchmark summary data loaded by the benchmark data plugin.
  *
- * Data is keyed by package name. Pass a package name to get that package's
- * data, or call without arguments to get all packages.
+ * Data is keyed by package name. `useBenchmarkData(packageName)` returns one
+ * package's four summaries; `useAllBenchmarkData()` returns everything.
  */
 
 import { usePluginData } from '@docusaurus/useGlobalData';
 
-interface PackageBenchmarkData {
- performance: unknown | null;
- comparison: unknown | null;
- stress: unknown | null;
- dx: unknown | null;
-}
+import type { AllBenchmarkData, PackageBenchmarkData } from '../types/benchmark-summaries';
 
-type AllBenchmarkData = Record<string, PackageBenchmarkData>;
+const EMPTY_PACKAGE_DATA: PackageBenchmarkData = {
+ performance: null,
+ comparison: null,
+ stress: null,
+ dx: null,
+};
 
 /**
- * Benchmark data accessor for Docusaurus pages
+ * Benchmark data accessor for a single package
  *
- * @param packageName - package to get data for, omit for all packages
- * @returns package-specific or all benchmark data
+ * @param packageName - package to get data for
+ * @returns the package's four summaries (each null when unavailable)
  * @example useBenchmarkData('math2d')
  * @category Helpers
  * @since 0.6.0
  */
-export function useBenchmarkData(packageName?: string): PackageBenchmarkData | AllBenchmarkData {
+export function useBenchmarkData(packageName: string): PackageBenchmarkData {
  const data = usePluginData('docusaurus-plugin-benchmark-data') as AllBenchmarkData;
- if (packageName) {
-  return data[packageName] ?? { performance: null, comparison: null, stress: null, dx: null };
- }
- return data;
+ return data[packageName] ?? EMPTY_PACKAGE_DATA;
+}
+
+/**
+ * Benchmark data accessor for all packages
+ *
+ * @returns all packages' benchmark data keyed by package name
+ * @example useAllBenchmarkData()
+ * @category Helpers
+ * @since 0.7.0
+ */
+export function useAllBenchmarkData(): AllBenchmarkData {
+ return usePluginData('docusaurus-plugin-benchmark-data') as AllBenchmarkData;
 }

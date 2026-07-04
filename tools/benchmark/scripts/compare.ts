@@ -2,81 +2,90 @@
  * @file scripts/compare.ts
  * @description Run cross-library performance comparison from the CLI
  *
- * Compare math2d vs gl-matrix under the most representative production scenario:
- * - Production build (assertions stripped by bundler DCE)
- * - Unchecked tier (equivalent to default after DCE)
- * - Native Math.* (same as gl-matrix — apples-to-apples)
- * - Static methods with out parameter (zero allocation for both libs)
+ * Resolves the target package's comparison configuration by convention
+ * (`src/packages/{name}/comparison-config.ts`); a package without one fails
+ * loudly naming the missing capability. For math2d the configuration compares
+ * against gl-matrix under the most representative production scenario — see
+ * `src/packages/math2d/comparison-config.ts` for the conditions rationale.
  *
- * The cost of fdlibm determinism is measured separately in the internal
- * performance benchmarks (see the performance/auxiliary page), not in
- * cross-library comparison, because gl-matrix has no determinism toggle.
- *
- * Usage: npm run compare -- [--operations=vectorAdd,vectorNormalize]
+ * Usage: npm run compare -- [--operations=vectorAdd,vectorNormalize] [--package=math2d]
  */
 
-import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { existsSync, writeFileSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-import { ensureBuildArtifacts, loadPackageLoader } from './run.ts';
-import { createMath2dAdapter } from '../src/packages/math2d/adapters/math2d-adapter.ts';
-import { createGlMatrixAdapter } from '../src/packages/math2d/adapters/gl-matrix-adapter.ts';
+import { ensureBuildArtifacts, loadPackageLoader, parseCommonFlags } from './run.ts';
 import { runComparison } from '../src/harness/comparison-runner.ts';
 import {
  printComparisonAscii,
  generateComparisonJson,
 } from '../src/harness/comparison-reporter.ts';
-import type { ComparisonConditions } from '../src/harness/comparison-reporter.ts';
-import { ALL_OPERATIONS, OPERATION_NAMES } from '../src/packages/math2d/vocabulary.ts';
 import { createLatestPointer } from '../src/harness/reporter.ts';
 
+import type { ComparisonConfig } from '../src/harness/comparison-types.ts';
+
 const args = process.argv.slice(2);
+const { packageName } = parseCommonFlags(args);
 const opsArg = args.find((a) => a.startsWith('--operations='))?.split('=')[1];
 const operationFilter = opsArg ? new Set(opsArg.split(',')) : undefined;
 
-const loader = await loadPackageLoader('math2d');
+const loader = await loadPackageLoader(packageName);
+
+// Resolve the package's comparison config by convention. The existsSync
+// precheck makes "package lacks the comparison capability" unambiguous; an
+// import error from an EXISTING config is re-thrown verbatim.
+const comparisonConfigPath = fileURLToPath(
+ new URL(`../src/packages/${packageName}/comparison-config.ts`, import.meta.url),
+);
+if (!existsSync(comparisonConfigPath)) {
+ console.error(
+  `\n  ERROR: package '${packageName}' lacks the cross-library comparison capability (no src/packages/${packageName}/comparison-config.ts).\n`,
+ );
+ process.exit(1);
+}
+const comparisonModule = await import(`../src/packages/${packageName}/comparison-config.ts`);
+const comparisonConfig = Object.values(comparisonModule).find(
+ (v): v is ComparisonConfig =>
+  typeof v === 'object' && v !== null && 'buildAdapters' in v && 'referenceLibrary' in v,
+);
+if (!comparisonConfig) {
+ console.error(
+  `\n  ERROR: src/packages/${packageName}/comparison-config.ts exports no ComparisonConfig-shaped object.\n`,
+ );
+ process.exit(1);
+}
+
 await ensureBuildArtifacts(['production'], loader);
 
 console.log('\n  Cross-Library Comparison\n  =======================\n');
 
-const math2dAdapter = await createMath2dAdapter({
- tier: 'unchecked',
- buildMode: 'production',
- nativeMath: true,
-});
-const glMatrixAdapter = createGlMatrixAdapter();
-
-console.log(`  math2d: v${math2dAdapter.version}`);
-console.log(`  gl-matrix: v${glMatrixAdapter.version}`);
-console.log(`  Build: production (assertions stripped by bundler DCE)`);
-console.log(`  Tier: unchecked (equivalent to default after DCE)`);
-console.log(`  Math: native Math.* (apples-to-apples with gl-matrix)`);
-console.log(`  Methods: static with out parameter (zero allocation)`);
+const adapters = await comparisonConfig.buildAdapters();
+for (const line of comparisonConfig.bannerLines(adapters)) console.log(line);
 console.log(
  `  Operations: ${operationFilter ? [...operationFilter].join(', ') : 'all standard vocabulary'}\n`,
 );
 
 const result = await runComparison(
- [math2dAdapter, glMatrixAdapter],
- 'gl-matrix',
- OPERATION_NAMES,
+ adapters,
+ comparisonConfig.referenceLibrary,
+ comparisonConfig.operationNames,
  operationFilter,
 );
 
 console.log(printComparisonAscii(result));
 
-const conditions: ComparisonConditions = {
- buildMode: 'production',
- tier: 'unchecked (simulates bundler DCE of assertions)',
- determinism: 'native (apples-to-apples — both libs use platform Math.*)',
- methodStyle: 'static with out parameter (zero allocation)',
-};
-
-mkdirSync('results', { recursive: true });
-const json = generateComparisonJson(result, ALL_OPERATIONS, conditions);
+// Persist JSON report (package-namespaced, tool-root-anchored)
+const RESULTS_DIR = fileURLToPath(new URL(`../results/${packageName}/`, import.meta.url));
+mkdirSync(RESULTS_DIR, { recursive: true });
+const json = generateComparisonJson(
+ result,
+ comparisonConfig.allOperations,
+ comparisonConfig.conditions,
+);
 const filename = `comparison-${new Date().toISOString().replace(/[:.]/g, '-')}.json`;
-const filepath = join('results', filename);
-const latestPath = join('results', 'comparison-latest.json');
+const filepath = join(RESULTS_DIR, filename);
+const latestPath = join(RESULTS_DIR, 'comparison-latest.json');
 writeFileSync(filepath, JSON.stringify(json, null, 2));
 createLatestPointer(filepath, latestPath, filename);
 console.log(`\n  Results saved to: ${filepath}\n`);

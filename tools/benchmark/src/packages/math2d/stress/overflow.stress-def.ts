@@ -7,7 +7,7 @@
 
 import type { StressTestDefinition, StressTestOutput } from '../../../harness/stress-types.ts';
 import type { DiagnosticReport } from '../../../harness/diagnostics.ts';
-import { runOverflowStress } from '../../../stress/overflow.stress.ts';
+import { runOverflowStress } from './overflow.stress.ts';
 
 /**
  * Verify overflow and underflow behavior across validation tiers

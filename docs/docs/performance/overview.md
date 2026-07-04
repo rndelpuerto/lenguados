@@ -61,14 +61,17 @@ redundant transcendental calls.
 Packages that require reproducible results (networked simulations, replay systems,
 deterministic testing) use [fdlibm](https://www.netlib.org/fdlibm/)-based math kernels.
 These produce bit-identical results across platforms at the cost of some throughput
-compared to native `Math.*` builtins. The exact overhead varies by function and
-is measured in the [Auxiliary Performance](../packages/math2d/performance/auxiliary) page.
+compared to native `Math.*` builtins. The overhead varies by function; the measured
+throughput of the fdlibm kernels is reported on the
+[Auxiliary Performance](../packages/math2d/performance/auxiliary) page (a side-by-side
+fdlibm-versus-native comparison is not currently part of the tracked benchmark suite).
 
 ### Dead-Code Elimination
 
-All packages declare `"sideEffects": false` and use conditional exports
-(`development` vs `default`). Bundlers strip validation code, debug logging, and
-development-only branches from production builds automatically.
+All packages declare `"sideEffects": false`, letting bundlers drop unused modules.
+Development-only validation is eliminated from the production artifacts at the library
+build step; the conditional exports (`development` vs `default`) select between the
+prebuilt development and production trees.
 
 ## How Benchmarks Are Organized
 
@@ -84,9 +87,7 @@ domain. The general performance section covers methodology and how to interpret 
 
 Each package has detailed performance analysis in its own documentation section:
 
-- **[@lenguados/math2d](../packages/math2d/performance)** — Throughput across 300+ operations,
-  tier comparisons, cross-library benchmarks vs gl-matrix, numerical accuracy analysis,
-  and bundle size metrics
+- **[@lenguados/math2d](../packages/math2d/performance)** — Throughput across 300+ operations, tier comparisons, cross-library benchmark comparisons, numerical accuracy analysis, and bundle size metrics
 
 As more packages are added to the engine, their performance documentation will follow
 the same structure.

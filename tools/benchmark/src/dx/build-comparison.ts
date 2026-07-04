@@ -4,12 +4,18 @@
  *
  * Reports absolute and percentage size difference,
  * estimating the validation code eliminated by DCE.
+ *
+ * Tree-aware: each build is measured as the TOTAL of its entry file plus
+ * every transitively reachable relative static import (preserveModules
+ * layout). A flat single-file bundle is a tree of one node, so flat-layout
+ * measurements are byte-identical to a direct single-file read.
  */
 
-import { readFileSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';
 
 import type { DxConfig } from '../harness/dx-types.ts';
+
+import { collectReachableModules } from './module-graph.ts';
 
 /** Comparison of development and production build sizes (raw and gzip) */
 export interface BuildComparisonResult {
@@ -20,27 +26,44 @@ export interface BuildComparisonResult {
 }
 
 /**
+ * Measure the total raw and gzip size of a build entry's module tree
+ *
+ * @param entryPath - Absolute path of the build entry file
+ * @returns Summed raw and gzip byte totals across all reachable modules
+ */
+function measureModuleTree(entryPath: string): { raw: number; gzip: number } {
+ let raw = 0;
+ let gzip = 0;
+
+ // Sum per-module raw and gzip bytes (same in-process zlib approach as the
+ // previous single-file read — deterministic and hard-failing). On a flat
+ // bundle the graph has exactly one node, so both totals are byte-identical
+ // to the former readFileSync measurement.
+ for (const { bytes } of collectReachableModules(entryPath)) {
+  raw += bytes.length;
+  gzip += gzipSync(bytes).length;
+ }
+
+ return { raw, gzip };
+}
+
+/**
  * Compare development and production build sizes
  *
- * @param config - DX configuration with dev and prod bundle paths
+ * @param config - DX configuration with dev and prod bundle entry paths
  * @returns Build size comparison with raw and gzip measurements
  */
 export function compareBuildSizes(config: DxConfig): BuildComparisonResult {
- const devContent = readFileSync(config.devBundle);
- const prodContent = readFileSync(config.prodBundle);
-
- const devRaw = devContent.length;
- const prodRaw = prodContent.length;
- const devGzip = gzipSync(devContent).length;
- const prodGzip = gzipSync(prodContent).length;
+ const dev = measureModuleTree(config.devBundle);
+ const prod = measureModuleTree(config.prodBundle);
 
  return {
-  devSize: { raw: devRaw, gzip: devGzip },
-  prodSize: { raw: prodRaw, gzip: prodGzip },
-  difference: { raw: devRaw - prodRaw, gzip: devGzip - prodGzip },
+  devSize: { raw: dev.raw, gzip: dev.gzip },
+  prodSize: { raw: prod.raw, gzip: prod.gzip },
+  difference: { raw: dev.raw - prod.raw, gzip: dev.gzip - prod.gzip },
   reductionPercent: {
-   raw: devRaw > 0 ? ((devRaw - prodRaw) / devRaw) * 100 : 0,
-   gzip: devGzip > 0 ? ((devGzip - prodGzip) / devGzip) * 100 : 0,
+   raw: dev.raw > 0 ? ((dev.raw - prod.raw) / dev.raw) * 100 : 0,
+   gzip: dev.gzip > 0 ? ((dev.gzip - prod.gzip) / dev.gzip) * 100 : 0,
   },
  };
 }

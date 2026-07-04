@@ -2,43 +2,37 @@
 sidebar_position: 2
 title: Methodology
 description: How lenguados benchmarks are measured — tools, statistical methods, and quality controls.
+kind: benchmark-comparison
 ---
 
 # Benchmark Methodology
 
-This page explains how lenguados performance data is collected, analyzed, and reported.
-Understanding the methodology helps interpret the numbers on other performance pages.
+This page explains how lenguados performance data is collected, analyzed, and reported. Understanding the methodology helps interpret the numbers on other performance pages.
 
 ## Measurement Tool
 
-All performance benchmarks use [**mitata**](https://github.com/evanwashere/mitata), a modern
-JavaScript micro-benchmarking library. mitata handles warm-up, iteration count selection,
-and high-resolution timing automatically.
+All performance benchmarks are measured with the **mitata** JavaScript micro-benchmarking library (MIT license; project home: [github.com/evanwashere/mitata](https://github.com/evanwashere/mitata)). mitata handles warm-up, iteration count selection, and high-resolution timing automatically.
 
-Each benchmark operation runs for a minimum wall-clock duration to accumulate enough samples
-for statistical analysis (typically 1,000-100,000+ samples per operation).
+Each benchmark operation runs for a minimum wall-clock duration to accumulate enough samples for statistical analysis (typically 1,000 to 100,000 or more samples per operation).
 
 ## Statistical Analysis
 
 ### Confidence Intervals
 
-Every reported metric includes a **95% bootstrap confidence interval** (10,000 resamples).
-Bootstrap CI is non-parametric — it makes no assumptions about the underlying distribution,
-which is critical for benchmarks where timing distributions are typically right-skewed.
+Every reported metric includes a **95% bootstrap confidence interval**: a non-parametric percentile bootstrap of the mean with **2,000 resamples**, computed over a stride subsample of at most 10,000 timing samples (a cost bound that spans the full measurement window). Bootstrap CI makes no assumptions about the underlying distribution, which is critical for benchmarks where timing distributions are typically right-skewed.
 
 ### Outlier Detection
 
-We use **Tukey's method** with two thresholds:
+Outliers are detected via **Tukey's method** with two thresholds:
 
 - **Mild outliers**: values beyond 1.5x IQR from Q1/Q3
 - **Severe outliers**: values beyond 3x IQR from Q1/Q3
 
-Outlier percentages are reported alongside each measurement. High outlier rates (>5%) indicate
-system noise — the median is more reliable than the mean in such cases.
+Outlier percentages are reported alongside each measurement. High outlier rates (above 5%) indicate system noise — the median is more reliable than the mean in such cases.
 
 ### Regression Detection
 
-When comparing against a baseline, we use **Welch's t-test** with two requirements:
+Baseline comparisons apply **Welch's t-test** with two requirements:
 
 1. **Statistical significance**: p-value < 0.05
 2. **Practical significance**: effect size > 2% of baseline mean
@@ -72,14 +66,14 @@ Any operation claiming zero allocation must show 0 bytes/op.
 
 ## Cross-Library Comparison Fairness
 
-When comparing against gl-matrix or other libraries:
+When comparing against external libraries (see the dedicated comparison pages listed on the package performance indexes):
 
 - Same hardware, same process, same session
 - Same input data for equivalent operations
 - Production builds for both libraries
 - Warm-up runs before measurement
-- **2.5% equivalence threshold**: operations within 2.5% of each other are reported as
-  ties, not wins/losses — this accounts for measurement noise
+- **Paired adjacent execution**: each operation's benchmarks for both libraries are registered adjacently, so every compared pair runs under near-identical machine state — separated blocks would let thermal and load drift hit the libraries differentially
+- **2.5% equivalence threshold**: operations within 2.5% of each other are reported as ties, not wins or losses — a single-run classification convention; run-to-run variance is larger (see [Interpreting Results](./interpreting-results))
 
 ## Reproducibility
 
@@ -123,6 +117,9 @@ npm run tools:bench:stress
 
 # DX analysis (bundle size, tree-shaking)
 npm run tools:bench:dx
+
+# Bundle-size budget gate (fails when a budgeted import exceeds its gzip budget)
+npm run tools:bench:size
 
 # Generate summaries (consumed by docs build)
 npm run tools:bench:summarize

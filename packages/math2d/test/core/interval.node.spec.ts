@@ -192,14 +192,6 @@ describe('Interval', () => {
    expect(united.min).toBe(0);
    expect(united.max).toBe(10);
   });
-
-  it('lerpInterval interpolates between intervals', () => {
-   const a = new Interval(0, 10);
-   const b = new Interval(20, 30);
-   const mid = a.lerpInterval(b, 0.5);
-   expect(mid.min).toBe(10);
-   expect(mid.max).toBe(20);
-  });
  });
 
  describe('Clone and copy', () => {
@@ -314,6 +306,18 @@ describe('Interval', () => {
    const result = a.multiplyScalar(3);
    expect(result.min).toBe(6);
    expect(result.max).toBe(12);
+  });
+
+  // V9-Interval-02: instance and static share the same NaN-propagation contract
+  it('multiplyScalar instance and static propagate NaN uniformly', () => {
+   const a = new Interval(2, 4);
+   const instanceResult = new Interval(2, 4).multiplyScalar(Number.NaN);
+   expect(instanceResult.min).toBeNaN();
+   expect(instanceResult.max).toBeNaN();
+
+   const staticResult = Interval.multiplyScalar(a, Number.NaN);
+   expect(staticResult.min).toBeNaN();
+   expect(staticResult.max).toBeNaN();
   });
 
   it('negate negates interval', () => {
@@ -616,10 +620,43 @@ describe('Interval', () => {
    expect(Interval.center({ min: 2, max: 6 })).toBe(4);
   });
 
-  it('hull creates smallest enclosing interval', () => {
-   const result = Interval.hull([1, 5, 3]);
+  // V9-Interval-03: hull split — `hull(a, b)` is binary; arrays use `hullOf`
+  it('hullOf creates smallest enclosing interval from array', () => {
+   const result = Interval.hullOf([1, 5, 3]);
    expect(result.min).toBe(1);
    expect(result.max).toBe(5);
+  });
+
+  it('hullOf throws on empty input (strict)', () => {
+   expect(() => Interval.hullOf([])).toThrow(RangeError);
+  });
+
+  it('hullOfSafe returns empty-interval sentinel for empty input', () => {
+   const result = Interval.hullOfSafe([]);
+   expect(result.min).toBe(Number.POSITIVE_INFINITY);
+   expect(result.max).toBe(Number.NEGATIVE_INFINITY);
+  });
+
+  it('hullOfUnchecked matches hullOf on non-empty input', () => {
+   const values = [1, 5, { min: -2, max: 3 }, 8];
+   const strict = Interval.hullOf(values);
+   const unchecked = Interval.hullOfUnchecked(values);
+   expect(unchecked.min).toBe(strict.min);
+   expect(unchecked.max).toBe(strict.max);
+  });
+
+  it('hullOfUnchecked yields the sentinel pair for empty input (no guard)', () => {
+   // The Unchecked form skips the empty-array guard; the loop does not execute,
+   // so `minValue = +Infinity` and `maxValue = -Infinity` remain unchanged.
+   const result = Interval.hullOfUnchecked([]);
+   expect(result.min).toBe(Number.POSITIVE_INFINITY);
+   expect(result.max).toBe(Number.NEGATIVE_INFINITY);
+  });
+
+  it('hullOf accepts mixed number and interval entries', () => {
+   const result = Interval.hullOf([0, { min: 3, max: 10 }, -2, 5]);
+   expect(result.min).toBe(-2);
+   expect(result.max).toBe(10);
   });
  });
 
@@ -1085,6 +1122,82 @@ describe('Interval', () => {
 
   it('static radius returns half width', () => {
    expect(Interval.radius({ min: 2, max: 8 })).toBe(3);
+  });
+
+  it('static mag returns max(|min|, |max|)', () => {
+   expect(Interval.mag({ min: -7, max: 3 })).toBe(7);
+   expect(Interval.mag({ min: 1, max: 5 })).toBe(5);
+   expect(Interval.mag({ min: -5, max: -1 })).toBe(5);
+   expect(Interval.mag({ min: 0, max: 0 })).toBe(0);
+  });
+
+  it('static mig returns zero when interval spans zero', () => {
+   expect(Interval.mig({ min: -3, max: 4 })).toBe(0);
+   expect(Interval.mig({ min: 0, max: 2 })).toBe(0);
+   expect(Interval.mig({ min: -2, max: 0 })).toBe(0);
+  });
+
+  it('static mig returns min(|min|, |max|) for intervals not spanning zero', () => {
+   expect(Interval.mig({ min: 2, max: 5 })).toBe(2);
+   expect(Interval.mig({ min: -5, max: -2 })).toBe(2);
+  });
+
+  it('instance mag / mig delegate to static', () => {
+   const iv = Interval.fromValues(-3, 5);
+   expect(iv.mag()).toBe(5);
+   expect(iv.mig()).toBe(0);
+  });
+
+  it('pow with exponent 0 returns [1, 1]', () => {
+   const result = Interval.pow({ min: -2, max: 3 }, 0);
+   expect(result.min).toBe(1);
+   expect(result.max).toBe(1);
+  });
+
+  it('pow with even exponent on sign-crossing interval returns [0, mag^n]', () => {
+   const result = Interval.pow({ min: -3, max: 2 }, 2);
+   expect(result.min).toBe(0);
+   expect(result.max).toBe(9);
+  });
+
+  it('pow with odd exponent preserves monotonicity', () => {
+   const result = Interval.pow({ min: -2, max: 3 }, 3);
+   expect(result.min).toBe(-8);
+   expect(result.max).toBe(27);
+  });
+
+  it('pow with negative exponent on positive interval', () => {
+   const result = Interval.pow({ min: 2, max: 4 }, -1);
+   expect(result.min).toBeCloseTo(0.25, DIGITS);
+   expect(result.max).toBeCloseTo(0.5, DIGITS);
+  });
+
+  it('pow throws for non-integer exponent', () => {
+   expect(() => Interval.pow({ min: 1, max: 2 }, 1.5)).toThrow(TypeError);
+  });
+
+  it('pow throws for negative exponent on zero-containing interval', () => {
+   expect(() => Interval.pow({ min: -1, max: 2 }, -2)).toThrow(RangeError);
+  });
+
+  it('powSafe returns fallback for non-integer exponent', () => {
+   const result = Interval.powSafe({ min: 1, max: 2 }, 1.5, { min: 99, max: 99 });
+   expect(result.min).toBe(99);
+   expect(result.max).toBe(99);
+  });
+
+  it('powSafe returns fallback for negative exponent on zero-containing interval', () => {
+   const result = Interval.powSafe({ min: -1, max: 1 }, -1, { min: 7, max: 7 });
+   expect(result.min).toBe(7);
+   expect(result.max).toBe(7);
+  });
+
+  it('powUnchecked matches pow for valid inputs', () => {
+   const iv = { min: 2, max: 3 };
+   const strict = Interval.pow(iv, 4);
+   const unchecked = Interval.powUnchecked(iv, 4);
+   expect(unchecked.min).toBe(strict.min);
+   expect(unchecked.max).toBe(strict.max);
   });
  });
 
@@ -2055,8 +2168,9 @@ describe('Interval', () => {
    expect(Interval.strictlyContains({ min: 0, max: 10 }, 10)).toBe(false);
   });
 
-  it('hull computes bounding interval of values', () => {
-   const r = Interval.hull(3, 1, 9, 5);
+  // V9-Interval-03: hull split — varargs form is removed; use hullOf with an array
+  it('hullOf computes bounding interval of numeric values', () => {
+   const r = Interval.hullOf([3, 1, 9, 5]);
    expect(r.min).toBe(1);
    expect(r.max).toBe(9);
   });
@@ -2258,6 +2372,12 @@ describe('Component-wise operations', () => {
   it('sign returns sign of both bounds', () => {
    const result = Interval.sign({ min: -5, max: 3 });
    expect(result.min).toBe(-1);
+   expect(result.max).toBe(1);
+  });
+
+  it('sign propagates NaN per V9-Scalar-01 (IEEE 754 §6.2)', () => {
+   const result = Interval.sign({ min: Number.NaN, max: 5 });
+   expect(result.min).toBeNaN();
    expect(result.max).toBe(1);
   });
 

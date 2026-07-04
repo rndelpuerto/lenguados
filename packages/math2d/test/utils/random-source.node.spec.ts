@@ -16,7 +16,7 @@ import {
 describe('utils/random-source', () => {
  describe('MathRandomSource', () => {
   it('returns values in range [0, 1)', () => {
-   const source = new MathRandomSource();
+   const source = MathRandomSource.create();
    for (let index = 0; index < 100; index++) {
     const value = source.next();
     expect(value).toBeGreaterThanOrEqual(0);
@@ -25,7 +25,7 @@ describe('utils/random-source', () => {
   });
 
   it('nextInt returns integers in range [0, max)', () => {
-   const source = new MathRandomSource();
+   const source = MathRandomSource.create();
    const max = 10;
    for (let index = 0; index < 100; index++) {
     const value = source.nextInt(max);
@@ -33,6 +33,15 @@ describe('utils/random-source', () => {
     expect(value).toBeGreaterThanOrEqual(0);
     expect(value).toBeLessThan(max);
    }
+  });
+
+  it('nextInt throws RangeError for invalid max', () => {
+   const source = MathRandomSource.create();
+   expect(() => source.nextInt(0)).toThrow(RangeError);
+   expect(() => source.nextInt(-1)).toThrow(RangeError);
+   expect(() => source.nextInt(Number.NaN)).toThrow(RangeError);
+   expect(() => source.nextInt(1.5)).toThrow(RangeError);
+   expect(() => source.nextInt(Number.MAX_SAFE_INTEGER + 1)).toThrow(RangeError);
   });
  });
 
@@ -81,12 +90,73 @@ describe('utils/random-source', () => {
    }
   });
 
-  it('nextInt throws for invalid max', () => {
+  it('nextInt throws RangeError for invalid max', () => {
    const source = new SeededRandomSource(42);
-   expect(() => source.nextInt(0)).toThrow(TypeError);
-   expect(() => source.nextInt(-5)).toThrow(TypeError);
-   expect(() => source.nextInt(NaN)).toThrow(TypeError);
-   expect(() => source.nextInt(1.5)).toThrow(TypeError);
+   expect(() => source.nextInt(0)).toThrow(RangeError);
+   expect(() => source.nextInt(-5)).toThrow(RangeError);
+   expect(() => source.nextInt(Number.NaN)).toThrow(RangeError);
+   expect(() => source.nextInt(Number.POSITIVE_INFINITY)).toThrow(RangeError);
+   expect(() => source.nextInt(Number.NEGATIVE_INFINITY)).toThrow(RangeError);
+   expect(() => source.nextInt(1.5)).toThrow(RangeError);
+   expect(() => source.nextInt(Number.MAX_SAFE_INTEGER + 1)).toThrow(RangeError);
+   expect(() => source.nextInt(2 ** 60)).toThrow(RangeError);
+  });
+
+  // V9-Random-01: max > 2^32 must terminate (previously caused infinite loop)
+  it('nextInt terminates for max = 2^32 + 1', () => {
+   const source = new SeededRandomSource(42);
+   const max = 4_294_967_297; // 2^32 + 1
+   const value = source.nextInt(max);
+   expect(Number.isInteger(value)).toBe(true);
+   expect(value).toBeGreaterThanOrEqual(0);
+   expect(value).toBeLessThan(max);
+  });
+
+  it('nextInt terminates for max = Number.MAX_SAFE_INTEGER', () => {
+   const source = new SeededRandomSource(42);
+   const value = source.nextInt(Number.MAX_SAFE_INTEGER);
+   expect(Number.isInteger(value)).toBe(true);
+   expect(value).toBeGreaterThanOrEqual(0);
+   expect(value).toBeLessThan(Number.MAX_SAFE_INTEGER);
+  });
+
+  it('nextInt terminates for max = 2^32 (boundary)', () => {
+   const source = new SeededRandomSource(42);
+   const max = 2 ** 32; // 4_294_967_296
+   const value = source.nextInt(max);
+   expect(Number.isInteger(value)).toBe(true);
+   expect(value).toBeGreaterThanOrEqual(0);
+   expect(value).toBeLessThan(max);
+  });
+
+  it('nextInt terminates for max = 2^32 - 1 (unchanged boundary)', () => {
+   const source = new SeededRandomSource(42);
+   const max = 2 ** 32 - 1;
+   const value = source.nextInt(max);
+   expect(Number.isInteger(value)).toBe(true);
+   expect(value).toBeGreaterThanOrEqual(0);
+   expect(value).toBeLessThan(max);
+  });
+
+  it('nextInt returns 0 for max = 1', () => {
+   const source = new SeededRandomSource(42);
+   // With max = 1, only valid result is 0
+   for (let index = 0; index < 10; index++) {
+    expect(source.nextInt(1)).toBe(0);
+   }
+  });
+
+  // V9-Random-01: determinism preserved after 53-bit composition change
+  it('nextInt reproduces the same stream after restoreState', () => {
+   const source = new SeededRandomSource(12345);
+   const max = 10_000_000_000; // > 2^32 to exercise composed path
+   source.nextInt(max);
+   source.nextInt(max);
+   const checkpoint = source.getState();
+   const afterCheckpoint = [source.nextInt(max), source.nextInt(max), source.nextInt(max)];
+   source.restoreState(checkpoint);
+   const replayed = [source.nextInt(max), source.nextInt(max), source.nextInt(max)];
+   expect(replayed).toEqual(afterCheckpoint);
   });
 
   it('seed() resets the generator', () => {
@@ -131,12 +201,19 @@ describe('utils/random-source', () => {
    );
   });
 
-  it('restoreState rejects NaN values that coerce to all-zero state', () => {
+  it('restoreState rejects non-integer components', () => {
    const source = new SeededRandomSource(12345);
 
-   expect(() => source.restoreState([NaN, 0, 0, 0])).toThrow(RangeError);
-   expect(() => source.restoreState([NaN, NaN, NaN, NaN])).toThrow(RangeError);
-   expect(() => source.restoreState([0.5, 0, 0, 0])).toThrow(RangeError);
+   expect(() => source.restoreState([NaN, 0, 0, 0])).toThrow(/finite integer/);
+   expect(() => source.restoreState([NaN, NaN, NaN, NaN])).toThrow(/finite integer/);
+   expect(() => source.restoreState([0.5, 0, 0, 0])).toThrow(/finite integer/);
+   expect(() => source.restoreState([Infinity, 0, 0, 0])).toThrow(/finite integer/);
+   expect(() => source.restoreState([0, -Infinity, 0, 0])).toThrow(/finite integer/);
+  });
+
+  it('restoreState rejects the all-zero absorbing state', () => {
+   const source = new SeededRandomSource(12345);
+   expect(() => source.restoreState([0, 0, 0, 0])).toThrow(/absorbing fixed point/);
   });
 
   it('handles edge case seeds', () => {

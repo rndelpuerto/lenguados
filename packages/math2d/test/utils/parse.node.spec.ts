@@ -208,6 +208,12 @@ describe('utils/parse', () => {
    // Note: 'a,b,c,d' parses as NaN values which throws
    expect(() => parseMatrix2('only_one')).toThrow();
   });
+
+  // V9-Parse-01: per-cell numeric guard (previously accepted strings silently)
+  it('throws on nested array with non-numeric cell (V9-Parse-01)', () => {
+   expect(() => parseMatrix2('[[1,"x"],[3,4]]')).toThrow();
+   expect(() => parseMatrix2('[[1,2],[null,4]]')).toThrow();
+  });
  });
 
  describe('formatMatrix2', () => {
@@ -284,6 +290,23 @@ describe('utils/parse', () => {
 
   it('throws on invalid format', () => {
    expect(() => parseTransform2('1,2')).toThrow();
+  });
+
+  // V9-Parse-02: .set() normalizes rotation; denormalized {cos: 2, sin: 0} no longer silently accepted
+  it('normalizes denormalized rotation input via .set() (V9-Parse-02)', () => {
+   // Input {cos: 2, sin: 0} is not unit-length — .set() should normalize to {cos: 1, sin: 0}
+   const t = parseTransform2('{"p":{"x":0,"y":0},"r":{"cos":2,"sin":0}}');
+   expect(t.rotation.cos).toBeCloseTo(1, 10);
+   expect(t.rotation.sin).toBeCloseTo(0, 10);
+   // cos² + sin² = 1 post-normalization
+   const magSq = t.rotation.cos * t.rotation.cos + t.rotation.sin * t.rotation.sin;
+   expect(magSq).toBeCloseTo(1, 10);
+  });
+
+  it('normalizes denormalized rotation in flat format (V9-Parse-02)', () => {
+   const t = parseTransform2('1,2,0.5,0.5'); // cos=0.5, sin=0.5 → not unit-length
+   const magSq = t.rotation.cos * t.rotation.cos + t.rotation.sin * t.rotation.sin;
+   expect(magSq).toBeCloseTo(1, 10); // normalized
   });
  });
 

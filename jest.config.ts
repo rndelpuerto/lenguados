@@ -10,9 +10,10 @@
  *  ────────────────────────────────────────────────────────────────────────────
  *  Aliases
  *  ───────
- *  We import the `paths` field from the root tsconfig and convert it to Jest’s
- *  `moduleNameMapper` so that TypeScript path aliases (e.g. `@engine/*`) are
- *  resolved at *runtime* as well as at compile‑time.
+ *  Cross-package specifiers (`@lenguados/math2d`) resolve to SOURCE via
+ *  `sharedModuleNameMapper`, keeping the suite hermetic — no build-order
+ *  dependency between workspace packages. Jest projects do not inherit
+ *  root-level resolution options, so the mapper is applied per project.
  *
  *  ────────────────────────────────────────────────────────────────────────────
  *  TypeScript
@@ -40,6 +41,18 @@ const sharedTransform = {
    jsc: {
     parser: { syntax: 'typescript', decorators: false },
     target: 'es2022',
+    // Match the SWC global replacement used by `rollup.config.mjs` so that
+    // `__LENGUADOS_DEV__` resolves to a literal `true` during tests. Tests
+    // exercise the development behaviour of every assertion call site.
+    transform: {
+     optimizer: {
+      globals: {
+       vars: {
+        __LENGUADOS_DEV__: 'true',
+       },
+      },
+     },
+    },
    },
   },
  ] satisfies [string, Record<string, unknown>],
@@ -50,6 +63,18 @@ const sharedTransform = {
  *  Root‑level options inherited by every project
  *  ----------------------------------------------------------------------
  */
+/**
+ * Cross-package specifiers resolve to SOURCE (not built lib) so the suite is
+ * hermetic — no build-order dependency between workspace packages. Jest
+ * projects do NOT inherit root-level resolution options, so this mapper is
+ * applied to every project explicitly.
+ */
+const sharedModuleNameMapper = {
+ // Generic: any workspace package root specifier resolves to its source
+ // barrel — a new package needs zero edits here.
+ '^@lenguados/([^/]+)$': '<rootDir>/packages/$1/src/index',
+};
+
 const baseConfig: Config = {
  moduleFileExtensions: ['ts', 'js', 'json'],
 
@@ -61,18 +86,22 @@ const baseConfig: Config = {
  //   prefix: '<rootDir>/',
  // }),
 
+ moduleNameMapper: sharedModuleNameMapper,
+
  // Ignore compiled output, external deps and tools/package
  testPathIgnorePatterns: ['/node_modules/', '/lib/', 'tools/package/'],
 
  // Aggregate coverage reports
  collectCoverage: true,
  coverageDirectory: 'coverage',
- coveragePathIgnorePatterns: ['/node_modules/', '/test/'],
+ coveragePathIgnorePatterns: ['/node_modules/', '/test/', '/lib/'],
  coverageReporters: ['text', 'lcov'],
+ // Documented contract: 90% lines/statements/functions, 80% branches
+ // (infrastructure canonical + CLAUDE.md + quality-pipeline + TESTING_STRATEGY).
  coverageThreshold: {
   global: {
-   branches: 50, // 85%
-   functions: 85,
+   branches: 80,
+   functions: 90,
    lines: 90,
    statements: 90,
   },
@@ -91,6 +120,7 @@ const baseConfig: Config = {
    roots: ['<rootDir>/packages'],
    testMatch: ['**/test/**/*.node.spec.ts'],
    transform: sharedTransform,
+   moduleNameMapper: sharedModuleNameMapper,
   },
 
   /** Browser / DOM tests (*.dom.spec.ts) executed in JSDOM */
@@ -99,6 +129,7 @@ const baseConfig: Config = {
    testEnvironment: 'jsdom',
    roots: ['<rootDir>/packages'],
    testMatch: ['**/test/**/*.dom.spec.ts'],
+   moduleNameMapper: sharedModuleNameMapper,
    // Polyfills and custom matchers (canvas, ResizeObserver, jest‑dom, etc.)
    setupFilesAfterEnv: ['<rootDir>/jest.dom.setup.ts'],
    transform: sharedTransform,

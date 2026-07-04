@@ -32,17 +32,35 @@ describe('printAsciiTable', () => {
   {
    operation: 'Vector2.add',
    stats: {
-    mean: 5.2, median: 5.0, stddev: 0.5, ci95lo: 4.8, ci95hi: 5.6,
-    outliersMild: 2, outliersSevere: 0, samples: 1000, opsPerSec: 192307692,
-    p50: 5.0, p95: 6.0, p99: 7.0,
+    mean: 5.2,
+    median: 5.0,
+    stddev: 0.5,
+    ci95lo: 4.8,
+    ci95hi: 5.6,
+    outliersMild: 2,
+    outliersSevere: 0,
+    samples: 1000,
+    opsPerSec: 192307692,
+    p50: 5.0,
+    p95: 6.0,
+    p99: 7.0,
    },
   },
   {
    operation: 'Vector2.normalize',
    stats: {
-    mean: 12.5, median: 12.0, stddev: 1.5, ci95lo: 11.5, ci95hi: 13.5,
-    outliersMild: 1, outliersSevere: 1, samples: 1000, opsPerSec: 80000000,
-    p50: 12.0, p95: 15.0, p99: 18.0,
+    mean: 12.5,
+    median: 12.0,
+    stddev: 1.5,
+    ci95lo: 11.5,
+    ci95hi: 13.5,
+    outliersMild: 1,
+    outliersSevere: 1,
+    samples: 1000,
+    opsPerSec: 80000000,
+    p50: 12.0,
+    p95: 15.0,
+    p99: 18.0,
    },
   },
  ];
@@ -96,8 +114,12 @@ describe('printComparisonTable', () => {
     baselineMean: 5,
     currentMean: 8,
     regression: {
-     significant: true, effectSize: 60, pValue: 0.001,
-     baselineMean: 5, currentMean: 8, withinThreshold: false,
+     significant: true,
+     effectSize: 60,
+     pValue: 0.001,
+     baselineMean: 5,
+     currentMean: 8,
+     withinThreshold: false,
     },
    },
   ];
@@ -113,8 +135,12 @@ describe('printComparisonTable', () => {
     baselineMean: 5,
     currentMean: 5.1,
     regression: {
-     significant: false, effectSize: 2, pValue: 0.3,
-     baselineMean: 5, currentMean: 5.1, withinThreshold: true,
+     significant: false,
+     effectSize: 2,
+     pValue: 0.3,
+     baselineMean: 5,
+     currentMean: 5.1,
+     withinThreshold: true,
     },
    },
   ];
@@ -134,16 +160,25 @@ describe('Diagnostic Report', () => {
   const report = createDiagnosticReport();
 
   addFinding(report, {
-   severity: 'error', type: 'overflow', entity: 'Vector2',
-   operation: 'magnitude', message: 'overflow detected',
+   severity: 'error',
+   type: 'overflow',
+   entity: 'Vector2',
+   operation: 'magnitude',
+   message: 'overflow detected',
   });
   addFinding(report, {
-   severity: 'warning', type: 'cancellation', entity: 'Matrix2',
-   operation: 'determinant', message: '45 bits lost',
+   severity: 'warning',
+   type: 'cancellation',
+   entity: 'Matrix2',
+   operation: 'determinant',
+   message: '45 bits lost',
   });
   addFinding(report, {
-   severity: 'error', type: 'overflow', entity: 'Vector2',
-   operation: 'normalize', message: 'overflow in sqrt',
+   severity: 'error',
+   type: 'overflow',
+   entity: 'Vector2',
+   operation: 'normalize',
+   message: 'overflow in sqrt',
   });
 
   expect(report.findings).toHaveLength(3);
@@ -156,12 +191,18 @@ describe('Diagnostic Report', () => {
  it('formats summary with entity grouping', () => {
   const report = createDiagnosticReport();
   addFinding(report, {
-   severity: 'error', type: 'overflow', entity: 'Vector2',
-   operation: 'magnitude', message: 'test',
+   severity: 'error',
+   type: 'overflow',
+   entity: 'Vector2',
+   operation: 'magnitude',
+   message: 'test',
   });
   addFinding(report, {
-   severity: 'warning', type: 'cancellation', entity: 'Matrix2',
-   operation: 'determinant', message: 'test',
+   severity: 'warning',
+   type: 'cancellation',
+   entity: 'Matrix2',
+   operation: 'determinant',
+   message: 'test',
   });
 
   const summary = formatDiagnosticSummary(report);

@@ -8,6 +8,7 @@ import { describe, expect, it } from '@jest/globals';
 
 import { Complex } from '../../src/core/complex';
 import { Matrix2 } from '../../src/core/matrix2';
+import { Matrix3 } from '../../src/core/matrix3';
 import { Rotation2 } from '../../src/core/rotation2';
 import { Vector2 } from '../../src/core/vector2';
 
@@ -119,6 +120,46 @@ describe('Rotation2', () => {
   it('isIdentity detects near zero rotation', () => {
    expect(Rotation2.fromAngle(0).isIdentity()).toBe(true);
    expect(Rotation2.fromAngle(DEG90).isIdentity()).toBe(false);
+  });
+
+  // V9-Rotation2-01 / V9-Types-09: setDirect uses inclusive <= boundary via
+  // assertRotation2Normalized, matching isNormalized's semantics.
+  it('isNormalized uses inclusive tolerance boundary', () => {
+   // A rotation whose cos²+sin² is within EPSILON of 1 must be considered normalized
+   const r = Rotation2.fromAngle(Math.PI / 4);
+   expect(Rotation2.isNormalized(r)).toBe(true);
+   expect(Rotation2.isNormalized({ cos: 1, sin: 0 })).toBe(true);
+   // Outside tolerance: not normalized
+   expect(Rotation2.isNormalized({ cos: 2, sin: 0 })).toBe(false);
+  });
+
+  it('isNormalizedCS accepts raw (cos, sin) components', () => {
+   expect(Rotation2.isNormalizedCS(1, 0)).toBe(true);
+   expect(Rotation2.isNormalizedCS(0, 1)).toBe(true);
+   expect(Rotation2.isNormalizedCS(0.6, 0.8)).toBe(true);
+  });
+
+  it('isNormalizedCS rejects non-unit pairs', () => {
+   expect(Rotation2.isNormalizedCS(2, 0)).toBe(false);
+   expect(Rotation2.isNormalizedCS(0.5, 0.5)).toBe(false);
+  });
+
+  it('isNormalizedCS respects a custom tolerance', () => {
+   expect(Rotation2.isNormalizedCS(0.6, 0.8 + 1e-11)).toBe(true);
+   expect(Rotation2.isNormalizedCS(0.6, 0.8 + 1e-5, 1e-4)).toBe(true);
+   expect(Rotation2.isNormalizedCS(0.6, 0.8 + 1e-5, 1e-6)).toBe(false);
+  });
+
+  it('isNormalizedCS returns false for non-finite components', () => {
+   // NaN propagation: any NaN in the arithmetic path yields NaN, and `NaN ≤ ε` is false.
+   expect(Rotation2.isNormalizedCS(Number.NaN, 0)).toBe(false);
+   expect(Rotation2.isNormalizedCS(0, Number.NaN)).toBe(false);
+   expect(Rotation2.isNormalizedCS(Infinity, 0)).toBe(false);
+  });
+
+  it('isNormalizedCS matches isNormalized for the same pair', () => {
+   const r = Rotation2.fromAngle(Math.PI / 3);
+   expect(Rotation2.isNormalizedCS(r.cos, r.sin)).toBe(Rotation2.isNormalized(r));
   });
  });
 
@@ -777,6 +818,101 @@ describe('Rotation2', () => {
    expect(result).toBe(out);
   });
 
+  it('fromComplexUnchecked produces normalized rotation for non-zero magnitude', () => {
+   const complex = new Complex(3, 4);
+   const rot = Rotation2.fromComplexUnchecked(complex);
+   expect(rot.cos).toBeCloseTo(0.6, DIGITS);
+   expect(rot.sin).toBeCloseTo(0.8, DIGITS);
+  });
+
+  it('fromComplexUnchecked matches fromComplex for unit-magnitude input', () => {
+   const complex = new Complex(Math.cos(DEG45), Math.sin(DEG45));
+   const strict = Rotation2.fromComplex(complex);
+   const unchecked = Rotation2.fromComplexUnchecked(complex);
+   expect(unchecked.cos).toBeCloseTo(strict.cos, DIGITS);
+   expect(unchecked.sin).toBeCloseTo(strict.sin, DIGITS);
+  });
+
+  it('fromComplexUnchecked yields NaN for zero magnitude', () => {
+   const zero = new Complex(0, 0);
+   const rot = Rotation2.fromComplexUnchecked(zero);
+   // 1 / sqrt(0) = Infinity; 0 * Infinity = NaN per IEEE 754.
+   expect(Number.isNaN(rot.cos)).toBe(true);
+   expect(Number.isNaN(rot.sin)).toBe(true);
+  });
+
+  it('static xAxis returns (cos, sin)', () => {
+   const rot = Rotation2.fromAngle(DEG45);
+   const v = Rotation2.xAxis(rot);
+   expect(v.x).toBeCloseTo(Math.cos(DEG45), DIGITS);
+   expect(v.y).toBeCloseTo(Math.sin(DEG45), DIGITS);
+  });
+
+  it('static yAxis returns (-sin, cos)', () => {
+   const rot = Rotation2.fromAngle(DEG45);
+   const v = Rotation2.yAxis(rot);
+   expect(v.x).toBeCloseTo(-Math.sin(DEG45), DIGITS);
+   expect(v.y).toBeCloseTo(Math.cos(DEG45), DIGITS);
+  });
+
+  it('static xAxis / yAxis match instance getters', () => {
+   const rot = Rotation2.fromAngle(Math.PI / 3);
+   expect(Rotation2.xAxis(rot).x).toBeCloseTo(rot.xAxis.x, DIGITS);
+   expect(Rotation2.xAxis(rot).y).toBeCloseTo(rot.xAxis.y, DIGITS);
+   expect(Rotation2.yAxis(rot).x).toBeCloseTo(rot.yAxis.x, DIGITS);
+   expect(Rotation2.yAxis(rot).y).toBeCloseTo(rot.yAxis.y, DIGITS);
+  });
+
+  it('static normalized returns identity for zero-magnitude input', () => {
+   const result = Rotation2.normalized({ cos: 0, sin: 0 });
+   expect(result.cos).toBe(1);
+   expect(result.sin).toBe(0);
+  });
+
+  it('static normalized matches normalizeSafe for ordinary input', () => {
+   const input = { cos: 3, sin: 4 }; // magnitude 5
+   const n1 = Rotation2.normalized(input);
+   const n2 = Rotation2.normalizeSafe(input);
+   expect(n1.cos).toBeCloseTo(n2.cos, DIGITS);
+   expect(n1.sin).toBeCloseTo(n2.sin, DIGITS);
+  });
+
+  it('fromMatrix3 extracts rotation from affine 3x3', () => {
+   const m3 = Matrix3.fromRotation(DEG45);
+   const rot = Rotation2.fromMatrix3(m3);
+   expect(rot.angle).toBeCloseTo(DEG45, DIGITS);
+  });
+
+  it('fromMatrix3 round-trip with Matrix3.fromRotation', () => {
+   const angle = Math.PI / 5;
+   const m3 = Matrix3.fromRotation(angle);
+   const rot = Rotation2.fromMatrix3(m3);
+   const m3Back = Matrix3.fromRotation(rot);
+   expect(m3Back.m00).toBeCloseTo(m3.m00, DIGITS);
+   expect(m3Back.m01).toBeCloseTo(m3.m01, DIGITS);
+   expect(m3Back.m10).toBeCloseTo(m3.m10, DIGITS);
+   expect(m3Back.m11).toBeCloseTo(m3.m11, DIGITS);
+  });
+
+  it('multiplyCS matches multiply for pre-computed cos/sin', () => {
+   const a = Rotation2.fromAngle(DEG45);
+   const b = Rotation2.fromAngle(DEG90);
+   const viaFull = Rotation2.multiply(a, b);
+   const viaCS = Rotation2.multiplyCS(a, b.cos, b.sin);
+   expect(viaCS.cos).toBeCloseTo(viaFull.cos, DIGITS);
+   expect(viaCS.sin).toBeCloseTo(viaFull.sin, DIGITS);
+  });
+
+  it('applyCS rotates a vector by pre-computed cos/sin', () => {
+   const v = { x: 1, y: 0 };
+   const angle = DEG45;
+   const cos = Math.cos(angle);
+   const sin = Math.sin(angle);
+   const result = Rotation2.applyCS(v, cos, sin);
+   expect(result.x).toBeCloseTo(Math.SQRT1_2, DIGITS);
+   expect(result.y).toBeCloseTo(Math.SQRT1_2, DIGITS);
+  });
+
   it('fromMatrix2 extracts rotation from matrix', () => {
    const m = Matrix2.fromRotation(DEG45);
    const rot = Rotation2.fromMatrix2(m);
@@ -1286,36 +1422,6 @@ describe('Rotation2', () => {
    expect(result.cos).toBeCloseTo(1, DIGITS);
    expect(result.sin).toBeCloseTo(0, DIGITS);
   });
- });
-
- describe('fromValues factory', () => {
-  it('creates rotation from cos and sin values', () => {
-   const rot = Rotation2.fromValues(1, 0);
-   expect(rot.cos).toBe(1);
-   expect(rot.sin).toBe(0);
-  });
-
-  it('creates 90 degree rotation', () => {
-   const rot = Rotation2.fromValues(0, 1);
-   expect(rot.cos).toBe(0);
-   expect(rot.sin).toBe(1);
-   expect(rot.angle).toBeCloseTo(DEG90, DIGITS);
-  });
-
-  it('creates 45 degree rotation', () => {
-   const cos45 = Math.cos(DEG45);
-   const sin45 = Math.sin(DEG45);
-   const rot = Rotation2.fromValues(cos45, sin45);
-   expect(rot.angle).toBeCloseTo(DEG45, DIGITS);
-  });
-
-  it('uses out parameter', () => {
-   const out = new Rotation2();
-   const result = Rotation2.fromValues(0, 1, out);
-   expect(result).toBe(out);
-   expect(out.sin).toBe(1);
-  });
-  // Pure math: NaN/Infinity are valid IEEE 754 values, no longer throws
  });
 
  describe('Static copy method', () => {

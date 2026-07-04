@@ -13,10 +13,10 @@ import { definePackageSuite } from '../../../harness/suite-builder.ts';
  * Define the scalar auxiliary operations benchmark suite
  *
  * @remarks
- * Benchmarks scalar interpolation (lerp, smoothStep, smootherStep),
- * clamping, comparison, and triality operations (mod, inverseLerp, loop,
- * pingPong, floorDivide, remap) across all three validation tiers. No
- * deterministic kernels are involved, so only one determinism mode is used.
+ * Benchmarks scalar interpolation (lerp, smoothStep), clamping, comparison,
+ * and triality operations (mod, inverseLerp, loop, floorDivide) across all
+ * three validation tiers. No deterministic kernels are involved, so only
+ * one determinism mode is used.
  */
 export const defineSuite = definePackageSuite({
  name: 'scalar',
@@ -42,7 +42,6 @@ export const defineSuite = definePackageSuite({
   add('isNearZero', () => m.isNearZero(1e-11));
   add('relativeEquals', () => m.relativeEquals(100, 100.001));
   add('lerpClamped', () => m.lerpClamped(2.0, 8.0, 1.5));
-  add('smootherStep', () => m.smootherStep(2.0, 8.0, 0.5));
 
   // Triality: mod
   triality({
@@ -64,24 +63,11 @@ export const defineSuite = definePackageSuite({
    unchecked: ['loopUnchecked', () => m.loopUnchecked(7.5, 0, 5)],
   });
 
-  // Triality: pingPong
-  triality({
-   default: ['pingPong', () => m.pingPong(7.5, 0, 5)],
-   safe: ['pingPongSafe', () => m.pingPongSafe(7.5, 0, 5)],
-   unchecked: ['pingPongUnchecked', () => m.pingPongUnchecked(7.5, 0, 5)],
-  });
-
   // Triality: floorDivide
   triality({
    default: ['floorDivide', () => m.floorDivide(7, 3)],
    safe: ['floorDivideSafe', () => m.floorDivideSafe(7, 3)],
    unchecked: ['floorDivideUnchecked', () => m.floorDivideUnchecked(7, 3)],
-  });
-
-  // Triality: remap
-  triality({
-   default: ['remap', () => m.remap(0.5, 0, 1, 10, 20)],
-   safe: ['remapSafe', () => m.remapSafe(0.5, 0, 1, 10, 20)],
   });
  },
 });

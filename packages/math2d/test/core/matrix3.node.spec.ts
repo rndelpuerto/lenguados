@@ -6,6 +6,7 @@
 
 import { describe, expect, it } from '@jest/globals';
 
+import { Matrix2 } from '../../src/core/matrix2';
 import { Matrix3 } from '../../src/core/matrix3';
 import { Transform2 } from '../../src/core/transform2';
 import { Vector2 } from '../../src/core/vector2';
@@ -53,6 +54,31 @@ describe('Matrix3', () => {
    const mat2 = Matrix3.fromMatrix2(Matrix3.IDENTITY as unknown as Matrix3);
    expect(mat2.m22).toBe(1);
    expect(mat2.m02).toBe(0);
+  });
+
+  it('fromAffine embeds linear 2x2 and translation', () => {
+   expect.hasAssertions();
+   const linear = new Matrix2(2, 0, 0, 3);
+   const result = Matrix3.fromAffine(linear, { x: 10, y: 20 });
+   expect(result.m00).toBe(2);
+   expect(result.m01).toBe(0);
+   expect(result.m02).toBe(0);
+   expect(result.m10).toBe(0);
+   expect(result.m11).toBe(3);
+   expect(result.m12).toBe(0);
+   expect(result.m20).toBe(10);
+   expect(result.m21).toBe(20);
+   expect(result.m22).toBe(1);
+   expect(result.isAffine()).toBe(true);
+  });
+
+  it('fromAffine transforms a point as linear · p + translation', () => {
+   expect.hasAssertions();
+   const linear = new Matrix2(2, 0, 0, 3);
+   const affine = Matrix3.fromAffine(linear, { x: 5, y: 7 });
+   const p = affine.transformPoint({ x: 1, y: 1 });
+   expect(p.x).toBeCloseTo(7, DIGITS); // 2·1 + 5
+   expect(p.y).toBeCloseTo(10, DIGITS); // 3·1 + 7
   });
 
   it('fromArray supports row-major inputs and validates bounds', () => {
@@ -133,6 +159,17 @@ describe('Matrix3', () => {
    const result = Matrix3.transformPoint(perspective, new Vector2(2, 0));
    // w = 0.5 * 2 + 2 = 3 -> x' = (1*2 +0+0)/3 = 2/3, y' = 0
    expectVecClose(result, 2 / 3, 0);
+  });
+
+  // V9-Matrix3-01: projective w ≈ 0 collapse documented — transformed point = origin
+  it('transformPoint collapses to origin when projective w ≈ 0 (V9-Matrix3-01)', () => {
+   // Construct a perspective matrix where m02*x + m12*y + m22 ≈ 0 for the test point
+   // m02 = -1, m12 = 0, m22 = 1, point = (1, 0) → w = -1 + 0 + 1 = 0
+   const nearPlane = new Matrix3(2, 0, -1, 0, 3, 0, 0, 0, 1);
+   const result = Matrix3.transformPoint(nearPlane, new Vector2(1, 0));
+   // divideSafe(1, 0) = 0 → x' = (2*1)*0 = 0, y' = 0
+   expect(result.x).toBe(0);
+   expect(result.y).toBe(0);
   });
 
   it('transformVector writes into provided out parameter', () => {
@@ -1369,6 +1406,14 @@ describe('Matrix3', () => {
    expect(result.m02).toBe(1);
   });
 
+  it('sign propagates NaN per V9-Scalar-01 (IEEE 754 §6.2)', () => {
+   const m = new Matrix3(Number.NaN, 0, 5, -3, 0, 3, -1, 0, 1);
+   const result = Matrix3.sign(m);
+   expect(result.m00).toBeNaN();
+   expect(result.m01).toBe(0);
+   expect(result.m02).toBe(1);
+  });
+
   it('min computes element-wise minimum', () => {
    const a = new Matrix3(1, 5, 3, 7, 2, 8, 4, 6, 9);
    const b = new Matrix3(2, 3, 4, 5, 6, 7, 8, 9, 1);
@@ -1776,7 +1821,7 @@ describe('Matrix3', () => {
   });
  });
 
- describe('Constructor Overloads', () => {
+ describe('Constructor (scalar-only, total)', () => {
   it('constructor with no args creates identity', () => {
    const m = new Matrix3();
    expect(m.isIdentity()).toBe(true);
@@ -1788,39 +1833,36 @@ describe('Matrix3', () => {
    expect(m.m22).toBe(9);
   });
 
-  it('constructor with array', () => {
-   const m = new Matrix3([1, 2, 3, 4, 5, 6, 7, 8, 9]);
-   expect(m.m00).toBe(1);
-   expect(m.m22).toBe(9);
+  it('accepts non-finite components (pure assignment, IEEE 754 values)', () => {
+   const m = new Matrix3(Number.NaN, 0, 0, 0, 1, 0, 0, 0, Number.POSITIVE_INFINITY);
+   expect(m.m00).toBeNaN();
+   expect(m.m22).toBe(Number.POSITIVE_INFINITY);
   });
 
-  it('constructor with object', () => {
-   const object = { m00: 1, m01: 2, m02: 3, m10: 4, m11: 5, m12: 6, m20: 7, m21: 8, m22: 9 };
-   const m = new Matrix3(object);
+  it('array construction is the exclusive domain of fromArray (validates in every build)', () => {
+   const m = Matrix3.fromArray([1, 2, 3, 4, 5, 6, 7, 8, 9]);
    expect(m.m00).toBe(1);
    expect(m.m22).toBe(9);
-  });
-
-  it('constructor throws on short array', () => {
-   expect(
-    () =>
-     new Matrix3([1, 2, 3] as unknown as [
-      number,
-      number,
-      number,
-      number,
-      number,
-      number,
-      number,
-      number,
-      number,
-     ]),
+   expect(() =>
+    Matrix3.fromArray([1, 2, 3] as unknown as [
+     number,
+     number,
+     number,
+     number,
+     number,
+     number,
+     number,
+     number,
+     number,
+    ]),
    ).toThrow(RangeError);
   });
 
-  it('constructor throws on invalid arguments', () => {
-   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-   expect(() => new Matrix3('invalid' as any)).toThrow(TypeError);
+  it('object construction is the exclusive domain of fromObject (type-trusting)', () => {
+   const object = { m00: 1, m01: 2, m02: 3, m10: 4, m11: 5, m12: 6, m20: 7, m21: 8, m22: 9 };
+   const m = Matrix3.fromObject(object);
+   expect(m.m00).toBe(1);
+   expect(m.m22).toBe(9);
   });
  });
 
@@ -2578,28 +2620,6 @@ describe('Matrix3', () => {
   });
  });
 
- describe('Static premultiply', () => {
-  it('premultiply(A, B) equals multiply(A, B)', () => {
-   const a = Matrix3.fromRotation(0.5);
-   const b = Matrix3.fromScale(new Vector2(2, 3));
-   const multiply = Matrix3.multiply(a, b);
-   const pre = Matrix3.premultiply(a, b);
-   expect(pre.m00).toBeCloseTo(multiply.m00, DIGITS);
-   expect(pre.m11).toBeCloseTo(multiply.m11, DIGITS);
-   expect(pre.m22).toBeCloseTo(multiply.m22, DIGITS);
-  });
-
-  it('static premultiply(A, B) matches instance B.premultiply(A)', () => {
-   const a = Matrix3.fromRotation(0.7);
-   const b = Matrix3.fromTranslation(new Vector2(5, 10));
-   const staticResult = Matrix3.premultiply(a, b);
-   const instanceResult = b.clone().premultiply(a);
-   expect(staticResult.m00).toBeCloseTo(instanceResult.m00, DIGITS);
-   expect(staticResult.m20).toBeCloseTo(instanceResult.m20, DIGITS);
-   expect(staticResult.m21).toBeCloseTo(instanceResult.m21, DIGITS);
-  });
- });
-
  describe('Static transformPoints/transformVectors', () => {
   it('transformPoints transforms array of points', () => {
    const m = Matrix3.fromTranslation(new Vector2(10, 20));
@@ -2928,9 +2948,22 @@ describe('Static getTranslation/getScale/getRotation', () => {
   expect(Matrix3.getRotation(m)).toBeCloseTo(Math.PI / 4, DIGITS);
  });
 
- it('getRotation returns 0 for near-zero scale', () => {
+ // V9-Matrix3-02: atan2 directly — IEEE 754 §9.2.1 `atan2(0, 0) = 0`, NaN propagates per §6.2
+ it('getRotation returns atan2(0, 0) = 0 for all-zero upper-left block', () => {
   const m = new Matrix3(0, 0, 0, 0, 0, 0, 0, 0, 1);
-  expect(Matrix3.getRotation(m)).toBe(0);
+  expect(Matrix3.getRotation(m)).toBe(0); // atan2(0, 0) = 0 per IEEE 754 §9.2.1
+ });
+
+ it('getRotation returns π/2 for singular matrix with m01 > 0, m00 = 0', () => {
+  // Previously returned 0 (via isNearZero short-circuit). Now returns atan2(1, 0) = π/2
+  // per IEEE 754, exposing the true IEEE-correct angle rather than fabricating 0.
+  const m = new Matrix3(0, 1, 0, 0, 0, 0, 0, 0, 1);
+  expect(Matrix3.getRotation(m)).toBeCloseTo(Math.PI / 2, DIGITS);
+ });
+
+ it('getRotation propagates NaN per IEEE 754 §6.2', () => {
+  const m = new Matrix3(Number.NaN, 0, 0, 0, 1, 0, 0, 0, 1);
+  expect(Matrix3.getRotation(m)).toBeNaN();
  });
 
  it('static and instance getters produce identical results', () => {

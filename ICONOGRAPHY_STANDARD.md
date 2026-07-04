@@ -20,17 +20,14 @@ The project uses **[Lucide React](https://lucide.dev/)** (`lucide-react`) as its
 
 ### Why Lucide
 
-1. **Industry standard** — dominant React icon library by weekly downloads; default in shadcn/ui.
-2. **Consistent visual language** — single-weight stroke icons on a uniform grid. No mixed styles.
-3. **Minimal bundle** — per-icon ESM modules with perfect tree-shaking. Docusaurus eliminates unused icons automatically.
-4. **Active maintenance** — monthly releases, explicit React 19 peer dependency.
-5. **Feather successor** — inherits Feather Icons' minimal aesthetic with active development and 1,400+ additional icons.
+1. **Consistent visual language** — single-weight stroke icons on a uniform grid. No mixed styles.
+2. **Minimal bundle** — per-icon ESM modules with effective tree-shaking; the docs build eliminates unused icons automatically.
+3. **Active maintenance** — frequent releases with an explicit peer-dependency contract for the site's React version.
+4. **Breadth** — 1,400+ icons in a single minimal aesthetic, covering every concept in the vocabulary table below.
 
 ### Prohibited alternatives
 
-- **react-icons** — aggregator with no visual consistency across icon sets.
-- **Feather Icons** — unmaintained predecessor to Lucide.
-- **Font-based libraries** (Font Awesome webfonts, Material Icons font) — load the entire icon set regardless of usage; no tree-shaking.
+`lucide-react` is the **sole approved icon library** for this project. Do not introduce icons from any other source — alternative icon packages, webfont-based icon sets, ad hoc SVG collections, or copy-pasted markup. A single library guarantees a consistent visual language, predictable bundle impact, and uniform accessibility behavior across the site. Introducing any other icon source requires an amendment to this standard first.
 
 ## Color
 

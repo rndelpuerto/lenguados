@@ -1,0 +1,10 @@
+{
+ "geometricMean": 0.385,
+ "band": 0.3,
+ "reference": "gl-matrix",
+ "referenceVersion": "3.4.4",
+ "target": "math2d",
+ "generatedAt": "2026-07-08T08:01:20.135Z",
+ "commit": "f6a455b",
+ "note": "Same-run geometric-mean throughput ratio (math2d / reference) anchor for trend surveillance. Warn-only band. Regeneration is a manual, reviewed operation: the PR must state the trigger (dependency upgrade, deliberate optimization, or accepted drift) — the same discipline as the determinism golden file (ADR-018)."
+}

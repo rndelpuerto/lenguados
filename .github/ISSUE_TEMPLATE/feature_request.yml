@@ -1,0 +1,76 @@
+# .github/ISSUE_TEMPLATE/feature_request.yml
+name: Feature request
+description: Propose a new capability, API addition, or improvement
+title: 'feat: '
+labels:
+ - enhancement
+body:
+ - type: markdown
+   attributes:
+    value: |
+     Thanks for proposing an improvement. For `@lenguados/math2d` API additions, please read the package boundary criteria in [packages/math2d/CONTRIBUTING.md](https://github.com/rndelpuerto/lenguados/blob/main/packages/math2d/CONTRIBUTING.md) first — math2d is a domain-agnostic core math library, and domain-specific algorithms belong in higher-level packages.
+
+ - type: dropdown
+   id: package
+   attributes:
+    label: Target package
+    description: Where should this capability live?
+    options:
+     - '@lenguados/math2d'
+     - '@lenguados/common'
+     - '@lenguados/examples'
+     - Documentation site (docs/)
+     - Benchmark laboratory (tools/benchmark)
+     - Monorepo / build infrastructure
+     - A new package
+     - Not sure
+   validations:
+    required: true
+
+ - type: input
+   id: version
+   attributes:
+    label: Current version
+    description: The package version you evaluated before requesting this (the capability may already exist in a newer release)
+    placeholder: '0.6.0'
+   validations:
+    required: false
+
+ - type: textarea
+   id: motivation
+   attributes:
+    label: Problem / motivation
+    description: What problem does this solve? What is currently impossible or awkward?
+   validations:
+    required: true
+
+ - type: textarea
+   id: proposal
+   attributes:
+    label: Proposed API or behavior
+    description: Sketch the API surface you would expect (signatures, usage example)
+    placeholder: |
+     ```typescript
+     // Static + instance, with optional `out` parameter
+     Vector2.example(v: ReadonlyVector2Like, out?: Vector2): Vector2;
+     ```
+   validations:
+    required: true
+
+ - type: textarea
+   id: alternatives
+   attributes:
+    label: Alternatives considered
+    description: Workarounds you tried, compositions of the existing API, or other designs you rejected
+   validations:
+    required: false
+
+ - type: checkboxes
+   id: checklist
+   attributes:
+    label: Pre-submission checklist
+    options:
+     - label: I searched the existing issues and this has not been requested yet
+       required: true
+     - label: For a math2d API addition, I checked the boundary criteria in packages/math2d/CONTRIBUTING.md (skip if the request targets another package)
+       required: false

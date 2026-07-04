@@ -20,7 +20,7 @@ export interface TreeShakingResult {
  sideEffectsEmpty: boolean;
 }
 
-const MIN_REDUCTION_PERCENT = 40;
+export const MIN_REDUCTION_PERCENT = 40;
 
 /**
  * Verify tree-shaking by comparing full import vs single-type import

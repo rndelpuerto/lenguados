@@ -1,0 +1,74 @@
+[
+ {
+  "id": "architecture",
+  "filename": "ARCHITECTURE.md",
+  "outputPath": "architecture.md",
+  "title": "Architecture",
+  "description": "Internal layer map, deterministic-kernel boundary, hot-path patterns, and zero-check conventions",
+  "sidebarPosition": 2
+ },
+ {
+  "id": "design-philosophy",
+  "filename": "DESIGN_PHILOSOPHY.md",
+  "outputPath": "design-philosophy.md",
+  "title": "Design Philosophy",
+  "description": "math2d-specific POA axioms, SOLID deviations, and hot-path pattern rationale",
+  "sidebarPosition": 3
+ },
+ {
+  "id": "edge-cases",
+  "filename": "EDGE_CASES.md",
+  "outputPath": "edge-cases.md",
+  "title": "Edge Cases",
+  "description": "IEEE 754 edge cases, NaN propagation, overflow boundaries, and set theory anomalies in math2d",
+  "sidebarPosition": 4
+ },
+ {
+  "id": "design-decisions",
+  "filename": "DESIGN_DECISIONS.md",
+  "outputPath": "design-decisions.md",
+  "title": "Design Decisions",
+  "description": "Architecture Decision Records for math2d architectural choices",
+  "sidebarPosition": 5
+ },
+ {
+  "id": "contributing",
+  "filename": "CONTRIBUTING.md",
+  "outputPath": "contributing.md",
+  "title": "Contributing to math2d",
+  "description": "Package identity test, quality bar, and checklist for contributing math code to @lenguados/math2d",
+  "sidebarPosition": 6
+ },
+ {
+  "id": "interoperability",
+  "filename": "INTEROPERABILITY.md",
+  "outputPath": "interoperability.md",
+  "title": "Type Interoperability",
+  "description": "Like-interfaces, type escalation, and conversion patterns between math2d types",
+  "sidebarPosition": 7
+ },
+ {
+  "id": "testing-strategy",
+  "filename": "TESTING_STRATEGY.md",
+  "outputPath": "testing-strategy.md",
+  "title": "Testing Strategy",
+  "description": "Property-based testing, custom arbitraries, and overflow boundary patterns for math2d",
+  "sidebarPosition": 8
+ },
+ {
+  "id": "tsdoc-standard",
+  "filename": "TSDOC_STANDARD.md",
+  "outputPath": "tsdoc-standard.md",
+  "title": "TSDoc Standard",
+  "description": "Type-specific categories, triality cross-linking matrix, and math2d-specific TSDoc templates",
+  "sidebarPosition": 9
+ },
+ {
+  "id": "module-exports",
+  "filename": "MODULE_EXPORTS.md",
+  "outputPath": "module-exports.md",
+  "title": "Module Exports and Internals",
+  "description": "Classification decisions and subpath export rationale for @lenguados/math2d",
+  "sidebarPosition": 10
+ }
+]

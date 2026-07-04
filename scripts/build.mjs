@@ -3,39 +3,50 @@
  * @file scripts/build.mjs
  * @description
  * Bundles the current package using the monorepo’s root-level Rollup config.
+ * Output STREAMS to the console (no buffering): progress is visible during
+ * multi-second builds and cannot be truncated by exec buffer limits, and the
+ * local rollup binary is invoked explicitly (no PATH ambiguity).
  *
  * @example
  *   node scripts/build.mjs
  * @returns {Promise<void>}
  */
 
-import { exec as execCb } from 'child_process';
-import { promisify } from 'util';
+import { spawn } from 'child_process';
+import { createRequire } from 'module';
 import path from 'path';
 
-const exec = promisify(execCb);
+const require = createRequire(import.meta.url);
 
 /**
  * Main entry point.
  *
- * Runs `rollup -c ../../rollup.config.mjs` in the current package folder,
- * writes stdout and stderr to the console, and exits with code 1 on error.
+ * Runs the workspace-local Rollup binary with the root config in the current
+ * package folder, inheriting stdio so output streams live, and exits with
+ * Rollup's own exit code on failure.
  */
-const main = async () => {
+const main = () => {
  const configPath = path.resolve(process.cwd(), '../../rollup.config.mjs');
+ const rollupBin = require.resolve('rollup/dist/bin/rollup');
 
- try {
-  const { stdout, stderr } = await exec(`rollup -c ${configPath}`, {
-   cwd: process.cwd(),
-  });
+ const child = spawn(process.execPath, [rollupBin, '-c', configPath], {
+  cwd: process.cwd(),
+  stdio: 'inherit',
+ });
 
-  process.stdout.write(stdout);
-  process.stderr.write(stderr);
- } catch (err) {
-  console.error('build failed:', err);
+ child.on('exit', (code, signal) => {
+  if (signal) {
+   process.exit(1);
+  }
+
+  process.exit(code ?? 1);
+ });
+
+ child.on('error', (error) => {
+  console.error('build failed:', error);
 
   process.exit(1);
- }
+ });
 };
 
 main();

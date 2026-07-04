@@ -1,6 +1,6 @@
 /**
  * @file validation/shapes.ts
- * @module @lenguados/math2d/validation/shapes
+ * @module @lenguados/math2d/validation
  * @description Object shape assertions for validating unknown values against *Like interfaces
  *
  * @remarks

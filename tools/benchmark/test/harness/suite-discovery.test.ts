@@ -18,4 +18,10 @@ describe('discoverSuites', () => {
   const suites = await discoverSuites('nonexistent-pkg');
   expect(suites).toHaveLength(0);
  });
+
+ it('discovers the second registered package (common) — the registry seam is real', async () => {
+  const suites = await discoverSuites('common');
+  expect(suites.length).toBeGreaterThanOrEqual(1);
+  expect(suites.map((s) => s.name)).toContain('parseJSONData');
+ });
 });

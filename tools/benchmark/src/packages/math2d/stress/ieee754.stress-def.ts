@@ -14,7 +14,7 @@ import {
  testUnaryEdgeCases,
  testBinaryEdgeCases,
  verifyNanPropagation,
-} from '../../../stress/ieee754-edge.stress.ts';
+} from './ieee754-edge.stress.ts';
 
 /**
  * Exercise IEEE 754 special values (NaN, ±Infinity, ±0, denormals) across operations

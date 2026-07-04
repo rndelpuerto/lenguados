@@ -1,11 +1,14 @@
 #!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
+
+npm run typecheck # type errors are invisible to SWC-based Jest and to ESLint
 
 npm test # full Jest suite before pushing
 
 # Benchmark smoke test: correctness checks only (no performance benchmarks).
 # Verifies build integrity, dev↔prod bit-for-bit match, DCE, and fdlibm determinism.
-# Skipped if tools/benchmark/node_modules is not installed.
 if [ -d "tools/benchmark/node_modules" ]; then
  npm run tools:bench:smoke
+else
+ echo "⚠️  pre-push: benchmark smoke SKIPPED — lab not installed." >&2
+ echo "    The determinism/DCE gate did not run. Install it with: npm run tools:bench:setup" >&2
 fi

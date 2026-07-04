@@ -1,11 +1,35 @@
 <!doctype html>
 <html>
+ <head>
+  <meta charset="utf-8" />
+  <title>canvas-hello — @lenguados/examples</title>
+ </head>
  <body>
-  <canvas id="canvas" width="200" height="200"></canvas>
-  <script type="module">
-   import { helloCanvas } from '../../esm/canvas-hello/index.development.js';
+  <!--
+   This page resolves its module RELATIVE TO THE BUILD OUTPUT: it works when
+   opened from lib/assets/canvas-hello/demo.html (the build copies it there).
+   ES modules do not load from file:// in most browsers, so serve it over a
+   local static server. From the repository root, after `npm run build`,
+   serve packages/examples/lib with any static file server and open
+   /assets/canvas-hello/demo.html.
 
-   helloCanvas('canvas');
+   The imported bundle is self-contained: the @lenguados/math2d code it uses
+   (Vector2, Rotation2 and their dependency subtree) is bundled as relative
+   modules under lib/esm/chunks/ — no bare specifiers, no import maps.
+  -->
+  <canvas id="canvas" width="400" height="300"></canvas>
+  <script type="module">
+   import { drawRotatingSquare } from '../../esm/canvas-hello/index.development.js';
+
+   let angle = 0;
+
+   const frame = () => {
+    angle += 0.01;
+    drawRotatingSquare('canvas', angle);
+    requestAnimationFrame(frame);
+   };
+
+   frame();
   </script>
  </body>
 </html>

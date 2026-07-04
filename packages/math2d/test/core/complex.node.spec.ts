@@ -231,9 +231,9 @@ describe('Complex', () => {
    expect(root.imag).toBeCloseTo(1, DIGITS);
   });
 
-  it('pow', () => {
+  it('powScalar', () => {
    const c = new Complex(0, 1);
-   const powered = c.pow(2);
+   const powered = c.powScalar(2);
    // i² = -1
    expect(powered.real).toBeCloseTo(-1, DIGITS);
    expect(powered.imag).toBeCloseTo(0, DIGITS);
@@ -372,7 +372,7 @@ describe('Complex', () => {
   });
 
   it('pow raises to power', () => {
-   const result = Complex.pow(new Complex(0, 1), 2);
+   const result = Complex.powScalar(new Complex(0, 1), 2);
    expect(result.real).toBeCloseTo(-1, DIGITS);
   });
 
@@ -413,10 +413,10 @@ describe('Complex', () => {
    expect(rec.real).toBeCloseTo(0.5);
   });
 
-  it('pow instance method', () => {
+  it('powScalar instance method', () => {
    expect.hasAssertions();
    const c = new Complex(2, 0);
-   const powered = c.pow(2);
+   const powered = c.powScalar(2);
    expect(powered.real).toBeCloseTo(4);
   });
 
@@ -462,7 +462,7 @@ describe('Complex', () => {
   it('pow static method', () => {
    expect.hasAssertions();
    const c = new Complex(2, 0);
-   const result = Complex.pow(c, 3);
+   const result = Complex.powScalar(c, 3);
    expect(result.real).toBeCloseTo(8);
   });
 
@@ -984,17 +984,17 @@ describe('Coverage - Instance divideSafe/Unchecked', () => {
  });
 });
 
-describe('Coverage - Instance pow', () => {
- it('pow computes complex power', () => {
+describe('Coverage - Instance powScalar', () => {
+ it('powScalar computes real-exponent power', () => {
   const c = new Complex(2, 0);
-  c.pow(3);
+  c.powScalar(3);
   expect(c.real).toBeCloseTo(8, DIGITS);
   expect(c.imag).toBeCloseTo(0, DIGITS);
  });
 
- it('pow with fractional exponent', () => {
+ it('powScalar with fractional exponent', () => {
   const c = new Complex(4, 0);
-  c.pow(0.5);
+  c.powScalar(0.5);
   expect(c.real).toBeCloseTo(2, DIGITS);
  });
 });
@@ -1009,14 +1009,14 @@ describe('Coverage - Instance comparison', () => {
  });
 });
 
-describe('Coverage - Static pow', () => {
- it('static pow computes complex power', () => {
-  const result = Complex.pow(new Complex(2, 0), 3);
+describe('Coverage - Static powScalar', () => {
+ it('powScalar computes real-exponent power on real base', () => {
+  const result = Complex.powScalar(new Complex(2, 0), 3);
   expect(result.real).toBeCloseTo(8, DIGITS);
  });
 
- it('static pow with complex base', () => {
-  const result = Complex.pow(new Complex(0, 1), 2);
+ it('powScalar computes real-exponent power on complex base', () => {
+  const result = Complex.powScalar(new Complex(0, 1), 2);
   expect(result.real).toBeCloseTo(-1, DIGITS);
  });
 });
@@ -1380,6 +1380,15 @@ describe('Coverage - Instance slerp', () => {
    expect(result!.real).toBeCloseTo(0.5);
   });
 
+  // V9-Complex-06: reciprocated preserves signed zero per C99 Annex G §G.5.1 (RA-4)
+  it('reciprocated preserves IEEE 754 signed zero for purely-real inputs', () => {
+   const result = new Complex(2, 0).reciprocated;
+   expect(result.real).toBeCloseTo(0.5);
+   // Signed zero from IEEE arithmetic is retained — the previous post-hoc cleanup
+   // that coerced -0 → +0 is removed; matches Complex.sqrt convention.
+   expect(Number.isFinite(result.imag)).toBe(true);
+  });
+
   it('divideUnchecked computes division', () => {
    const result = Complex.divideUnchecked(new Complex(6, 0), new Complex(3, 0));
    expect(result.real).toBeCloseTo(2);
@@ -1612,26 +1621,26 @@ describe('Coverage - Instance slerp', () => {
   });
  });
 
- describe('Branch Coverage - pow edge cases', () => {
-  it('pow with zero exponent returns 1', () => {
-   const result = Complex.pow(new Complex(5, 5), 0);
+ describe('Branch Coverage - powScalar edge cases', () => {
+  it('powScalar with zero exponent returns 1', () => {
+   const result = Complex.powScalar(new Complex(5, 5), 0);
    expect(result.real).toBe(1);
    expect(result.imag).toBe(0);
   });
 
-  it('pow with negative exponent', () => {
-   const result = Complex.pow(new Complex(2, 0), -1);
+  it('powScalar with negative exponent', () => {
+   const result = Complex.powScalar(new Complex(2, 0), -1);
    expect(result.real).toBeCloseTo(0.5, DIGITS);
   });
 
-  it('pow with zero base', () => {
-   const result = Complex.pow(new Complex(0, 0), 2);
+  it('powScalar with zero base and positive exponent', () => {
+   const result = Complex.powScalar(new Complex(0, 0), 2);
    expect(result.real).toBe(0);
    expect(result.imag).toBe(0);
   });
 
-  it('pow throws for zero base with negative exponent', () => {
-   expect(() => Complex.pow(new Complex(0, 0), -1)).toThrow(RangeError);
+  it('powScalar throws for zero base with negative exponent', () => {
+   expect(() => Complex.powScalar(new Complex(0, 0), -1)).toThrow(RangeError);
   });
  });
 
@@ -2395,17 +2404,353 @@ describe('Instance slerp zero-magnitude guard', () => {
  });
 });
 
-describe('Instance pow zero-to-negative validation', () => {
- it('throws RangeError for zero complex raised to negative exponent', () => {
+describe('Instance powScalar zero-to-negative validation', () => {
+ it('throws RangeError for zero complex raised to negative real exponent', () => {
   const zero = new Complex(0, 0);
-  expect(() => zero.pow(-1)).toThrow(RangeError);
+  expect(() => zero.powScalar(-1)).toThrow(RangeError);
  });
 
- it('zero complex raised to positive exponent returns (0, 0)', () => {
+ it('zero complex raised to positive real exponent returns (0, 0)', () => {
   const zero = new Complex(0, 0);
-  const result = zero.pow(2);
+  const result = zero.powScalar(2);
   expect(result.real).toBeCloseTo(0);
   expect(result.imag).toBeCloseTo(0);
+ });
+});
+
+describe('Complex-exponent pow / powSafe / powUnchecked', () => {
+ it('pow matches powScalar when exponent is real', () => {
+  const base = new Complex(2, 3);
+  const viaComplex = Complex.pow(base, new Complex(4, 0));
+  const viaScalar = Complex.powScalar(base, 4);
+  expect(viaComplex.real).toBeCloseTo(viaScalar.real, 8);
+  expect(viaComplex.imag).toBeCloseTo(viaScalar.imag, 8);
+ });
+
+ it('pow computes principal branch for complex exponent', () => {
+  // i^i = exp(-π/2) ≈ 0.20787957635
+  const result = Complex.pow(new Complex(0, 1), new Complex(0, 1));
+  expect(result.real).toBeCloseTo(Math.exp(-Math.PI / 2), 10);
+  expect(result.imag).toBeCloseTo(0, 10);
+ });
+
+ it('pow throws on zero base', () => {
+  expect(() => Complex.pow(new Complex(0, 0), new Complex(1, 1))).toThrow(RangeError);
+ });
+
+ it('powSafe returns fallback on zero base', () => {
+  const fallback = new Complex(7, 8);
+  const result = Complex.powSafe(new Complex(0, 0), new Complex(2, 0), fallback);
+  expect(result.real).toBe(7);
+  expect(result.imag).toBe(8);
+ });
+
+ it('powSafe defaults fallback to ZERO', () => {
+  const result = Complex.powSafe(new Complex(0, 0), new Complex(2, 0));
+  expect(result.real).toBe(0);
+  expect(result.imag).toBe(0);
+ });
+
+ it('powSafe matches pow for non-zero base', () => {
+  const base = new Complex(1, 1);
+  const exp = new Complex(0.5, 0.25);
+  const strict = Complex.pow(base, exp);
+  const safe = Complex.powSafe(base, exp);
+  expect(safe.real).toBeCloseTo(strict.real, 12);
+  expect(safe.imag).toBeCloseTo(strict.imag, 12);
+ });
+
+ it('powUnchecked matches pow for non-zero base', () => {
+  const base = new Complex(2, 3);
+  const exp = new Complex(1.5, -0.5);
+  const strict = Complex.pow(base, exp);
+  const unchecked = Complex.powUnchecked(base, exp);
+  expect(unchecked.real).toBeCloseTo(strict.real, 12);
+  expect(unchecked.imag).toBeCloseTo(strict.imag, 12);
+ });
+
+ it('instance pow mutates this and returns this', () => {
+  const z = new Complex(1, 1);
+  const result = z.pow(new Complex(2, 0));
+  expect(result).toBe(z);
+  expect(z.real).toBeCloseTo(0, 10);
+  expect(z.imag).toBeCloseTo(2, 10);
+ });
+
+ it('instance pow throws on zero', () => {
+  const z = new Complex(0, 0);
+  expect(() => z.pow(new Complex(1, 1))).toThrow(RangeError);
+ });
+
+ it('instance powSafe returns fallback on zero', () => {
+  const z = new Complex(0, 0);
+  const fallback = new Complex(5, 5);
+  z.powSafe(new Complex(2, 0), fallback);
+  expect(z.real).toBe(5);
+  expect(z.imag).toBe(5);
+ });
+
+ it('instance powUnchecked matches static', () => {
+  const base = new Complex(3, 4);
+  const exp = new Complex(0.5, 0);
+  const staticResult = Complex.powUnchecked(base, exp);
+  const instanceResult = base.clone().powUnchecked(exp);
+  expect(instanceResult.real).toBeCloseTo(staticResult.real, 12);
+  expect(instanceResult.imag).toBeCloseTo(staticResult.imag, 12);
+ });
+});
+
+describe('Real-exponent powScalarSafe / powScalarUnchecked', () => {
+ it('powScalarSafe returns fallback for zero base with negative exponent', () => {
+  const fallback = new Complex(9, 9);
+  const result = Complex.powScalarSafe(new Complex(0, 0), -2, fallback);
+  expect(result.real).toBe(9);
+  expect(result.imag).toBe(9);
+ });
+
+ it('powScalarSafe matches powScalar for ordinary inputs', () => {
+  const base = new Complex(2, 1);
+  const strict = Complex.powScalar(base, 3);
+  const safe = Complex.powScalarSafe(base, 3);
+  expect(safe.real).toBeCloseTo(strict.real, 12);
+  expect(safe.imag).toBeCloseTo(strict.imag, 12);
+ });
+
+ it('powScalarUnchecked matches powScalar for non-zero base', () => {
+  const base = new Complex(4, 0);
+  const strict = Complex.powScalar(base, 0.5);
+  const unchecked = Complex.powScalarUnchecked(base, 0.5);
+  expect(unchecked.real).toBeCloseTo(strict.real, 12);
+  expect(unchecked.imag).toBeCloseTo(strict.imag, 12);
+ });
+
+ it('instance powScalarSafe mutates and returns this', () => {
+  const z = new Complex(0, 0);
+  const result = z.powScalarSafe(-1, new Complex(3, 4));
+  expect(result).toBe(z);
+  expect(z.real).toBe(3);
+  expect(z.imag).toBe(4);
+ });
+
+ it('instance powScalarUnchecked mutates and returns this', () => {
+  const z = new Complex(2, 0);
+  const result = z.powScalarUnchecked(4);
+  expect(result).toBe(z);
+  expect(z.real).toBeCloseTo(16, 10);
+ });
+});
+
+describe('Complex multiplyCS hot-path variant', () => {
+ it('matches multiply with pre-computed cos/sin factor', () => {
+  const z = new Complex(2, 3);
+  const cos = Math.cos(Math.PI / 4);
+  const sin = Math.sin(Math.PI / 4);
+  const unit = new Complex(cos, sin);
+  const viaFull = Complex.multiply(z, unit);
+  const viaCS = Complex.multiplyCS(z, cos, sin);
+  expect(viaCS.real).toBeCloseTo(viaFull.real, DIGITS);
+  expect(viaCS.imag).toBeCloseTo(viaFull.imag, DIGITS);
+ });
+});
+
+describe('Complex mod triality', () => {
+ it('mod computes component-wise positive modulo', () => {
+  const result = Complex.mod(new Complex(7, -1), new Complex(3, 4));
+  expect(result.real).toBe(1);
+  expect(result.imag).toBe(3);
+ });
+
+ it('mod throws for non-positive real divisor', () => {
+  expect(() => Complex.mod(new Complex(1, 1), new Complex(0, 2))).toThrow(RangeError);
+ });
+
+ it('mod throws for non-positive imag divisor', () => {
+  expect(() => Complex.mod(new Complex(1, 1), new Complex(2, -1))).toThrow(RangeError);
+ });
+
+ it('modSafe returns fallback component for non-positive divisor', () => {
+  const fallback = new Complex(9, 10);
+  const result = Complex.modSafe(new Complex(7, 5), new Complex(0, 4), fallback);
+  expect(result.real).toBe(9); // fallback.real
+  expect(result.imag).toBe(1); // 5 mod 4
+ });
+
+ it('modSafe defaults fallback to ZERO', () => {
+  const result = Complex.modSafe(new Complex(7, 5), new Complex(-1, 4));
+  expect(result.real).toBe(0);
+  expect(result.imag).toBe(1);
+ });
+
+ it('modUnchecked matches mod for positive divisor', () => {
+  const a = new Complex(7, 13);
+  const b = new Complex(3, 5);
+  const strict = Complex.mod(a, b);
+  const unchecked = Complex.modUnchecked(a, b);
+  expect(unchecked.real).toBe(strict.real);
+  expect(unchecked.imag).toBe(strict.imag);
+ });
+
+ it('instance mod mutates and returns this', () => {
+  const z = new Complex(7, 5);
+  const result = z.mod(new Complex(3, 4));
+  expect(result).toBe(z);
+  expect(z.real).toBe(1);
+  expect(z.imag).toBe(1);
+ });
+
+ it('instance modSafe handles invalid divisor', () => {
+  const z = new Complex(5, 5);
+  z.modSafe(new Complex(0, 2), new Complex(7, 0));
+  expect(z.real).toBe(7);
+  expect(z.imag).toBe(1);
+ });
+
+ it('instance modUnchecked mutates and returns this', () => {
+  const z = new Complex(10, 11);
+  const result = z.modUnchecked(new Complex(3, 5));
+  expect(result).toBe(z);
+  expect(z.real).toBe(1);
+  expect(z.imag).toBe(1);
+ });
+});
+
+describe('Complex trigonometric / hyperbolic / inverse-trig', () => {
+ it('sin(0) returns (0, 0)', () => {
+  const result = Complex.sin(new Complex(0, 0));
+  expect(result.real).toBe(0);
+  expect(result.imag).toBe(0);
+ });
+
+ it('sin matches real-axis reduction', () => {
+  const result = Complex.sin(new Complex(Math.PI / 2, 0));
+  expect(result.real).toBeCloseTo(1, 12);
+  expect(result.imag).toBeCloseTo(0, 12);
+ });
+
+ it('sin(i) = i·sinh(1)', () => {
+  const result = Complex.sin(new Complex(0, 1));
+  expect(result.real).toBeCloseTo(0, 12);
+  expect(result.imag).toBeCloseTo(Math.sinh(1), 12);
+ });
+
+ it('cos(0) returns (1, 0)', () => {
+  const result = Complex.cos(new Complex(0, 0));
+  expect(result.real).toBeCloseTo(1, 12);
+  // IEEE 754 signed-zero: −sin(0)·sinh(0) = −0, numerically equal to 0.
+  expect(Math.abs(result.imag)).toBe(0);
+ });
+
+ it('cos(i) = cosh(1)', () => {
+  const result = Complex.cos(new Complex(0, 1));
+  expect(result.real).toBeCloseTo(Math.cosh(1), 12);
+  expect(result.imag).toBeCloseTo(0, 12);
+ });
+
+ it('tan(0) returns (0, 0)', () => {
+  const result = Complex.tan(new Complex(0, 0));
+  expect(result.real).toBe(0);
+  expect(result.imag).toBe(0);
+ });
+
+ it('tan matches sin/cos decomposition', () => {
+  const z = new Complex(0.5, 0.3);
+  const result = Complex.tan(z);
+  const sinZ = Complex.sin(z);
+  const cosZ = Complex.cos(z);
+  const expected = Complex.divide(sinZ, cosZ);
+  expect(result.real).toBeCloseTo(expected.real, 10);
+  expect(result.imag).toBeCloseTo(expected.imag, 10);
+ });
+
+ it('sinh(0) returns (0, 0)', () => {
+  const result = Complex.sinh(new Complex(0, 0));
+  expect(result.real).toBe(0);
+  expect(result.imag).toBe(0);
+ });
+
+ it('sinh(i·π/2) = i', () => {
+  const result = Complex.sinh(new Complex(0, Math.PI / 2));
+  expect(result.real).toBeCloseTo(0, 10);
+  expect(result.imag).toBeCloseTo(1, 10);
+ });
+
+ it('cosh(0) returns (1, 0)', () => {
+  const result = Complex.cosh(new Complex(0, 0));
+  expect(result.real).toBeCloseTo(1, 12);
+  expect(result.imag).toBe(0);
+ });
+
+ it('tanh matches sinh/cosh decomposition', () => {
+  const z = new Complex(0.4, 0.2);
+  const result = Complex.tanh(z);
+  const sinhZ = Complex.sinh(z);
+  const coshZ = Complex.cosh(z);
+  const expected = Complex.divide(sinhZ, coshZ);
+  expect(result.real).toBeCloseTo(expected.real, 10);
+  expect(result.imag).toBeCloseTo(expected.imag, 10);
+ });
+
+ it('asin(sin(z)) recovers z for small argument', () => {
+  const z = new Complex(0.3, 0.2);
+  const round = Complex.asin(Complex.sin(z));
+  expect(round.real).toBeCloseTo(z.real, 10);
+  expect(round.imag).toBeCloseTo(z.imag, 10);
+ });
+
+ it('acos(cos(z)) recovers z for small argument', () => {
+  const z = new Complex(0.3, 0.2);
+  const round = Complex.acos(Complex.cos(z));
+  expect(round.real).toBeCloseTo(z.real, 10);
+  expect(round.imag).toBeCloseTo(z.imag, 10);
+ });
+
+ it('atan(tan(z)) recovers z for small argument', () => {
+  const z = new Complex(0.2, 0.15);
+  const round = Complex.atan(Complex.tan(z));
+  expect(round.real).toBeCloseTo(z.real, 10);
+  expect(round.imag).toBeCloseTo(z.imag, 10);
+ });
+
+ it('asin(1) = π/2', () => {
+  const result = Complex.asin(new Complex(1, 0));
+  expect(result.real).toBeCloseTo(Math.PI / 2, 10);
+  expect(result.imag).toBeCloseTo(0, 10);
+ });
+
+ it('acos(1) = 0', () => {
+  const result = Complex.acos(new Complex(1, 0));
+  expect(result.real).toBeCloseTo(0, 10);
+  expect(result.imag).toBeCloseTo(0, 10);
+ });
+
+ it('instance sin mutates and returns this', () => {
+  const z = new Complex(Math.PI / 2, 0);
+  const result = z.sin();
+  expect(result).toBe(z);
+  expect(z.real).toBeCloseTo(1, 12);
+ });
+
+ it('instance cos mutates and returns this', () => {
+  const z = new Complex(0, 0);
+  const result = z.cos();
+  expect(result).toBe(z);
+  expect(z.real).toBeCloseTo(1, 12);
+ });
+
+ it('instance tanh matches static', () => {
+  const z = new Complex(0.2, 0.3);
+  const staticResult = Complex.tanh(z);
+  const instanceResult = z.clone().tanh();
+  expect(instanceResult.real).toBeCloseTo(staticResult.real, 12);
+  expect(instanceResult.imag).toBeCloseTo(staticResult.imag, 12);
+ });
+
+ it('instance asin matches static', () => {
+  const z = new Complex(0.5, 0.5);
+  const staticResult = Complex.asin(z);
+  const instanceResult = z.clone().asin();
+  expect(instanceResult.real).toBeCloseTo(staticResult.real, 10);
+  expect(instanceResult.imag).toBeCloseTo(staticResult.imag, 10);
  });
 });
 

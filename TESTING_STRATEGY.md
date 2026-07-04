@@ -21,7 +21,7 @@ Every package SHALL implement three tiers of testing:
 
 - Tests live in `packages/*/test/` mirroring the source structure
 - Naming: `*.node.spec.ts` (Node environment), `*.dom.spec.ts` (jsdom environment)
-- Coverage thresholds: 90% lines/statements/functions, 50% branches
+- Coverage thresholds: 90% lines/statements/functions, 80% branches
 
 ```bash
 npm test              # All tests (includes lint)
@@ -29,7 +29,7 @@ npm run test:unit     # Tests without lint
 npm run test:watch    # Watch mode
 
 # Run a single test file
-npx jest --testPathPattern="packages/<pkg>/test/<path>" --no-coverage
+npx jest --testPathPatterns="packages/<pkg>/test/<path>" --no-coverage
 ```
 
 ---

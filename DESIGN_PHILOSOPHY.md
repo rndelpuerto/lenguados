@@ -11,7 +11,7 @@ This document is the engine-wide Rosetta Stone for understanding why certain cod
 
 In standard enterprise development, DRY (Don't Repeat Yourself) and SOLID are sacrosanct. In a physics engine executed millions of times per second, the rules of CPU cache-lines and Branch Prediction overrule theoretical purity.
 
-Every package in the engine adopts **POA**: we strictly enforce SOLID until it hits an algorithmic hot-path, at which point the abstraction is deliberately dismantled.
+Every package in the engine adopts **POA**: SOLID is strictly enforced until it hits an algorithmic hot path, at which point the abstraction is deliberately dismantled with a documented rationale.
 
 ---
 
@@ -24,7 +24,7 @@ Every package in the engine adopts **POA**: we strictly enforce SOLID until it h
 
 ### 2.2 Open/Closed Principle (OCP)
 
-- **Intentional Friction:** Core engine classes are not designed to be inherited (`extends`). V8 optimizes classes based on "Hidden Classes" (object shapes). Subclassing breaks these optimizations globally.
+- **Intentional Friction:** Core engine classes are not designed to be inherited (`extends`). Modern JavaScript engines optimize classes based on "Hidden Classes" (object shapes). Subclassing breaks these optimizations globally.
 - **The Rule:** Do not use `extends` on core engine classes. Use Composition instead.
 
 ### 2.3 Liskov Substitution Principle (LSP)
@@ -45,7 +45,7 @@ Every package in the engine adopts **POA**: we strictly enforce SOLID until it h
 
 ### 3.1 Loop Unrolling (Intentional WET Code)
 
-V8 cannot reliably inline nested `for` loops within hot mathematical functions. Engine packages explicitly unroll loops in performance-critical operations, manually writing out each computation instead of abstracting into helper functions.
+JIT engines cannot reliably inline nested `for` loops within hot mathematical functions. Engine packages explicitly unroll loops in performance-critical operations, manually writing out each computation instead of abstracting into helper functions.
 
 ### 3.2 The Dual-Path Pipeline (Safe vs Unchecked)
 

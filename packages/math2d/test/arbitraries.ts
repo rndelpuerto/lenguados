@@ -158,6 +158,50 @@ export const arbRotationMatrix2 = arbAngle.map((angle) => Matrix2.fromRotation(a
 /** Invertible Matrix2 */
 export const arbInvertibleMatrix2 = arbMatrix2.filter((m) => Math.abs(m.determinant()) > 1e-10);
 
+/**
+ * Reflection Matrix2 (det < 0)
+ *
+ * @remarks
+ * Filters arbInvertibleMatrix2 to those with negative determinant. Useful
+ * for testing SVD reflection-input handling and the closest-rotation
+ * sign-correction path under Convention A.
+ */
+export const arbReflectionMatrix2 = arbInvertibleMatrix2.filter((m) => m.determinant() < 0);
+
+/**
+ * Symmetric positive-semi-definite Matrix2
+ *
+ * @remarks
+ * Constructed as `Aᵀ · A` for random `A`, which is always symmetric and PSD.
+ * Useful for verifying polar-decomposition's S-factor invariants.
+ */
+export const arbSymmetricPSDMatrix2 = arbMatrix2.map((a) =>
+ Matrix2.multiply(Matrix2.transpose(a), a),
+);
+
+/**
+ * Near-singular Matrix2 with the requested condition number
+ *
+ * @remarks
+ * Builds a general (non-symmetric) matrix with σ_max = 1, σ_min = 1/κ via two
+ * independent random rotations: `M = U · diag(1, 1/κ) · Vᵀ`. The resulting
+ * matrix has condition number κ to within numerical precision. Using two
+ * distinct rotations (rather than `R · Σ · Rᵀ`) ensures the arbitrary covers
+ * general 2×2 matrices, not just the symmetric subset, so property tests
+ * exercise the full SVD pipeline including non-trivial U and V factors.
+ *
+ * @param condition - Target condition number κ ≥ 1; values up to 1e15 are realistic
+ * @returns Arbitrary yielding general 2×2 matrices with the requested condition number
+ */
+export const arbNearSingularMatrix2 = (condition: number) =>
+ fc.tuple(arbAngle, arbAngle).map(([angleU, angleV]) => {
+  const u = Matrix2.fromRotation(angleU);
+  const sigma = new Matrix2(1, 0, 0, 1 / condition);
+  const v = Matrix2.fromRotation(angleV);
+  // M = U · Σ · Vᵀ — independent U and V give general (non-symmetric) input
+  return Matrix2.multiply(Matrix2.multiply(u, sigma), Matrix2.transpose(v));
+ });
+
 /** General Matrix3 */
 export const arbMatrix3 = fc
  .tuple(

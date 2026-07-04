@@ -39,6 +39,19 @@ describe('numeric/rounding', () => {
    expect(roundToInt(1)).toBe(1);
    expect(roundToInt(-1)).toBe(-1);
   });
+
+  // V9-Numeric-03: propagate non-finite per IEEE 754 (C99 §F.9.6.4, NumPy np.rint, Rust round_ties_even)
+  test('roundToInt propagates NaN per IEEE 754 §6.2', () => {
+   expect(roundToInt(Number.NaN)).toBeNaN();
+  });
+
+  test('roundToInt propagates +Infinity', () => {
+   expect(roundToInt(Number.POSITIVE_INFINITY)).toBe(Number.POSITIVE_INFINITY);
+  });
+
+  test('roundToInt propagates -Infinity', () => {
+   expect(roundToInt(Number.NEGATIVE_INFINITY)).toBe(Number.NEGATIVE_INFINITY);
+  });
  });
 
  describe('roundToPlaces', () => {
@@ -132,10 +145,12 @@ describe('numeric/rounding', () => {
    expect(roundToMultiple(-Infinity, 5)).toBe(-Infinity);
   });
 
-  test('roundToInt throws on non-finite values', () => {
-   expect(() => roundToInt(NaN)).toThrow(RangeError);
-   expect(() => roundToInt(Infinity)).toThrow(RangeError);
-   expect(() => roundToInt(-Infinity)).toThrow(RangeError);
+  test('roundToInt propagates non-finite values (V9-Numeric-03 supersedes throw-on-non-finite)', () => {
+   // Per V9-Numeric-03: align with IEEE 754 §6.2 / C99 §F.9.6.4 / NumPy np.rint / Rust round_ties_even.
+   // NaN → NaN; ±Infinity → ±Infinity. Sibling `roundToMultiple` already follows this pattern.
+   expect(roundToInt(Number.NaN)).toBeNaN();
+   expect(roundToInt(Number.POSITIVE_INFINITY)).toBe(Number.POSITIVE_INFINITY);
+   expect(roundToInt(Number.NEGATIVE_INFINITY)).toBe(Number.NEGATIVE_INFINITY);
   });
  });
 

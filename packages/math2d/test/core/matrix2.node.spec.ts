@@ -556,6 +556,18 @@ describe('Matrix2', () => {
    expect(m.frobeniusNorm()).toBeCloseTo(Math.sqrt(30));
   });
 
+  // Overflow-safe hypot composition (Matrix Frobenius convention per RA-2).
+  // Threshold is sqrt(MAX_VALUE / 4) ≈ 6.7e153, above which naive sqrt(Σm²) overflows.
+  it('frobeniusNorm is overflow-safe for components above ~6.7e153', () => {
+   const large = 1e200; // individual component squared overflows: 1e200² = 1e400 > MAX_VALUE
+   const m = new Matrix2(large, 0, 0, large);
+   const norm = m.frobeniusNorm();
+   // Naive `sqrt(large² + 0 + 0 + large²)` would overflow because large² = Infinity.
+   // hypot composition returns a finite value ≈ large * √2 ≈ 1.41e200.
+   expect(Number.isFinite(norm)).toBe(true);
+   expect(norm).toBeCloseTo(large * Math.SQRT2, -190);
+  });
+
   it('isInvertible checks invertibility', () => {
    expect(Matrix2.IDENTITY.isInvertible()).toBe(true);
    expect(new Matrix2(0, 0, 0, 0).isInvertible()).toBe(false);
@@ -564,6 +576,23 @@ describe('Matrix2', () => {
   it('isOrthogonal checks orthogonality', () => {
    expect(Matrix2.fromRotation(Math.PI / 4).isOrthogonal()).toBe(true);
    expect(new Matrix2(1, 2, 3, 4).isOrthogonal()).toBe(false);
+  });
+
+  it('isSpecialOrthogonal accepts rotation matrices', () => {
+   const rot = Matrix2.fromRotation(Math.PI / 3);
+   expect(Matrix2.isSpecialOrthogonal(rot)).toBe(true);
+   expect(rot.isSpecialOrthogonal()).toBe(true);
+  });
+
+  it('isSpecialOrthogonal rejects reflection matrices', () => {
+   // Reflection about X-axis: det = -1.
+   const reflect = Matrix2.fromReflection({ x: 0, y: 1 });
+   expect(Matrix2.isOrthogonal(reflect)).toBe(true);
+   expect(Matrix2.isSpecialOrthogonal(reflect)).toBe(false);
+  });
+
+  it('isSpecialOrthogonal rejects non-orthogonal matrices', () => {
+   expect(Matrix2.isSpecialOrthogonal(new Matrix2(1, 2, 3, 4))).toBe(false);
   });
  });
 
@@ -995,32 +1024,30 @@ describe('Matrix2', () => {
   });
  });
 
- describe('Constructor Overloads', () => {
-  it('constructs from array', () => {
-   const m = new Matrix2([1, 2, 3, 4]);
+ describe('Constructor (scalar-only, total)', () => {
+  it('array construction is the exclusive domain of fromArray (validates in every build)', () => {
+   const m = Matrix2.fromArray([1, 2, 3, 4]);
    expect(m.m00).toBe(1);
    expect(m.m01).toBe(2);
    expect(m.m10).toBe(3);
    expect(m.m11).toBe(4);
+   expect(() =>
+    Matrix2.fromArray([1, 2, 3] as unknown as [number, number, number, number]),
+   ).toThrow(RangeError);
   });
 
-  it('constructs from object', () => {
-   const m = new Matrix2({ m00: 5, m01: 6, m10: 7, m11: 8 });
+  it('object construction is the exclusive domain of fromObject (type-trusting)', () => {
+   const m = Matrix2.fromObject({ m00: 5, m01: 6, m10: 7, m11: 8 });
    expect(m.m00).toBe(5);
    expect(m.m01).toBe(6);
    expect(m.m10).toBe(7);
    expect(m.m11).toBe(8);
   });
 
-  it('throws on short array', () => {
-   expect(() => new Matrix2([1, 2, 3] as unknown as [number, number, number, number])).toThrow(
-    RangeError,
-   );
-  });
-
-  it('throws on invalid arguments', () => {
-   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-   expect(() => new Matrix2('invalid' as any)).toThrow(TypeError);
+  it('accepts non-finite components (pure assignment, IEEE 754 values)', () => {
+   const m = new Matrix2(Number.NaN, 0, 0, Number.POSITIVE_INFINITY);
+   expect(m.m00).toBeNaN();
+   expect(m.m11).toBe(Number.POSITIVE_INFINITY);
   });
 
   it('constructs identity by default', () => {
@@ -1102,6 +1129,15 @@ describe('Matrix2', () => {
    const m = new Matrix2(-5, 0, 3, -1);
    const result = Matrix2.sign(m);
    expect(result.m00).toBe(-1);
+   expect(result.m01).toBe(0);
+   expect(result.m10).toBe(1);
+   expect(result.m11).toBe(-1);
+  });
+
+  it('sign propagates NaN per V9-Scalar-01 (IEEE 754 §6.2)', () => {
+   const m = new Matrix2(Number.NaN, 0, 3, -1);
+   const result = Matrix2.sign(m);
+   expect(result.m00).toBeNaN();
    expect(result.m01).toBe(0);
    expect(result.m10).toBe(1);
    expect(result.m11).toBe(-1);
@@ -2294,36 +2330,6 @@ describe('Matrix2', () => {
   });
  });
 
- describe('Static premultiply', () => {
-  it('premultiply(A, B) equals multiply(A, B)', () => {
-   const a = Matrix2.fromRotation(0.5);
-   const b = Matrix2.fromScale(new Vector2(2, 3));
-   const multiply = Matrix2.multiply(a, b);
-   const pre = Matrix2.premultiply(a, b);
-   expect(pre.m00).toBeCloseTo(multiply.m00, DIGITS);
-   expect(pre.m01).toBeCloseTo(multiply.m01, DIGITS);
-   expect(pre.m10).toBeCloseTo(multiply.m10, DIGITS);
-   expect(pre.m11).toBeCloseTo(multiply.m11, DIGITS);
-  });
-
-  it('premultiply uses out parameter', () => {
-   const out = new Matrix2();
-   const result = Matrix2.premultiply(new Matrix2(), new Matrix2(), out);
-   expect(result).toBe(out);
-  });
-
-  it('static premultiply(A, B) matches instance B.premultiply(A)', () => {
-   const a = Matrix2.fromRotation(0.7);
-   const b = Matrix2.fromScale(new Vector2(1.5, 2.5));
-   const staticResult = Matrix2.premultiply(a, b);
-   const instanceResult = b.clone().premultiply(a);
-   expect(staticResult.m00).toBeCloseTo(instanceResult.m00, DIGITS);
-   expect(staticResult.m01).toBeCloseTo(instanceResult.m01, DIGITS);
-   expect(staticResult.m10).toBeCloseTo(instanceResult.m10, DIGITS);
-   expect(staticResult.m11).toBeCloseTo(instanceResult.m11, DIGITS);
-  });
- });
-
  describe('Instance compose/decompose', () => {
   it('compose sets matrix to rotation+scale', () => {
    const m = new Matrix2().compose(Math.PI / 4, 2);
@@ -2500,8 +2506,8 @@ describe('Matrix2', () => {
  });
 
  describe('Coverage: instance operations', () => {
-  it('constructor from object', () => {
-   const m = new Matrix2({ m00: 2, m01: 3, m10: 4, m11: 5 });
+  it('fromObject factory copies all components', () => {
+   const m = Matrix2.fromObject({ m00: 2, m01: 3, m10: 4, m11: 5 });
    expect(m.m00).toBe(2);
    expect(m.m01).toBe(3);
    expect(m.m10).toBe(4);
@@ -2682,6 +2688,57 @@ describe('Matrix2 Safe/Unchecked variants', () => {
    expect(m.m01).toBeCloseTo(0, DIGITS);
    expect(m.m10).toBeCloseTo(0, DIGITS);
    expect(m.m11).toBeCloseTo(-1, DIGITS);
+  });
+
+  it('DEV-mode rejects non-unit normals', () => {
+   // |n| = sqrt(2 ≠ 1) — assertion should fire in dev builds.
+   expect(() => Matrix2.fromReflection({ x: 1, y: 1 })).toThrow();
+  });
+ });
+
+ /* ===== fromOuterProduct ===== */
+
+ describe('fromOuterProduct', () => {
+  it('standard basis vectors produce basis outer products', () => {
+   const basisX = { x: 1, y: 0 };
+   const basisY = { x: 0, y: 1 };
+   const m00 = Matrix2.fromOuterProduct(basisX, basisX);
+   expect(m00.m00).toBe(1);
+   expect(m00.m01).toBe(0);
+   expect(m00.m10).toBe(0);
+   expect(m00.m11).toBe(0);
+   const m01 = Matrix2.fromOuterProduct(basisX, basisY);
+   // column 0 = basisX * 0 = 0, column 1 = basisX * 1 = (1, 0)
+   expect(m01.m00).toBe(0);
+   expect(m01.m01).toBe(0);
+   expect(m01.m10).toBe(1);
+   expect(m01.m11).toBe(0);
+  });
+
+  it('general outer product layout M[i,j] = u[i]·v[j]', () => {
+   const u = { x: 2, y: 3 };
+   const v = { x: 5, y: 7 };
+   const m = Matrix2.fromOuterProduct(u, v);
+   expect(m.m00).toBe(10); // u.x * v.x
+   expect(m.m01).toBe(15); // u.y * v.x
+   expect(m.m10).toBe(14); // u.x * v.y
+   expect(m.m11).toBe(21); // u.y * v.y
+  });
+
+  it('composes with fromReflection: fromReflection(n) = I - 2·(n ⊗ n)', () => {
+   const n = { x: 3 / 5, y: 4 / 5 }; // unit vector
+   const outer = Matrix2.fromOuterProduct(n, n);
+   const reflected = Matrix2.fromReflection(n);
+   expect(reflected.m00).toBeCloseTo(1 - 2 * outer.m00, DIGITS);
+   expect(reflected.m01).toBeCloseTo(-2 * outer.m01, DIGITS);
+   expect(reflected.m10).toBeCloseTo(-2 * outer.m10, DIGITS);
+   expect(reflected.m11).toBeCloseTo(1 - 2 * outer.m11, DIGITS);
+  });
+
+  it('writes to provided out parameter and returns it', () => {
+   const out = new Matrix2();
+   const result = Matrix2.fromOuterProduct({ x: 1, y: 2 }, { x: 3, y: 4 }, out);
+   expect(result).toBe(out);
   });
  });
 
@@ -2964,6 +3021,53 @@ describe('Matrix2 Safe/Unchecked variants', () => {
    };
    const dot = real.v1.x * real.v2.x + real.v1.y * real.v2.y;
    expect(dot).toBeCloseTo(0, DIGITS);
+  });
+ });
+
+ describe('Instance mirrors for eigenvalues / eigendecompose / solveLinearSystem', () => {
+  it('instance eigenvalues matches static', () => {
+   const m = new Matrix2(3, 0, 0, 5);
+   const staticResult = Matrix2.eigenvalues(m);
+   const instanceResult = m.eigenvalues();
+   expect(instanceResult.type).toBe('real');
+   expect(staticResult.type).toBe('real');
+   // Narrow both unions and assert component-wise equality.
+   const staticReal = staticResult as Extract<typeof staticResult, { type: 'real' }>;
+   const instanceReal = instanceResult as Extract<typeof instanceResult, { type: 'real' }>;
+   expect(instanceReal.lambda1).toBeCloseTo(staticReal.lambda1, DIGITS);
+   expect(instanceReal.lambda2).toBeCloseTo(staticReal.lambda2, DIGITS);
+  });
+
+  it('instance eigendecompose matches static', () => {
+   const m = new Matrix2(2, 1, 1, 2);
+   const staticResult = Matrix2.eigendecompose(m);
+   const instanceResult = m.eigendecompose();
+   expect(instanceResult.type).toBe(staticResult.type);
+  });
+
+  it('instance solveLinearSystem matches static', () => {
+   const m = new Matrix2(2, 0, 0, 3);
+   const b = { x: 4, y: 9 };
+   const staticResult = Matrix2.solveLinearSystem(m, b);
+   const instanceResult = m.solveLinearSystem(b);
+   expect(instanceResult.x).toBeCloseTo(staticResult.x, DIGITS);
+   expect(instanceResult.y).toBeCloseTo(staticResult.y, DIGITS);
+  });
+
+  it('instance solveLinearSystemSafe returns (0, 0) for singular', () => {
+   const singular = new Matrix2(1, 2, 2, 4);
+   const b = { x: 1, y: 1 };
+   const result = singular.solveLinearSystemSafe(b);
+   expect(result.x).toBe(0);
+   expect(result.y).toBe(0);
+  });
+
+  it('instance solveLinearSystemUnchecked matches static', () => {
+   const m = new Matrix2(2, 0, 0, 3);
+   const b = { x: 4, y: 9 };
+   const instanceResult = m.solveLinearSystemUnchecked(b);
+   expect(instanceResult.x).toBeCloseTo(2, DIGITS);
+   expect(instanceResult.y).toBeCloseTo(3, DIGITS);
   });
  });
 });

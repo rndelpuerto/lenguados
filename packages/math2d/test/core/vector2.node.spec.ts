@@ -651,6 +651,22 @@ describe('Vector2', () => {
    expectVecClose(v, 5, 0);
   });
 
+  it('fromAngleCS matches fromAngle for pre-computed cos/sin', () => {
+   const angle = Math.PI / 6;
+   const cos = Math.cos(angle);
+   const sin = Math.sin(angle);
+   const viaFull = Vector2.fromAngle(angle, 2);
+   const viaCS = Vector2.fromAngleCS(cos, sin, 2);
+   expectVecClose(viaCS, viaFull.x, viaFull.y);
+  });
+
+  it('fromAngleCS default radius is 1', () => {
+   const cos = Math.cos(Math.PI / 3);
+   const sin = Math.sin(Math.PI / 3);
+   const v = Vector2.fromAngleCS(cos, sin);
+   expectVecClose(v, cos, sin);
+  });
+
   it('fromValues creates vector', () => {
    const v = Vector2.fromValues(3, 4);
    expectVecClose(v, 3, 4);
@@ -988,6 +1004,39 @@ describe('Vector2', () => {
    const { length, unit } = Vector2.getLengthAndNormalize(v);
    expect(length).toBeCloseTo(5, DIGITS);
    expectVecClose(unit, 3 / 5, 4 / 5);
+  });
+
+  it('normalizeGetLength writes unit to out and returns length', () => {
+   const out = new Vector2();
+   const length = Vector2.normalizeGetLength({ x: 3, y: 4 }, out);
+   expect(length).toBeCloseTo(5, DIGITS);
+   expectVecClose(out, 3 / 5, 4 / 5);
+  });
+
+  it('normalizeGetLength throws for zero-length vector', () => {
+   expect(() => Vector2.normalizeGetLength({ x: 0, y: 0 })).toThrow(RangeError);
+  });
+
+  it('normalizeGetLengthSafe returns 0 and writes fallback for zero-length vector', () => {
+   const fallback = { x: 1, y: 0 };
+   const out = new Vector2();
+   const length = Vector2.normalizeGetLengthSafe({ x: 0, y: 0 }, fallback, out);
+   expect(length).toBe(0);
+   expectVecClose(out, 1, 0);
+  });
+
+  it('normalizeGetLengthSafe matches strict for ordinary input', () => {
+   const out = new Vector2();
+   const length = Vector2.normalizeGetLengthSafe({ x: 3, y: 4 }, Vector2.ZERO, out);
+   expect(length).toBeCloseTo(5, DIGITS);
+   expectVecClose(out, 3 / 5, 4 / 5);
+  });
+
+  it('normalizeGetLengthUnchecked matches strict for non-zero input', () => {
+   const out = new Vector2();
+   const length = Vector2.normalizeGetLengthUnchecked({ x: 3, y: 4 }, out);
+   expect(length).toBeCloseTo(5, DIGITS);
+   expectVecClose(out, 3 / 5, 4 / 5);
   });
 
   it('normalize handles very large components without overflow', () => {
@@ -2538,28 +2587,38 @@ describe('Vector2', () => {
   });
  });
 
- describe('Coverage - Constructor Overloads', () => {
-  it('constructor with array', () => {
+ describe('Coverage - Constructor (scalar-only, total)', () => {
+  it('defaults to the zero vector with no arguments', () => {
    expect.hasAssertions();
-   const v = new Vector2([5, 6]);
+   const v = new Vector2();
+   expect(v.x).toBe(0);
+   expect(v.y).toBe(0);
+  });
+
+  it('assigns explicit components without validation', () => {
+   expect.hasAssertions();
+   const v = new Vector2(5, 6);
    expectVecClose(v, 5, 6, DIGITS);
   });
 
-  it('constructor with object', () => {
+  it('accepts non-finite components (pure assignment, IEEE 754 values)', () => {
    expect.hasAssertions();
-   const v = new Vector2({ x: 7, y: 8 });
+   const v = new Vector2(Number.NaN, Number.POSITIVE_INFINITY);
+   expect(v.x).toBeNaN();
+   expect(v.y).toBe(Number.POSITIVE_INFINITY);
+  });
+
+  it('array construction is the exclusive domain of fromArray (validates in every build)', () => {
+   expect.hasAssertions();
+   const v = Vector2.fromArray([5, 6]);
+   expectVecClose(v, 5, 6, DIGITS);
+   expect(() => Vector2.fromArray([1] as unknown as [number, number])).toThrow(RangeError);
+  });
+
+  it('object construction is the exclusive domain of fromObject (type-trusting)', () => {
+   expect.hasAssertions();
+   const v = Vector2.fromObject({ x: 7, y: 8 });
    expectVecClose(v, 7, 8, DIGITS);
-  });
-
-  it('constructor throws on short array', () => {
-   expect.hasAssertions();
-   expect(() => new Vector2([1] as unknown as [number, number])).toThrow(RangeError);
-  });
-
-  it('constructor throws on invalid argument', () => {
-   expect.hasAssertions();
-   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-   expect(() => new Vector2('invalid' as any)).toThrow(TypeError);
   });
  });
 
@@ -3364,10 +3423,11 @@ describe('Vector2', () => {
  });
 
  describe('Triality - reflect family', () => {
-  it('reflect throws on non-unit normal', () => {
+  it('reflect asserts unit-length normal in DEV', () => {
    const v = new Vector2(1, -1);
    const nonUnitNormal = new Vector2(0, 2); // length = 2, not unit
-   expect(() => Vector2.reflect(v, nonUnitNormal)).toThrow(RangeError);
+   // DEV-mode assertion fires (via `assert()`); production DCE strips it.
+   expect(() => Vector2.reflect(v, nonUnitNormal)).toThrow();
   });
 
   it('reflect works on unit normal', () => {

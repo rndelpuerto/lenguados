@@ -7,7 +7,7 @@
 import { TAU, DEG_TO_RAD, RAD_TO_DEG, RAD_TO_TURN } from '../scalar/constants';
 
 /**
- * Converts degrees to radians.
+ * Converts degrees to radians
  * @param degrees - Angle in degrees
  * @returns Angle in radians
  *
@@ -26,7 +26,7 @@ export function degreesToRadians(degrees: number): number {
 }
 
 /**
- * Converts radians to degrees.
+ * Converts radians to degrees
  * @param radians - Angle in radians
  * @returns Angle in degrees
  *
@@ -45,7 +45,7 @@ export function radiansToDegrees(radians: number): number {
 }
 
 /**
- * Converts turns to radians (1 turn = TAU radians = 2π radians).
+ * Converts turns to radians (1 turn = TAU radians = 2π radians)
  * @param turns - Number of turns
  * @returns Angle in radians
  *
@@ -65,7 +65,7 @@ export function turnsToRadians(turns: number): number {
 }
 
 /**
- * Converts radians to turns (1 turn = TAU radians = 2π radians).
+ * Converts radians to turns (1 turn = TAU radians = 2π radians)
  * @param radians - Angle in radians
  * @returns Number of turns
  *

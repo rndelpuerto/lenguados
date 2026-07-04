@@ -326,12 +326,6 @@ describe('Coverage Boost - Edge Cases', () => {
    expect(r.sin).toBeCloseTo(1, DIGITS);
   });
 
-  it('fromValues creates rotation from cos/sin', () => {
-   const r = Rotation2.fromValues(0, 1);
-   expect(r.cos).toBe(0);
-   expect(r.sin).toBe(1);
-  });
-
   it('identity resets to default', () => {
    const r = Rotation2.fromAngle(Math.PI / 4);
    r.identity();
@@ -342,7 +336,7 @@ describe('Coverage Boost - Edge Cases', () => {
 
  describe('Complex coverage', () => {
   it('static pow computes power', () => {
-   const result = Complex.pow(new Complex(2, 0), 3);
+   const result = Complex.powScalar(new Complex(2, 0), 3);
    expect(result.real).toBeCloseTo(8, DIGITS);
   });
  });

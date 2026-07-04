@@ -8,32 +8,35 @@ import { log } from '../../deterministic/deterministic-kernels';
 import { LN_2 } from '../scalar/constants';
 
 /**
- * Rounds to nearest integer.
- * Uses banker's rounding (round half to even).
+ * Rounds a value to the nearest integer using banker's rounding (round half to even)
  *
  * @remarks
- * Banker's rounding reduces bias in repeated operations by
- * rounding 0.5 to the nearest even number.
+ * Banker's rounding reduces bias in repeated operations by rounding 0.5 to
+ * the nearest even number. Non-finite inputs propagate per IEEE 754 §6.2 and
+ * C99 §F.9.6.4: `NaN → NaN`, `±Infinity → ±Infinity`. Consistent with the sibling
+ * `roundToMultiple`.
  *
  * @param value - Value to round
- * @returns Rounded integer
+ * @returns Rounded integer; `NaN` for `NaN` input; `±Infinity` for `±Infinity`
  *
  * @example
  * ```typescript
- * roundToInt(3.2);     // 3
- * roundToInt(3.7);     // 4
- * roundToInt(3.5);     // 4 (rounds to even)
- * roundToInt(4.5);     // 4 (rounds to even)
- * roundToInt(-2.5);    // -2 (rounds to even)
+ * roundToInt(3.2);       // 3
+ * roundToInt(3.7);       // 4
+ * roundToInt(3.5);       // 4 (rounds to even)
+ * roundToInt(4.5);       // 4 (rounds to even)
+ * roundToInt(-2.5);      // -2 (rounds to even)
+ * roundToInt(NaN);       // NaN
+ * roundToInt(Infinity);  // Infinity
  * ```
  *
  * @category Arithmetic
  * @since 0.7.0
  */
 export function roundToInt(value: number): number {
- if (!Number.isFinite(value)) {
-  throw new RangeError('roundToInt: value must be finite');
- }
+ // Propagate non-finite per IEEE 754 §6.2 / C99 §F.9.6.4:
+ // NaN → NaN; ±Infinity → ±Infinity.
+ if (!Number.isFinite(value)) return value;
 
  const integer = Math.floor(value);
  const fraction = value - integer;
@@ -46,7 +49,7 @@ export function roundToInt(value: number): number {
 }
 
 /**
- * Rounds to specific decimal places.
+ * Rounds to specific decimal places
  *
  * @remarks
  * Uses the standard `Math.round(value * 10^places) / 10^places` approach.
@@ -80,7 +83,7 @@ export function roundToPlaces(value: number, places: number): number {
 }
 
 /**
- * Rounds to nearest multiple.
+ * Rounds to nearest multiple
  * @param value - Value to round
  * @param multiple - Multiple to round to
  * @returns Rounded value
@@ -103,7 +106,7 @@ export function roundToMultiple(value: number, multiple: number): number {
 }
 
 /**
- * Rounds to nearest power of two.
+ * Rounds to nearest power of two
  * @remarks Uses deterministic math (`log` from deterministic-kernels).
  *
  * @param value - Value to round (must be positive)
@@ -118,7 +121,7 @@ export function roundToMultiple(value: number, multiple: number): number {
  * roundToPowerOfTwo(24);     // 32
  * ```
  *
- * @category Arithmetic
+ * @category Safety
  * @since 0.7.0
  */
 export function roundToPowerOfTwo(value: number): number {
@@ -133,7 +136,7 @@ export function roundToPowerOfTwo(value: number): number {
 }
 
 /**
- * Returns the smallest power of two greater than or equal to value.
+ * Returns the smallest power of two greater than or equal to value
  * @param value - Input value (positive)
  * @returns Next power of two, or 0 for non-positive input
  *
@@ -147,7 +150,8 @@ export function roundToPowerOfTwo(value: number): number {
  *
  * @see {@link floorPowerOfTwo} - Largest power of two ≤ value
  * @see {@link roundToPowerOfTwo} - Nearest power of two
- * @category Arithmetic
+ *
+ * @category Safety
  * @since 0.7.0
  */
 export function ceilPowerOfTwo(value: number): number {
@@ -157,7 +161,7 @@ export function ceilPowerOfTwo(value: number): number {
 }
 
 /**
- * Returns the largest power of two less than or equal to value.
+ * Returns the largest power of two less than or equal to value
  * @param value - Input value (positive)
  * @returns Previous power of two, or 0 for non-positive input
  *
@@ -171,7 +175,8 @@ export function ceilPowerOfTwo(value: number): number {
  *
  * @see {@link ceilPowerOfTwo} - Smallest power of two ≥ value
  * @see {@link roundToPowerOfTwo} - Nearest power of two
- * @category Arithmetic
+ *
+ * @category Safety
  * @since 0.7.0
  */
 export function floorPowerOfTwo(value: number): number {
@@ -181,21 +186,30 @@ export function floorPowerOfTwo(value: number): number {
 }
 
 /**
- * Gets fractional part.
+ * Gets fractional part
+ *
  * @remarks
- * Returns NaN for non-finite inputs (NaN, ±Infinity) because
- * `Math.floor` returns ±Infinity for ±Infinity and NaN for NaN.
+ * Returns NaN for every non-finite input: `fract(NaN) → NaN`,
+ * `fract(+Infinity) → NaN`, `fract(-Infinity) → NaN`. The result is
+ * always non-negative (`fract(−3.7) ≈ 0.3`), matching the fractional-part
+ * convention `x - floor(x)`. For
+ * the cross-linked ceil/floor/round-to-power-of-two family, see
+ * {@link roundToPowerOfTwo}, {@link ceilPowerOfTwo}, {@link floorPowerOfTwo}
+ * in this file; for scalar wrapping variants (e.g. `flooredMod`) see
+ * `auxiliary/numeric/wrapping.ts`.
  *
  * @param value - Value to get fraction from
- * @returns Fractional part (always positive)
+ * @returns Fractional part (always positive), or NaN for non-finite input
  *
  * @example
  * ```typescript
- * fract(3.7);        // 0.7
- * fract(3.2);        // 0.2
- * fract(-3.7);       // 0.3
- * fract(-3.2);       // 0.8
+ * fract(3.7);        // 0.7000000000000002
+ * fract(3.2);        // 0.20000000000000018
+ * fract(-3.7);       // 0.2999999999999998
+ * fract(-3.2);       // 0.7999999999999998
  * fract(5);          // 0
+ * fract(Infinity);   // NaN
+ * fract(NaN);        // NaN
  * ```
  *
  * @category Arithmetic

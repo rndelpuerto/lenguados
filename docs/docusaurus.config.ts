@@ -27,7 +27,10 @@ const config: Config = {
  projectName: 'lenguados',
  deploymentBranch: 'gh-pages',
 
- onBrokenLinks: 'warn',
+ onBrokenLinks: 'throw',
+ // onBrokenLinks does not cover #fragment links; without this, a dead anchor
+ // ships silently as a warning with exit code 0.
+ onBrokenAnchors: 'throw',
 
  headTags: [
   {
@@ -69,6 +72,71 @@ const config: Config = {
     id: 'api',
     entryPoints: ['../packages/*'],
     entryPointStrategy: 'packages',
+    // With entryPointStrategy: 'packages', TypeDoc bootstraps a per-package
+    // converter and reads `typedocOptions` from each package.json. Options
+    // declared here at the plugin root apply only to the outer shell; the
+    // per-package converters need their config inside the `packageOptions`
+    // block below. Per-package entry points still come from each
+    // `packages/<pkg>/package.json` typedocOptions.entryPoints.
+    packageOptions: {
+     // Register the project's TSDoc extension tags alongside TypeDoc's defaults.
+     // TypeDoc replaces (not merges) the built-in `blockTags` list when the option
+     // is set, so this array must include both the TypeDoc defaults and the
+     // project-specific tags defined in docs/docs/guides/tsdoc-standard.md §1.
+     blockTags: [
+      // TypeDoc built-in block tags (from typedoc/dist/lib/utils/options/tsdoc-defaults.js).
+      '@defaultValue',
+      '@deprecated',
+      '@example',
+      '@jsx',
+      '@param',
+      '@privateRemarks',
+      '@remarks',
+      '@returns',
+      '@see',
+      '@throws',
+      '@typeParam',
+      '@author',
+      '@callback',
+      '@category',
+      '@categoryDescription',
+      '@default',
+      '@document',
+      '@extends',
+      '@augments',
+      '@yields',
+      '@group',
+      '@groupDescription',
+      '@import',
+      '@inheritDoc',
+      '@license',
+      '@module',
+      '@mergeModuleWith',
+      '@prop',
+      '@property',
+      '@return',
+      '@satisfies',
+      '@since',
+      '@sortStrategy',
+      '@template',
+      '@this',
+      '@type',
+      '@typedef',
+      '@summary',
+      '@preventInline',
+      '@inlineType',
+      '@preventExpand',
+      '@expandType',
+      // Project-specific TSDoc extension tags.
+      '@file',
+      '@description',
+      '@internal',
+      '@constant',
+      '@public',
+      '@packageDocumentation',
+     ],
+     excludeInternal: true,
+    },
     tsconfig: '../tsconfig.json',
     exclude: ['**/test/**/*'],
     readme: 'none',

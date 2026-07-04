@@ -44,6 +44,17 @@ const suiteFilter = suiteArg ? new Set(suiteArg.split(',')) : undefined;
 const allTests = await discoverStressTests(packageName);
 const tests = suiteFilter ? allTests.filter((t) => suiteFilter.has(t.name)) : allTests;
 
+// A package with zero stress definitions produces NO report: persisting an
+// empty stress-latest.json would flow through summarize into the docs as
+// hollow data. Skip-with-notice keeps the minimal-citizen package shape valid
+// without publishing empty artifacts.
+if (tests.length === 0) {
+ console.log(
+  `\n  No stress definitions found for package '${packageName}' (src/packages/${packageName}/stress/) — nothing to run, no report written.\n`,
+ );
+ process.exit(0);
+}
+
 console.log(
  `\n  Running stress tests: ${tests.map((t) => t.name).join(', ')} (${samples} samples)\n`,
 );
@@ -63,12 +74,15 @@ for (const test of tests) {
 
 console.log(`\n  Diagnostics: ${formatDiagnosticSummary(diagnostics)}\n`);
 
-// Persist JSON report
-const RESULTS_DIR = new URL('../results/', import.meta.url).pathname;
+// Persist JSON report (package-namespaced)
+const RESULTS_DIR = new URL(`../results/${packageName}/`, import.meta.url).pathname;
 mkdirSync(RESULTS_DIR, { recursive: true });
 
 const report: StressReport = {
- metadata: collectMetadata(),
+ metadata: collectMetadata(
+  packageName,
+  suiteArg ? { full: false, filters: { suite: suiteArg } } : { full: true },
+ ),
  samples,
  suites: collected,
  diagnostics,

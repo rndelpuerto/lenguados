@@ -22,6 +22,14 @@ const exec = promisify(execCb);
  */
 const publishLocal = async () => {
  const port = process.env.npm_package_config_verdaccioport;
+
+ if (!port) {
+  console.error(
+   'verdaccioport is not set. Run through npm (npm run publish:local / unpublish:local) from a package whose package.json declares config.verdaccioport.',
+  );
+
+  process.exit(1);
+ }
  const registry = `http://localhost:${port}/`;
  const cwd = process.cwd();
 

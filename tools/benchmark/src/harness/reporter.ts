@@ -30,6 +30,21 @@ import type { BenchmarkResult, GroupResult, ResourceMetrics } from './runner.ts'
 /* Types                                                                       */
 /* ========================================================================== */
 
+/**
+ * Describe the scope provenance of a benchmark run
+ *
+ * @remarks
+ * A run is publishable (`full: true`) when it is suite-, tier-, and
+ * entity-unfiltered AND covers the canonical publication cell
+ * (production build, fdlibm determinism). Filtered runs record the
+ * filter values so downstream consumers can distinguish partial data
+ * without re-running anything.
+ */
+export interface RunScope {
+ full: boolean;
+ filters?: Record<string, string>;
+}
+
 /** Contain system metadata captured at benchmark execution time */
 export interface ReportMetadata {
  timestamp: string;
@@ -38,6 +53,10 @@ export interface ReportMetadata {
  cpu: string;
  commitHash: string;
  arch: string;
+ /** Package the run measured (results are namespaced by this name) */
+ packageName?: string;
+ /** Run-scope provenance (absent only in pre-provenance legacy data) */
+ scope?: RunScope;
 }
 
 /** Represent a single benchmark result entry in the JSON report */
@@ -93,7 +112,7 @@ function getCommitHash(): string {
  *
  * @returns A ReportMetadata object with timestamp, Node version, OS, CPU, commit hash, and arch
  */
-export function collectMetadata(): ReportMetadata {
+export function collectMetadata(packageName?: string, scope?: RunScope): ReportMetadata {
  const cpuInfo = cpus();
  return {
   timestamp: new Date().toISOString(),
@@ -102,6 +121,8 @@ export function collectMetadata(): ReportMetadata {
   cpu: cpuInfo.length > 0 ? `${cpuInfo[0]!.model} (${cpuInfo.length} cores)` : 'unknown',
   commitHash: getCommitHash(),
   arch: arch(),
+  ...(packageName !== undefined ? { packageName } : {}),
+  ...(scope !== undefined ? { scope } : {}),
  };
 }
 
@@ -161,6 +182,8 @@ export function generateJsonReport(
  groups: GroupResult[],
  dimensions?: Record<string, string>,
  includeRaw = false,
+ packageName?: string,
+ scope?: RunScope,
 ): BenchmarkReport {
  const entries: ReportEntry[] = [];
  for (const group of groups) {
@@ -170,7 +193,7 @@ export function generateJsonReport(
  }
 
  return {
-  metadata: collectMetadata(),
+  metadata: collectMetadata(packageName, scope),
   results: entries,
  };
 }
@@ -233,7 +256,17 @@ export function printAsciiTable(entries: ReportEntry[]): string {
 /* Result Persistence                                                          */
 /* ========================================================================== */
 
-const RESULTS_DIR = new URL('../../results/', import.meta.url).pathname;
+const RESULTS_BASE_DIR = new URL('../../results/', import.meta.url).pathname;
+
+/**
+ * Resolve the package-namespaced results directory (`results/{package}/`)
+ *
+ * @param packageName - Package whose results directory to resolve
+ * @returns Absolute path of the package's results directory
+ */
+export function packageResultsDir(packageName: string): string {
+ return join(RESULTS_BASE_DIR, packageName);
+}
 
 /**
  * Persist a benchmark report to disk as timestamped JSON
@@ -242,13 +275,14 @@ const RESULTS_DIR = new URL('../../results/', import.meta.url).pathname;
  * @returns The absolute path of the written file
  */
 export function persistReport(report: BenchmarkReport): string {
- mkdirSync(RESULTS_DIR, { recursive: true });
+ const resultsDir = packageResultsDir(report.metadata.packageName ?? 'math2d');
+ mkdirSync(resultsDir, { recursive: true });
 
  const ts = report.metadata.timestamp.replace(/[:.]/g, '-');
  const hash = report.metadata.commitHash;
  const filename = `${ts}-${hash}.json`;
- const filepath = join(RESULTS_DIR, filename);
- const latestPath = join(RESULTS_DIR, 'latest.json');
+ const filepath = join(resultsDir, filename);
+ const latestPath = join(resultsDir, 'latest.json');
 
  writeFileSync(filepath, JSON.stringify(report, null, 2));
  createLatestPointer(filepath, latestPath, filename);

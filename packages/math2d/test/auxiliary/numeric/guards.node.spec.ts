@@ -12,7 +12,6 @@ import {
  isInfinity,
  isDenormal,
  isInRange,
- flushDenormal,
 } from '../../../src/auxiliary/numeric/guards';
 
 describe('numeric/guards', () => {
@@ -129,32 +128,6 @@ describe('numeric/guards', () => {
    expect(isInRange(5, 5, 5)).toBe(true);
    expect(isInRange(4, 5, 5)).toBe(false);
    expect(isInRange(6, 5, 5)).toBe(false);
-  });
- });
-
- describe('flushDenormal', () => {
-  test('flushes denormal to zero', () => {
-   expect(flushDenormal(5e-324)).toBe(0);
-  });
-
-  test('returns normal numbers unchanged', () => {
-   expect(flushDenormal(1.5)).toBe(1.5);
-  });
-
-  test('zero is not denormal and returns 0', () => {
-   expect(flushDenormal(0)).toBe(0);
-  });
-
-  test('flushes negative denormal to zero', () => {
-   expect(flushDenormal(-5e-324)).toBe(0);
-  });
-
-  test('NaN passes through', () => {
-   expect(flushDenormal(NaN)).toBeNaN();
-  });
-
-  test('Infinity passes through', () => {
-   expect(flushDenormal(Infinity)).toBe(Infinity);
   });
  });
 });

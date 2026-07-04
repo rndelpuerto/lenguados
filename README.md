@@ -1,8 +1,7 @@
 # lenguados
 
 [![npm version](https://img.shields.io/npm/v/@lenguados/math2d.svg)](https://www.npmjs.com/package/@lenguados/math2d)
-[![CI](https://img.shields.io/github/actions/workflow/status/rndelpuerto/lenguados/ci.yml?branch=main&label=CI)](https://github.com/rndelpuerto/lenguados/actions)
-[![Coverage](https://img.shields.io/codecov/c/github/rndelpuerto/lenguados)](https://codecov.io/gh/rndelpuerto/lenguados)
+[![Benchmarks](https://img.shields.io/github/actions/workflow/status/rndelpuerto/lenguados/bench.yml?branch=main&label=benchmarks)](https://github.com/rndelpuerto/lenguados/actions/workflows/bench.yml)
 [![Bundle Size](https://img.shields.io/bundlephobia/minzip/@lenguados/math2d)](https://bundlephobia.com/package/@lenguados/math2d)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue.svg)](https://www.typescriptlang.org/)
@@ -11,13 +10,11 @@
 
 **lenguados** is a TypeScript monorepo for a deterministic, extensible 2D physics engine. The core `@lenguados/math2d` package provides math primitives with bit-exact cross-platform results, designed for networked game lockstep and high-performance simulations.
 
-**lenguados** es un monorepo TypeScript para un motor de fisicas 2D determinista y extensible. El paquete principal `@lenguados/math2d` provee primitivas matematicas con resultados bit-exactos entre plataformas, disenado para sincronizacion de juegos en red y simulaciones de alto rendimiento.
-
 ## Highlights
 
 - **Cross-platform determinism** -- fdlibm-based math kernels guarantee bit-exact results across all JS engines, OSes, and CPUs
 - **Zero-allocation patterns** -- static methods with `out` parameter reuse objects in hot paths, minimizing GC pressure
-- **Tree-shakeable validation** -- assertions are stripped from production builds via conditional exports
+- **Tree-shakeable validation** -- dev-only assertions are eliminated from production bundles at the library build step; conditional exports select the development or production artifacts
 - **Strict/Safe/Unchecked triality** -- three error-handling tiers per fallible operation to match your safety needs
 - **TypeScript-first** -- strict mode, `Readonly*Like` structural interfaces, full TSDoc coverage
 
@@ -28,7 +25,7 @@ npm install @lenguados/math2d
 ```
 
 ```typescript
-import { Vector2, Rotation2, Transform2, DEG_TO_RAD } from '@lenguados/math2d';
+import { Vector2, Transform2, DEG_TO_RAD } from '@lenguados/math2d';
 
 // Create vectors -- static methods are pure, instance methods mutate `this`
 const position = Vector2.fromValues(10, 20);
@@ -75,6 +72,14 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the full contributor guide.
 - [Contributing](CONTRIBUTING.md) -- setup, workflow, commit conventions, math2d API conventions
 - [Changelog](CHANGELOG.md) -- version history
 - [Docs Site](https://rndelpuerto.github.io/lenguados/docs/) -- deep-dives, design decisions, edge cases, and API reference
+
+## Stability
+
+lenguados is **pre-1.0** software and follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html) `0.x` semantics:
+
+- **Minor releases (`0.X.0`) may contain breaking changes.** Every breaking change is documented in the [Changelog](CHANGELOG.md).
+- **Patch releases (`0.x.Y`)** are backward-compatible bug fixes.
+- Only the latest `0.x` release receives security fixes — see the [Security Policy](SECURITY.md) for supported versions and the private vulnerability-reporting process.
 
 ## License
 

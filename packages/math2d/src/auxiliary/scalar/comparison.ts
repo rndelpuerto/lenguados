@@ -7,7 +7,7 @@
 import { EPSILON } from './constants';
 
 /**
- * Tests if two values are approximately equal.
+ * Tests if two values are approximately equal
  *
  * @remarks
  * Default tolerance is {@link EPSILON} (1e-10). This is an absolute comparison —
@@ -16,6 +16,12 @@ import { EPSILON } from './constants';
  * Note: `Math.abs(a - b)` overflows to `Infinity` when `a` and `b` have
  * opposite signs and large magnitudes (e.g., `1e308` and `-1e308`), but
  * this correctly returns `false` since `Infinity > epsilon`.
+ *
+ * Signed-zero equality: `nearEquals(-0, +0, 0) === true` because the `a === b`
+ * fast path is reached first and `−0 === +0` per IEEE 754-2019 §5.11
+ * (numerical equality ignores the sign bit of zero). This is intentional and
+ * is the IEEE 754 behaviour every language-level numeric equality check
+ * inherits.
  *
  * @param a - First value
  * @param b - Second value
@@ -26,9 +32,10 @@ import { EPSILON } from './constants';
  *
  * @example
  * ```typescript
- * nearEquals(1.0, 1.0000000001);          // true (within default epsilon)
+ * nearEquals(1.0, 1.00000000001);         // true (within default epsilon)
  * nearEquals(1.0, 1.01, 0.1);            // true (within custom epsilon)
  * nearEquals(1.0, 2.0);                  // false
+ * nearEquals(-0, 0, 0);                  // true (IEEE 754 §5.11)
  * ```
  *
  * @category Comparison
@@ -46,7 +53,7 @@ export function nearEquals(a: number, b: number, epsilon: number = EPSILON): boo
 }
 
 /**
- * Tests if value is near zero.
+ * Tests if value is near zero
  *
  * @remarks
  * Default tolerance is {@link EPSILON} (1e-10). Used by core type operations
@@ -76,7 +83,7 @@ export function isNearZero(value: number, epsilon: number = EPSILON): boolean {
 }
 
 /**
- * Tests if value is near one.
+ * Tests if value is near one
  *
  * @remarks
  * Default tolerance is {@link EPSILON} (1e-10). Commonly used to verify
@@ -90,7 +97,7 @@ export function isNearZero(value: number, epsilon: number = EPSILON): boolean {
  *
  * @example
  * ```typescript
- * isNearOne(0.9999999999);   // true (within default epsilon)
+ * isNearOne(0.99999999999);  // true (within default epsilon)
  * isNearOne(0.9);           // false
  * isNearOne(1.01, 0.1);     // true (within custom epsilon)
  * ```
@@ -106,7 +113,7 @@ export function isNearOne(value: number, epsilon: number = EPSILON): boolean {
 }
 
 /**
- * Tests combined tolerance equality: |a-b| <= epsilon * max(|a|, |b|, 1).
+ * Tests combined tolerance equality: |a-b| <= epsilon * max(|a|, |b|, 1)
  * Scales with magnitude for large numbers; uses absolute floor for small numbers.
  *
  * @remarks
@@ -156,7 +163,7 @@ export function relativeEquals(a: number, b: number, relativeEpsilon: number = E
 }
 
 /**
- * Tests if a < b with epsilon tolerance.
+ * Tests if a < b with epsilon tolerance
  * Returns true if a < b - epsilon.
  * @param a - First value
  * @param b - Second value
@@ -183,7 +190,7 @@ export function lessThan(a: number, b: number, epsilon: number = EPSILON): boole
 }
 
 /**
- * Tests if a > b with epsilon tolerance.
+ * Tests if a > b with epsilon tolerance
  * Returns true if a > b + epsilon.
  * @param a - First value
  * @param b - Second value
@@ -210,7 +217,7 @@ export function greaterThan(a: number, b: number, epsilon: number = EPSILON): bo
 }
 
 /**
- * Tests if value is in range [min, max] with epsilon.
+ * Tests if value is in range [min, max] with epsilon
  *
  * @remarks
  * Uses epsilon tolerance at both bounds:
@@ -235,7 +242,8 @@ export function greaterThan(a: number, b: number, epsilon: number = EPSILON): bo
  * inRange(-0.5, 0, 10, 1);               // true (within custom epsilon)
  * ```
  *
- * @see {@link isInRange} For exact (non-tolerant) range checking
+ * @see {@link isInRange} - Exact (non-tolerant) range check
+ *
  * @category Comparison
  * @since 0.7.0
  */
@@ -252,11 +260,18 @@ export function inRange(
 }
 
 /**
- * Compares two values with tolerance.
+ * Compares two values with tolerance
  *
  * @remarks
  * This provides a three-way comparison suitable for sorting or ordering.
  * Values within epsilon of each other are considered equal (returns 0).
+ *
+ * Total-order contract for `Array.prototype.sort` compatibility: NaN sorts
+ * AFTER every finite and infinite value. Two NaNs are equal (both return 0
+ * when compared to each other). This diverges from {@link nearEquals}, which
+ * treats NaN as never-equal-to-anything per IEEE 754 §5.11; the divergence
+ * is intentional because `sort` requires transitivity that the IEEE 754
+ * NaN semantics do not provide.
  *
  * @param a - First value
  * @param b - Second value

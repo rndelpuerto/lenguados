@@ -14,9 +14,12 @@
   "cross-env": "tsx scripts/cross-env.ts",
   "compare": "tsx scripts/compare.ts",
   "run-all": "tsx scripts/run-all.ts",
+  "size": "tsx scripts/size.ts",
   "summarize": "tsx scripts/summarize.ts",
+  "trend": "tsx scripts/trend.ts",
   "smoke": "tsx scripts/smoke.ts",
-  "test": "node --experimental-vm-modules ./node_modules/.bin/jest"
+  "test": "npm run typecheck && node --experimental-vm-modules ./node_modules/.bin/jest",
+  "typecheck": "tsc --noEmit -p tsconfig.json"
  },
  "dependencies": {
   "decimal.js": "^10.4.3",
@@ -27,12 +30,11 @@
  },
  "devDependencies": {
   "@jest/globals": "^30.3.0",
-  "@size-limit/esbuild": "^11.0.0",
   "@swc/core": "^1.15.24",
   "@swc/jest": "^0.2.39",
   "@types/node": "^25.6.0",
-  "jest": "^30.3.0",
-  "size-limit": "^11.0.0"
+  "esbuild": "^0.25.0",
+  "jest": "^30.3.0"
  },
  "optionalDependencies": {
   "playwright": "^1.48.0"

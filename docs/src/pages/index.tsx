@@ -16,12 +16,7 @@ function HomepageHeader() {
  const logoUrl = useBaseUrl('/img/logo.svg');
  return (
   <header className={clsx('hero', styles.heroBanner)}>
-   <img
-    src={logoUrl}
-    alt=""
-    aria-hidden="true"
-    className={styles.heroLogo}
-   />
+   <img src={logoUrl} alt="" aria-hidden="true" className={styles.heroLogo} />
    <div className="container">
     <Heading as="h1" className="hero__title">
      {siteConfig.title}
@@ -47,10 +42,7 @@ function HomepageHeader() {
 export default function Home(): ReactNode {
  const { siteConfig } = useDocusaurusContext();
  return (
-  <Layout
-   title="Deterministic 2D Physics Engine"
-   description={siteConfig.tagline}
-  >
+  <Layout title="Deterministic 2D Physics Engine" description={siteConfig.tagline}>
    <HomepageHeader />
    <main>
     <HomepageFeatures />

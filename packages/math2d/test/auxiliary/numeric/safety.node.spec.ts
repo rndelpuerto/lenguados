@@ -59,6 +59,23 @@ describe('numeric/safety', () => {
    const value = Math.E ** 5;
    expect(logSafe(value)).toBeCloseTo(5);
   });
+
+  // V9-Numeric-01: NaN propagates per canonical Safe contract (IEEE 754 §6.2)
+  test('logSafe(NaN) propagates NaN', () => {
+   expect(logSafe(Number.NaN)).toBeNaN();
+  });
+
+  test('logSafe(value, NaN) propagates NaN via base', () => {
+   expect(logSafe(10, Number.NaN)).toBeNaN();
+  });
+
+  test('logSafe(Infinity) returns +Infinity (IEEE 754 required)', () => {
+   expect(logSafe(Number.POSITIVE_INFINITY)).toBe(Number.POSITIVE_INFINITY);
+  });
+
+  test('logSafe(-Infinity) returns domain fallback 0', () => {
+   expect(logSafe(Number.NEGATIVE_INFINITY)).toBe(0);
+  });
  });
 
  describe('powSafe', () => {
@@ -214,6 +231,19 @@ describe('numeric/safety', () => {
   test('handles empty array', () => {
    expect(robustSum([])).toBe(0);
   });
+
+  // V9-Numeric-02: NaN and Infinity propagate per IEEE 754 §6.2 / §6.3
+  test('robustSum propagates NaN from any input', () => {
+   expect(robustSum([1, 2, Number.NaN, 4])).toBeNaN();
+  });
+
+  test('robustSum propagates +Infinity', () => {
+   expect(robustSum([1, 2, Number.POSITIVE_INFINITY])).toBe(Number.POSITIVE_INFINITY);
+  });
+
+  test('robustSum yields NaN for +Infinity + (-Infinity) per IEEE 754 §6.3', () => {
+   expect(robustSum([Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY])).toBeNaN();
+  });
  });
 
  describe('neumaierSum', () => {
@@ -225,12 +255,45 @@ describe('numeric/safety', () => {
    const values = [1e10, 1, 1, 1, -1e10];
    expect(neumaierSum(values)).toBeCloseTo(3);
   });
+
+  // V9-Numeric-02: NaN and Infinity propagate per IEEE 754 §6.2 / §6.3
+  test('neumaierSum propagates NaN from any input', () => {
+   expect(neumaierSum([1, 2, Number.NaN, 4])).toBeNaN();
+  });
+
+  test('neumaierSum yields non-finite for Infinity input (compensation artifact)', () => {
+   // Neumaier's compensation step (sum - t + value) produces NaN for Infinity:
+   // Infinity - Infinity = NaN per IEEE 754 §6.3. The final sum + compensation
+   // thus returns NaN. This is mathematically correct — the algorithm cannot
+   // preserve Infinity without re-architecting. The contract is "no silent
+   // sanitize-to-zero", not "Infinity survives Neumaier compensation".
+   expect(Number.isFinite(neumaierSum([1, 2, Number.POSITIVE_INFINITY]))).toBe(false);
+  });
+
+  test('neumaierSum yields NaN for +Infinity + (-Infinity) per IEEE 754 §6.3', () => {
+   expect(neumaierSum([Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY])).toBeNaN();
+  });
  });
 
  describe('compensatedProduct', () => {
   test('returns product and error', () => {
    const result = compensatedProduct(2, 3);
    expect(result.product).toBe(6);
+  });
+
+  // V9-Numeric-02: NaN propagates per IEEE 754 §6.2
+  test('compensatedProduct propagates NaN from a factor', () => {
+   expect(compensatedProduct(Number.NaN, 3).product).toBeNaN();
+   expect(compensatedProduct(2, Number.NaN).product).toBeNaN();
+  });
+
+  test('compensatedProduct produces Infinity for Inf × finite per IEEE 754', () => {
+   expect(compensatedProduct(Number.POSITIVE_INFINITY, 3).product).toBe(Number.POSITIVE_INFINITY);
+   expect(compensatedProduct(Number.POSITIVE_INFINITY, -3).product).toBe(Number.NEGATIVE_INFINITY);
+  });
+
+  test('compensatedProduct yields NaN for Infinity × 0 per IEEE 754', () => {
+   expect(compensatedProduct(Number.POSITIVE_INFINITY, 0).product).toBeNaN();
   });
 
   test('error term compensates rounding', () => {
@@ -245,13 +308,13 @@ describe('numeric/safety', () => {
    expect(Number.isFinite(r.error)).toBe(true);
   });
 
-  test('handles non-finite inputs by sanitizing to 0', () => {
-   const nanResult = compensatedProduct(NaN, 5);
-   expect(nanResult.product).toBe(0);
-   expect(nanResult.error).toBe(0);
-
-   const infResult = compensatedProduct(Infinity, 3);
-   expect(infResult.product).toBe(0);
+  test('non-finite inputs propagate per IEEE 754 (V9-Numeric-02 supersedes prior sanitize-to-0)', () => {
+   // NaN × any → NaN
+   expect(compensatedProduct(Number.NaN, 5).product).toBeNaN();
+   // Infinity × finite → signed Infinity
+   expect(compensatedProduct(Number.POSITIVE_INFINITY, 3).product).toBe(Number.POSITIVE_INFINITY);
+   // Infinity × 0 → NaN per IEEE 754 §6.3
+   expect(compensatedProduct(Number.POSITIVE_INFINITY, 0).product).toBeNaN();
   });
  });
 
@@ -266,9 +329,13 @@ describe('numeric/safety', () => {
    expect(ensureFinite(-Infinity, 99)).toBe(99);
   });
 
-  test('falls back to 0 when fallback itself is non-finite', () => {
-   expect(ensureFinite(NaN, Infinity)).toBe(0);
-   expect(ensureFinite(NaN, NaN)).toBe(0);
+  // V9-Numeric-08: DEV-mode fallback guard. Under Jest, DEV_MODE is true
+  // (NODE_ENV=test ≠ production). In production builds this branch is DCE'd
+  // and the function silently replaces non-finite fallback with 0.
+  test('throws RangeError in DEV when fallback itself is non-finite', () => {
+   expect(() => ensureFinite(Number.NaN, Number.POSITIVE_INFINITY)).toThrow(RangeError);
+   expect(() => ensureFinite(Number.NaN, Number.NaN)).toThrow(RangeError);
+   expect(() => ensureFinite(0, Number.NEGATIVE_INFINITY)).toThrow(RangeError);
   });
  });
 
@@ -287,7 +354,8 @@ describe('numeric/safety', () => {
    expect(Number.isFinite(reciprocalSafe(1e308))).toBe(true);
   });
 
-  test('logSafe always returns finite for finite inputs', () => {
+  test('logSafe always returns finite for FINITE inputs (NaN propagates per V9)', () => {
+   // Domain errors → 0 fallback
    expect(Number.isFinite(logSafe(0))).toBe(true);
    expect(Number.isFinite(logSafe(-1))).toBe(true);
    expect(Number.isFinite(logSafe(1e308))).toBe(true);
@@ -295,13 +363,16 @@ describe('numeric/safety', () => {
    expect(Number.isFinite(logSafe(1, 0))).toBe(true); // base<=0 edge case
    expect(Number.isFinite(logSafe(1, -1))).toBe(true);
    expect(Number.isFinite(logSafe(1, Infinity))).toBe(true);
+   // Finite positive: finite-in/finite-out holds for `value` and `base` both finite-positive
+   expect(Number.isFinite(logSafe(Math.E))).toBe(true);
   });
 
-  test('ensureFinite always returns finite', () => {
-   expect(Number.isFinite(ensureFinite(NaN))).toBe(true);
+  test('ensureFinite always returns finite when fallback is finite', () => {
+   expect(Number.isFinite(ensureFinite(NaN))).toBe(true); // default fallback 0
    expect(Number.isFinite(ensureFinite(Infinity))).toBe(true);
-   expect(Number.isFinite(ensureFinite(NaN, Infinity))).toBe(true);
-   expect(Number.isFinite(ensureFinite(NaN, NaN))).toBe(true);
+   expect(Number.isFinite(ensureFinite(NaN, 42))).toBe(true);
+   // V9-Numeric-08: non-finite fallback now throws in DEV (was silently replaced with 0).
+   // Moved to dedicated `throws RangeError in DEV when fallback itself is non-finite` test.
   });
  });
 

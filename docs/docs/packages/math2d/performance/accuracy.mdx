@@ -11,6 +11,7 @@ import {
  InsightCallout,
  NoDataFallback,
  MethodologyNote,
+ PartialDataNotice,
 } from '@site/src/components/benchmark';
 import { useBenchmarkData } from '@site/src/hooks/use-benchmark-data';
 
@@ -18,25 +19,31 @@ export function AccuracyOverview() {
  const { stress } = useBenchmarkData('math2d');
  if (!stress || !stress.metadata) return <NoDataFallback />;
  const { ulpAccuracy, identities, allocation, cancellation } = stress;
- const maxUlp = ulpAccuracy.length > 0 ? Math.max(...ulpAccuracy.map(u => u.maxUlp)) : 0;
- const allIdentitiesPassed = identities.length > 0 && identities.every(i => i.passed);
- const catastrophicCount = cancellation.filter(c => c.isCatastrophic).length;
+ const maxUlp = ulpAccuracy.length > 0 ? Math.max(...ulpAccuracy.map((u) => u.maxUlp)) : 0;
+ const allIdentitiesPassed = identities.length > 0 && identities.every((i) => i.passed);
+ const catastrophicCount = cancellation.filter((c) => c.isCatastrophic).length;
  return (
   <>
+   <PartialDataNotice summaries={[stress]} />
    <TldrBox>
     {ulpAccuracy.length > 0 && (
      <>
       <strong>Max {maxUlp} ULP error</strong> across all fdlibm deterministic kernels — every
-      function matches the reference implementation within {maxUlp} units in the last place.
-      {' '}
+      function matches the reference implementation within {maxUlp} units in the last place.{' '}
      </>
     )}
     {identities.length > 0 && (
      <>
-      {allIdentitiesPassed
-       ? <><strong>All {identities.length} mathematical identities verified</strong> across 10K random inputs per property.</>
-       : <>{identities.filter(i => i.passed).length}/{identities.length} identities passed.</>
-      }
+      {allIdentitiesPassed ? (
+       <>
+        <strong>All {identities.length} mathematical identities verified</strong> across 10K random
+        inputs per property.
+       </>
+      ) : (
+       <>
+        {identities.filter((i) => i.passed).length}/{identities.length} identities passed.
+       </>
+      )}
      </>
     )}
    </TldrBox>
@@ -45,9 +52,9 @@ export function AccuracyOverview() {
      <h3>ULP Accuracy by Function</h3>
      <p>
       ULP (Unit in the Last Place) measures the smallest possible rounding error for a
-      floating-point result. 0 ULP means the result is the closest representable
-      <code>float64</code> to the mathematical answer. 1 ULP means it differs by one bit
-      in the significand.
+      floating-point result. 0 ULP means the result is the closest representable{' '}
+      <code>float64</code> to the mathematical answer. 1 ULP means it differs by one bit in the
+      significand.
      </p>
      <UlpAccuracyChart data={ulpAccuracy} title="ULP Error Distribution" />
      <MethodologyNote summary="ULP accuracy data">
@@ -67,14 +74,19 @@ export function AccuracyOverview() {
     <>
      <h3>Mathematical Identity Verification</h3>
      <p>
-      Each identity is tested with 10,000 random inputs to verify that algebraic properties
-      hold within floating-point tolerance.
+      Each identity is tested with 10,000 random inputs to verify that algebraic properties hold
+      within floating-point tolerance.
      </p>
      <DataTable
       columns={[
        { key: 'property', label: 'Identity' },
-       { key: 'passed', label: 'Status', format: (v) => v ? 'PASS' : 'FAIL' },
-       { key: 'maxError', label: 'Max Error', format: (v) => Number(v).toExponential(2), align: 'right' },
+       { key: 'passed', label: 'Status', format: (v) => (v ? 'PASS' : 'FAIL') },
+       {
+        key: 'maxError',
+        label: 'Max Error',
+        format: (v) => Number(v).toExponential(2),
+        align: 'right',
+       },
        { key: 'runs', label: 'Runs', align: 'right' },
       ]}
       data={identities}
@@ -86,18 +98,23 @@ export function AccuracyOverview() {
      <h3>Catastrophic Cancellation</h3>
      <p>
       Cancellation occurs when subtracting nearly-equal numbers causes significant loss of
-      precision. {catastrophicCount === 0
+      precision.{' '}
+      {catastrophicCount === 0
        ? 'No catastrophic cancellation detected in tested scenarios.'
-       : `${catastrophicCount} case(s) flagged as catastrophic.`
-      }
+       : `${catastrophicCount} case(s) flagged as catastrophic.`}
      </p>
      <MethodologyNote summary="Cancellation data">
       <DataTable
        columns={[
         { key: 'operation', label: 'Operation' },
         { key: 'entity', label: 'Entity' },
-        { key: 'bitsLost', label: 'Bits Lost', format: (v) => Number(v).toFixed(0), align: 'right' },
-        { key: 'isCatastrophic', label: 'Catastrophic', format: (v) => v ? 'YES' : 'no' },
+        {
+         key: 'bitsLost',
+         label: 'Bits Lost',
+         format: (v) => Number(v).toFixed(0),
+         align: 'right',
+        },
+        { key: 'isCatastrophic', label: 'Catastrophic', format: (v) => (v ? 'YES' : 'no') },
        ]}
        data={cancellation}
       />
@@ -113,7 +130,7 @@ export function AccuracyOverview() {
 math2d uses [fdlibm](https://www.netlib.org/fdlibm/)-based deterministic kernels for all
 transcendental functions (`sin`, `cos`, `tan`, `atan2`, `exp`, `log`, etc.). This guarantees
 bit-identical results across platforms at the cost of some throughput compared to
-native `Math.*` (which itself uses C++ fdlibm in V8).
+the engine's native `Math.*` implementation.
 
 This page documents the accuracy characteristics of those implementations.
 
@@ -121,20 +138,20 @@ This page documents the accuracy characteristics of those implementations.
 
 ## Why fdlibm?
 
-Native JavaScript `Math.sin` produces different results on different CPUs — Intel, ARM,
-and Apple Silicon use different microcode implementations. For applications that require
-determinism (networked simulations, replay systems, unit test reproducibility), this is
-unacceptable.
+The ECMAScript specification does not require `Math.sin` to be correctly rounded, so
+native results can differ across JavaScript engines, engine versions, and the platform
+math libraries they delegate to. For applications that require determinism (networked
+simulations, replay systems, unit test reproducibility), this is unacceptable.
 
 fdlibm is the IEEE 754 reference implementation. It produces identical results on every
 platform that supports `float64`, with a target accuracy of 1 ULP (one bit of rounding
-error in the worst case).
+error) for the primitive functions; composite functions such as `pow` compound rounding
+across internal steps and may reach single-digit ULP, as the measured maxima above show.
 
 <InsightCallout title="Determinism vs Performance">
- The throughput cost of JavaScript fdlibm is a deliberate architectural tradeoff.
- In a 60 fps game loop with 10K entities, transcendental functions represent
- less than 5% of total frame time — the determinism guarantee is worth far more
- than the marginal throughput difference.
+ The throughput cost of JavaScript fdlibm is a deliberate architectural tradeoff. In a typical game
+ loop, transcendental functions account for a small fraction of total frame time — the determinism
+ guarantee is worth far more than the marginal throughput difference.
 </InsightCallout>
 
 For how to read ULP metrics, see [Interpreting Results](../../../performance/interpreting-results).

@@ -72,11 +72,11 @@ export default defineFlatConfig([
  js.configs.recommended,
 
  /* ───────────────── Repository‑wide settings / generic ignores ──── */
+ // Flat config: only an ignores-ONLY object applies globally. A config
+ // object that mixes `settings` with `ignores` scopes the ignores to that
+ // object alone — the two concerns must be split for the ignores to be
+ // repository-wide.
  {
-  settings: {
-   // Let eslint‑plugin‑import resolve TS path aliases.
-   'import/resolver': { typescript: { project: TS_PROJECT } },
-  },
   ignores: [
    'node_modules',
    'coverage',
@@ -85,6 +85,12 @@ export default defineFlatConfig([
    '*.config.mjs',
    '.eslintrc.js',
   ],
+ },
+ {
+  settings: {
+   // Let eslint‑plugin‑import resolve TS path aliases.
+   'import/resolver': { typescript: { project: TS_PROJECT } },
+  },
  },
 
  /* ───────────────── Jest setup files + unit tests ───────────────── */
@@ -139,6 +145,9 @@ export default defineFlatConfig([
     window: 'readonly',
     HTMLElement: 'readonly',
     CanvasRenderingContext2D: 'readonly',
+    // Library-side build-time DCE flag, replaced by SWC at build/test time.
+    // Declared in @types/generic.d.ts; recognized here for ESLint no-undef.
+    __LENGUADOS_DEV__: 'readonly',
    },
   },
   plugins: {

@@ -11,24 +11,26 @@ Every source file across all packages SHALL conform to this standard. Individual
 
 All TSDoc blocks SHALL follow this fixed order. Only tags present in a given block need appear — but those that do SHALL respect this sequence:
 
-| #   | Tag             | Scope               | Purpose                                  |
-| --- | --------------- | ------------------- | ---------------------------------------- |
-| 1   | _(summary)_     | All                 | First line, no tag prefix                |
-| 2   | `@file`         | File headers only   | Relative path from `src/`                |
-| 3   | `@module`       | File headers only   | Full NPM module path                     |
-| 4   | `@description`  | File headers only   | One-sentence purpose                     |
-| 5   | `@remarks`      | Where needed        | Details, design context, edge cases      |
-| 6   | `@param`        | Functions/methods   | One per parameter, in signature order    |
-| 7   | `@returns`      | Functions/methods   | Return value description                 |
-| 8   | `@throws`       | Fallible functions  | Error type and condition                 |
-| 9   | `@defaultValue` | Optional params     | Default value when inline is unclear     |
-| 10  | `@example`      | Most public symbols | Usage demonstrations                     |
-| 11  | `@see`          | Cross-references    | Links to related symbols                 |
-| 12  | `@internal`     | Private helpers     | Marks non-public API                     |
-| 13  | `@constant`     | Constants           | Type annotation for constants            |
-| 14  | `@category`     | Public exports      | TypeDoc grouping (controlled vocabulary) |
-| 15  | `@since`        | Public exports      | First version containing this symbol     |
-| 16  | `@public`       | Overrides only      | Explicit public visibility               |
+| #   | Tag                     | Scope                     | Purpose                                      |
+| --- | ----------------------- | ------------------------- | -------------------------------------------- |
+| 1   | _(summary)_             | All                       | First line, no tag prefix                    |
+| 2   | `@packageDocumentation` | Package entry file only   | Marks the main barrel's documentation block  |
+| 3   | `@file`                 | File headers only         | Relative path from `src/`                    |
+| 4   | `@module`               | File headers only         | Full NPM module path                         |
+| 5   | `@description`          | File headers only         | One-sentence purpose                         |
+| 6   | `@remarks`              | Where needed              | Details, design context, edge cases          |
+| 7   | `@template`             | Generic functions/classes | One per type parameter, in declaration order |
+| 8   | `@param`                | Functions/methods         | One per parameter, in signature order        |
+| 9   | `@returns`              | Functions/methods         | Return value description                     |
+| 10  | `@throws`               | Fallible functions        | Error type and condition                     |
+| 11  | `@defaultValue`         | Optional params           | Default value when inline is unclear         |
+| 12  | `@example`              | Most public symbols       | Usage demonstrations                         |
+| 13  | `@see`                  | Cross-references          | Links to related symbols                     |
+| 14  | `@internal`             | Private helpers           | Marks non-public API                         |
+| 15  | `@constant`             | Constants                 | Type annotation for constants                |
+| 16  | `@category`             | Public exports            | TypeDoc grouping (controlled vocabulary)     |
+| 17  | `@since`                | Public exports            | First version containing this symbol         |
+| 18  | `@public`               | Overrides only            | Explicit public visibility                   |
 
 ---
 
@@ -50,7 +52,7 @@ Every `.ts` source file SHALL start with:
 
 ````typescript
 /**
- * Imperative summary of what the function does.
+ * Present-tense third-person summary of what the function does.
  * @param name - Sentence fragment, no trailing period
  * @returns Sentence fragment describing return value
  *
@@ -101,14 +103,14 @@ No `@category`, no `@since`, no `@example`. `@internal` as last tag.
 
 ## 3. Text Conventions
 
-| Rule                             | Correct                         | Incorrect                             |
-| -------------------------------- | ------------------------------- | ------------------------------------- |
-| Imperative voice summaries       | `Clamps a value between bounds` | `This function clamps a value`        |
-| `@param` sentence fragments      | `@param value - Value to clamp` | `@param value - The value to clamp.`  |
-| `@returns` sentence fragments    | `@returns Clamped value`        | `@returns Returns the clamped value.` |
-| No trailing periods on fragments | `Value to test`                 | `Value to test.`                      |
-| Unicode permitted in prose       | θ, π, ≈, ±, ∞                   | `\theta`, `\pi`                       |
-| LaTeX prohibited in TSDoc        | ASCII art in code blocks        | `\frac{}{}`, `\sqrt{}`                |
+| Rule                                 | Correct                         | Incorrect                             |
+| ------------------------------------ | ------------------------------- | ------------------------------------- |
+| Present-tense third-person summaries | `Clamps a value between bounds` | `This function clamps a value`        |
+| `@param` sentence fragments          | `@param value - Value to clamp` | `@param value - The value to clamp.`  |
+| `@returns` sentence fragments        | `@returns Clamped value`        | `@returns Returns the clamped value.` |
+| No trailing periods on fragments     | `Value to test`                 | `Value to test.`                      |
+| Unicode permitted in prose           | θ, π, ≈, ±, ∞                   | `\theta`, `\pi`                       |
+| LaTeX prohibited in TSDoc            | ASCII art in code blocks        | `\frac{}{}`, `\sqrt{}`                |
 
 ### `@see` Format
 
@@ -152,8 +154,12 @@ Packages MAY define additional type-specific categories. See each package's TSDo
 
 ## 5. Prohibited Tags
 
-| Tag      | Reason                              |
-| -------- | ----------------------------------- |
-| `@group` | Use visual section dividers instead |
-| `@alpha` | All exports are stable              |
-| `@beta`  | All exports are stable              |
+| Tag           | Reason                                                     |
+| ------------- | ---------------------------------------------------------- |
+| `@group`      | Use visual section dividers instead                        |
+| `@alpha`      | All exports are stable                                     |
+| `@beta`       | All exports are stable                                     |
+| `@override`   | Not in the engine's ESLint allowed tag list                |
+| `@migration`  | Use CHANGELOG entries instead                              |
+| `@deprecated` | Deprecated symbols are removed outright rather than marked |
+| `@alias`      | Aliased symbols are removed outright                       |

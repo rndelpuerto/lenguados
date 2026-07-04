@@ -2,10 +2,9 @@
 
 ## Table of Contents
 
-- [Description](#description)
 - [Usage](#usage)
   - [Install](#install)
-  - [Scripts](#styles)
+  - [Scripts](#scripts)
   - [Module](#module)
 - [Examples](#examples)
 - [Full Specs](#full-specs)
@@ -17,15 +16,15 @@
 
 ### Install
 
-> Follow the [general installation guide](https://github.com/rndelpuerto/lenguados/blob/main/docs/guide/installation.md).
-
 ```sh
-$ npm install --save @lenguados/{{ cookiecutter.package_name }}
+npm install @lenguados/{{ cookiecutter.package_name }}
 ```
 
 ### Scripts
 
-> Follow the [general scripts usage guide](https://github.com/rndelpuerto/lenguados/blob/main/docs/guide/scripts-usage.md) for configuration and how-tos.
+Build, test, and lint through the monorepo root scripts. See the
+[contributing guide](https://github.com/rndelpuerto/lenguados/blob/main/CONTRIBUTING.md)
+for the full workflow.
 
 ### Module
 
@@ -40,7 +39,7 @@ import { greet } from '@lenguados/{{ cookiecutter.package_name }}';
 ### Basic example
 
 ```ts
-import { greet } from '@lenguados/{{cookiecutter.package_name}}';
+import { greet } from '@lenguados/{{ cookiecutter.package_name }}';
 
 const message = greet('Ada');
 

@@ -14,25 +14,6 @@
  *
  * All trigonometric operations use deterministic kernels for
  * cross-platform reproducibility.
- *
- * @migration
- * **Planned Migration**: This module will be moved to `@lenguados/math2d-io`
- * in version 2.0. The I/O concern (string parsing/serialization) is outside
- * the core mathematical scope of this library.
- *
- * **What will change in v2.0:**
- * - Import path: `@lenguados/math2d-io` instead of `@lenguados/math2d`
- * - Additional formats: Binary serialization, CSV batch parsing
- * - Streaming support for large datasets
- *
- * **Migration path:**
- * ```typescript
- * // Before (v1.x)
- * import { parseVector2, formatVector2 } from '@lenguados/math2d';
- *
- * // After (v2.0)
- * import { parseVector2, formatVector2 } from '@lenguados/math2d-io';
- * ```
  */
 
 import { DEG_TO_RAD, RAD_TO_DEG } from '../auxiliary/scalar/constants';
@@ -55,7 +36,7 @@ import type {
 } from '../types';
 
 /**
- * Converts a fixed-precision number to a JSON-safe string.
+ * Converts a fixed-precision number to a JSON-safe string
  * @param n - Number to convert
  * @param precision - Decimal precision for toFixed, or undefined for toString
  * @returns JSON-safe string representation
@@ -71,7 +52,7 @@ function jsonFixed(n: number, precision: number | undefined): string {
 /* ========================================================================== */
 
 /**
- * Parses a string representation of a 2D vector.
+ * Parses a string representation of a 2D vector
  *
  * @remarks
  * Supported formats:
@@ -102,7 +83,7 @@ export function parseVector2(string_: string, out = new Vector2()): Vector2 {
  // Trim whitespace
  const trimmed = string_.trim();
 
- // Fast structural check for JSON to avoid throwing exceptions (V8 de-opt)
+ // Fast structural check for JSON to avoid throwing exceptions (JIT de-optimization)
  if (trimmed.startsWith('{') && trimmed.endsWith('}')) {
   if (/"x"\s*:/i.test(trimmed) && /"y"\s*:/i.test(trimmed)) {
    try {
@@ -137,7 +118,7 @@ export function parseVector2(string_: string, out = new Vector2()): Vector2 {
 }
 
 /**
- * Formats a 2D vector as a string.
+ * Formats a 2D vector as a string
  *
  * @remarks
  * Supported formats: 'csv', 'space', 'json', 'brackets'.
@@ -183,7 +164,7 @@ export function formatVector2(
 /* ========================================================================== */
 
 /**
- * Parses a string representation of a 2D rotation.
+ * Parses a string representation of a 2D rotation
  *
  * @remarks
  * Supported formats:
@@ -209,7 +190,7 @@ export function formatVector2(
 export function parseRotation2(string_: string, out = new Rotation2()): Rotation2 {
  const trimmed = string_.trim();
 
- // Fast structural check for JSON to avoid throwing exceptions (V8 de-opt)
+ // Fast structural check for JSON to avoid throwing exceptions (JIT de-optimization)
  if (trimmed.startsWith('{') && trimmed.endsWith('}')) {
   if (/"(cos|c)"\s*:/i.test(trimmed) && /"(sin|s)"\s*:/i.test(trimmed)) {
    try {
@@ -257,7 +238,7 @@ export function parseRotation2(string_: string, out = new Rotation2()): Rotation
 }
 
 /**
- * Formats a 2D rotation as a string.
+ * Formats a 2D rotation as a string
  *
  * @remarks
  * Supported formats: 'radians', 'degrees', 'components', 'json'.
@@ -308,7 +289,7 @@ export function formatRotation2(
 /* ========================================================================== */
 
 /**
- * Parses a string representation of a 2x2 matrix.
+ * Parses a string representation of a 2x2 matrix
  *
  * @remarks
  * Supported formats:
@@ -333,7 +314,7 @@ export function formatRotation2(
 export function parseMatrix2(string_: string, out = new Matrix2()): Matrix2 {
  const trimmed = string_.trim();
 
- // Fast structural check for JSON to avoid throwing exceptions (V8 de-opt)
+ // Fast structural check for JSON to avoid throwing exceptions (JIT de-optimization)
  if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
   if (/^\[\s*\[/.test(trimmed) || /"m00"\s*:/.test(trimmed)) {
    try {
@@ -343,7 +324,11 @@ export function parseMatrix2(string_: string, out = new Matrix2()): Matrix2 {
     if (Array.isArray(parsed) && parsed.length === 2) {
      const [row0, row1] = parsed;
      if (Array.isArray(row0) && row0.length === 2 && Array.isArray(row1) && row1.length === 2) {
-      return out.set(row0[0], row0[1], row1[0], row1[1]);
+      // Per-cell numeric guard (rejects `[[1, "x"], [3, 4]]`).
+      const cells = [row0[0], row0[1], row1[0], row1[1]];
+      if (cells.every((c) => typeof c === 'number')) {
+       return out.set(row0[0], row0[1], row1[0], row1[1]);
+      }
      }
     }
 
@@ -375,7 +360,7 @@ export function parseMatrix2(string_: string, out = new Matrix2()): Matrix2 {
 }
 
 /**
- * Formats a 2x2 matrix as a string.
+ * Formats a 2x2 matrix as a string
  *
  * @remarks
  * Supported formats: 'flat', 'nested', 'json'.
@@ -420,7 +405,7 @@ export function formatMatrix2(
 /* ========================================================================== */
 
 /**
- * Parses a string representation of a 3x3 matrix.
+ * Parses a string representation of a 3x3 matrix
  *
  * @remarks
  * Supported formats:
@@ -445,7 +430,7 @@ export function formatMatrix2(
 export function parseMatrix3(string_: string, out = new Matrix3()): Matrix3 {
  const trimmed = string_.trim();
 
- // Fast structural check for JSON to avoid throwing exceptions (V8 de-opt)
+ // Fast structural check for JSON to avoid throwing exceptions (JIT de-optimization)
  if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
   if (/^\[\s*\[/.test(trimmed) || /"m00"\s*:/.test(trimmed)) {
    try {
@@ -456,6 +441,10 @@ export function parseMatrix3(string_: string, out = new Matrix3()): Matrix3 {
      const values: number[] = [];
      for (const row of parsed) {
       if (Array.isArray(row) && row.length === 3) {
+       // Per-cell numeric guard (rejects non-numeric cells).
+       if (!row.every((c) => typeof c === 'number')) {
+        throw new Error('Non-numeric cell');
+       }
        values.push(...row);
       } else {
        throw new Error('Invalid row');
@@ -510,7 +499,7 @@ export function parseMatrix3(string_: string, out = new Matrix3()): Matrix3 {
 }
 
 /**
- * Formats a 3x3 matrix as a string.
+ * Formats a 3x3 matrix as a string
  *
  * @remarks
  * Supported formats: 'flat', 'nested', 'json'.
@@ -565,13 +554,16 @@ export function formatMatrix3(
 /* ========================================================================== */
 
 /**
- * Parses a string representation of a 2D transform.
+ * Parses a string representation of a 2D transform
  *
  * @remarks
  * Supported formats:
  * - "px,py,c,s" (position x,y and rotation cos,sin)
- * - "px py c s" (space-separated)
- * - JSON format with `p` and `r` properties
+ * - "px,py,c,s,sx,sy" (6-value form with scale sx,sy appended)
+ * - "px py c s" (space-separated, 4 or 6 values)
+ * - JSON format with `p` and `r` properties (optional `s` for scale)
+ *
+ * When scale is omitted (4-value form, or JSON without `s`), it defaults to (1, 1).
  *
  * @param string_ - Input string to parse
  * @param out - Optional output transform to avoid allocation. Defaults to `new Transform2()`
@@ -589,7 +581,7 @@ export function formatMatrix3(
 export function parseTransform2(string_: string, out = new Transform2()): Transform2 {
  const trimmed = string_.trim();
 
- // Fast structural check for JSON to avoid throwing exceptions (V8 de-opt)
+ // Fast structural check for JSON to avoid throwing exceptions (JIT de-optimization)
  if (trimmed.startsWith('{') && trimmed.endsWith('}')) {
   if (/"p"\s*:/i.test(trimmed) && /"r"\s*:/i.test(trimmed)) {
    try {
@@ -603,7 +595,8 @@ export function parseTransform2(string_: string, out = new Transform2()): Transf
       typeof object.r.sin === 'number'
      ) {
       out.position.set(object.p.x, object.p.y);
-      out.rotation.copy({ cos: object.r.cos, sin: object.r.sin });
+      // `.set()` enforces unit-length normalization on the rotation components.
+      out.rotation.set(object.r.cos, object.r.sin);
       // Extract scale if present, default to (1,1)
       if (object.s && typeof object.s.x === 'number' && typeof object.s.y === 'number') {
        out.scale.set(object.s.x, object.s.y);
@@ -620,7 +613,8 @@ export function parseTransform2(string_: string, out = new Transform2()): Transf
       typeof object.r.s === 'number'
      ) {
       out.position.set(object.p.x, object.p.y);
-      out.rotation.copy({ cos: object.r.c, sin: object.r.s });
+      // `.set()` enforces unit-length normalization on the rotation components.
+      out.rotation.set(object.r.c, object.r.s);
       if (object.s && typeof object.s.x === 'number' && typeof object.s.y === 'number') {
        out.scale.set(object.s.x, object.s.y);
       } else {
@@ -645,9 +639,9 @@ export function parseTransform2(string_: string, out = new Transform2()): Transf
   throw new Error(`parseTransform2: expected 4 or 6 values, got ${values.length} in "${string_}"`);
  }
 
- // Set position and rotation directly (avoid lossy atan2 round-trip)
+ // `.set()` enforces unit-length normalization on the rotation components.
  out.position.set(values[0]!, values[1]!);
- out.rotation.copy({ cos: values[2]!, sin: values[3]! });
+ out.rotation.set(values[2]!, values[3]!);
 
  // 6-component format includes scale
  if (values.length === 6) {
@@ -660,7 +654,7 @@ export function parseTransform2(string_: string, out = new Transform2()): Transf
 }
 
 /**
- * Formats a 2D transform as a string.
+ * Formats a 2D transform as a string
  *
  * @remarks
  * Supported formats: 'flat', 'json'.
@@ -704,11 +698,12 @@ export function formatTransform2(
 /* ========================================================================== */
 
 /**
- * Parses a string representation of a complex number.
+ * Parses a string representation of a complex number
  *
  * @remarks
  * Supported formats:
  * - "a+bi" or "a-bi" (standard mathematical notation)
+ * - "bi" (pure imaginary, e.g. "4i" or "-2i")
  * - "a,b" (comma-separated real,imag)
  * - "(a,b)" (with parentheses)
  * - "{real:a, imag:b}" (JSON-like)
@@ -733,7 +728,7 @@ export function formatTransform2(
 export function parseComplex(string_: string, out = new Complex()): Complex {
  const trimmed = string_.trim();
 
- // Fast structural check for JSON to avoid throwing exceptions (V8 de-opt)
+ // Fast structural check for JSON to avoid throwing exceptions (JIT de-optimization)
  if (trimmed.startsWith('{') && trimmed.endsWith('}')) {
   if (/"real"\s*:/i.test(trimmed) && /"imag"\s*:/i.test(trimmed)) {
    try {
@@ -790,7 +785,7 @@ export function parseComplex(string_: string, out = new Complex()): Complex {
 }
 
 /**
- * Formats a complex number as a string.
+ * Formats a complex number as a string
  *
  * @remarks
  * Supported formats:
@@ -824,7 +819,12 @@ export function formatComplex(
 
  switch (format) {
   case 'math': {
-   if (Object.is(c.imag, -0)) return `${real}-0i`;
+   // Preserve `-0` sign while still applying the caller's precision to the
+   // literal (e.g. `formatComplex({real: 3, imag: -0}, 'math', 2)` → "3-0.00i").
+   if (Object.is(c.imag, -0)) {
+    const zeroLiteral = precision !== undefined ? (-0).toFixed(precision) : '0';
+    return `${real}-${zeroLiteral}i`;
+   }
    return c.imag >= 0 ? `${real}+${imag}i` : `${real}${imag}i`;
   }
   case 'csv':
@@ -842,7 +842,7 @@ export function formatComplex(
 /* ========================================================================== */
 
 /**
- * Parses a string representation of an interval.
+ * Parses a string representation of an interval
  *
  * @remarks
  * Supported formats:
@@ -854,7 +854,7 @@ export function formatComplex(
  * @param string_ - Input string to parse
  * @param out - Optional output interval to avoid allocation. Defaults to `new Interval()`
  * @returns The `out` interval containing the parsed values
- * @throws {Error} If the string cannot be parsed
+ * @throws {Error} If the string cannot be parsed, or if `min` exceeds `max`
  *
  * @example
  * ```typescript
@@ -910,7 +910,7 @@ export function parseInterval(string_: string, out = new Interval()): Interval {
 }
 
 /**
- * Formats an interval as a string.
+ * Formats an interval as a string
  *
  * @remarks
  * Supported formats:

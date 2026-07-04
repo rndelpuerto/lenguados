@@ -12,6 +12,9 @@ import {
  InsightCallout,
  NoDataFallback,
  MethodologyNote,
+ PartialDataNotice,
+ formatOps,
+ formatKB,
 } from '@site/src/components/benchmark';
 import { useBenchmarkData } from '@site/src/hooks/use-benchmark-data';
 
@@ -27,22 +30,40 @@ export function Math2dPerformance() {
   }
  }
  const totalOps = entityNames.reduce((sum, e) => sum + entities[e].operations.length, 0);
- const formatOps = (v) => v >= 1e9 ? `${(v/1e9).toFixed(1)}G` : v >= 1e6 ? `${(v/1e6).toFixed(0)}M` : `${(v/1e3).toFixed(0)}K`;
  const allocation = stress?.allocation ?? [];
- const allZeroAlloc = allocation.length > 0 && allocation.every(a => a.isZeroAlloc);
+ const allZeroAlloc = allocation.length > 0 && allocation.every((a) => a.isZeroAlloc);
  const bundleSize = dx?.bundleSize ?? [];
  const treeShaking = dx?.treeShaking;
  const assertionElimination = dx?.assertionElimination;
  const buildComparison = dx?.buildComparison;
  return (
   <>
+   <PartialDataNotice summaries={[performance, stress, dx]} />
    <TldrBox>
     <strong>{totalOps} operations</strong> benchmarked across {entityNames.length} entity types.
-    {allZeroAlloc && <> All static <code>out</code>-parameter operations verified zero-allocation.</>}
-    {bundleSize.length > 0 && <> Bundle ranges from {(Math.min(...bundleSize.map(b=>b.gzipBytes))/1024).toFixed(1)} to {(Math.max(...bundleSize.map(b=>b.gzipBytes))/1024).toFixed(1)} KB gzip depending on import path.</>}
+    {allZeroAlloc && (
+     <>
+      {' '}
+      All static <code>out</code>-parameter operations verified zero-allocation.
+     </>
+    )}
+    {bundleSize.length > 0 && (
+     <>
+      {' '}
+      Bundle ranges from {(Math.min(...bundleSize.map((b) => b.gzipBytes)) / 1024).toFixed(
+       1,
+      )} to {(Math.max(...bundleSize.map((b) => b.gzipBytes)) / 1024).toFixed(1)} KB gzip depending
+      on import path.
+     </>
+    )}
    </TldrBox>
    <h3>Throughput Heatmap</h3>
-   <HeatmapChart data={heatmapData} title="All Entities — ops/sec" />
+   <p>
+    Cell color is mapped on a logarithmic scale because throughput spans several orders of
+    magnitude. Empty cells mean the operation does not exist on that entity — hover a cell for exact
+    throughput, and see the entity pages below for per-operation detail.
+   </p>
+   <HeatmapChart data={heatmapData} title="All Entities — ops/sec (log color scale)" />
    <MethodologyNote summary="Heatmap data table">
     <DataTable
      columns={[
@@ -63,8 +84,24 @@ export function Math2dPerformance() {
       <DataTable
        columns={[
         { key: 'importPath', label: 'Import Path' },
-        { key: 'rawBytes', label: 'Raw', format: (v) => `${(Number(v)/1024).toFixed(1)} KB`, align: 'right' },
-        { key: 'gzipBytes', label: 'Gzip', format: (v) => `${(Number(v)/1024).toFixed(1)} KB`, align: 'right' },
+        {
+         key: 'rawBytes',
+         label: 'Raw',
+         format: (v) => formatKB(Number(v)),
+         align: 'right',
+        },
+        {
+         key: 'gzipBytes',
+         label: 'Gzip',
+         format: (v) => formatKB(Number(v)),
+         align: 'right',
+        },
+        {
+         key: 'budgetGzipBytes',
+         label: 'Budget',
+         format: (v) => (v === undefined || v === null ? '—' : formatKB(Number(v))),
+         align: 'right',
+        },
        ]}
        data={bundleSize}
       />
@@ -80,10 +117,13 @@ export function Math2dPerformance() {
        { key: 'value', label: 'Value', align: 'right' },
       ]}
       data={[
-       { metric: 'Full library', value: `${(treeShaking.fullSize/1024).toFixed(1)} KB` },
-       { metric: 'Vector2 only', value: `${(treeShaking.minimalSize/1024).toFixed(1)} KB` },
+       { metric: 'Full library', value: formatKB(treeShaking.fullSize) },
+       { metric: 'Vector2 only', value: formatKB(treeShaking.minimalSize) },
        { metric: 'Reduction', value: `${treeShaking.reductionPercent.toFixed(0)}%` },
-       { metric: 'sideEffects: false', value: treeShaking.sideEffectsEmpty ? 'Honored' : 'Not honored' },
+       {
+        metric: 'sideEffects: false',
+        value: treeShaking.sideEffectsEmpty ? 'Honored' : 'Not honored',
+       },
       ]}
      />
     </>
@@ -97,10 +137,30 @@ export function Math2dPerformance() {
        { key: 'status', label: 'Status' },
       ]}
       data={[
-       { check: 'Assertion names in production', status: assertionElimination.prodBundle.containsAssertions ? 'Export stubs present' : 'None' },
-       { check: 'DEV_MODE in production', status: assertionElimination.prodBundle.containsDevMode ? 'FOUND (issue)' : 'None (correct)' },
-       { check: 'NODE_ENV guard in production', status: assertionElimination.prodBundle.containsNodeEnv ? 'Present (runtime DCE)' : 'None (static DCE)' },
-       { check: 'Assertions in development', status: assertionElimination.devBundle.containsAssertions ? 'Present (correct)' : 'Missing (issue)' },
+       {
+        check: 'Assertion names in production',
+        status: assertionElimination.prodBundle.containsAssertions
+         ? 'Export stubs present'
+         : 'None',
+       },
+       {
+        check: 'DEV_MODE in production',
+        status: assertionElimination.prodBundle.containsDevMode
+         ? 'FOUND (issue)'
+         : 'None (correct)',
+       },
+       {
+        check: 'NODE_ENV guard in production',
+        status: assertionElimination.prodBundle.containsNodeEnv
+         ? 'Present (runtime DCE)'
+         : 'None (static DCE)',
+       },
+       {
+        check: 'Assertions in development',
+        status: assertionElimination.devBundle.containsAssertions
+         ? 'Present (correct)'
+         : 'Missing (issue)',
+       },
       ]}
      />
     </>
@@ -115,9 +175,21 @@ export function Math2dPerformance() {
        { key: 'gzip', label: 'Gzip', align: 'right' },
       ]}
       data={[
-       { build: 'Development', raw: `${(buildComparison.devSize.raw/1024).toFixed(1)} KB`, gzip: `${(buildComparison.devSize.gzip/1024).toFixed(1)} KB` },
-       { build: 'Production', raw: `${(buildComparison.prodSize.raw/1024).toFixed(1)} KB`, gzip: `${(buildComparison.prodSize.gzip/1024).toFixed(1)} KB` },
-       { build: 'Reduction', raw: `${buildComparison.reductionPercent.raw.toFixed(1)}%`, gzip: `${buildComparison.reductionPercent.gzip.toFixed(1)}%` },
+       {
+        build: 'Development',
+        raw: formatKB(buildComparison.devSize.raw),
+        gzip: formatKB(buildComparison.devSize.gzip),
+       },
+       {
+        build: 'Production',
+        raw: formatKB(buildComparison.prodSize.raw),
+        gzip: formatKB(buildComparison.prodSize.gzip),
+       },
+       {
+        build: 'Reduction',
+        raw: `${buildComparison.reductionPercent.raw.toFixed(1)}%`,
+        gzip: `${buildComparison.reductionPercent.gzip.toFixed(1)}%`,
+       },
       ]}
      />
     </>
@@ -132,7 +204,7 @@ export function Math2dPerformance() {
         { key: 'operation', label: 'Operation' },
         { key: 'variant', label: 'Variant' },
         { key: 'bytesPerOp', label: 'B/op', format: (v) => Number(v).toFixed(1), align: 'right' },
-        { key: 'isZeroAlloc', label: 'Zero-Alloc', format: (v) => v ? 'YES' : 'NO' },
+        { key: 'isZeroAlloc', label: 'Zero-Alloc', format: (v) => (v ? 'YES' : 'NO') },
        ]}
        data={allocation}
       />
@@ -154,17 +226,17 @@ metrics, see the [Performance](../../../performance/overview) section.
 
 Detailed per-entity analysis with operation-level charts and tier comparisons:
 
-| Page | What's Covered |
-|------|---------------|
-| [Vector2](./vector2) | 63 operations, 8 triality groups, *CS variant analysis |
-| [Matrices](./matrices) | Matrix2 + Matrix3, eigendecomposition, affine ops |
-| [Rotation & Complex](./rotation-complex) | Transcendental functions, normalization, composition |
-| [Interval & Transform](./interval-transform) | Set operations, SRT composition, inverse costs |
-| [Auxiliary](./auxiliary) | fdlibm vs native, scalar triality, deterministic throughput |
+| Page                                         | What's Covered                                              |
+| -------------------------------------------- | ----------------------------------------------------------- |
+| [Vector2](./vector2)                         | 63 operations, 8 triality groups, \*CS variant analysis     |
+| [Matrices](./matrices)                       | Matrix2 + Matrix3, eigendecomposition, affine ops           |
+| [Rotation & Complex](./rotation-complex)     | Transcendental functions, normalization, composition        |
+| [Interval & Transform](./interval-transform) | Set operations, SRT composition, inverse costs              |
+| [Auxiliary](./auxiliary)                     | fdlibm vs native, scalar triality, deterministic throughput |
 
 ## Quality & Accuracy
 
-| Page | What's Covered |
-|------|---------------|
-| [Cross-Library Comparisons](./comparisons) | math2d vs gl-matrix: per-category ratios, geometric mean |
-| [Numerical Accuracy](./accuracy) | ULP accuracy, IEEE 754 edge cases, identity verification |
+| Page                                       | What's Covered                                                                                    |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------- |
+| [Cross-Library Comparisons](./comparisons) | Head-to-head comparison versus established 2D math libraries: per-category ratios, geometric mean |
+| [Numerical Accuracy](./accuracy)           | ULP accuracy, IEEE 754 edge cases, identity verification                                          |

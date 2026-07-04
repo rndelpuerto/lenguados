@@ -10,7 +10,6 @@ import {
  angleBisector,
  angleDifference,
  angleFromVectors,
- sinCosNormalized,
  clampAngle,
  angleDistance,
  anglesNearEqual,
@@ -56,6 +55,18 @@ describe('angle/operations', () => {
 
   test('throws on negative epsilon', () => {
    expect(() => anglesNearEqual(0, 0, -1)).toThrow(RangeError);
+  });
+
+  // V9-Angle-06: fast-path a === b only fires for finite numbers; NaN propagates via angleDistance
+  test('fast-path returns true for identical finite inputs without calling angleDistance', () => {
+   expect(anglesNearEqual(1.23456789, 1.23456789)).toBe(true);
+   expect(anglesNearEqual(Math.PI, Math.PI)).toBe(true);
+  });
+
+  test('NaN inputs return false (IEEE 754 §5.11: NaN !== NaN)', () => {
+   expect(anglesNearEqual(Number.NaN, 0)).toBe(false);
+   expect(anglesNearEqual(0, Number.NaN)).toBe(false);
+   expect(anglesNearEqual(Number.NaN, Number.NaN)).toBe(false);
   });
  });
 
@@ -108,6 +119,13 @@ describe('angle/operations', () => {
    expect(clampAngle(0, NaN, Math.PI / 2)).toBeNaN();
    expect(clampAngle(0, 0, NaN)).toBeNaN();
   });
+
+  // V9-Angle-02: non-finite bounds return angle unchanged (bogus bounds cannot define an arc)
+  test('returns angle unchanged when bounds are non-finite (V9-Angle-02)', () => {
+   expect(clampAngle(1, Number.POSITIVE_INFINITY, Math.PI)).toBe(1);
+   expect(clampAngle(1, 0, Number.POSITIVE_INFINITY)).toBe(1);
+   expect(clampAngle(1, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY)).toBe(1);
+  });
  });
 
  describe('sinCos', () => {
@@ -144,28 +162,6 @@ describe('angle/operations', () => {
    expect(result).toBe(out);
    expect(out.sin).toBeCloseTo(0.5, 5);
    expect(out.cos).toBeCloseTo(Math.sqrt(3) / 2, 5);
-  });
- });
-
- describe('sinCosNormalized', () => {
-  test('returns unit length sin/cos', () => {
-   const result = sinCosNormalized(Math.PI / 4);
-   const lengthSq = result.sin * result.sin + result.cos * result.cos;
-   expect(lengthSq).toBeCloseTo(1, 10);
-  });
-
-  test('accepts out parameter for zero-allocation', () => {
-   const out = { sin: 0, cos: 0 };
-   const result = sinCosNormalized(Math.PI / 2, out);
-   expect(result).toBe(out);
-   expect(out.sin).toBeCloseTo(1, 5);
-   expect(out.cos).toBeCloseTo(0, 5);
-  });
-
-  test('creates new object when out is not provided', () => {
-   const result = sinCosNormalized(0);
-   expect(result.sin).toBeCloseTo(0, 5);
-   expect(result.cos).toBeCloseTo(1, 5);
   });
  });
 

@@ -1,0 +1,137 @@
+# .github/workflows/rule-invariants.yml
+name: math2d Rule Invariants
+
+# ───────────────────────────────────────────────────────────────────────────────
+# Trigger:
+# - On every pull request to main, before merge.
+# - On push to main (post-merge defence-in-depth).
+# - Manually via workflow_dispatch.
+# ───────────────────────────────────────────────────────────────────────────────
+on:
+ pull_request:
+  branches: [main]
+ push:
+  branches: [main]
+ workflow_dispatch:
+
+concurrency:
+ group: rule-invariants-${{ github.ref }}
+ cancel-in-progress: true
+
+jobs:
+ # ─────────────────────────────────────────────────────────────────────────────
+ # Cross-class conversion placement invariant (math2d D-9 rule).
+ # Codifies the rule "Cross-class conversions cluster on the dependent class"
+ # documented in:
+ #   - packages/math2d/ARCHITECTURE.md §Factories (from*) and Conversions (to*)
+ #   - .claude/rules/math2d-patterns.md §Cross-class Conversion Placement
+ # Authoritative spec for these invariants:
+ #   - openspec/specs/api-cleanup/spec.md (post-V10 promotion)
+ #   - openspec/specs/matrix2-outer-product/spec.md
+ # ─────────────────────────────────────────────────────────────────────────────
+ cross-class-conversion-rule:
+  name: math2d Cross-class Conversion Rule
+  runs-on: ubuntu-latest
+  timeout-minutes: 15
+
+  permissions:
+   contents: read
+
+  steps:
+   - name: Checkout repository
+     uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+     with:
+      fetch-depth: 1
+
+   - name: Set up Node.js (pinned via .nvmrc)
+     uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+     with:
+      node-version-file: .nvmrc
+      cache: npm
+
+   - name: Verify Complex.prototype.toRotation2 is absent (V10 D-1)
+     run: |
+      if grep -nE "\btoRotation2" packages/math2d/src/core/complex.ts; then
+       echo "::error::Found Complex.toRotation2 reference. The cross-class conversion rule requires Rotation2.fromComplex() — adding the reciprocal would create a runtime class cycle (rotation2.ts already imports complex.ts). See packages/math2d/ARCHITECTURE.md §Factories and Conversions."
+       exit 1
+      fi
+
+   - name: Verify Vector2.outerProduct is absent (V10 D-2)
+     run: |
+      if grep -nE "outerProduct" packages/math2d/src/core/vector2.ts; then
+       echo "::error::Found Vector2.outerProduct reference. The canonical outer product is Matrix2.fromOuterProduct(u, v). Vector2-side delegate is rejected because it forces vector2.ts → matrix2.ts import (matrix2.ts already imports vector2.ts)."
+       exit 1
+      fi
+
+   - name: Verify complex.ts has no concrete Rotation2 import
+     run: |
+      if grep -nE "^import.*Rotation2" packages/math2d/src/core/complex.ts; then
+       echo "::error::Found concrete Rotation2 import in complex.ts. Cross-class concrete imports must flow one direction only (rotation2.ts → complex.ts). Use 'import type' if a type-only reference is needed."
+       exit 1
+      fi
+
+   - name: Verify vector2.ts has no concrete Matrix2 import
+     run: |
+      if grep -nE "^import.*Matrix2" packages/math2d/src/core/vector2.ts; then
+       echo "::error::Found concrete Matrix2 import in vector2.ts. Cross-class concrete imports must flow one direction only (matrix2.ts → vector2.ts). Use 'import type' if a type-only reference is needed."
+       exit 1
+      fi
+
+   # ───────────────────────────────────────────────────────────────────────────
+   # SVD-derivative invariants (V11 math2d-svd-and-derivatives).
+   # Codifies three rules introduced when adding Matrix2.svd, pseudoInverse,
+   # polarDecompose, conditionNumber, and Rotation2.fromMatrix2Closest:
+   #   - Deterministic kernels MUST be imported from deterministic-kernels.ts
+   #     (no Math.atan2 / Math.hypot in matrix2.ts or rotation2.ts).
+   #   - matrix2.ts MUST NOT have a concrete Rotation2 import (D-9 cycle).
+   #   - matrix2.ts MUST NOT define toClosestRotation (ADR-015 placement rule).
+   # Authoritative spec for these invariants:
+   #   - openspec/changes/math2d-svd-and-derivatives/specs/**
+   #   - packages/math2d/DESIGN_DECISIONS.md ADR-011, ADR-015
+   # ───────────────────────────────────────────────────────────────────────────
+   - name: Verify deterministic-kernel imports in SVD path
+     run: |
+      if grep -nE "Math\.(atan2|hypot)" packages/math2d/src/core/matrix2.ts packages/math2d/src/core/rotation2.ts; then
+       echo "::error::Found Math.atan2 or Math.hypot in matrix2.ts or rotation2.ts. These functions are non-deterministic across platforms; import 'atan2' and 'hypot' from '../deterministic/deterministic-kernels' instead. See .claude/rules/architecture-and-layers.md §Deterministic Functions."
+       exit 1
+      fi
+
+   - name: Verify matrix2.ts has no concrete Rotation2 import (V11 D-9)
+     run: |
+      if grep -nE "^import\s*\{[^}]*\bRotation2\b" packages/math2d/src/core/matrix2.ts; then
+       echo "::error::Found concrete Rotation2 import in matrix2.ts. The D-9 cross-class conversion rule prohibits this — rotation2.ts already imports matrix2.ts. Use 'import type { Rotation2 }' if a type-only reference is required, or use ReadonlyRotation2Like for parameter types. See packages/math2d/DESIGN_DECISIONS.md §ADR-011."
+       exit 1
+      fi
+
+   - name: Verify matrix2.ts has no toClosestRotation method (V11 ADR-015)
+     run: |
+      if grep -nE "toClosestRotation" packages/math2d/src/core/matrix2.ts; then
+       echo "::error::Found toClosestRotation reference in matrix2.ts. The canonical entry-point is Rotation2.fromMatrix2Closest(matrix). Adding the reciprocal would force a concrete Rotation2 import in matrix2.ts, violating the D-9 cycle rule. See packages/math2d/DESIGN_DECISIONS.md §ADR-015."
+       exit 1
+      fi
+
+   # ───────────────────────────────────────────────────────────────────────────
+   # Library-side DCE assertion-elimination invariant (CH-8 ADR-017).
+   # Verifies production library bundles contain zero assertion-failure label
+   # strings of the form "<Type>.<method>:<param>". Under Model B, every
+   # assertion call site is wrapped in `if (__LENGUADOS_DEV__) { ... }` and
+   # eliminated by SWC + minify at the library build step. A non-zero match
+   # indicates a call site that escaped DCE — the source pattern likely lacks
+   # the build-time guard.
+   # Authoritative reference:
+   #   - openspec/specs/validation-composition/spec.md
+   #   - packages/math2d/DESIGN_DECISIONS.md §ADR-017
+   # ───────────────────────────────────────────────────────────────────────────
+   - name: Build math2d production bundle for invariant check
+     run: |
+      npm ci --prefer-offline --no-audit
+      npm run dist
+
+   - name: Verify production library bundle has zero assertion call-site labels (ADR-017)
+     run: |
+      labels=$(grep -rhoE --include="*.production.js" --include="module.js" '"[A-Z][a-zA-Z0-9]+\.[a-z][a-zA-Z0-9]*:[a-z][a-zA-Z0-9]*"' packages/math2d/lib/cjs packages/math2d/lib/esm | sort -u || true)
+      if [ -n "$labels" ]; then
+       echo "::error::Found assertion-failure label string(s) in production library bundle. Library-side DCE (ADR-017) requires zero call-site labels anywhere in the production module trees (lib/cjs, lib/esm). Each label indicates a default-tier assertion call site that escaped __LENGUADOS_DEV__ DCE. Wrap the source call site in 'if (__LENGUADOS_DEV__) { ... }' or hoist the dev-only validation block. See packages/math2d/DESIGN_DECISIONS.md §ADR-017. Found:"
+       echo "$labels"
+       exit 1
+      fi

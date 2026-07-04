@@ -1,70 +1,28 @@
 /**
  * @file test/auxiliary/scalar/arithmetic.node.spec.ts
  * @module @lenguados/math2d/auxiliary/scalar
- * @description Focused tests for remap, loop, and pingPong helpers.
+ * @description Focused tests for loop, clamp, saturate, mod, floorDivide helpers.
  */
 
 import { describe, expect, test } from '@jest/globals';
 
 import {
- loop,
- loopUnchecked,
- pingPong,
- pingPongUnchecked,
- remap,
- remapSafe,
- loopSafe,
- pingPongSafe,
- modSafe,
  clamp,
- sign,
- saturate,
- saturateSigned,
- step,
- mod as module_,
- modUnchecked,
  floorDivide,
  floorDivideSafe,
  floorDivideUnchecked,
+ loop,
+ loopSafe,
+ loopUnchecked,
+ mod as module_,
+ modSafe,
+ modUnchecked,
+ saturate,
+ sign,
+ step,
 } from '../../../src/auxiliary/scalar/arithmetic';
 
 describe('scalar/arithmetic – focused behaviors', () => {
- describe('remap', () => {
-  test('maps values from one range to another', () => {
-   expect(remap(5, 0, 10, 0, 100)).toBe(50);
-   expect(remap(0, 0, 10, 0, 100)).toBe(0);
-   expect(remap(10, 0, 10, 0, 100)).toBe(100);
-  });
-
-  test('supports extrapolation outside the input range', () => {
-   expect(remap(15, 0, 10, 0, 100)).toBe(150);
-   expect(remap(-5, 0, 10, 0, 100)).toBe(-50);
-  });
-
-  test('handles reversed input and output ranges', () => {
-   // remap(5, 10, 0, 0, 100): normalized = (5-10)/(0-10) = 0.5, result = 0 + 0.5*100 = 50
-   expect(remap(5, 10, 0, 0, 100)).toBe(50);
-   // remap(5, 10, 0, 100, 0): normalized = 0.5, result = 100 + 0.5*(-100) = 50
-   expect(remap(5, 10, 0, 100, 0)).toBe(50);
-   // remap(8, 10, 0, 100, 0): normalized = (8-10)/(0-10) = 0.2, result = 100 + 0.2*(-100) = 80
-   expect(remap(8, 10, 0, 100, 0)).toBe(80);
-  });
-
-  test('preserves endpoints exactly to avoid drift', () => {
-   expect(remap(10, 10, 20, -5, 5)).toBe(-5);
-   expect(remap(20, 10, 20, -5, 5)).toBe(5);
-  });
-
-  test('throws for zero input range (inMin === inMax) when value is not at endpoint', () => {
-   expect(() => remap(5, 10, 10, 0, 100)).toThrow(RangeError);
-  });
-
-  test('returns exact endpoint for value at boundary of zero range', () => {
-   // When value === inMin === inMax, endpoint guard returns outMin
-   expect(remap(0, 0, 0, -1, 1)).toBe(-1);
-  });
- });
-
  describe('loop', () => {
   test('wraps values within the specified bounds', () => {
    expect(loop(5, 0, 10)).toBe(5);
@@ -91,38 +49,6 @@ describe('scalar/arithmetic – focused behaviors', () => {
   });
  });
 
- describe('pingPong', () => {
-  test('bounces values between min and max', () => {
-   expect(pingPong(1, 0, 2)).toBe(1);
-   expect(pingPong(3, 0, 2)).toBe(1);
-   expect(pingPong(4, 0, 2)).toBe(0);
-   expect(pingPong(5, 0, 2)).toBe(1);
-  });
-
-  test('correctly handles negative values', () => {
-   // phase = (-1 % 4) + 4 = 3, > range, reflected = 1, result = 2 - 1 = 1
-   expect(pingPong(-1, 0, 2)).toBe(1);
-   // phase = (-2 % 4) + 4 = 2, <= range, result = 0 + 2 = 2
-   expect(pingPong(-2, 0, 2)).toBe(2);
-   // phase = (-3 % 4) + 4 = 1, <= range, result = 0 + 1 = 1
-   expect(pingPong(-3, 0, 2)).toBe(1);
-   // phase = (-4 % 4) = 0, <= range, result = 0 + 0 = 0
-   expect(pingPong(-4, 0, 2)).toBe(0);
-  });
-
-  test('throws for collapsed range', () => {
-   expect(() => pingPong(10, 5, 5)).toThrow(RangeError);
-  });
-
-  test('remains deterministic under many cycles', () => {
-   // range = 4, doubleRange = 8
-   // phase = (32 - (-1)) % 8 = 33 % 8 = 1, <= range, result = -1 + 1 = 0
-   expect(pingPong(32, -1, 3)).toBe(0);
-   // phase = (33.5 - (-1)) % 8 = 34.5 % 8 = 2.5, <= range, result = -1 + 2.5 = 1.5
-   expect(pingPong(33.5, -1, 3)).toBeCloseTo(1.5, 12);
-  });
- });
-
  describe('clamp', () => {
   test('clamps values to range', () => {
    expect(clamp(5, 0, 10)).toBe(5);
@@ -144,15 +70,6 @@ describe('scalar/arithmetic – focused behaviors', () => {
    expect(saturate(0.5)).toBe(0.5);
    expect(saturate(-0.5)).toBe(0);
    expect(saturate(1.5)).toBe(1);
-  });
- });
-
- describe('saturateSigned', () => {
-  test('clamps to [-1, 1]', () => {
-   expect(saturateSigned(0.5)).toBe(0.5);
-   expect(saturateSigned(-0.5)).toBe(-0.5);
-   expect(saturateSigned(-1.5)).toBe(-1);
-   expect(saturateSigned(1.5)).toBe(1);
   });
  });
 
@@ -208,24 +125,6 @@ describe('scalar/arithmetic – focused behaviors', () => {
   });
  });
 
- describe('remapSafe', () => {
-  test('returns outMin for collapsed input range (inMin equals inMax)', () => {
-   expect(remapSafe(5, 3, 3, 0, 100)).toBe(0); // outMin = 0
-   expect(remapSafe(5, 0, 0, 10, 20)).toBe(10); // outMin = 10
-  });
-
-  test('works like remap for valid ranges', () => {
-   expect(remapSafe(5, 0, 10, 0, 100)).toBe(50);
-   expect(remapSafe(0, 0, 10, 0, 100)).toBe(0);
-   expect(remapSafe(10, 0, 10, 0, 100)).toBe(100);
-  });
-
-  test('handles extrapolation', () => {
-   expect(remapSafe(15, 0, 10, 0, 100)).toBe(150);
-   expect(remapSafe(-5, 0, 10, 0, 100)).toBe(-50);
-  });
- });
-
  describe('modUnchecked', () => {
   test('returns positive modulo without validation', () => {
    expect(modUnchecked(7, 3)).toBe(1);
@@ -242,14 +141,6 @@ describe('scalar/arithmetic – focused behaviors', () => {
   });
  });
 
- describe('pingPongUnchecked', () => {
-  test('ping-pongs value without validation', () => {
-   expect(pingPongUnchecked(0, 0, 2)).toBe(0);
-   expect(pingPongUnchecked(2, 0, 2)).toBe(2);
-   expect(pingPongUnchecked(3, 0, 2)).toBe(1);
-   expect(pingPongUnchecked(4, 0, 2)).toBe(0);
-  });
- });
  describe('loopSafe', () => {
   test('delegates to loop for valid range', () => {
    expect(loopSafe(5, 0, 10)).toBe(5);
@@ -259,18 +150,6 @@ describe('scalar/arithmetic – focused behaviors', () => {
   test('returns min for invalid range (max <= min)', () => {
    expect(loopSafe(5, 5, 5)).toBe(5);
    expect(loopSafe(5, 10, 0)).toBe(10);
-  });
- });
-
- describe('pingPongSafe', () => {
-  test('delegates to pingPong for valid range', () => {
-   expect(pingPongSafe(3, 0, 2)).toBe(1);
-   expect(pingPongSafe(5, 0, 2)).toBe(1);
-  });
-
-  test('returns min for invalid range', () => {
-   expect(pingPongSafe(5, 5, 5)).toBe(5);
-   expect(pingPongSafe(5, 10, 0)).toBe(10);
   });
  });
 
@@ -293,8 +172,20 @@ describe('scalar/arithmetic – focused behaviors', () => {
    expect(clamp(5, NaN, 10)).toBe(5);
   });
 
-  test('sign(NaN) returns 0', () => {
-   expect(sign(NaN)).toBe(0);
+  test('sign(NaN) propagates NaN (V9-Scalar-01 per IEEE 754 §6.2)', () => {
+   expect(sign(Number.NaN)).toBeNaN();
+  });
+
+  test('sign(+Infinity) returns +1', () => {
+   expect(sign(Number.POSITIVE_INFINITY)).toBe(1);
+  });
+
+  test('sign(-Infinity) returns -1', () => {
+   expect(sign(Number.NEGATIVE_INFINITY)).toBe(-1);
+  });
+
+  test('sign(-0) returns 0 (IEEE 754 §5.11: -0 == 0)', () => {
+   expect(sign(-0)).toBe(0);
   });
 
   test('step(NaN, 5) returns 1 (5 is not < NaN)', () => {

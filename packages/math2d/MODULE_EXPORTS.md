@@ -8,20 +8,19 @@
 
 Every source module in `@lenguados/math2d` is classified using the four options defined in the engine-wide guide:
 
-| Source Module         | Option     | Export Surface                                                                               | Rationale                                                                                                    |
-| --------------------- | ---------- | -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| `types/`              | Barrel     | Interfaces, type guards (`is*Like`), `SinCos`                                                | Defines the type system. Zero runtime cost.                                                                  |
-| `auxiliary/scalar/`   | Barrel     | `clamp`, `lerp`, `EPSILON`, `sign`, `nearEquals`, ...                                        | Fundamental scalar primitives used everywhere.                                                               |
-| `auxiliary/angle/`    | Barrel     | `normalizeRadians`, `sinCos`, `lerpAngle`, ...                                               | Fundamental angular operations.                                                                              |
-| `auxiliary/numeric/`  | Barrel     | `divideSafe`, `sqrtSafe`, `fract`, `flooredMod`, ...                                         | Production-active safety layer.                                                                              |
-| `core/`               | Barrel     | `Vector2`, `Rotation2`, `Complex`, `Interval`, `Matrix2`, `Matrix3`, `Transform2`            | THE core types of the package.                                                                               |
-| `deterministic/`      | Barrel     | `sin`, `cos`, `tan`, `atan2`, `exp`, `log`, `pow`, `hypot`, `config`, `DeterministicKernels` | All 14 symbols are fundamental L0 primitives. No subset is "advanced" enough to justify a separate internal. |
-| `validation/assert`   | **Hybrid** | Barrel: 17 assertions. Internal: 7 shape guards.                                             | See detailed rationale below.                                                                                |
-| `utils/random`        | Internal   | `randomVector2`, `randomInCircle`, `randomRotation2`, ... (17 functions)                     | Testing and procedural generation tooling. Not math core.                                                    |
-| `utils/random-source` | Internal   | `RandomSource`, `SeededRandomSource`, `setDefaultRandomSource`, ...                          | PRNG infrastructure. Configuration concern.                                                                  |
-| `utils/parse`         | Internal   | `parseVector2`, `formatMatrix3`, ... (14 functions)                                          | I/O serialization. Planned migration to `@lenguados/math2d-io`.                                              |
-| `utils/performance`   | Internal   | `measure`, `MeasurementCollector`, ... (9 exports)                                           | Dev benchmarking tooling.                                                                                    |
-| `@internal` helpers   | Hidden     | `kernelSin`, `reduceAngle`, `setDirect`, `splitMix32`, `hasNumericProperties`, ...           | Private implementation details.                                                                              |
+| Source Module         | Option     | Export Surface                                                                                                       | Rationale                                                                                                                |
+| --------------------- | ---------- | -------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `types/`              | Barrel     | Interfaces, type guards (`is*Like`), `SinCos`                                                                        | Defines the type system. Zero runtime cost.                                                                              |
+| `auxiliary/scalar/`   | Barrel     | `clamp`, `lerp`, `EPSILON`, `sign`, `nearEquals`, ...                                                                | Fundamental scalar primitives used everywhere.                                                                           |
+| `auxiliary/angle/`    | Barrel     | `normalizeRadians`, `sinCos`, `lerpAngle`, ...                                                                       | Fundamental angular operations.                                                                                          |
+| `auxiliary/numeric/`  | Barrel     | `divideSafe`, `sqrtSafe`, `fract`, `flooredMod`, ...                                                                 | Production-active safety layer.                                                                                          |
+| `core/`               | Barrel     | `Vector2`, `Rotation2`, `Complex`, `Interval`, `Matrix2`, `Matrix3`, `Transform2`                                    | THE core types of the package.                                                                                           |
+| `deterministic/`      | Barrel     | `sin`, `cos`, `tan`, `asin`, `acos`, `atan`, `atan2`, `exp`, `log`, `pow`, `hypot`, `config`, `DeterministicKernels` | All 13 re-exported symbols are fundamental L0 primitives. No subset is "advanced" enough to justify a separate internal. |
+| `validation/assert`   | **Hybrid** | Barrel: 17 assertions. Internal: 7 shape guards.                                                                     | See detailed rationale below.                                                                                            |
+| `utils/random`        | Internal   | `randomVector2`, `randomInCircle`, `randomRotation2`, ... (21 functions)                                             | Testing and procedural generation tooling. Not math core.                                                                |
+| `utils/random-source` | Internal   | `RandomSource`, `SeededRandomSource`, `setDefaultRandomSource`, ...                                                  | PRNG infrastructure. Configuration concern.                                                                              |
+| `utils/parse`         | Internal   | `parseVector2`, `formatMatrix3`, ... (14 functions)                                                                  | I/O serialization.                                                                                                       |
+| `@internal` helpers   | Hidden     | `kernelSin`, `reduceAngle`, `setDirect`, `splitMix32`, `hasNumericProperties`, ...                                   | Private implementation details.                                                                                          |
 
 ---
 
@@ -56,16 +55,15 @@ The barrel already exports the non-throwing type guards (`isVector2Like`, etc.) 
 
 ### Why `deterministic/` Is Not an Internal
 
-All 14 exported symbols are L0 mathematical primitives: the 12 fdlibm kernels (`sin`, `cos`, ...), the runtime configuration (`config`), and the namespace aggregator (`DeterministicKernels`). There is no subset that serves a "different scenario" from the barrel's primary purpose. A single-symbol internal would add build complexity without consumer benefit. Consumer-side tree-shaking achieves the same bundle isolation.
+The barrel re-exports 13 symbols from this module: the 11 scalar fdlibm kernels (`sin`, `cos`, `tan`, `asin`, `acos`, `atan`, `atan2`, `exp`, `log`, `pow`, `hypot`), the runtime configuration (`config`), and the namespace aggregator (`DeterministicKernels`). The combined `sinCos` kernel reaches the barrel through its `auxiliary/angle` wrapper (identical `(angle, out?)` signature, delegating to the L0 kernel), bringing the deterministic surface to 14 symbols. The hyperbolic kernels (`sinh`, `cosh`, `tanh`) are implemented at L0 for internal use (the `Complex` hyperbolic operations) and are not re-exported from the barrel. There is no subset that serves a "different scenario" from the barrel's primary purpose. A single-symbol internal would add build complexity without consumer benefit. Consumer-side tree-shaking achieves the same bundle isolation.
 
 ### Why `utils/` Modules Are Internal-Only
 
-The four `utils/` modules serve use cases **outside the primary math workflow**:
+The three `utils/` modules serve use cases **outside the primary math workflow**:
 
 - **`random`**: Testing, procedural content generation. Not a mathematical operation.
 - **`random-source`**: PRNG seeding infrastructure. One-time configuration, not math.
-- **`parse`**: String serialization and deserialization. An I/O concern, not a mathematical operation. Scheduled for migration to a dedicated `@lenguados/math2d-io` package.
-- **`performance`**: Benchmarking and measurement collection. Developer tooling, not math.
+- **`parse`**: String serialization and deserialization. An I/O concern, not a mathematical operation.
 
 None of these pass Test 1 (Identity) or Test 2 (Co-import) from the general classification criteria.
 
@@ -106,7 +104,4 @@ import { SeededRandomSource } from '@lenguados/math2d/utils/random-source';
 
 // Internal — parsing and serialization
 import { parseVector2, formatMatrix3 } from '@lenguados/math2d/utils/parse';
-
-// Internal — performance measurement
-import { measure, MeasurementCollector } from '@lenguados/math2d/utils/performance';
 ```

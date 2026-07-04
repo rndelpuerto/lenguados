@@ -22,9 +22,12 @@ import {
  randomOnRectangle,
  randomOnSegment,
  randomOnTriangle,
+ randomInAnnulus,
+ randomInAnnulusSafe,
+ randomInAnnulusUnchecked,
+ randomIsometry2,
  randomRotation2,
  randomRotationMatrix2,
- randomTransform2,
  randomUnitComplex,
  randomUnitVector2,
  randomVector2,
@@ -160,13 +163,97 @@ describe('utils/random', () => {
   });
  });
 
- describe('randomTransform2', () => {
+ describe('randomIsometry2', () => {
   it('returns transforms with position in unit circle', () => {
    const source = createSource();
    for (let index = 0; index < 100; index++) {
-    const t = randomTransform2(undefined, source);
+    const t = randomIsometry2(undefined, source);
     expect(t.position.magnitude()).toBeLessThanOrEqual(1);
    }
+  });
+
+  it('rename regression: randomRigidTransform2 is removed from the public API', () => {
+   /*
+    * Compile-time check. `randomRigidTransform2` was renamed to `randomIsometry2`
+    * in 0.7.0. Any future re-introduction of the old name must fail TypeScript
+    * compilation so the rename remains enforced permanently. The `@ts-expect-error`
+    * directive MUST be immediately above the type alias it targets; the
+    * `eslint-disable-line` therefore lives on the type-alias line itself.
+    */
+   // @ts-expect-error - randomRigidTransform2 is removed; use randomIsometry2 instead
+   type _RemovedName = typeof import('../../src/utils/random').randomRigidTransform2; // eslint-disable-line @typescript-eslint/no-unused-vars -- intentional: the @ts-expect-error above is the assertion; the type alias exists only to force TypeScript to resolve the removed symbol name
+   // Runtime sentinel so the it() block has an assertion (the @ts-expect-error above is the real check).
+   expect(typeof randomIsometry2).toBe('function');
+  });
+
+  it('preserves the pre-rename behavioural contract bit-for-bit', () => {
+   /*
+    * Fixture captured from the predecessor symbol (`randomRigidTransform2`) under
+    * the pre-rename 0.7.0 build with `SeededRandomSource(42)`. The rename is
+    * body-preserving: the post-rename `randomIsometry2` MUST yield identical
+    * components for the same seed.
+    */
+   const source = new SeededRandomSource(42);
+   const t = randomIsometry2(undefined, source);
+   expect(t.position.x).toBeCloseTo(0.306889309628814, 15);
+   expect(t.position.y).toBeCloseTo(-0.003648841081425418, 15);
+   expect(t.rotation.cos).toBeCloseTo(-0.612183147325127, 15);
+   expect(t.rotation.sin).toBeCloseTo(0.7907160009327634, 15);
+   expect(t.scale.x).toBe(1);
+   expect(t.scale.y).toBe(1);
+  });
+ });
+
+ describe('randomInAnnulus triality', () => {
+  it('produces points with radius in [inner, outer]', () => {
+   const source = createSource();
+   const inner = 2;
+   const outer = 5;
+   for (let index = 0; index < 100; index++) {
+    const p = randomInAnnulus(inner, outer, undefined, source);
+    const r = p.magnitude();
+    expect(r).toBeGreaterThanOrEqual(inner - 1e-9);
+    expect(r).toBeLessThanOrEqual(outer + 1e-9);
+   }
+  });
+
+  it('degenerates to a circle when inner === outer', () => {
+   const source = createSource();
+   const p = randomInAnnulus(3, 3, undefined, source);
+   expect(p.magnitude()).toBeCloseTo(3, 8);
+  });
+
+  it('throws for negative inner radius', () => {
+   expect(() => randomInAnnulus(-1, 2)).toThrow(RangeError);
+  });
+
+  it('throws when inner > outer', () => {
+   expect(() => randomInAnnulus(5, 2)).toThrow(RangeError);
+  });
+
+  it('randomInAnnulusSafe returns fallback on invalid radii', () => {
+   const fallback = { x: 9, y: 9 };
+   const result = randomInAnnulusSafe(5, 2, fallback);
+   expect(result.x).toBe(9);
+   expect(result.y).toBe(9);
+  });
+
+  it('randomInAnnulusSafe produces valid sample for valid radii', () => {
+   const source = createSource();
+   const p = randomInAnnulusSafe(1, 2, undefined, undefined, source);
+   const r = p.magnitude();
+   expect(r).toBeGreaterThanOrEqual(1 - 1e-9);
+   expect(r).toBeLessThanOrEqual(2 + 1e-9);
+  });
+
+  it('randomInAnnulusUnchecked matches randomInAnnulus for valid inputs', () => {
+   // Use the same seeded source twice to compare outputs.
+   const s1 = createSource();
+   const s2 = createSource();
+   const strict = randomInAnnulus(1, 3, undefined, s1);
+   const unchecked = randomInAnnulusUnchecked(1, 3, undefined, s2);
+   expect(unchecked.x).toBeCloseTo(strict.x, 12);
+   expect(unchecked.y).toBeCloseTo(strict.y, 12);
   });
  });
 
@@ -339,8 +426,8 @@ describe('utils/random', () => {
    expect(m.determinant()).toBeCloseTo(1, 6);
   });
 
-  it('randomTransform2 works without explicit source', () => {
-   const t = randomTransform2();
+  it('randomIsometry2 works without explicit source', () => {
+   const t = randomIsometry2();
    expect(t.position.magnitude()).toBeLessThanOrEqual(1);
   });
 

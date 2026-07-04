@@ -44,7 +44,6 @@ export const defineSuite = definePackageSuite({
 
   // Arithmetic
   add('Matrix3.multiply (out)', () => M3.multiply(a, b, out));
-  add('Matrix3.premultiply (out)', () => M3.premultiply(a, b, out));
   add('Matrix3.multiplyScalar (out)', () => M3.multiplyScalar(a, 2.5, out));
   add('Matrix3.negate (out)', () => M3.negate(a, out));
 

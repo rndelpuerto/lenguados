@@ -1,0 +1,5 @@
+# .github/CODEOWNERS
+# Default owners — automatically requested for review on every pull request.
+# Later matches take precedence; keep the catch-all rule first.
+
+* @rndelpuerto

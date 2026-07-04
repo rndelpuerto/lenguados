@@ -3,6 +3,7 @@
  */
 
 import React from 'react';
+import { useChartPalette } from '../../hooks/use-chart-palette';
 import BenchmarkChart from './benchmark-chart';
 import type { EChartsOption } from 'echarts';
 
@@ -18,10 +19,20 @@ interface UlpAccuracyChartProps {
  title?: string;
 }
 
+/**
+ * Sort value for a ULP histogram bucket key. Bucket keys are either exact
+ * counts ('0', '1') or open-ended trailing-plus buckets ('2+'), which must
+ * sort after every bounded bucket — treated as +Infinity here.
+ */
+function bucketSortValue(key: string): number {
+ return key.endsWith('+') ? Number.POSITIVE_INFINITY : Number(key);
+}
+
 export default function UlpAccuracyChart({
  data,
  title,
 }: UlpAccuracyChartProps): React.ReactElement {
+ const palette = useChartPalette();
  const functions = data.map((d) => d.fn);
 
  // Collect all ULP bucket keys across all functions
@@ -31,9 +42,19 @@ export default function UlpAccuracyChart({
    allKeys.add(key);
   }
  }
- const sortedKeys = [...allKeys].sort((a, b) => Number(a) - Number(b));
+ const sortedKeys = [...allKeys].sort((a, b) => {
+  const diff = bucketSortValue(a) - bucketSortValue(b);
+  // Two open-ended buckets (both +Infinity) fall back to their numeric prefix.
+  return Number.isNaN(diff) ? Number.parseFloat(a) - Number.parseFloat(b) : diff;
+ });
 
- const colors = ['#009E73', '#0072B2', '#E69F00', '#D55E00', '#CC79A7'];
+ const colors = [
+  palette.tertiary,
+  palette.primary,
+  palette.quaternary,
+  palette.secondary,
+  palette.quinary,
+ ];
 
  const series: EChartsOption['series'] = sortedKeys.map((key, i) => ({
   name: `${key} ULP`,

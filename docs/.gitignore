@@ -4,15 +4,24 @@
 # Production
 /build
 
-# Generated files
+# Generated files (produced by scripts/generate-package-docs.mjs; regenerated on every `npm run docs`)
 .docusaurus
 .cache-loader
 docs/api/
 docs/architecture.md
 docs/contributing/
-docs/packages/*/overview.md
-docs/packages/*/module-exports.md
 docs/guides/
+docs/packages/*/overview.md
+docs/packages/*/architecture.md
+docs/packages/*/contributing.md
+docs/packages/*/design-philosophy.md
+docs/packages/*/design-decisions.md
+docs/packages/*/edge-cases.md
+docs/packages/*/interoperability.md
+docs/packages/*/module-exports.md
+docs/packages/*/testing-strategy.md
+docs/packages/*/tsdoc-standard.md
+docs/packages/*/iconography-standard.md
 
 # Misc
 .DS_Store

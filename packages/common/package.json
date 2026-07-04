@@ -1,7 +1,7 @@
 {
  "name": "@lenguados/common",
  "version": "0.6.0",
- "description": "Common constants, utils and other resources to use all across the 2D version (lenguados) of the Lenguado physics-engine family.",
+ "description": "Shared cross-cutting utilities used across the 2D version (lenguados) of the Lenguado physics-engine family.",
  "keywords": [
   "common"
  ],
@@ -25,6 +25,7 @@
   "./main.js": "./main.js"
  },
  "types": "./lib/@types/index.d.ts",
+ "sideEffects": false,
  "exports": {
   ".": {
    "types": "./lib/@types/index.d.ts",
@@ -49,7 +50,6 @@
    }
   },
   "./lib/*": {
-   "types": "./lib/@types/*.d.ts",
    "require": "./lib/cjs/*",
    "import": "./lib/esm/*"
   },
@@ -60,12 +60,15 @@
   "main.js",
   "main.mjs",
   "dev-main.mjs",
-  "lib"
+  "lib",
+  "LICENSE",
+  "NOTICE"
  ],
  "scripts": {
   "build": "node ../../scripts/build.mjs",
   "clean": "node ../../scripts/clean.mjs",
   "outdated": "node ../../scripts/outdated.mjs",
+  "prepack": "cross-env NODE_ENV=development node ../../scripts/build.mjs && cross-env NODE_ENV=production node ../../scripts/build.mjs && node ../../scripts/sync-legal-files.mjs",
   "publish:local": "node ../../scripts/publish-local.mjs",
   "unpublish:local": "node ../../scripts/unpublish-local.mjs",
   "watch": "node ../../scripts/watch.mjs"
@@ -75,5 +78,13 @@
  },
  "publishConfig": {
   "access": "public"
+ },
+ "typedocOptions": {
+  "entryPoints": [
+   "src/utils/parse-json-data.ts"
+  ]
+ },
+ "config": {
+  "verdaccioport": "4873"
  }
 }

@@ -11,6 +11,8 @@ import {
  TldrBox,
  NoDataFallback,
  MethodologyNote,
+ PartialDataNotice,
+ formatOps,
 } from '@site/src/components/benchmark';
 import { useBenchmarkData } from '@site/src/hooks/use-benchmark-data';
 
@@ -22,15 +24,14 @@ export function RotationPerformance() {
  if (!r2 && !cx) {
   return (
    <TldrBox>
-    Rotation2 and Complex benchmark data is not yet available.
-    Run <code>npm run tools:bench:all</code> with rotation and complex suites
-    to generate this data.
+    Rotation2 and Complex benchmark data is not yet available. Run{' '}
+    <code>npm run tools:bench:all</code> with rotation and complex suites to generate this data.
    </TldrBox>
   );
  }
- const formatOps = (v) => v >= 1e9 ? `${(v/1e9).toFixed(1)}G` : v >= 1e6 ? `${(v/1e6).toFixed(0)}M` : `${(v/1e3).toFixed(0)}K`;
  return (
   <>
+   <PartialDataNotice summaries={[performance]} />
    {r2 && (
     <>
      <h3>Rotation2 Operations</h3>
@@ -40,7 +41,12 @@ export function RotationPerformance() {
        columns={[
         { key: 'name', label: 'Operation' },
         { key: 'opsPerSec', label: 'ops/sec', format: (v) => formatOps(Number(v)), align: 'right' },
-        { key: 'median', label: 'Median (ns)', format: (v) => Number(v).toFixed(1), align: 'right' },
+        {
+         key: 'median',
+         label: 'Median (ns)',
+         format: (v) => Number(v).toFixed(1),
+         align: 'right',
+        },
         { key: 'samples', label: 'Samples', align: 'right' },
        ]}
        data={r2.operations}
@@ -58,7 +64,12 @@ export function RotationPerformance() {
        columns={[
         { key: 'name', label: 'Operation' },
         { key: 'opsPerSec', label: 'ops/sec', format: (v) => formatOps(Number(v)), align: 'right' },
-        { key: 'median', label: 'Median (ns)', format: (v) => Number(v).toFixed(1), align: 'right' },
+        {
+         key: 'median',
+         label: 'Median (ns)',
+         format: (v) => Number(v).toFixed(1),
+         align: 'right',
+        },
         { key: 'samples', label: 'Samples', align: 'right' },
        ]}
        data={cx.operations}

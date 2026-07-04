@@ -1,11 +1,14 @@
 /**
- * Side-by-side bar chart comparing lenguados vs gl-matrix.
- * Uses blue (#0072B2) for lenguados, vermillion (#D55E00) for competitor,
- * and gray for ties within 2.5% equivalence threshold.
+ * Side-by-side bar chart comparing two libraries operation by operation.
+ * Colors come from the `--chart-color-*` palette: primary for this project,
+ * secondary for the competitor, and the tie gray for operations within the
+ * 2.5% equivalence threshold (`withinEquivalence`).
  */
 
 import React from 'react';
+import { useChartPalette } from '../../hooks/use-chart-palette';
 import BenchmarkChart from './benchmark-chart';
+import { formatOps } from './format';
 import type { EChartsOption } from 'echarts';
 
 interface ComparisonData {
@@ -21,26 +24,21 @@ interface ComparisonChartProps {
  title?: string;
 }
 
-function formatOps(value: number): string {
- if (value >= 1e9) return `${(value / 1e9).toFixed(1)}G`;
- if (value >= 1e6) return `${(value / 1e6).toFixed(0)}M`;
- if (value >= 1e3) return `${(value / 1e3).toFixed(0)}K`;
- return String(Math.round(value));
-}
-
-const COLORS = {
- primary: '#0072B2',
- competitor: '#D55E00',
- tie: '#888888',
-};
-
 export default function ComparisonChart({
  data,
  libraries,
  title,
 }: ComparisonChartProps): React.ReactElement {
+ const palette = useChartPalette();
  const [lib1, lib2] = libraries;
  const operations = data.map((d) => d.name);
+ const hasTies = data.some((d) => d.withinEquivalence === true);
+
+ const seriesData = (library: string, baseColor: string) =>
+  data.map((d) => ({
+   value: d.results[library]?.opsPerSec ?? 0,
+   itemStyle: { color: d.withinEquivalence === true ? palette.tie : baseColor },
+  }));
 
  const option: EChartsOption = {
   title: title ? { text: title, left: 'center' } : undefined,
@@ -48,7 +46,12 @@ export default function ComparisonChart({
    trigger: 'axis',
    axisPointer: { type: 'shadow' },
    formatter: (params: unknown) => {
-    const items = params as Array<{ seriesName: string; value: number; marker: string; dataIndex: number }>;
+    const items = params as Array<{
+     seriesName: string;
+     value: number;
+     marker: string;
+     dataIndex: number;
+    }>;
     const d = data[items[0].dataIndex];
     const lines = items.map((p) => `${p.marker} ${p.seriesName}: ${formatOps(p.value)} ops/sec`);
     const ratioStr = d.ratio != null ? `<br/>Ratio: ${d.ratio.toFixed(3)}x` : '';
@@ -73,17 +76,27 @@ export default function ComparisonChart({
    {
     name: lib1,
     type: 'bar',
-    data: data.map((d) => d.results[lib1]?.opsPerSec ?? 0),
-    itemStyle: { color: COLORS.primary },
+    data: seriesData(lib1, palette.primary),
+    itemStyle: { color: palette.primary },
    },
    {
     name: lib2,
     type: 'bar',
-    data: data.map((d) => d.results[lib2]?.opsPerSec ?? 0),
-    itemStyle: { color: COLORS.competitor },
+    data: seriesData(lib2, palette.secondary),
+    itemStyle: { color: palette.secondary },
    },
   ],
  };
 
- return <BenchmarkChart option={option} height={Math.max(300, data.length * 40 + 100)} />;
+ return (
+  <>
+   <BenchmarkChart option={option} height={Math.max(300, data.length * 40 + 100)} />
+   {hasTies && (
+    <p style={{ fontSize: '0.85rem', color: 'var(--ifm-color-emphasis-600)', margin: '0.25rem 0' }}>
+     Gray bars mark statistical ties — operations whose throughput difference is within the 2.5%
+     equivalence threshold.
+    </p>
+   )}
+  </>
+ );
 }

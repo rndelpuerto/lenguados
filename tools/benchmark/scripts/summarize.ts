@@ -6,9 +6,18 @@
  * and produces condensed summary JSON files. These summaries are consumed
  * by the Docusaurus benchmark-data plugin at docs build time.
  *
- * Usage: tsx scripts/summarize.ts [--package=name]
+ * Guard: by default this script REFUSES (non-zero exit, before writing any
+ * output) to summarize a performance `latest.json` that is missing, records
+ * a non-publishable run scope (filtered), carries legacy metadata without
+ * scope provenance, or was generated under a Node major different from the
+ * repository's pinned version. `--force` bypasses the refusals and stamps
+ * `partial: true` into every summary written, so documentation pages can
+ * label deliberately partial data.
  *
- * Input:  results/{latest,comparison-latest,stress-latest,dx-latest}.json
+ * Usage: tsx scripts/summarize.ts [--package=name] [--force]
+ *        [--input-dir=path] [--output-dir=path]   (test overrides)
+ *
+ * Input:  results/{package}/{latest,comparison-latest,stress-latest,dx-latest}.json
  * Output: results/summaries/{package}/{performance,comparison,stress,dx}-summary.json
  */
 
@@ -16,13 +25,44 @@ import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'no
 import { join, resolve } from 'node:path';
 
 const TOOL_ROOT = resolve(import.meta.dirname, '..');
-const RESULTS_DIR = join(TOOL_ROOT, 'results');
 
-// Parse --package flag (default: math2d)
-const pkgArg = process.argv.find((a) => a.startsWith('--package='));
+// Parse flags (default package: math2d; dir overrides exist for tests)
+const argv = process.argv.slice(2);
+const pkgArg = argv.find((a) => a.startsWith('--package='));
 const packageName = pkgArg ? pkgArg.split('=')[1]! : 'math2d';
+const force = argv.includes('--force');
 
-const OUTPUT_DIR = join(RESULTS_DIR, 'summaries', packageName);
+// --package=all: fan out over every registered package loader (generic).
+if (packageName === 'all') {
+ const { readdirSync } = await import('node:fs');
+ const { execSync } = await import('node:child_process');
+ const packagesDir = join(TOOL_ROOT, 'src', 'packages');
+ const registered = readdirSync(packagesDir, { withFileTypes: true })
+  .filter((entry) => entry.isDirectory())
+  .map((entry) => entry.name)
+  .sort();
+ for (const pkg of registered) {
+  execSync(
+   `./node_modules/.bin/tsx scripts/summarize.ts --package=${pkg}${force ? ' --force' : ''}`,
+   {
+    stdio: 'inherit',
+    cwd: TOOL_ROOT,
+   },
+  );
+ }
+ process.exit(0);
+}
+
+const inputDirArg = argv.find((a) => a.startsWith('--input-dir='))?.split('=')[1];
+const outputDirArg = argv.find((a) => a.startsWith('--output-dir='))?.split('=')[1];
+
+const RESULTS_DIR = inputDirArg ? resolve(inputDirArg) : join(TOOL_ROOT, 'results', packageName);
+const OUTPUT_DIR = outputDirArg
+ ? resolve(outputDirArg)
+ : join(TOOL_ROOT, 'results', 'summaries', packageName);
+
+/** Days after which a run is warned as stale (warn-only, never refused) */
+const STALENESS_WARN_DAYS = 30;
 
 /* ========================================================================== */
 /* Helpers                                                                     */
@@ -411,11 +451,158 @@ function transformDx(raw: Record<string, unknown> | null): unknown {
 
 console.log(`  Generating benchmark summaries for ${packageName}...\n`);
 
-// Read input files
-const performance = readJsonFile(join(RESULTS_DIR, 'latest.json'));
+/* ========================================================================== */
+/* Publication Guard                                                           */
+/* ========================================================================== */
+
+/**
+ * Refuse to summarize, naming the run and the reason, unless `--force`
+ *
+ * @param reason - Why the input is not publishable
+ */
+function refuse(reason: string): void {
+ if (force) {
+  console.warn(`  [forced] ${reason}`);
+  return;
+ }
+ console.error(`  ERROR: refusing to summarize — ${reason}`);
+ console.error(
+  '  Run a full benchmark (`npm run tools:bench:all`) to refresh, or pass --force for a deliberate partial summary (it will be stamped partial: true).',
+ );
+ process.exit(1);
+}
+
+const perfLatestPath = join(RESULTS_DIR, 'latest.json');
+if (!existsSync(perfLatestPath)) {
+ refuse(`missing input ${perfLatestPath} (no benchmark run found for '${packageName}')`);
+}
+
+const performance = readJsonFile(perfLatestPath);
+const perfMeta = (performance?.['metadata'] ?? {}) as {
+ timestamp?: string;
+ nodeVersion?: string;
+ packageName?: string;
+ scope?: { full?: boolean; filters?: Record<string, string> };
+};
+
+if (performance) {
+ const runStamp = perfMeta.timestamp ?? 'unknown timestamp';
+
+ // Package identity: a mismatched run must never be summarized under this name.
+ if (perfMeta.packageName !== undefined && perfMeta.packageName !== packageName) {
+  console.error(
+   `  ERROR: ${perfLatestPath} records packageName '${perfMeta.packageName}', not '${packageName}' — input/flag mismatch.`,
+  );
+  process.exit(1);
+ }
+
+ // Scope provenance: legacy data (no scope) is unverifiable; filtered runs are partial.
+ if (perfMeta.scope === undefined) {
+  refuse(
+   `run ${runStamp} carries legacy metadata without scope provenance (unverifiable: cannot prove it was a full run)`,
+  );
+ } else if (perfMeta.scope.full !== true) {
+  const filters = JSON.stringify(perfMeta.scope.filters ?? {});
+  refuse(`run ${runStamp} was filtered (${filters}) — not publishable`);
+ }
+
+ // Node pin: a run from a different Node major is not comparable to CI/publication data.
+ const pinnedRaw = (() => {
+  try {
+   return readFileSync(join(TOOL_ROOT, '..', '..', '.nvmrc'), 'utf-8').trim();
+  } catch {
+   return undefined;
+  }
+ })();
+ const pinnedMajor = pinnedRaw ? Number.parseInt(pinnedRaw.split('.')[0] ?? '', 10) : Number.NaN;
+ if (!Number.isInteger(pinnedMajor)) {
+  console.warn('  [warn] could not parse .nvmrc — skipping the Node version check');
+ } else if (perfMeta.nodeVersion) {
+  const runMajor = Number.parseInt(perfMeta.nodeVersion.replace(/^v/, '').split('.')[0] ?? '', 10);
+  if (Number.isInteger(runMajor) && runMajor !== pinnedMajor) {
+   refuse(
+    `run ${runStamp} was generated under Node ${perfMeta.nodeVersion}, but the repository pins Node ${pinnedMajor}.x`,
+   );
+  }
+ }
+
+ // Staleness: warn-only.
+ if (perfMeta.timestamp) {
+  const ageDays = (Date.now() - Date.parse(perfMeta.timestamp)) / 86_400_000;
+  if (Number.isFinite(ageDays) && ageDays > STALENESS_WARN_DAYS) {
+   console.warn(`  [warn] run ${perfMeta.timestamp} is ${Math.floor(ageDays)} days old`);
+  }
+ }
+}
+
+// Secondary inputs: MISSING stays warn-only (their docs sections carry
+// explicit fallbacks, and run-all failure propagation covers CI). A PRESENT
+// secondary, however, is cross-checked for freshness against the primary
+// run — a stale dx/stress/comparison beside a fresh latest.json would feed
+// outdated figures into the docs under a green pipeline.
+const SECONDARY_GRACE_MS = 60 * 60 * 1000;
+
+/**
+ * Resolve a secondary input's timestamp: embedded metadata when present,
+ * file modification time otherwise (comparison reports carry no metadata)
+ *
+ * @param filepath - Absolute path to the secondary latest pointer
+ * @param data - Parsed content (null when missing/invalid)
+ * @returns Epoch milliseconds, or undefined when indeterminable
+ */
+function secondaryTimestamp(
+ filepath: string,
+ data: Record<string, unknown> | null,
+): number | undefined {
+ const meta = data?.['metadata'] as { timestamp?: string } | undefined;
+ if (meta?.timestamp) {
+  const parsed = Date.parse(meta.timestamp);
+  if (Number.isFinite(parsed)) return parsed;
+ }
+ return existsSync(filepath) ? statSync(filepath).mtime.getTime() : undefined;
+}
+
+/**
+ * Refuse (or warn within the grace window) when a present secondary input
+ * predates the primary run
+ *
+ * @param name - Display name of the secondary input
+ * @param filepath - Absolute path to the secondary latest pointer
+ * @param data - Parsed content (null when missing — skipped)
+ */
+function checkSecondaryFreshness(
+ name: string,
+ filepath: string,
+ data: Record<string, unknown> | null,
+): void {
+ if (data === null) return; // missing → the existing warn-only path already reported it
+ const primaryTs = perfMeta.timestamp ? Date.parse(perfMeta.timestamp) : Number.NaN;
+ if (!Number.isFinite(primaryTs)) return; // unverifiable primary already handled by the scope guard
+ const secondaryTs = secondaryTimestamp(filepath, data);
+ if (secondaryTs === undefined) return;
+ const behindMs = primaryTs - secondaryTs;
+ if (behindMs > SECONDARY_GRACE_MS) {
+  refuse(
+   `${name} (${new Date(secondaryTs).toISOString()}) predates the primary run (${perfMeta.timestamp}) by more than the grace window — stale secondary input`,
+  );
+ } else if (behindMs > 0) {
+  console.warn(
+   `  [warn] ${name} (${new Date(secondaryTs).toISOString()}) is older than the primary run (${perfMeta.timestamp}) — within the grace window`,
+  );
+ }
+}
+
 const comparison = readJsonFile(join(RESULTS_DIR, 'comparison-latest.json'));
 const stress = readJsonFile(join(RESULTS_DIR, 'stress-latest.json'));
 const dx = readJsonFile(join(RESULTS_DIR, 'dx-latest.json'));
+
+checkSecondaryFreshness('dx-latest.json', join(RESULTS_DIR, 'dx-latest.json'), dx);
+checkSecondaryFreshness('stress-latest.json', join(RESULTS_DIR, 'stress-latest.json'), stress);
+checkSecondaryFreshness(
+ 'comparison-latest.json',
+ join(RESULTS_DIR, 'comparison-latest.json'),
+ comparison,
+);
 
 // Derive comparison timestamp from the raw file mtime (deterministic, idempotent)
 const compFilePath = join(RESULTS_DIR, 'comparison-latest.json');
@@ -428,6 +615,14 @@ const perfSummary = transformPerformance(performance);
 const compSummary = transformComparison(comparison, compTimestamp);
 const stressSummary = transformStress(stress);
 const dxSummary = transformDx(dx);
+
+// Forced partial summaries are stamped in EVERY output file so each docs
+// section can label its own data.
+if (force) {
+ for (const summary of [perfSummary, compSummary, stressSummary, dxSummary]) {
+  (summary as Record<string, unknown>)['partial'] = true;
+ }
+}
 
 // Write output
 mkdirSync(OUTPUT_DIR, { recursive: true });

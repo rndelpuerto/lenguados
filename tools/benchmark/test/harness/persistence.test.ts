@@ -214,7 +214,7 @@ describe('StressReport JSON structure', () => {
   const parsed = JSON.parse(json) as StressReport;
 
   expect(parsed.suites.ulp).toHaveLength(1);
-  expect(parsed.suites.ulp![0]!.fn).toBe('cos');
+  expect((parsed.suites.ulp![0] as { fn: string }).fn).toBe('cos');
   expect(parsed.suites.ieee754).toBeUndefined();
   expect(parsed.suites.cancellation).toBeUndefined();
  });
@@ -305,6 +305,7 @@ describe('DxReport JSON structure', () => {
      containsDevMode: false,
      containsNodeEnv: false,
      containsLenguadosDev: false,
+     callSiteLabels: [],
      foundPatterns: [],
     },
     devBundle: {

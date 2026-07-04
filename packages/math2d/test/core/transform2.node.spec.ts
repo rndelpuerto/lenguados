@@ -148,6 +148,23 @@ describe('Transform2', () => {
    const inv = Transform2.inverse(transform);
    expectVecClose(inv.position, 0, 2, 4);
   });
+
+  // V9-Transform2-02: inverted getter routes through inverseSafe (identity fallback for singular)
+  it('inverted getter returns identity fallback for singular transform (V9-Transform2-02)', () => {
+   // Zero-scale transform is singular (no inverse exists)
+   const singular = Transform2.fromValues(1, 2, 0, 0, 0);
+   const result = singular.inverted;
+   // Safe tier returns identity fallback instead of throwing
+   expect(result.position.x).toBe(0);
+   expect(result.position.y).toBe(0);
+   expect(result.scale.x).toBe(1);
+   expect(result.scale.y).toBe(1);
+  });
+
+  it('inverted getter does not throw for non-singular transform', () => {
+   const t = Transform2.fromValues(1, 2, Math.PI / 4, 2, 3);
+   expect(() => t.inverted).not.toThrow();
+  });
  });
 
  describe('Interpolation', () => {
@@ -1598,7 +1615,7 @@ describe('Transform2 direction methods', () => {
   const t = new Transform2({ x: 10, y: 20 }, Math.PI / 3, { x: 2, y: 2 });
   const dir = { x: 1, y: 0 };
   const { cos, sin } = t.rotation;
-  const csResult = Transform2.transformDirectionCS(cos, sin, dir);
+  const csResult = Transform2.transformDirectionCS(dir, cos, sin);
   const normalResult = Transform2.transformDirection(t, dir);
   expect(csResult.x).toBeCloseTo(normalResult.x, DIGITS);
   expect(csResult.y).toBeCloseTo(normalResult.y, DIGITS);
@@ -1617,7 +1634,7 @@ describe('Transform2 direction methods', () => {
   const t = new Transform2({ x: 10, y: 20 }, Math.PI / 3, { x: 2, y: 2 });
   const dir = { x: 0.5, y: 0.866 };
   const { cos, sin } = t.rotation;
-  const csResult = Transform2.inverseTransformDirectionCS(cos, sin, dir);
+  const csResult = Transform2.inverseTransformDirectionCS(dir, cos, sin);
   const normalResult = Transform2.inverseTransformDirection(t, dir);
   expect(csResult.x).toBeCloseTo(normalResult.x, DIGITS);
   expect(csResult.y).toBeCloseTo(normalResult.y, DIGITS);
@@ -1679,6 +1696,164 @@ describe('Transform2.premultiply', () => {
    const t = new Transform2({ x: 1, y: 2 }, 0.5, { x: 3, y: 4 });
    expect(t.toArray().length).toBe(Transform2.ELEMENT_COUNT);
    expect(Transform2.ELEMENT_COUNT).toBe(5);
+  });
+ });
+
+ describe('translate / rotate / scaleBy', () => {
+  it('static translate adds offset to position only', () => {
+   const src = new Transform2({ x: 1, y: 2 }, 0.5, { x: 3, y: 4 });
+   const out = Transform2.translate(src, 10, 20);
+   expect(out.position.x).toBe(11);
+   expect(out.position.y).toBe(22);
+   expect(out.rotation.cos).toBe(src.rotation.cos);
+   expect(out.scale.x).toBe(3);
+  });
+
+  it('static rotate composes rotations without changing position/scale', () => {
+   const src = new Transform2({ x: 7, y: 3 }, 0, { x: 2, y: 3 });
+   const out = Transform2.rotate(src, Math.PI / 2);
+   expect(out.position.x).toBe(7);
+   expect(out.position.y).toBe(3);
+   expect(out.scale.x).toBe(2);
+   expect(out.scale.y).toBe(3);
+   expect(out.rotation.cos).toBeCloseTo(0, DIGITS);
+   expect(out.rotation.sin).toBeCloseTo(1, DIGITS);
+  });
+
+  it('static scaleBy accepts uniform scalar', () => {
+   const src = new Transform2({ x: 0, y: 0 }, 0, { x: 2, y: 3 });
+   const out = Transform2.scaleBy(src, 5);
+   expect(out.scale.x).toBe(10);
+   expect(out.scale.y).toBe(15);
+  });
+
+  it('static scaleBy accepts non-uniform (sx, sy)', () => {
+   const src = new Transform2({ x: 0, y: 0 }, 0, { x: 2, y: 3 });
+   const out = Transform2.scaleBy(src, 4, 5);
+   expect(out.scale.x).toBe(8);
+   expect(out.scale.y).toBe(15);
+  });
+
+  it('static scaleBy accepts Vector2Like', () => {
+   const src = new Transform2({ x: 0, y: 0 }, 0, { x: 2, y: 3 });
+   const out = Transform2.scaleBy(src, { x: 4, y: 5 });
+   expect(out.scale.x).toBe(8);
+   expect(out.scale.y).toBe(15);
+  });
+
+  it('instance translate mutates and returns this', () => {
+   const t = new Transform2({ x: 1, y: 2 }, 0, { x: 1, y: 1 });
+   const result = t.translate(5, 5);
+   expect(result).toBe(t);
+   expect(t.position.x).toBe(6);
+   expect(t.position.y).toBe(7);
+  });
+
+  it('instance rotate mutates and returns this', () => {
+   const t = new Transform2({ x: 0, y: 0 }, 0, { x: 1, y: 1 });
+   t.rotate(Math.PI / 2);
+   expect(t.rotation.cos).toBeCloseTo(0, DIGITS);
+   expect(t.rotation.sin).toBeCloseTo(1, DIGITS);
+  });
+
+  it('instance scaleBy mutates and returns this', () => {
+   const t = new Transform2({ x: 0, y: 0 }, 0, { x: 2, y: 3 });
+   const result = t.scaleBy(2);
+   expect(result).toBe(t);
+   expect(t.scale.x).toBe(4);
+   expect(t.scale.y).toBe(6);
+  });
+
+  it('static transformPoints produces the same results as instance', () => {
+   const t = new Transform2({ x: 5, y: 7 }, Math.PI / 4, { x: 2, y: 2 });
+   const pts = [
+    { x: 0, y: 0 },
+    { x: 1, y: 0 },
+    { x: 0, y: 1 },
+   ];
+   const viaStatic = Transform2.transformPoints(t, pts);
+   const viaInstance = t.transformPoints(pts);
+   for (let index = 0; index < pts.length; index++) {
+    expect(viaStatic[index]!.x).toBeCloseTo(viaInstance[index]!.x, DIGITS);
+    expect(viaStatic[index]!.y).toBeCloseTo(viaInstance[index]!.y, DIGITS);
+   }
+  });
+
+  it('static transformVectors ignores translation', () => {
+   const t = new Transform2({ x: 100, y: 100 }, 0, { x: 2, y: 3 });
+   const [result] = Transform2.transformVectors(t, [{ x: 1, y: 1 }]);
+   expect(result!.x).toBe(2);
+   expect(result!.y).toBe(3);
+  });
+
+  it('static transformPoints reuses out array entries when present', () => {
+   const t = new Transform2({ x: 1, y: 1 }, 0, { x: 1, y: 1 });
+   const existing = new Vector2(99, 99);
+   const out: Vector2[] = [existing];
+   const result = Transform2.transformPoints(t, [{ x: 0, y: 0 }], out);
+   expect(result[0]).toBe(existing);
+   expect(existing.x).toBe(1);
+   expect(existing.y).toBe(1);
+  });
+
+  it('relative equals multiply(inverse(a), b)', () => {
+   const a = new Transform2({ x: 3, y: 5 }, Math.PI / 4, { x: 2, y: 2 });
+   const b = new Transform2({ x: 1, y: 2 }, Math.PI / 3, { x: 1, y: 1 });
+   const viaRelative = Transform2.relative(a, b);
+   const viaCompose = Transform2.multiply(Transform2.inverse(a), b);
+   expect(viaRelative.position.x).toBeCloseTo(viaCompose.position.x, DIGITS);
+   expect(viaRelative.position.y).toBeCloseTo(viaCompose.position.y, DIGITS);
+   expect(viaRelative.rotation.cos).toBeCloseTo(viaCompose.rotation.cos, DIGITS);
+   expect(viaRelative.rotation.sin).toBeCloseTo(viaCompose.rotation.sin, DIGITS);
+   expect(viaRelative.scale.x).toBeCloseTo(viaCompose.scale.x, DIGITS);
+   expect(viaRelative.scale.y).toBeCloseTo(viaCompose.scale.y, DIGITS);
+  });
+
+  it('relative throws for singular a', () => {
+   const a = new Transform2({ x: 0, y: 0 }, 0, { x: 0, y: 1 });
+   const b = new Transform2({ x: 1, y: 1 }, 0, { x: 1, y: 1 });
+   expect(() => Transform2.relative(a, b)).toThrow(RangeError);
+  });
+
+  it('relativeSafe returns identity for singular a', () => {
+   const a = new Transform2({ x: 0, y: 0 }, 0, { x: 0, y: 1 });
+   const b = new Transform2({ x: 1, y: 1 }, 0, { x: 1, y: 1 });
+   const result = Transform2.relativeSafe(a, b);
+   expect(result.position.x).toBe(0);
+   expect(result.position.y).toBe(0);
+   expect(result.rotation.cos).toBe(1);
+   expect(result.rotation.sin).toBe(0);
+   expect(result.scale.x).toBe(1);
+   expect(result.scale.y).toBe(1);
+  });
+
+  it('relativeUnchecked handles out === b aliasing', () => {
+   const a = new Transform2({ x: 3, y: 5 }, Math.PI / 4, { x: 2, y: 2 });
+   const b = new Transform2({ x: 1, y: 2 }, Math.PI / 3, { x: 1, y: 1 });
+   const bClone = new Transform2({ x: 1, y: 2 }, Math.PI / 3, { x: 1, y: 1 });
+   const expected = Transform2.relative(a, b);
+   // aliasing: pass bClone as out.
+   Transform2.relativeUnchecked(a, bClone, bClone);
+   expect(bClone.position.x).toBeCloseTo(expected.position.x, DIGITS);
+   expect(bClone.position.y).toBeCloseTo(expected.position.y, DIGITS);
+  });
+
+  it('instance relativeTo matches static relative(this, other)', () => {
+   const a = new Transform2({ x: 3, y: 5 }, Math.PI / 4, { x: 2, y: 2 });
+   const b = new Transform2({ x: 1, y: 2 }, Math.PI / 3, { x: 1, y: 1 });
+   const expected = Transform2.relative(a, b);
+   const result = a.clone().relativeTo(b);
+   expect(result.position.x).toBeCloseTo(expected.position.x, DIGITS);
+   expect(result.rotation.cos).toBeCloseTo(expected.rotation.cos, DIGITS);
+  });
+
+  it('instance relativeFrom matches static relative(other, this)', () => {
+   const a = new Transform2({ x: 3, y: 5 }, Math.PI / 4, { x: 2, y: 2 });
+   const b = new Transform2({ x: 1, y: 2 }, Math.PI / 3, { x: 1, y: 1 });
+   const expected = Transform2.relative(b, a);
+   const result = a.clone().relativeFrom(b);
+   expect(result.position.x).toBeCloseTo(expected.position.x, DIGITS);
+   expect(result.rotation.cos).toBeCloseTo(expected.rotation.cos, DIGITS);
   });
  });
 

@@ -13,7 +13,7 @@ import type { DiagnosticReport } from '../../../harness/diagnostics.ts';
 import {
  testCrossProductCancellation,
  testDeterminantCancellation,
-} from '../../../stress/cancellation.stress.ts';
+} from './cancellation.stress.ts';
 
 /**
  * Measure catastrophic cancellation in cross product and determinant computations

@@ -1,0 +1,20 @@
+{
+ // Dependency-audit gate configuration (pr-validation.yml).
+ //
+ // The gate BLOCKS at high severity. When a new advisory reddens CI without
+ // any code change, the managed recourse is an allowlist entry here — added
+ // via a reviewed change that records: the advisory id (GHSA-...), why it is
+ // acceptable to defer (e.g. dev-only dependency, no exploitable path), and
+ // when it must be removed (the patched version). Remove entries as soon as
+ // the fixed dependency version lands in the lockfile.
+ "$schema": "https://raw.githubusercontent.com/IBM/audit-ci/main/docs/schema.json",
+ "high": true,
+ "allowlist": [
+  // GHSA-5c6j-r48x-rmvq — serialize-javascript@6 nested under @docusaurus/core 3.10.1
+  // (copy-webpack-plugin / css-minimizer-webpack-plugin). Docs-site BUILD-TIME
+  // only: never shipped, no runtime dependency of any published package. No
+  // non-breaking upstream fix (Docusaurus must bump its webpack plugins).
+  // REMOVE when a Docusaurus release resolves serialize-javascript >= 7.0.5.
+  "GHSA-5c6j-r48x-rmvq",
+ ],
+}

@@ -12,7 +12,7 @@ import type { PackageLoader } from './package-loader.ts';
 /** Represent the execution context for a single dimension cell */
 export interface CellContext {
  /** The loaded module for this cell's build mode */
- math2d: Record<string, unknown>;
+ module: Record<string, unknown>;
  /** The cell being executed */
  cell: DimensionCell;
  /** Cleanup function to restore previous state */
@@ -47,7 +47,7 @@ export async function setupCell(cell: DimensionCell, loader: PackageLoader): Pro
  }
 
  return {
-  math2d: mod,
+  module: mod,
   cell,
   teardown() {
    if (config && previousValue !== undefined) {

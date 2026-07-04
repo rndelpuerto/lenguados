@@ -7,7 +7,7 @@
 
 import type { StressTestDefinition, StressTestOutput } from '../../../harness/stress-types.ts';
 import type { DiagnosticReport } from '../../../harness/diagnostics.ts';
-import { runAllocationStress } from '../../../stress/allocation.stress.ts';
+import { runAllocationStress } from './allocation.stress.ts';
 
 /**
  * Verify that out-param operations allocate zero heap bytes per call

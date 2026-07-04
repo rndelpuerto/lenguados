@@ -35,6 +35,7 @@
  * ```
  */
 
+import { sinCos } from '../auxiliary/angle/operations';
 import { sqrtSafe } from '../auxiliary/numeric/safety';
 import { TAU } from '../auxiliary/scalar/constants';
 import { lerp } from '../auxiliary/scalar/interpolation';
@@ -44,7 +45,7 @@ import { Matrix2 } from '../core/matrix2';
 import { Rotation2 } from '../core/rotation2';
 import { Transform2 } from '../core/transform2';
 import { Vector2 } from '../core/vector2';
-import { cos, log, sin } from '../deterministic/deterministic-kernels';
+import { log } from '../deterministic/deterministic-kernels';
 import type { ReadonlyVector2Like } from '../types';
 import { assertNonNegative } from '../validation/assert';
 
@@ -55,7 +56,7 @@ import { type RandomSource, getDefaultRandomSource } from './random-source';
 /* ========================================================================== */
 
 /**
- * Generates a random 2D vector with components in range [min, max).
+ * Generates a random 2D vector with components in range [min, max)
  *
  * @remarks
  * Each component is sampled independently with a uniform distribution.
@@ -85,7 +86,7 @@ export function randomVector2(
 }
 
 /**
- * Generates a random unit vector.
+ * Generates a random unit vector
  *
  * @remarks
  * Uses a uniform distribution over the unit circle.
@@ -107,7 +108,8 @@ export function randomUnitVector2(
  source: RandomSource = getDefaultRandomSource(),
 ): Vector2 {
  const angle = source.next() * TAU;
- return out.set(cos(angle), sin(angle));
+ const { sin, cos } = sinCos(angle);
+ return out.set(cos, sin);
 }
 
 /* ========================================================================== */
@@ -115,7 +117,7 @@ export function randomUnitVector2(
 /* ========================================================================== */
 
 /**
- * Generates a random point on a circle's circumference.
+ * Generates a random point on a circle's circumference
  *
  * @remarks
  * Uses a uniform distribution along the perimeter. `radius` should be non-negative.
@@ -139,13 +141,16 @@ export function randomOnCircle(
  source: RandomSource = getDefaultRandomSource(),
 ): Vector2 {
  // Development assertion: negative radius produces inverted points (likely a bug)
- assertNonNegative(radius, 'randomOnCircle:radius');
+ if (__LENGUADOS_DEV__) {
+  assertNonNegative(radius, 'randomOnCircle:radius');
+ }
  const angle = source.next() * TAU;
- return out.set(cos(angle) * radius, sin(angle) * radius);
+ const { sin, cos } = sinCos(angle);
+ return out.set(cos * radius, sin * radius);
 }
 
 /**
- * Generates a random point inside a unit circle.
+ * Generates a random point inside a unit circle
  *
  * @remarks
  * Uses sqrt(r) in polar coordinates to achieve uniform area distribution.
@@ -170,11 +175,12 @@ export function randomInUnitCircle(
  // Use sqrtSafe for cross-platform reproducibility
  const r = sqrtSafe(source.next());
  const angle = source.next() * TAU;
- return out.set(cos(angle) * r, sin(angle) * r);
+ const { sin, cos } = sinCos(angle);
+ return out.set(cos * r, sin * r);
 }
 
 /**
- * Generates a random point inside a circle with given radius.
+ * Generates a random point inside a circle with given radius
  *
  * @remarks
  * Samples the unit disk and scales by `radius` to keep uniform area density.
@@ -198,9 +204,113 @@ export function randomInCircle(
  source: RandomSource = getDefaultRandomSource(),
 ): Vector2 {
  // Development assertion: negative radius produces inverted points (likely a bug)
- assertNonNegative(radius, 'randomInCircle:radius');
+ if (__LENGUADOS_DEV__) {
+  assertNonNegative(radius, 'randomInCircle:radius');
+ }
  randomInUnitCircle(out, source);
  return out.multiplyScalar(radius);
+}
+
+/**
+ * Generates a uniform random point in the annulus between `inner` and `outer` radii
+ *
+ * @remarks
+ * Uniform area density requires `r² = U · (outer² − inner²) + inner²` with
+ * `U ~ Uniform[0, 1)`; taking the square root gives the radial sample. The
+ * angle is sampled uniformly in `[0, TAU)`. Degenerate case `inner === outer`
+ * produces a point on the circle of that radius.
+ *
+ * @param inner - Inner radius (non-negative)
+ * @param outer - Outer radius (must satisfy `outer ≥ inner`)
+ * @param out - Optional output vector. Defaults to `new Vector2()`
+ * @param source - Random source to sample from. Defaults to `defaultRandomSource`
+ * @returns The `out` vector set to a point inside the annulus
+ * @throws {RangeError} If `inner < 0` or `inner > outer`
+ *
+ * @example
+ * ```typescript
+ * const p = randomInAnnulus(2, 5);
+ * ```
+ *
+ * @see {@link randomInAnnulusSafe} - Returns fallback on invalid radii
+ * @see {@link randomInAnnulusUnchecked} - No validation, for hot paths
+ *
+ * @category Factory
+ * @since 0.7.0
+ */
+export function randomInAnnulus(
+ inner: number,
+ outer: number,
+ out = new Vector2(),
+ source: RandomSource = getDefaultRandomSource(),
+): Vector2 {
+ if (inner < 0) {
+  throw new RangeError('randomInAnnulus: inner radius must be non-negative');
+ }
+ if (inner > outer) {
+  throw new RangeError('randomInAnnulus: inner radius must be ≤ outer radius');
+ }
+ return randomInAnnulusUnchecked(inner, outer, out, source);
+}
+
+/**
+ * Generates a uniform random point in the annulus, returning a fallback on invalid input
+ *
+ * @param inner - Inner radius
+ * @param outer - Outer radius
+ * @param fallback - Fallback applied to `out` on invalid radii. @defaultValue `(0, 0)`
+ * @param out - Optional output vector. Defaults to `new Vector2()`
+ * @param source - Random source to sample from. Defaults to `defaultRandomSource`
+ * @returns The `out` vector set to an annulus sample, or the fallback
+ *
+ * @see {@link randomInAnnulus} - Strict variant that throws
+ *
+ * @category Factory
+ * @since 0.7.0
+ */
+export function randomInAnnulusSafe(
+ inner: number,
+ outer: number,
+ fallback: ReadonlyVector2Like = Vector2.ZERO,
+ out = new Vector2(),
+ source: RandomSource = getDefaultRandomSource(),
+): Vector2 {
+ if (inner < 0 || inner > outer) {
+  return out.set(fallback.x, fallback.y);
+ }
+ return randomInAnnulusUnchecked(inner, outer, out, source);
+}
+
+/**
+ * Generates a uniform random point in the annulus without validation
+ *
+ * @remarks
+ * **Precondition:** `0 ≤ inner ≤ outer`.
+ *
+ * @param inner - Inner radius
+ * @param outer - Outer radius
+ * @param out - Optional output vector. Defaults to `new Vector2()`
+ * @param source - Random source to sample from. Defaults to `defaultRandomSource`
+ * @returns The `out` vector set to an annulus sample
+ *
+ * @see {@link randomInAnnulus} - Strict variant that throws
+ * @see {@link randomInAnnulusSafe} - Returns fallback on invalid radii
+ *
+ * @category Factory
+ * @since 0.7.0
+ */
+export function randomInAnnulusUnchecked(
+ inner: number,
+ outer: number,
+ out = new Vector2(),
+ source: RandomSource = getDefaultRandomSource(),
+): Vector2 {
+ const innerSq = inner * inner;
+ const outerSq = outer * outer;
+ const radius = Math.sqrt(innerSq + source.next() * (outerSq - innerSq));
+ const angle = source.next() * TAU;
+ const { sin, cos } = sinCos(angle);
+ return out.set(radius * cos, radius * sin);
 }
 
 /* ========================================================================== */
@@ -208,7 +318,7 @@ export function randomInCircle(
 /* ========================================================================== */
 
 /**
- * Generates a random 2D rotation.
+ * Generates a random 2D rotation
  *
  * @remarks
  * Uses a uniform angle distribution in [0, TAU).
@@ -233,7 +343,7 @@ export function randomRotation2(
 }
 
 /**
- * Generates a random 2x2 rotation matrix.
+ * Generates a random 2x2 rotation matrix
  *
  * @remarks
  * Uses a uniform angle distribution in [0, TAU).
@@ -263,10 +373,15 @@ export function randomRotationMatrix2(
 /* ========================================================================== */
 
 /**
- * Generates a random rigid transform (SE(2)).
+ * Generates a random isometry on SE(2): random rotation and random translation with identity scale
  *
  * @remarks
- * Rotation is sampled uniformly and translation is sampled inside the unit circle.
+ * Rotation is sampled uniformly in [0, TAU) and translation is sampled inside
+ * the unit disk. An isometry preserves distances — the scale is identity,
+ * matching the Special Euclidean group SE(2) (translation + rotation only, no
+ * stretch). See Altmann 1986 *Rotations, Quaternions, and Double Groups* Ch. 3
+ * for the standard definition and do Carmo 1976 *Differential Geometry of
+ * Curves and Surfaces* Ch. 4 for the distance-preserving characterisation.
  *
  * @param out - Optional output transform to avoid allocation. Defaults to `new Transform2()`
  * @param source - Random source to sample from. Defaults to `defaultRandomSource`
@@ -274,13 +389,13 @@ export function randomRotationMatrix2(
  *
  * @example
  * ```typescript
- * const t = randomTransform2();
+ * const t = randomIsometry2();
  * ```
  *
  * @category Factory
  * @since 0.7.0
  */
-export function randomTransform2(
+export function randomIsometry2(
  out = new Transform2(),
  source: RandomSource = getDefaultRandomSource(),
 ): Transform2 {
@@ -295,7 +410,7 @@ export function randomTransform2(
 /* ========================================================================== */
 
 /**
- * Generates a random point inside a rectangle centered at the origin.
+ * Generates a random point inside a rectangle centered at the origin
  *
  * @remarks
  * Each coordinate is sampled uniformly from [-width/2, width/2) and
@@ -325,7 +440,7 @@ export function randomInRectangle(
 }
 
 /**
- * Generates a random point inside an axis-aligned box.
+ * Generates a random point inside an axis-aligned box
  *
  * @remarks
  * Each coordinate is sampled independently in [min, max).
@@ -358,7 +473,7 @@ export function randomInBox(
 }
 
 /**
- * Generates a random point on the perimeter of a rectangle.
+ * Generates a random point on the perimeter of a rectangle
  *
  * @remarks
  * Samples uniformly along the perimeter length. Width and height should be positive.
@@ -408,11 +523,12 @@ export function randomOnRectangle(
 /* ========================================================================== */
 
 /**
- * Generates a random 2D vector with a normal distribution.
+ * Generates a random 2D vector with a normal distribution
  *
  * @remarks
- * Uses the Box-Muller transform to sample each component independently from
- * N(mean, standardDeviation^2). `standardDeviation` should be non-negative.
+ * Uses the Box-Muller transform (Box & Muller 1958) to sample each component
+ * independently from N(mean, standardDeviation^2). `standardDeviation` should
+ * be non-negative.
  *
  * @param mean - Mean of the distribution. Defaults to `0`
  * @param standardDeviation - Standard deviation. Defaults to `1`
@@ -425,8 +541,6 @@ export function randomOnRectangle(
  * const v = randomGaussianVector2(0, 2);
  * ```
  *
- * @see {@link https://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform} - Box-Muller transform
- *
  * @category Factory
  * @since 0.7.0
  */
@@ -437,7 +551,9 @@ export function randomGaussianVector2(
  source: RandomSource = getDefaultRandomSource(),
 ): Vector2 {
  // Development assertion: negative stdDev is mathematically valid but counterintuitive
- assertNonNegative(standardDeviation, 'randomGaussianVector2:standardDeviation');
+ if (__LENGUADOS_DEV__) {
+  assertNonNegative(standardDeviation, 'randomGaussianVector2:standardDeviation');
+ }
  // Box-Muller transform
  const u1 = source.next();
  const u2 = source.next();
@@ -448,8 +564,9 @@ export function randomGaussianVector2(
  // Use deterministic log() from deterministic-kernels for cross-platform consistency
  const mag = standardDeviation * sqrtSafe(-2.0 * log(safeU1));
  const angle = TAU * u2;
+ const { sin, cos } = sinCos(angle);
 
- return out.set(mean + mag * cos(angle), mean + mag * sin(angle));
+ return out.set(mean + mag * cos, mean + mag * sin);
 }
 
 /* ========================================================================== */
@@ -457,7 +574,7 @@ export function randomGaussianVector2(
 /* ========================================================================== */
 
 /**
- * Generates a random point on a line segment.
+ * Generates a random point on a line segment
  *
  * @remarks
  * Samples uniformly along the segment length.
@@ -487,10 +604,13 @@ export function randomOnSegment(
 }
 
 /**
- * Generates a random point inside a triangle.
+ * Generates a random point inside a triangle
  *
  * @remarks
- * Uses barycentric coordinates to ensure uniform area distribution.
+ * Samples two uniform variates `(u, v)` in the unit square and folds the pair
+ * across the diagonal `u + v = 1` into the unit triangle. The fold is
+ * area-preserving, so the resulting barycentric coordinates `(u, v, 1 − u − v)`
+ * are uniformly distributed over the triangle.
  *
  * @param a - First vertex of the triangle
  * @param b - Second vertex of the triangle
@@ -503,8 +623,6 @@ export function randomOnSegment(
  * ```typescript
  * const p = randomInTriangle(a, b, c);
  * ```
- *
- * @see {@link https://math.stackexchange.com/questions/18686/uniform-random-point-in-triangle} - Uniform random point in triangle
  *
  * @category Factory
  * @since 0.7.0
@@ -533,7 +651,7 @@ export function randomInTriangle(
 }
 
 /**
- * Generates a random point on a triangle perimeter.
+ * Generates a random point on a triangle perimeter
  *
  * @remarks
  * Distributes points uniformly by edge length.
@@ -594,7 +712,7 @@ export function randomOnTriangle(
 /* ========================================================================== */
 
 /**
- * Generates a random complex number with components in range [min, max).
+ * Generates a random complex number with components in range [min, max)
  *
  * @remarks
  * Both real and imaginary components are sampled independently
@@ -625,7 +743,7 @@ export function randomComplex(
 }
 
 /**
- * Generates a random unit complex number (on the unit circle).
+ * Generates a random unit complex number (on the unit circle)
  *
  * @remarks
  * Equivalent to generating a random rotation as a complex number.
@@ -648,7 +766,8 @@ export function randomUnitComplex(
  source: RandomSource = getDefaultRandomSource(),
 ): Complex {
  const angle = source.next() * TAU;
- return out.set(cos(angle), sin(angle));
+ const { sin, cos } = sinCos(angle);
+ return out.set(cos, sin);
 }
 
 /* ========================================================================== */
@@ -656,7 +775,7 @@ export function randomUnitComplex(
 /* ========================================================================== */
 
 /**
- * Generates a random interval within specified bounds.
+ * Generates a random interval within specified bounds
  *
  * @remarks
  * Generates two random values, sorts them, and uses them as min/max.

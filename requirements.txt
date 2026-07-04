@@ -1,0 +1,16 @@
+# Python tooling for the lenguados monorepo -- DECLARATIVE SOURCE OF TRUTH.
+#
+# This file is the single source of truth for the cookiecutter version
+# constraint. It is NOT installed by `npm run init` (the bootstrap is
+# Python-free). It is consumed only by `npm run tools:create-package`
+# (tools/create-package.sh), which reads the pin from here and runs
+# cookiecutter in an isolated runner (pipx / uv), so a system `pip install`
+# is never required.
+#
+# Do NOT run `pip install -r requirements.txt`: on modern Python (PEP 668,
+# "externally-managed-environment") that hard-fails outside a virtualenv.
+# Install the scaffolder once with:  pipx install cookiecutter   (or use uv).
+#
+# Floor 2.6.0 = the version validated against tools/package on this repo;
+# upper bound <3 caps the next major so a breaking 3.0 cannot land silently.
+cookiecutter>=2.6.0,<3

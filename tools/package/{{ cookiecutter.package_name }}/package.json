@@ -25,6 +25,7 @@
   "./main.js": "./main.js"
  },
  "types": "./lib/@types/index.d.ts",
+ "sideEffects": false,
  "exports": {
   ".": {
    "types": "./lib/@types/index.d.ts",
@@ -38,7 +39,6 @@
    }
   },
   "./lib/*": {
-   "types": "./lib/@types/*.d.ts",
    "require": "./lib/cjs/*",
    "import": "./lib/esm/*"
   },
@@ -49,12 +49,15 @@
   "main.js",
   "main.mjs",
   "dev-main.mjs",
-  "lib"
+  "lib",
+  "LICENSE",
+  "NOTICE"
  ],
  "scripts": {
   "build": "node ../../scripts/build.mjs",
   "clean": "node ../../scripts/clean.mjs",
   "outdated": "node ../../scripts/outdated.mjs",
+  "prepack": "cross-env NODE_ENV=development node ../../scripts/build.mjs && cross-env NODE_ENV=production node ../../scripts/build.mjs && node ../../scripts/sync-legal-files.mjs",
   "publish:local": "node ../../scripts/publish-local.mjs",
   "unpublish:local": "node ../../scripts/unpublish-local.mjs",
   "watch": "node ../../scripts/watch.mjs"
@@ -63,9 +66,14 @@
   "verdaccioport": "4873"
  },
  "engines": {
-  "node": ">=22"
+  "node": ">=24"
  },
  "publishConfig": {
   "access": "public"
+ },
+ "typedocOptions": {
+  "entryPoints": [
+   "src/index.ts"
+  ]
  }
 }

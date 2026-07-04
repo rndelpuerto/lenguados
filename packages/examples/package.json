@@ -1,7 +1,7 @@
 {
  "name": "@lenguados/examples",
  "version": "0.6.0",
- "description": "Interactive demos, visual tests and reference scenes to showcase and validate all features of the 2-D version of the Lenguado physics-engine family.",
+ "description": "Interactive demos and reference scenes exercising the public API of the 2-D packages of the Lenguado physics-engine family.",
  "keywords": [
   "examples"
  ],
@@ -25,6 +25,7 @@
   "./main.js": "./main.js"
  },
  "types": "./lib/@types/index.d.ts",
+ "sideEffects": false,
  "exports": {
   ".": {
    "types": "./lib/@types/index.d.ts",
@@ -50,7 +51,6 @@
   },
   "./assets/*": "./lib/assets/*",
   "./lib/*": {
-   "types": "./lib/@types/*.d.ts",
    "require": "./lib/cjs/*",
    "import": "./lib/esm/*"
   },
@@ -61,12 +61,15 @@
   "main.js",
   "main.mjs",
   "dev-main.mjs",
-  "lib"
+  "lib",
+  "LICENSE",
+  "NOTICE"
  ],
  "scripts": {
   "build": "node ../../scripts/build.mjs",
   "clean": "node ../../scripts/clean.mjs",
   "outdated": "node ../../scripts/outdated.mjs",
+  "prepack": "cross-env NODE_ENV=development node ../../scripts/build.mjs && cross-env NODE_ENV=production node ../../scripts/build.mjs && node ../../scripts/sync-legal-files.mjs",
   "publish:local": "node ../../scripts/publish-local.mjs",
   "unpublish:local": "node ../../scripts/unpublish-local.mjs",
   "watch": "node ../../scripts/watch.mjs"
@@ -76,5 +79,24 @@
  },
  "publishConfig": {
   "access": "public"
+ },
+ "typedocOptions": {
+  "entryPoints": [
+   "src/canvas-hello/index.ts"
+  ]
+ },
+ "devDependencies": {
+  "@lenguados/math2d": "^0.6.0"
+ },
+ "config": {
+  "verdaccioport": "4873"
+ },
+ "peerDependencies": {
+  "@lenguados/math2d": "^0.6.0"
+ },
+ "peerDependenciesMeta": {
+  "@lenguados/math2d": {
+   "optional": true
+  }
  }
 }

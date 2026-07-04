@@ -7,7 +7,7 @@
 
 import { BarChart, HeatmapChart } from 'echarts/charts';
 import {
- DatasetComponent,
+ AriaComponent,
  GridComponent,
  LegendComponent,
  TitleComponent,
@@ -24,7 +24,7 @@ echarts.use([
  TooltipComponent,
  LegendComponent,
  TitleComponent,
- DatasetComponent,
+ AriaComponent,
  VisualMapComponent,
  SVGRenderer,
 ]);

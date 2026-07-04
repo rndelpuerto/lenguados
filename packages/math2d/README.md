@@ -6,7 +6,7 @@
 
 > Core 2D math utilities for the Lenguado physics-engine family.
 
-High-performance, fully-typed TypeScript math primitives with **cross-platform determinism** (fdlibm-based kernels), **zero-allocation** hot-path patterns, and **tree-shakeable validation**.
+High-performance, fully-typed TypeScript math primitives with **cross-platform determinism** (fdlibm-based kernels), **zero-allocation** hot-path patterns, and **development-only validation** (assertions are eliminated at the library build step; conditional exports select the production build).
 
 ## Highlights
 
@@ -25,16 +25,7 @@ npm install @lenguados/math2d
 ## Quick Start
 
 ```typescript
-import {
- Vector2,
- Rotation2,
- Transform2,
- Matrix3,
- lerp,
- nearEquals,
- DEG_TO_RAD,
- sinCos,
-} from '@lenguados/math2d';
+import { Vector2, Transform2, DEG_TO_RAD, sinCos } from '@lenguados/math2d';
 
 // --- Static methods are pure; instance methods mutate `this` ---
 const position = Vector2.fromValues(10, 20);
@@ -58,19 +49,19 @@ rotated.rotateCS(cos, sin);
 
 ## API Overview
 
-All exports are **named** imports from the package root.
+All exports are **named**. Core types, the auxiliary layer, the deterministic kernels, and validation are imported from the package root; the utilities are imported from dedicated subpaths (see the Utilities table below).
 
 ### Core Types
 
-| Type         | Description                                                     |
-| ------------ | --------------------------------------------------------------- |
-| `Vector2`    | Mutable, chainable 2D vector with static pure helpers           |
-| `Rotation2`  | Unit-complex rotation (cos, sin) with CS variants for hot paths |
-| `Complex`    | Full complex arithmetic (exp, log, polar, slerp)                |
-| `Interval`   | Closed interval [min, max] arithmetic and set operations        |
-| `Matrix2`    | 2x2 column-major matrix (rotation, scale, shear, solve)         |
-| `Matrix3`    | 3x3 affine matrix for 2D coordinate transforms                  |
-| `Transform2` | Decomposed SRT (Scale -> Rotate -> Translate) transform         |
+| Type         | Description                                                                                                             |
+| ------------ | ----------------------------------------------------------------------------------------------------------------------- |
+| `Vector2`    | Mutable, chainable 2D vector with static pure helpers                                                                   |
+| `Rotation2`  | Unit-complex rotation (cos, sin) with CS variants for hot paths and closest-rotation factory (`fromMatrix2Closest`)     |
+| `Complex`    | Full complex arithmetic (exp, log, polar, slerp)                                                                        |
+| `Interval`   | Closed interval [min, max] arithmetic and set operations                                                                |
+| `Matrix2`    | 2x2 column-major matrix: arithmetic, decompositions (SVD, polar, eigen, pseudo-inverse), condition number, solve, shear |
+| `Matrix3`    | 3x3 affine matrix for 2D coordinate transforms                                                                          |
+| `Transform2` | Decomposed SRT (Scale -> Rotate -> Translate) transform                                                                 |
 
 Each type includes: `Readonly*` alias, `freeze*()` function, `is*Like()` guard, and `*Like` / `Readonly*Like` structural interfaces.
 
@@ -78,10 +69,12 @@ Each type includes: `Readonly*` alias, `freeze*()` function, `is*Like()` guard, 
 
 | Module        | Key Exports                                                                                                                                      |
 | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Scalar**    | `clamp`, `lerp`, `smoothStep`, `nearEquals`, `inverseLerp`, `sign`, `saturate`, `remap`, `mod`, `pingPong`, `step`                               |
+| **Scalar**    | `clamp`, `lerp`, `smoothStep`, `nearEquals`, `inverseLerp`, `sign`, `saturate`, `mod`, `floorDivide`, `loop`, `step`                             |
 | **Angle**     | `sinCos`, `degreesToRadians`, `normalizeRadians`, `angleDifference`, `lerpAngle`, `angleBisector`, `AngleUnwrapper`                              |
 | **Numeric**   | `divideSafe`, `reciprocalSafe`, `sqrtSafe`, `acosSafe`, `asinSafe`, `expSafe`, `logSafe`, `powSafe`, `robustSum`, `neumaierSum`, `roundToPlaces` |
 | **Constants** | `PI`, `TAU`, `HALF_PI`, `DEG_TO_RAD`, `RAD_TO_DEG`, `EPSILON`, `MIN_SAFE_DIVISOR`, `SQRT_2`                                                      |
+
+The Numeric row lists Layer 1 safety-wrappers over the Layer 0 deterministic kernels (shown in the Deterministic Kernels row below). Each `*Safe` entry substitutes a neutral fallback (`0`, `1`, identity) for IEEE 754 domain violations that would otherwise propagate as `NaN` or `Infinity`. These wrappers do not throw and do not have `*Unchecked` siblings — the raw kernel itself is the "no-guard" form. The full strict / Safe / Unchecked triality applies wherever a strict variant throws on invalid input: the Core-type operations (for example `Vector2.normalize`, `Matrix2.inverse`) and a small set of restricted-domain scalar operations (`mod`, `inverseLerp`, `loop`, `floorDivide`). The total IEEE 754 kernels themselves carry no triality.
 
 ### Deterministic Kernels
 
@@ -93,6 +86,8 @@ Each type includes: `Readonly*` alias, `freeze*()` function, `is*Like()` guard, 
 | `sinCos`, `hypot`               | Combined/utility functions                                   |
 | `config`                        | `config.useNativeMath` toggle for determinism vs performance |
 
+The `sinCos` exported from the package root is the auxiliary (angle-layer) wrapper over the L0 kernel — same `(angle, out?)` signature, delegating to the deterministic implementation. It is the same symbol listed in the Angle row above.
+
 ### Validation
 
 | Export                                                   | Description                           |
@@ -101,15 +96,21 @@ Each type includes: `Readonly*` alias, `freeze*()` function, `is*Like()` guard, 
 | `assert`, `assertFinite`, `assertNonZero`, `assertRange` | Scalar assertions                     |
 | `assertVector2`, `assertMatrix2`, `assertRotation2`, ... | Per-type structural assertions        |
 
-Assertions are tree-shakeable: stripped from production builds via conditional exports.
+Assertions are development-only: they are eliminated at the library build step, and conditional exports select the production build.
 
 ### Utilities
 
-| Export                                                                   | Description                       |
-| ------------------------------------------------------------------------ | --------------------------------- |
-| `randomVector2`, `randomUnitVector2`, `randomOnCircle`, `randomInCircle` | Random generation                 |
-| `SeededRandomSource`                                                     | Deterministic PRNG (xoshiro128++) |
-| `parseVector2`, `formatVector2`, ...                                     | Serialization/parsing per type    |
+| Export                                                                   | Import Path                             | Description                       |
+| ------------------------------------------------------------------------ | --------------------------------------- | --------------------------------- |
+| `randomVector2`, `randomUnitVector2`, `randomOnCircle`, `randomInCircle` | `@lenguados/math2d/utils/random`        | Random generation                 |
+| `SeededRandomSource`                                                     | `@lenguados/math2d/utils/random-source` | Deterministic PRNG (xoshiro128++) |
+| `parseVector2`, `formatVector2`, ...                                     | `@lenguados/math2d/utils/parse`         | Serialization/parsing per type    |
+
+```typescript
+import { randomVector2 } from '@lenguados/math2d/utils/random';
+import { SeededRandomSource } from '@lenguados/math2d/utils/random-source';
+import { parseVector2 } from '@lenguados/math2d/utils/parse';
+```
 
 ## Key Concepts
 
@@ -162,7 +163,7 @@ for (const v of validatedVectors) {
 
 - [Architecture](https://github.com/rndelpuerto/lenguados/blob/main/packages/math2d/ARCHITECTURE.md) -- layered design and dependency rules
 - [Contributing](https://github.com/rndelpuerto/lenguados/blob/main/CONTRIBUTING.md) -- setup, workflow, API conventions
-- [TSDoc Standard](https://github.com/rndelpuerto/lenguados/blob/main/docs/docs/guides/tsdoc-standard.md) -- canonical tag order, templates
+- [TSDoc Standard](https://github.com/rndelpuerto/lenguados/blob/main/TSDOC_STANDARD.md) -- canonical tag order, templates
 - [Changelog](https://github.com/rndelpuerto/lenguados/blob/main/packages/math2d/CHANGELOG.md) -- version history
 - [Full Documentation](https://rndelpuerto.github.io/lenguados/docs/) -- docs site with deep-dives, design decisions, and API reference
 

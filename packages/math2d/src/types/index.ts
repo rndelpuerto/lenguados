@@ -13,7 +13,7 @@
 /* ========================================================================== */
 
 /**
- * Readonly interface for objects with x,y components.
+ * Readonly interface for objects with x,y components
  *
  * @category Types
  * @since 0.7.0
@@ -24,7 +24,7 @@ export interface ReadonlyVector2Like {
 }
 
 /**
- * Mutable interface for objects with x,y components.
+ * Mutable interface for objects with x,y components
  *
  * @category Types
  * @since 0.7.0
@@ -39,7 +39,7 @@ export interface Vector2Like {
 /* ========================================================================== */
 
 /**
- * Readonly interface for 2x2 matrix components.
+ * Readonly interface for 2x2 matrix components
  *
  * @category Types
  * @since 0.7.0
@@ -52,7 +52,7 @@ export interface ReadonlyMatrix2Like {
 }
 
 /**
- * Mutable interface for 2x2 matrix components.
+ * Mutable interface for 2x2 matrix components
  *
  * @category Types
  * @since 0.7.0
@@ -69,7 +69,7 @@ export interface Matrix2Like {
 /* ========================================================================== */
 
 /**
- * Readonly interface for 3x3 matrix components.
+ * Readonly interface for 3x3 matrix components
  *
  * @category Types
  * @since 0.7.0
@@ -87,7 +87,7 @@ export interface ReadonlyMatrix3Like {
 }
 
 /**
- * Mutable interface for 3x3 matrix components.
+ * Mutable interface for 3x3 matrix components
  *
  * @category Types
  * @since 0.7.0
@@ -109,41 +109,41 @@ export interface Matrix3Like {
 /* ========================================================================== */
 
 /**
- * Readonly interface for 2D rotation represented as cosine/sine components.
+ * Readonly interface for 2D rotation represented as cosine/sine components
  *
  * @category Types
  * @since 0.7.0
  */
 export interface ReadonlyRotation2Like {
  /**
-  * Cosine component of the rotation.
+  * Cosine component of the rotation
   * For a rotation of angle θ, this equals cos(θ).
   */
  readonly cos: number;
 
  /**
-  * Sine component of the rotation.
+  * Sine component of the rotation
   * For a rotation of angle θ, this equals sin(θ).
   */
  readonly sin: number;
 }
 
 /**
- * Mutable interface for 2D rotation represented as cosine/sine components.
- * @see {@link ReadonlyRotation2Like} for detailed property documentation.
+ * Mutable interface for 2D rotation represented as cosine/sine components
+ * @see {@link ReadonlyRotation2Like} - detailed property documentation
  *
  * @category Types
  * @since 0.7.0
  */
 export interface Rotation2Like {
  /**
-  * Cosine component of the rotation.
+  * Cosine component of the rotation
   * For a rotation of angle θ, this equals cos(θ).
   */
  cos: number;
 
  /**
-  * Sine component of the rotation.
+  * Sine component of the rotation
   * For a rotation of angle θ, this equals sin(θ).
   */
  sin: number;
@@ -154,7 +154,7 @@ export interface Rotation2Like {
 /* ========================================================================== */
 
 /**
- * Readonly interface for complex numbers.
+ * Readonly interface for complex numbers
  *
  * @category Types
  * @since 0.7.0
@@ -165,7 +165,7 @@ export interface ReadonlyComplexLike {
 }
 
 /**
- * Mutable interface for complex numbers.
+ * Mutable interface for complex numbers
  *
  * @category Types
  * @since 0.7.0
@@ -180,7 +180,7 @@ export interface ComplexLike {
 /* ========================================================================== */
 
 /**
- * Readonly interface for intervals.
+ * Readonly interface for intervals
  *
  * @category Types
  * @since 0.7.0
@@ -191,7 +191,7 @@ export interface ReadonlyIntervalLike {
 }
 
 /**
- * Mutable interface for intervals.
+ * Mutable interface for intervals
  *
  * @category Types
  * @since 0.7.0
@@ -206,7 +206,7 @@ export interface IntervalLike {
 /* ========================================================================== */
 
 /**
- * Readonly interface for 2D transforms.
+ * Readonly interface for 2D transforms
  *
  * @category Types
  * @since 0.7.0
@@ -218,7 +218,7 @@ export interface ReadonlyTransform2Like {
 }
 
 /**
- * Mutable interface for 2D transforms.
+ * Mutable interface for 2D transforms
  *
  * @category Types
  * @since 0.7.0
@@ -234,7 +234,16 @@ export interface Transform2Like {
 /* ========================================================================== */
 
 /**
- * Internal helper to check if an object has numeric properties.
+ * Internal helper to check if an object has numeric properties
+ *
+ * @remarks
+ * Shape guard only — validates that the keys exist and each value is a
+ * `typeof === 'number'`. NaN, ±Infinity, and signed zero all pass. The
+ * function deliberately does NOT enforce `Number.isFinite`; callers that
+ * need numeric validity must layer `assertFinite` on top. This matches
+ * the two-layer pattern where `is*Like` guards discriminate between
+ * plain objects and structurally valid shapes, and scalar assertions
+ * handle per-value domain checks.
  *
  * @param object - Object to check
  * @param keys - Property names to verify
@@ -251,7 +260,7 @@ function hasNumericProperties(object: Record<string, unknown>, keys: readonly st
 }
 
 /**
- * Type guard to check if value has x,y properties (Vector2Like).
+ * Type guard to check if value has x,y properties (Vector2Like)
  *
  * @param value - Value to check
  * @returns True if value conforms to ReadonlyVector2Like
@@ -273,7 +282,7 @@ export function isVector2Like(value: unknown): value is ReadonlyVector2Like {
 }
 
 /**
- * Type guard to check if value has 2x2 matrix properties (Matrix2Like).
+ * Type guard to check if value has 2x2 matrix properties (Matrix2Like)
  *
  * @param value - Value to check
  * @returns True if value conforms to ReadonlyMatrix2Like
@@ -295,7 +304,7 @@ export function isMatrix2Like(value: unknown): value is ReadonlyMatrix2Like {
 }
 
 /**
- * Type guard to check if value has rotation properties (Rotation2Like).
+ * Type guard to check if value has rotation properties (Rotation2Like)
  *
  * @param value - Value to check
  * @returns True if value conforms to ReadonlyRotation2Like
@@ -317,7 +326,7 @@ export function isRotation2Like(value: unknown): value is ReadonlyRotation2Like 
 }
 
 /**
- * Type guard to check if value has 3x3 matrix properties (Matrix3Like).
+ * Type guard to check if value has 3x3 matrix properties (Matrix3Like)
  *
  * @param value - Value to check
  * @returns True if value conforms to ReadonlyMatrix3Like
@@ -349,7 +358,7 @@ export function isMatrix3Like(value: unknown): value is ReadonlyMatrix3Like {
 }
 
 /**
- * Type guard to check if value has complex number properties (ComplexLike).
+ * Type guard to check if value has complex number properties (ComplexLike)
  *
  * @param value - Value to check
  * @returns True if value conforms to ReadonlyComplexLike
@@ -371,7 +380,7 @@ export function isComplexLike(value: unknown): value is ReadonlyComplexLike {
 }
 
 /**
- * Type guard to check if value has interval properties (IntervalLike).
+ * Type guard to check if value has interval properties (IntervalLike)
  *
  * @param value - Value to check
  * @returns True if value conforms to ReadonlyIntervalLike
@@ -393,7 +402,7 @@ export function isIntervalLike(value: unknown): value is ReadonlyIntervalLike {
 }
 
 /**
- * Type guard to check if value has transform2 properties (Transform2Like).
+ * Type guard to check if value has transform2 properties (Transform2Like)
  *
  * @param value - Value to check
  * @returns True if value conforms to ReadonlyTransform2Like
@@ -424,7 +433,7 @@ export function isTransform2Like(value: unknown): value is ReadonlyTransform2Lik
 /* ========================================================================== */
 
 /**
- * Eigenvalue result for a 2x2 matrix with two distinct or repeated real eigenvalues.
+ * Eigenvalue result for a 2x2 matrix with two distinct or repeated real eigenvalues
  *
  * @category Types
  * @since 0.7.0
@@ -439,7 +448,7 @@ export interface RealEigenvalues {
 }
 
 /**
- * Eigenvalue result for a 2x2 matrix with complex conjugate eigenvalues.
+ * Eigenvalue result for a 2x2 matrix with complex conjugate eigenvalues
  *
  * @remarks
  * The two eigenvalues are `realPart ± imaginaryPart * i`.
@@ -457,7 +466,7 @@ export interface ComplexEigenvalues {
 }
 
 /**
- * Discriminated union of eigenvalue results for a 2x2 matrix.
+ * Discriminated union of eigenvalue results for a 2x2 matrix
  *
  * @category Types
  * @since 0.7.0
@@ -465,7 +474,7 @@ export interface ComplexEigenvalues {
 export type EigenvalueResult = RealEigenvalues | ComplexEigenvalues;
 
 /**
- * Eigendecomposition result for a 2x2 matrix with real eigenvalues and eigenvectors.
+ * Eigendecomposition result for a 2x2 matrix with real eigenvalues and eigenvectors
  *
  * @category Types
  * @since 0.7.0
@@ -484,7 +493,7 @@ export interface RealEigendecomposition {
 }
 
 /**
- * Eigendecomposition result for a 2x2 matrix with complex eigenvalues (no real eigenvectors).
+ * Eigendecomposition result for a 2x2 matrix with complex eigenvalues (no real eigenvectors)
  *
  * @category Types
  * @since 0.7.0
@@ -499,7 +508,7 @@ export interface ComplexEigendecomposition {
 }
 
 /**
- * Discriminated union of eigendecomposition results for a 2x2 matrix.
+ * Discriminated union of eigendecomposition results for a 2x2 matrix
  *
  * @category Types
  * @since 0.7.0
@@ -507,11 +516,79 @@ export interface ComplexEigendecomposition {
 export type EigendecomposeResult = RealEigendecomposition | ComplexEigendecomposition;
 
 /* ========================================================================== */
+/* SVD Types                                                                  */
+/* ========================================================================== */
+
+/**
+ * Result of a 2x2 Singular Value Decomposition M = U · Σ · Vᵀ
+ *
+ * @remarks
+ * Both `U` and `V` are proper rotations (`det = +1`), expressed as the
+ * `ReadonlyRotation2Like` shape `{ cos, sin }`. The diagonal entries
+ * `(sigma.x, sigma.y)` satisfy `sigma.x ≥ 0` and `sigma.x ≥ |sigma.y|`.
+ *
+ * Sign convention (Convention A): for matrices with `det(M) ≥ 0`,
+ * `sigma.y ≥ 0`. For matrices with `det(M) < 0` (reflection inputs),
+ * `sigma.y ≤ 0`; the reflection sign is encoded in `sigma.y` so that
+ * both `U` and `V` remain proper rotations. The algebraic identity
+ * `det(M) = sigma.x · sigma.y` holds exactly.
+ *
+ * Consumers cross-referencing libraries that use the unsigned-σ
+ * convention should compare `(sigma.x, |sigma.y|)` and reconcile the
+ * sign against `det(M)`.
+ *
+ * @category Types
+ * @since 0.7.0
+ */
+export interface SvdResult {
+ /** Left rotation factor (proper rotation, `det = +1`). */
+ readonly U: ReadonlyRotation2Like;
+ /** Singular values `(σ_x, σ_y)` with `σ_x ≥ 0` and `σ_x ≥ |σ_y|`; signed σ_y carries the reflection sign. */
+ readonly sigma: ReadonlyVector2Like;
+ /** Right rotation factor (proper rotation, `det = +1`). */
+ readonly V: ReadonlyRotation2Like;
+}
+
+/* ========================================================================== */
+/* Polar Decomposition Types                                                  */
+/* ========================================================================== */
+
+/**
+ * Result of a 2x2 polar decomposition M = R · S under Convention A
+ *
+ * @remarks
+ * `R` is the proper-rotation factor and `S` is the symmetric stretch factor.
+ * Computed via SVD as `R = U · Vᵀ` and `S = V · diag(σ) · Vᵀ`. Under
+ * Convention A both `U` and `V` are proper rotations, so `R` is **always**
+ * a proper rotation (`det(R) = +1`), even when `det(M) < 0`.
+ *
+ * **Convention A versus textbook polar**: the textbook polar decomposition
+ * pushes the reflection sign of `M` into `R` (which may then be a
+ * reflection) so that `S` is always SPD. Convention A pushes the reflection
+ * sign into the singular value `sigma.y` instead, keeping `R` a proper
+ * rotation. In exchange, `det(S) = sigma.x · sigma.y = det(M)`, so `S` is
+ * SPD when `det(M) ≥ 0` and indefinite when `det(M) < 0`.
+ *
+ * Consumers requiring an SPD `S` (textbook polar) MUST reconstruct from
+ * `Matrix2.svd` directly — the reflection sign on `sigma.y` distinguishes
+ * the two cases.
+ *
+ * @category Types
+ * @since 0.7.0
+ */
+export interface PolarDecomposeResult {
+ /** Proper-rotation factor under Convention A; `det(R) = +1` always. */
+ readonly R: ReadonlyRotation2Like;
+ /** Symmetric stretch factor; SPD when `det(M) ≥ 0`, indefinite when `det(M) < 0`. */
+ readonly S: ReadonlyMatrix2Like;
+}
+
+/* ========================================================================== */
 /* SinCos                                                                      */
 /* ========================================================================== */
 
 /**
- * Pre-computed sine and cosine pair.
+ * Pre-computed sine and cosine pair
  *
  * @remarks
  * Used by angle operations and deterministic kernels to return both
@@ -528,7 +605,7 @@ export interface SinCos {
 }
 
 /**
- * Read-only variant of {@link SinCos} for cached angle lookup tables.
+ * Read-only variant of {@link SinCos} for cached angle lookup tables
  *
  * @remarks
  * Follows the Readonly*Like pattern established by all other value types

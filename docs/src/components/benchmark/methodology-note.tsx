@@ -14,9 +14,5 @@ export default function MethodologyNote({
  summary = 'Methodology details',
  children,
 }: MethodologyNoteProps): React.ReactElement {
- return (
-  <Details summary={<summary>{summary}</summary>}>
-   {children}
-  </Details>
- );
+ return <Details summary={<summary>{summary}</summary>}>{children}</Details>;
 }

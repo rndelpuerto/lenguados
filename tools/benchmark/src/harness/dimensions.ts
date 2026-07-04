@@ -119,8 +119,15 @@ export type DimensionFilter = Partial<Record<keyof DimensionCell, string>>;
  * Each filter key restricts the corresponding axis to the given value.
  * Multiple filters are AND-combined (all must match).
  *
- * Example: `{ tier: 'unchecked', determinism: 'fdlibm' }` keeps only
- * cells where tier=unchecked AND determinism=fdlibm.
+ * A filter axis only constrains cells that DECLARE that axis: packages that
+ * do not participate in a dimension (for example, determinism outside the
+ * deterministic-math package) match any constraint on it, so heterogeneous
+ * multi-package runs keep their cells. Cells that declare the axis must
+ * still match exactly.
+ *
+ * Example: `{ tier: 'unchecked', determinism: 'fdlibm' }` keeps cells where
+ * tier=unchecked AND determinism=fdlibm, plus cells that declare neither
+ * axis.
  *
  * @param cells - The dimension cells to filter
  * @param filter - Partial constraints to match against
@@ -129,7 +136,8 @@ export type DimensionFilter = Partial<Record<keyof DimensionCell, string>>;
 export function filterCells(cells: DimensionCell[], filter: DimensionFilter): DimensionCell[] {
  return cells.filter((cell) => {
   for (const [key, value] of Object.entries(filter)) {
-   if (value !== undefined && cell[key as keyof DimensionCell] !== value) {
+   const cellValue = cell[key as keyof DimensionCell];
+   if (value !== undefined && cellValue !== undefined && cellValue !== value) {
     return false;
    }
   }
@@ -193,7 +201,7 @@ export function parseDimensionFilter(args: string[]): DimensionFilter {
  * @returns A colon-separated string key (e.g., 'node:development:fdlibm:Vector2')
  */
 export function cellToKey(cell: DimensionCell): string {
- const parts = [cell.environment, cell.buildMode];
+ const parts: string[] = [cell.environment, cell.buildMode];
  if (cell.determinism !== undefined) parts.push(cell.determinism);
  if (cell.tier !== undefined) parts.push(cell.tier);
  parts.push(cell.entity);
@@ -207,7 +215,7 @@ export function cellToKey(cell: DimensionCell): string {
  * @returns A label like '[node] Vector2 (development, fdlibm)'
  */
 export function cellToLabel(cell: DimensionCell): string {
- const details = [cell.buildMode];
+ const details: string[] = [cell.buildMode];
  if (cell.determinism !== undefined) details.push(cell.determinism);
  if (cell.tier !== undefined) details.push(cell.tier);
  return `[${cell.environment}] ${cell.entity} (${details.join(', ')})`;

@@ -59,17 +59,6 @@
     "import": "./lib/esm/utils/parse.production.js"
    }
   },
-  "./utils/performance": {
-   "types": "./lib/@types/utils/performance.d.ts",
-   "development": {
-    "require": "./lib/cjs/utils/performance.development.js",
-    "import": "./lib/esm/utils/performance.development.js"
-   },
-   "default": {
-    "require": "./lib/cjs/utils/performance.production.js",
-    "import": "./lib/esm/utils/performance.production.js"
-   }
-  },
   "./utils/random": {
    "types": "./lib/@types/utils/random.d.ts",
    "development": {
@@ -103,8 +92,25 @@
     "import": "./lib/esm/validation/shapes.production.js"
    }
   },
+  "./lib/esm/auxiliary/*": null,
+  "./lib/cjs/auxiliary/*": null,
+  "./lib/esm/core/*": null,
+  "./lib/cjs/core/*": null,
+  "./lib/esm/deterministic/*": null,
+  "./lib/cjs/deterministic/*": null,
+  "./lib/esm/types/*": null,
+  "./lib/cjs/types/*": null,
+  "./lib/esm/chunks/*": null,
+  "./lib/cjs/chunks/*": null,
+  "./lib/auxiliary/*": null,
+  "./lib/core/*": null,
+  "./lib/deterministic/*": null,
+  "./lib/types/*": null,
+  "./lib/chunks/*": null,
+  "./lib/esm/validation/*": null,
+  "./lib/cjs/validation/*": null,
+  "./lib/validation/*": null,
   "./lib/*": {
-   "types": "./lib/@types/*.d.ts",
    "require": "./lib/cjs/*",
    "import": "./lib/esm/*"
   },
@@ -115,12 +121,15 @@
   "main.js",
   "main.mjs",
   "dev-main.mjs",
-  "lib"
+  "lib",
+  "LICENSE",
+  "NOTICE"
  ],
  "scripts": {
   "build": "node ../../scripts/build.mjs",
   "clean": "node ../../scripts/clean.mjs",
   "outdated": "node ../../scripts/outdated.mjs",
+  "prepack": "cross-env NODE_ENV=development node ../../scripts/build.mjs && cross-env NODE_ENV=production node ../../scripts/build.mjs && node ../../scripts/sync-legal-files.mjs",
   "publish:local": "node ../../scripts/publish-local.mjs",
   "unpublish:local": "node ../../scripts/unpublish-local.mjs",
   "watch": "node ../../scripts/watch.mjs"
@@ -133,5 +142,10 @@
  },
  "publishConfig": {
   "access": "public"
+ },
+ "typedocOptions": {
+  "entryPoints": [
+   "src/index.ts"
+  ]
  }
 }

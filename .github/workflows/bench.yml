@@ -22,18 +22,22 @@ concurrency:
 jobs:
  benchmark:
   name: Run Benchmarks
+  # Canonical benchmark data is produced from main only — a manual dispatch
+  # from any other ref must not generate publishable summaries.
+  if: github.event_name != 'workflow_dispatch' || github.ref == 'refs/heads/main'
   runs-on: ubuntu-latest
   timeout-minutes: 60
 
   permissions:
    contents: read
+   actions: read # download the rolling trend history from the previous bench run
 
   steps:
    # ─────────────────────────────────────────────────────────────────────────
    # Checkout
    # ─────────────────────────────────────────────────────────────────────────
    - name: Checkout repository
-     uses: actions/checkout@v4
+     uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
      with:
       fetch-depth: 1
 
@@ -41,10 +45,15 @@ jobs:
    # Setup Environment
    # ─────────────────────────────────────────────────────────────────────────
    - name: Set up Node.js
-     uses: actions/setup-node@v4
+     uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
      with:
       node-version-file: '.nvmrc'
       cache: npm
+      # Cache key covers exactly the lockfiles this workflow installs
+      # (root npm ci + tools:bench:setup).
+      cache-dependency-path: |
+       package-lock.json
+       tools/benchmark/package-lock.json
 
    - name: Install monorepo dependencies
      run: npm ci
@@ -59,29 +68,89 @@ jobs:
      run: npm run dist
 
    # ─────────────────────────────────────────────────────────────────────────
+   # Determinism drift gate (Node-only, post-build pre-bench)
+   # Verifies the committed cross-environment golden file at
+   # `tools/benchmark/baselines/golden.json` against the current build's
+   # deterministic-kernel output. Failure here aborts the bench run so
+   # downstream summaries reflect a known-good determinism state.
+   # See packages/math2d/DESIGN_DECISIONS.md ADR-018.
+   # ─────────────────────────────────────────────────────────────────────────
+   - name: Verify determinism golden file (Node-only)
+     run: npm run tools:bench:smoke
+
+   # ─────────────────────────────────────────────────────────────────────────
    # Run benchmark suite
-   # Produces: tools/benchmark/results/{latest,stress-latest,dx-latest,comparison-latest}.json
+   # Produces: tools/benchmark/results/{package}/{latest,stress-latest,dx-latest,comparison-latest}.json
+   # run-all propagates phase failures (continue-then-fail): any failed phase
+   # fails this step, so partial data can never reach summarize under green.
    # ─────────────────────────────────────────────────────────────────────────
    - name: Run full benchmark suite
-     run: npm run tools:bench:all
+     run: npm run tools:bench:all -- --package=all
      env:
-      # Reduce variance: disable Node.js JIT tiering changes mid-benchmark
+      # Heap headroom: avoid GC-pressure variance during long benchmark phases
       NODE_OPTIONS: '--max-old-space-size=4096'
 
    # ─────────────────────────────────────────────────────────────────────────
    # Generate lightweight summary JSON from raw results
    # The benchmark tool owns this transformation as part of its output.
+   # summarize refuses (non-zero) missing/filtered/legacy/wrong-Node input —
+   # the operative data-integrity gate; the upload guard below is backstop.
    # ─────────────────────────────────────────────────────────────────────────
    - name: Generate benchmark summaries
-     run: npm run tools:bench:summarize
+     run: npm run tools:bench:summarize -- --package=all
 
    # ─────────────────────────────────────────────────────────────────────────
    # Upload summaries as artifact for the docs deploy workflow
    # ─────────────────────────────────────────────────────────────────────────
    - name: Upload benchmark summaries
-     uses: actions/upload-artifact@v4
+     uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
      with:
+      overwrite: true # re-runs of a completed run must not fail on artifact immutability
       name: benchmark-summaries
       path: tools/benchmark/results/summaries/
       retention-days: 30
-      if-no-files-found: warn
+      if-no-files-found: error
+
+   # ─────────────────────────────────────────────────────────────────────────
+   # Trend surveillance (warn-only — NEVER fails on a performance delta)
+   # Single-run wall-clock numbers on shared runners carry a measured noise
+   # floor, so per-run pass/fail thresholds are statistically dishonest
+   # (see .claude/rules/quality-pipeline.md and tools/benchmark/README.md).
+   # Instead: download the rolling history from the previous successful run,
+   # append this run's compact record, surface a delta table in the job
+   # summary with catastrophic-only annotations, and re-upload the history.
+   # 90-day retention keeps the rolling window alive across runs; a gap
+   # longer than that restarts the window — acceptable for a warn-only
+   # surface. gh requires GH_TOKEN explicitly; `actions: read` suffices.
+   # ─────────────────────────────────────────────────────────────────────────
+   - name: Download trend history (previous successful bench run)
+     env:
+      GH_TOKEN: ${{ github.token }}
+     shell: bash # pin the -e semantics the guards below reason about
+     run: |
+      # `|| true` guards the assignment: under the default `bash -e` shell a
+      # transient gh/API failure would otherwise abort the step and fail an
+      # otherwise-good bench run (blocking the docs deploy) — warn-only
+      # surveillance plumbing must never break the canonical pipeline. A
+      # transient failure degrades to "start a new window", which the next
+      # run self-heals from.
+      run_id=$(gh run list --repo "$GITHUB_REPOSITORY" -w 'Run Benchmark Suite' -s success -b main -L 1 --json databaseId --jq '.[0].databaseId' || true)
+      if [ -z "$run_id" ] || [ "$run_id" = "null" ]; then
+       echo "No previous successful bench run reachable — starting a new trend history."
+      elif ! gh run download "$run_id" --repo "$GITHUB_REPOSITORY" -n benchmark-history -D tools/benchmark/results/trend/; then
+       echo "Previous bench run has no history artifact (first trend run or retention expired) — starting a new trend history."
+      fi
+
+   - name: Record trend and publish delta report
+     run: |
+      npm run tools:bench:trend -- --package=all
+      cat tools/benchmark/results/trend/*-report.md >> "$GITHUB_STEP_SUMMARY"
+
+   - name: Upload trend history
+     uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+     with:
+      overwrite: true # re-runs of a completed run must not fail on artifact immutability
+      name: benchmark-history
+      path: tools/benchmark/results/trend/*-history.jsonl
+      retention-days: 90
+      if-no-files-found: error

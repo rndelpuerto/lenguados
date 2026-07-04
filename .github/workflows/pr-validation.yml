@@ -5,10 +5,23 @@ on:
  pull_request:
   branches: [main]
 
+concurrency:
+ group: pr-validation-${{ github.event.pull_request.number }}
+ cancel-in-progress: true
+
 jobs:
  pr-validation:
   name: PR Validation Pipeline
   runs-on: ubuntu-latest
+
+  # CodeQL SARIF upload requires security-events: write; everything else is
+  # read-only. Declared explicitly — restrictive default permissions would
+  # silently fail the analyze step's upload.
+  permissions:
+   contents: read
+   issues: read
+   pull-requests: read
+   security-events: write
 
   steps:
    # ─────────────────────────────────────────────────────────────────────────
@@ -16,18 +29,23 @@ jobs:
    # Retrieves the repository code.
    # ─────────────────────────────────────────────────────────────────────────
    - name: Checkout repository
-     uses: actions/checkout@v4
+     uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
    # ─────────────────────────────────────────────────────────────────────────
    # Setup Environment
    # Installs Node.js and project dependencies.
    # ─────────────────────────────────────────────────────────────────────────
    - name: Set up Node.js and enable npm cache
-     uses: actions/setup-node@v4
+     uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
      with:
       node-version-file: '.nvmrc'
       registry-url: 'https://registry.npmjs.org'
       cache: npm
+      # Cache key covers exactly the lockfiles this workflow installs
+      # (root npm ci + tools:bench:setup).
+      cache-dependency-path: |
+       package-lock.json
+       tools/benchmark/package-lock.json
 
    - name: Install dependencies
      run: npm ci
@@ -35,17 +53,45 @@ jobs:
    # ─────────────────────────────────────────────────────────────────────────
    # PR-Metadata Validation
    # Ensures branch naming and milestone conform to release flow.
+   # Native bash implementations — the previous third-party actions
+   # (amondnet/branch-name-validator, actions-ecosystem/action-check-milestone)
+   # no longer exist on GitHub (404), so their intent is preserved without
+   # supply-chain dependencies. Single-quoted YAML performs no escape
+   # processing, so regex backslashes are written singly.
    # ─────────────────────────────────────────────────────────────────────────
    - name: Validate branch naming convention
-     uses: amondnet/branch-name-validator@v2
-     with:
-      pattern: '^(release|hotfix)/v\\d+\\.\\d+\\.\\d+$'
+     env:
+      HEAD_REF: ${{ github.head_ref }}
+     run: |
+      if printf '%s' "$HEAD_REF" | grep -Eq '^(release|hotfix)/v[0-9]+\.[0-9]+\.[0-9]+$|^(feature|feat|fix|enhancement|docs|chore|refactor|test|perf|ci|build|dependabot)/'; then
+       echo "Branch name OK: $HEAD_REF"
+      else
+       echo "::error::Branch '$HEAD_REF' does not match the naming convention: release|hotfix/vX.Y.Z or <type>/<topic> with type in feature|feat|fix|enhancement|docs|chore|refactor|test|perf|ci|build."
+       exit 1
+      fi
 
    - name: Ensure PR has a valid milestone
-     uses: actions-ecosystem/action-check-milestone@v1
-     with:
-      github_token: ${{ secrets.GITHUB_TOKEN }}
-      pattern: '^v\\d+\\.\\d+\\.\\d+$'
+     # Dependabot PRs carry no milestone and their author cannot assign one;
+     # the maintainer triages them outside the milestone contract.
+     if: github.actor != 'dependabot[bot]'
+     env:
+      GH_TOKEN: ${{ github.token }}
+      PR_NUMBER: ${{ github.event.pull_request.number }}
+     run: |
+      milestone=$(gh api "repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER" --jq '.milestone.title // empty' 2>/dev/null) || {
+       echo "::warning::Could not query the PR milestone (limited token on forks?) — skipping the milestone gate."
+       exit 0
+      }
+      if [ -z "$milestone" ]; then
+       echo "::error::PR #$PR_NUMBER has no milestone. Assign a vX.Y.Z milestone before merging."
+       exit 1
+      fi
+      if printf '%s' "$milestone" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+$'; then
+       echo "Milestone OK: $milestone"
+      else
+       echo "::error::Milestone '$milestone' does not match the vX.Y.Z pattern."
+       exit 1
+      fi
 
    # ─────────────────────────────────────────────────────────────────────────
    # Quality Gates
@@ -68,10 +114,11 @@ jobs:
    # Executes unit tests and captures coverage report.
    # ─────────────────────────────────────────────────────────────────────────
    - name: Run unit tests with coverage
-     run: npm test
+     # test:unit skips the pretest lint hook — lint already ran as its own step
+     run: npm run test:unit
 
    - name: Upload coverage report
-     uses: actions/upload-artifact@v4
+     uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
      with:
       name: coverage-report
       path: coverage
@@ -83,6 +130,46 @@ jobs:
    - name: Verify production distribution
      run: npm run dist
 
+   - name: Verify package tarball contents
+     run: node scripts/verify-tarball.mjs
+
+   # ─────────────────────────────────────────────────────────────────────────
+   # Determinism drift pre-merge gate
+   # Installs the benchmark tooling and verifies the committed
+   # cross-environment golden file at `tools/benchmark/baselines/golden.json`
+   # against the current build's deterministic-kernel output. Catches drift
+   # before merge so `main` is never left in a broken determinism state.
+   # See packages/math2d/DESIGN_DECISIONS.md ADR-018.
+   # ─────────────────────────────────────────────────────────────────────────
+   - name: Install benchmark tool dependencies
+     run: npm run tools:bench:setup
+
+   - name: Verify determinism golden file (Node-only)
+     run: npm run tools:bench:smoke
+
+   # ─────────────────────────────────────────────────────────────────────────
+   # Benchmark laboratory unit tests (typecheck + Jest)
+   # The lab's correctness semantics are load-bearing for CI: the cross-env
+   # verify exit codes gate the determinism-browsers workflow and the trend
+   # scripts feed the published performance surfaces. Without this step a PR
+   # could re-break those semantics (e.g., force verify to exit 0) with every
+   # other gate green.
+   # ─────────────────────────────────────────────────────────────────────────
+   - name: Run benchmark laboratory tests
+     run: npm run tools:bench:test
+
+   # ─────────────────────────────────────────────────────────────────────────
+   # Bundle-size budget gate
+   # Bundles each budgeted import entry (esbuild + node:zlib gzip — the same
+   # instrument that produces the published docs numbers) and fails the PR
+   # when any entry exceeds its `budgetGzipBytes` declared in the package's
+   # dx-config. Requires the dist artifacts (built above) and the lab tooling
+   # (installed above). Intentional size changes rebaseline the budget in the
+   # same PR with justification.
+   # ─────────────────────────────────────────────────────────────────────────
+   - name: Enforce bundle-size budgets
+     run: npm run tools:bench:size
+
    - name: Build documentation
      run: npm run docs
 
@@ -90,21 +177,43 @@ jobs:
    # Security & Health
    # Audits dependencies, verifies licenses, and runs CodeQL analysis.
    # ─────────────────────────────────────────────────────────────────────────
+   # ─────────────────────────────────────────────────────────────────────────
+   # Dependency audit with a MANAGED allowlist (audit-ci.jsonc): a freshly
+   # published advisory is handled by a reviewed, justified allowlist entry
+   # instead of freezing every PR — the gate stays blocking at high severity.
+   # ─────────────────────────────────────────────────────────────────────────
    - name: Perform dependency audit
-     run: npm audit --audit-level=high
+     run: npx audit-ci --config audit-ci.jsonc
 
-   - name: Validate OSS licenses
-     uses: cybercyclone/license-checker-action@v1
-     with:
-      allow: 'Apache-2.0,MIT'
+   # The previous third-party action (cybercyclone/license-checker-action) no
+   # longer exists on GitHub. The MEANINGFUL license guarantee this repository
+   # makes to consumers is that published packages ship ZERO runtime
+   # dependencies — no third-party license obligations travel with the
+   # artifacts. This gate enforces that invariant directly (a --production
+   # license scan is vacuous here by design: there is nothing to scan).
+   # devDependency license policy (build toolchain only, never shipped) is a
+   # separate at-release concern.
+   - name: Validate OSS licenses (zero runtime dependencies in published packages)
+     run: |
+      failed=0
+      for pkg in packages/*/package.json; do
+       deps=$(node -e "const d=require('./$pkg').dependencies||{}; console.log(Object.keys(d).length)")
+       if [ "$deps" != "0" ]; then
+        echo "::error::$pkg declares $deps runtime dependencies — published packages must ship dependency-free (license guarantee to consumers)."
+        failed=1
+       else
+        echo "$pkg: zero runtime dependencies OK"
+       fi
+      done
+      exit $failed
 
    - name: Initialize CodeQL analysis
-     uses: github/codeql-action/init@v3
+     uses: github/codeql-action/init@02c5e83432fe5497fd85b873b6c9f16a8578e1d9 # v3.37.0
      with:
       languages: javascript
 
    - name: Autobuild for CodeQL
-     uses: github/codeql-action/autobuild@v3
+     uses: github/codeql-action/autobuild@02c5e83432fe5497fd85b873b6c9f16a8578e1d9 # v3.37.0
 
    - name: Analyze code with CodeQL
-     uses: github/codeql-action/analyze@v3
+     uses: github/codeql-action/analyze@02c5e83432fe5497fd85b873b6c9f16a8578e1d9 # v3.37.0

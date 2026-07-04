@@ -13,23 +13,22 @@
  * from {@link @lenguados/math2d/auxiliary/scalar/arithmetic}.
  */
 
-import { isNearZero } from '../scalar/comparison';
-
 /* ========================================================================== */
 /* Floored Modulo                                                             */
 /* ========================================================================== */
 
 /**
- * Floored modulo (strict).
+ * Computes the floored remainder (Python-style `%`), where the result shares the sign of `divisor`
  *
  * @remarks
- * Uses `isNearZero(divisor)` with EPSILON tolerance (1e-10) to detect
- * zero divisors, not an exact `=== 0` check. Values like 1e-11 will throw.
+ * Uses an exact `=== 0` divisor check per C99 §7.12.10.1. Tiny non-zero divisors
+ * like `1e-11` are accepted as valid (the IEEE 754 result is mathematically
+ * well-defined). NaN propagates per IEEE 754 §6.2: `flooredMod(x, NaN)` → NaN.
  *
  * @param dividend - Value to divide
- * @param divisor - Divisor
+ * @param divisor - Divisor; MUST NOT be exactly zero
  * @returns Floored remainder
- * @throws {RangeError} If divisor is near zero
+ * @throws {RangeError} If `divisor === 0` (exactly)
  *
  * @example
  * ```typescript
@@ -37,33 +36,41 @@ import { isNearZero } from '../scalar/comparison';
  * flooredMod(-7, 3);      // 2
  * flooredMod(7, -3);      // -2
  * flooredMod(-7, -3);     // -1
+ * flooredMod(5, 1e-11);   // valid: tiny divisor is non-zero
+ * flooredMod(5, NaN);     // NaN (IEEE 754 propagation)
  * ```
  *
  * @see {@link flooredModSafe} - Returns 0 if divisor is zero
  * @see {@link flooredModUnchecked} - No validation
- * @see {@link mod} — positive modulo (in `auxiliary/scalar/arithmetic.ts`)
- * @see {@link loop} — range wrapping (in `auxiliary/scalar/arithmetic.ts`)
+ * @see {@link mod} - positive modulo (in `auxiliary/scalar/arithmetic.ts`)
+ * @see {@link loop} - range wrapping (in `auxiliary/scalar/arithmetic.ts`)
  *
  * @category Wrapping
  * @since 0.7.0
  */
 export function flooredMod(dividend: number, divisor: number): number {
- if (isNearZero(divisor)) {
+ if (divisor === 0) {
   throw new RangeError('flooredMod: divisor must not be zero');
  }
  return ((dividend % divisor) + divisor) % divisor;
 }
 
 /**
- * Floored modulo (safe).
+ * Computes the floored remainder with a `0` fallback for exact zero divisor
+ *
+ * @remarks
+ * NaN propagates per the canonical Safe contract (IEEE 754 §6.2): NaN in → NaN out.
+ * The `0` fallback triggers ONLY when `divisor === 0` exactly.
+ *
  * @param dividend - Value to divide
  * @param divisor - Divisor
- * @returns Floored remainder, or 0 if divisor is zero
+ * @returns Floored remainder; `0` if `divisor === 0` exactly; `NaN` if any input is NaN
  *
  * @example
  * ```typescript
  * flooredModSafe(7, 3);      // 1
- * flooredModSafe(7, 0);      // 0 (zero divisor)
+ * flooredModSafe(7, 0);      // 0 (zero divisor fallback)
+ * flooredModSafe(7, NaN);    // NaN (propagates)
  * ```
  *
  * @see {@link flooredMod} - Throws if divisor is zero
@@ -72,12 +79,12 @@ export function flooredMod(dividend: number, divisor: number): number {
  * @since 0.7.0
  */
 export function flooredModSafe(dividend: number, divisor: number): number {
- if (isNearZero(divisor)) return 0;
+ if (divisor === 0) return 0;
  return ((dividend % divisor) + divisor) % divisor;
 }
 
 /**
- * Floored modulo (unchecked).
+ * Floored modulo (unchecked)
  *
  * @remarks
  * **Precondition:** divisor !== 0. Zero divisor produces NaN.
@@ -86,8 +93,8 @@ export function flooredModSafe(dividend: number, divisor: number): number {
  * @param divisor - Divisor (must not be zero)
  * @returns Floored remainder
  *
- * @see {@link flooredMod} — Throws if divisor is zero
- * @see {@link flooredModSafe} — Returns 0 if divisor is zero
+ * @see {@link flooredMod} - Throws if divisor is zero
+ * @see {@link flooredModSafe} - Returns 0 if divisor is zero
  *
  * @category Wrapping
  * @since 0.7.0

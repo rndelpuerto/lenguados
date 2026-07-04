@@ -9,7 +9,7 @@
 /* ========================================================================== */
 
 /**
- * Default epsilon for floating-point comparisons.
+ * Default epsilon for floating-point comparisons
  *
  * @remarks
  * This value (1e-10) provides a good balance between:
@@ -26,25 +26,12 @@
  */
 export const EPSILON = 1e-10;
 
-/**
- * Square of epsilon for area/volume comparisons.
- *
- * @remarks
- * When comparing areas or squared distances, use EPSILON_SQUARED
- * to maintain consistent tolerance behavior.
- *
- * @constant {number}
- * @category Tolerance
- * @since 0.7.0
- */
-export const EPSILON_SQUARED = EPSILON * EPSILON;
-
 /* ========================================================================== */
 /* Angular Constants                                                          */
 /* ========================================================================== */
 
 /**
- * Mathematical constant π (pi) ≈ 3.14159265358979.
+ * Mathematical constant π (pi) ≈ 3.14159265358979
  *
  * @constant {number}
  * @category Angular
@@ -53,7 +40,7 @@ export const EPSILON_SQUARED = EPSILON * EPSILON;
 export const PI = Math.PI;
 
 /**
- * Mathematical constant τ (tau) = 2π ≈ 6.28318530717959.
+ * Mathematical constant τ (tau) = 2π ≈ 6.28318530717959
  *
  * @remarks
  * Tau represents one full rotation in radians. Some consider it
@@ -66,7 +53,7 @@ export const PI = Math.PI;
 export const TAU = 2 * Math.PI;
 
 /**
- * Half of π ≈ 1.5707963267949 (90 degrees).
+ * Half of π ≈ 1.5707963267949 (90 degrees)
  *
  * @constant {number}
  * @category Angular
@@ -75,7 +62,7 @@ export const TAU = 2 * Math.PI;
 export const HALF_PI = Math.PI / 2;
 
 /**
- * Quarter of π ≈ 0.785398163397448 (45 degrees).
+ * Quarter of π ≈ 0.785398163397448 (45 degrees)
  *
  * @constant {number}
  * @category Angular
@@ -88,11 +75,11 @@ export const QUARTER_PI = Math.PI / 4;
 /* ========================================================================== */
 
 /**
- * Conversion factor from degrees to radians.
+ * Conversion factor from degrees to radians
  *
  * @example
  * ```typescript
- * const radians = degrees * DEG_TO_RAD;
+ * const radians = 90 * DEG_TO_RAD; // 1.5707963267948966 (π/2)
  * ```
  *
  * @constant {number}
@@ -102,11 +89,11 @@ export const QUARTER_PI = Math.PI / 4;
 export const DEG_TO_RAD = Math.PI / 180;
 
 /**
- * Conversion factor from radians to degrees.
+ * Conversion factor from radians to degrees
  *
  * @example
  * ```typescript
- * const degrees = radians * RAD_TO_DEG;
+ * const degrees = (Math.PI / 2) * RAD_TO_DEG; // 90
  * ```
  *
  * @constant {number}
@@ -116,12 +103,11 @@ export const DEG_TO_RAD = Math.PI / 180;
 export const RAD_TO_DEG = 180 / Math.PI;
 
 /**
- * Conversion factor from radians to turns (full rotations).
+ * Conversion factor from radians to turns (full rotations)
  *
  * @example
  * ```typescript
- * const turns = radians * RAD_TO_TURN;
- * // 2π radians = 1 turn
+ * const turns = (2 * Math.PI) * RAD_TO_TURN; // 1 (2π radians = 1 turn)
  * ```
  *
  * @constant {number}
@@ -131,12 +117,11 @@ export const RAD_TO_DEG = 180 / Math.PI;
 export const RAD_TO_TURN = 1 / TAU;
 
 /**
- * Conversion factor from turns to radians.
+ * Conversion factor from turns to radians
  *
  * @example
  * ```typescript
- * const radians = turns * TURN_TO_RAD;
- * // 1 turn = 2π radians
+ * const radians = 1 * TURN_TO_RAD; // 6.283185307179586 (2π; 1 turn)
  * ```
  *
  * @constant {number}
@@ -150,7 +135,7 @@ export const TURN_TO_RAD = TAU;
 /* ========================================================================== */
 
 /**
- * Square root of 2 ≈ 1.41421356237.
+ * Square root of 2 ≈ 1.41421356237
  *
  * @remarks
  * The diagonal of a unit square. Commonly used in 2D geometry.
@@ -162,7 +147,7 @@ export const TURN_TO_RAD = TAU;
 export const SQRT_2 = Math.SQRT2;
 
 /**
- * Square root of 1/2 ≈ 0.707106781187.
+ * Square root of 1/2 ≈ 0.707106781187
  *
  * @remarks
  * Equals 1/√2 = √2/2. Common in rotation calculations (45° sin/cos).
@@ -174,7 +159,7 @@ export const SQRT_2 = Math.SQRT2;
 export const SQRT_HALF = Math.SQRT1_2;
 
 /**
- * Natural logarithm of 2 ≈ 0.693147180559945.
+ * Natural logarithm of 2 ≈ 0.693147180559945
  *
  * @constant {number}
  * @category Mathematical
@@ -183,7 +168,7 @@ export const SQRT_HALF = Math.SQRT1_2;
 export const LN_2 = Math.LN2;
 
 /**
- * Smallest positive normal number in IEEE 754 double precision.
+ * Smallest positive normal number in IEEE 754 double precision
  * Numbers smaller than this (but not zero) are denormal/subnormal.
  *
  * @constant {number}
@@ -191,41 +176,3 @@ export const LN_2 = Math.LN2;
  * @since 0.7.0
  */
 export const SMALLEST_NORMAL = 2.2250738585072014e-308; // 2^-1022
-
-/* ========================================================================== */
-/* Unified Constants Object                                                   */
-/* ========================================================================== */
-
-/**
- * Unified constants object for convenient access.
- *
- * @example
- * ```typescript
- * import { Constants } from '@lenguados/math2d';
- * const angle = degrees * Constants.DEG_TO_RAD;
- * ```
- *
- * @constant
- * @category Collection
- * @since 0.7.0
- */
-export const Constants = {
- EPSILON,
- EPSILON_SQUARED,
- PI,
- TAU,
- HALF_PI,
- QUARTER_PI,
- DEG_TO_RAD,
- RAD_TO_DEG,
- RAD_TO_TURN,
- TURN_TO_RAD,
-
- SQRT_2,
- SQRT_HALF,
- LN_2,
-
- SMALLEST_NORMAL,
-} as const;
-
-Object.freeze(Constants);

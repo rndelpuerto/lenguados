@@ -106,12 +106,8 @@ describe('aggregateScore', () => {
  });
 
  it('cross-library normalization with mock data', () => {
-  const math2d: OperationResult[] = [
-   { operation: 'vectorAdd', meanNs: 2, opsPerSec: 500e6 },
-  ];
-  const glMatrix: OperationResult[] = [
-   { operation: 'vectorAdd', meanNs: 2, opsPerSec: 500e6 },
-  ];
+  const math2d: OperationResult[] = [{ operation: 'vectorAdd', meanNs: 2, opsPerSec: 500e6 }];
+  const glMatrix: OperationResult[] = [{ operation: 'vectorAdd', meanNs: 2, opsPerSec: 500e6 }];
 
   const score = aggregateScore(math2d, glMatrix, 'math2d', 'gl-matrix');
   expect(score.geometricMean).toBeCloseTo(1.0, 10);
